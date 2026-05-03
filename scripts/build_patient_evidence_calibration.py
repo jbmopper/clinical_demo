@@ -1,0 +1,89 @@
+"""Build a patient-side FHIR evidence calibration packet.
+
+This creates the project-specific analogue to Chia for matcher
+adjudication. Rows are candidates for human review: each contains one
+criterion, matcher output, optional Layer-3 judge output, and stable
+patient/trial source-row ids that reviewers can cite in labels.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+from clinical_demo.api.loaders import load_patient, load_trial
+from clinical_demo.evals.layer_three import build_source_context
+from clinical_demo.evals.patient_evidence import (
+    PatientEvidenceHumanLabel,
+    build_patient_evidence_rows,
+    load_layer_three_report,
+    load_patient_evidence_labels_if_exists,
+    save_patient_evidence_labels,
+    save_patient_evidence_rows,
+    select_patient_evidence_targets,
+    summarize_patient_evidence_rows,
+)
+from clinical_demo.evals.store import load_run, open_store
+
+DEFAULT_DB = Path("eval/runs.sqlite")
+DEFAULT_JUDGE_REPORT = Path("eval/baselines/2026-04-30/layer3_judge_calibrated.json")
+DEFAULT_LABELS = Path("eval/calibration/patient_evidence_labels.json")
+DEFAULT_OUTPUT = Path("eval/calibration/patient_evidence_candidates.json")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--db", type=Path, default=DEFAULT_DB)
+    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--judge-report", type=Path, default=DEFAULT_JUDGE_REPORT)
+    parser.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--limit", type=int, default=60)
+    args = parser.parse_args()
+
+    with open_store(args.db) as store:
+        run = load_run(store, args.run_id)
+    judge_report = load_layer_three_report(args.judge_report)
+    existing_labels = load_patient_evidence_labels_if_exists(args.labels)
+
+    targets = select_patient_evidence_targets(run, judge_report=judge_report, limit=args.limit)
+    if existing_labels:
+        labels = existing_labels
+    else:
+        labels = [
+            PatientEvidenceHumanLabel(
+                pair_id=target.pair_id,
+                criterion_index=target.criterion_index,
+            )
+            for target in targets
+        ]
+        save_patient_evidence_labels(args.labels, labels)
+
+    source_contexts = {}
+    for target in targets:
+        if target.pair_id in source_contexts:
+            continue
+        source_contexts[target.pair_id] = build_source_context(
+            load_patient(target.patient_id),
+            load_trial(target.nct_id),
+            max_conditions=12,
+            max_observations=15,
+            max_medications=8,
+        )
+
+    rows = build_patient_evidence_rows(
+        targets,
+        source_contexts=source_contexts,
+        judge_report=judge_report,
+        existing_labels=labels,
+    )
+    save_patient_evidence_rows(args.output, rows)
+
+    print(f"wrote {len(rows)} patient-evidence calibration rows to {args.output}")
+    print(f"label template: {args.labels}")
+    print(json.dumps(summarize_patient_evidence_rows(rows), indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

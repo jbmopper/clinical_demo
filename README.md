@@ -21,19 +21,24 @@ AI Forward Deployed Engineer interview.
 > F1 58.6%. Layer-3 has judge scaffolding plus a calibration UI.
 > The first human calibration pass saved 25 labels in
 > `eval/calibration/layer3_human_labels.json`, all marked
-> `correct`. That is useful, but it mostly says the matcher is
-> honest and conservative; many "correct" verdicts are still
-> `indeterminate` because the deterministic layer lacks patient
-> evidence adjudication, condition absence reasoning, or unit
-> reconciliation. The calibration viewer now shows patient and
-> trial source context so future review can judge both the
-> deterministic verdict and the source evidence behind it.
+> `correct`; the full calibrated judge run over 1,086 verdicts
+> then found 1,066 `correct` and 20 `incorrect`, with 25/25
+> agreement against the human labels. That is useful, but it
+> mostly says the matcher is honest and conservative; many
+> "correct" verdicts are still `indeterminate` because the
+> deterministic layer lacks patient evidence adjudication,
+> condition absence reasoning, or unit reconciliation. The
+> calibration viewer now shows patient and trial source context so
+> future review can judge both the deterministic verdict and the
+> source evidence behind it.
 >
-> **576 Python tests passing**; Svelte production build verified
-> locally. Up next in Phase 2: keep the deterministic matcher as
-> the first pass, but add bounded LLM passes over retrieved
-> patient/trial sources for condition presence/absence and unit
-> reconciliation before the Phase 3 cost-quality routing sweep.
+> **579 Python tests passing**; Svelte production build verified
+> locally. Up next in Phase 2: review the generated 60-row
+> patient-side FHIR evidence label template, then keep the
+> deterministic matcher as the first pass while adding bounded LLM
+> passes over retrieved patient/trial sources for condition
+> presence/absence and unit reconciliation before the Phase 3
+> cost-quality routing sweep.
 
 ## What it is (one paragraph)
 
@@ -46,7 +51,8 @@ system never autonomously enrolls anyone.
 ## Source-of-truth docs
 
 - [`PLAN.md`](./PLAN.md) — build plan, hour estimates, scope cuts, decision log.
-- [`description.md`](./description.md) — narrative + architecture + diagram.
+- [`description.md`](./description.md#high-level-architecture) — narrative
+  plus Mermaid and ASCII architecture diagrams.
 
 ## Setup
 
@@ -284,7 +290,7 @@ predicate of the criterion. The LLM matcher's verdicts carry
 `matcher_version="llm-matcher-v0.1"` so eval consumers can pivot
 on which path produced each verdict.
 
-Routing rule (planned v1, Phase 2.12-2.13): keep the deterministic
+Routing rule (planned v1, Phase 2.12-2.14): keep the deterministic
 matcher as the first pass, then route selected unresolved rows to
 bounded LLM/source-evidence passes. Examples include compound or
 unmapped condition criteria, social-history absence criteria,

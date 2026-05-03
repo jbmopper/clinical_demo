@@ -46,18 +46,25 @@ autonomously enrolls anyone.
 ```mermaid
 flowchart TD
     A["Trial Protocol<br/>(ClinicalTrials.gov)"] --> B["Criterion Extractor<br/><i>cheap model + Chia schema;<br/>structured output: typed criteria</i>"]
-    C["Patient Record<br/>(Synthea FHIR)"] --> D["Patient Profiler<br/><i>deterministic FHIR parsers;<br/>light LLM for narrative notes</i>"]
+    C["Patient Record<br/>(Synthea FHIR)"] --> D["Patient Profiler<br/><i>deterministic FHIR parsers;<br/>source rows for adjudication</i>"]
+
+    CH["Chia corpus<br/><i>trial-text extraction gold</i>"] -.-> B
+    FH["FHIR evidence calibration set<br/><i>patient-side gold for presence,<br/>absence, measurements, no evidence</i>"] -.-> E
 
     B --> E
     D --> E
 
     subgraph LG["LangGraph workflow"]
         E["Per-Criterion Matcher<br/><i>fan out per criterion</i>"]
-        E --> F{"Deterministic<br/>match possible?"}
-        F -->|yes| G["Deterministic verdict<br/><i>numeric thresholds, age, sex,<br/>active conditions</i>"]
-        F -->|no| H["LLM matcher<br/><i>free-text, temporal, negation</i>"]
+        E --> F["Deterministic first pass<br/><i>age, sex, mapped conditions,<br/>known labs and units</i>"]
+        F -->|resolved| G["Deterministic verdict"]
+        F -->|unresolved condition/source evidence| H["LLM patient-evidence adjudicator<br/><i>presence, absence, social history,<br/>compound criteria with citations</i>"]
+        F -->|unit ambiguity| U["Unit reconciliation<br/><i>LLM infers intended unit;<br/>deterministic code converts</i>"]
+        F -->|free text| L["LLM matcher<br/><i>free-text, temporal, negation</i>"]
         G --> I["Per-criterion verdict<br/>+ reason + citations"]
         H --> I
+        U --> I
+        L --> I
         I --> J["Aggregator + Self-Critique Loop<br/><i>frontier model;<br/>checks contradictions, missed<br/>deterministic matches, hallucinations</i>"]
     end
 
@@ -74,8 +81,8 @@ flowchart TD
          v                                              v
    Criterion Extractor                          Patient Profiler
    (cheap model + Chia                          (deterministic FHIR
-    schema; structured                           parsers + light LLM
-    output: list of                              for narrative notes)
+    schema; structured                           parsers + source rows
+    output: list of                              for adjudication)
     typed criteria)
          |                                              |
          +--------------------+    +---------------------+
@@ -83,8 +90,13 @@ flowchart TD
                               v    v
                      Per-Criterion Matcher (LangGraph)
                      - For each criterion:
-                       - Try deterministic match first (age, sex, lab values)
-                       - Escalate to LLM only for free-text/temporal/negation
+                       - Try deterministic match first (age, sex, mapped facts,
+                         known lab units)
+                       - Escalate unresolved condition/source-evidence cases
+                         to a cited LLM patient-evidence adjudicator
+                       - Reconcile high-impact unit ambiguity through a small
+                         whitelisted deterministic conversion layer
+                       - Escalate true free-text/temporal/negation cases to LLM
                        - Return: pass | fail | indeterminate + reason + citations
                               |
                               v
@@ -98,6 +110,11 @@ flowchart TD
                      - Per-criterion verdict + click-to-source
                      - Accept / override / flag controls
                      - Feedback writes to eval dataset
+
+Eval sidecars:
+- Chia corpus: gold annotations for trial-text extraction.
+- FHIR evidence calibration set: project-specific patient-side gold labels
+  for presence, absence, measurement comparisons, and insufficient evidence.
 ```
 
 LangGraph earns its keep here for real reasons: per-criterion fan-out and
