@@ -15,6 +15,7 @@ All tests run offline:
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import httpx
@@ -31,6 +32,7 @@ from clinical_demo.terminology import (
     VSACClient,
     VSACExpansion,
     cache_path_for_rxnorm,
+    cache_path_for_surface_resolution,
     cache_path_for_vsac,
 )
 from clinical_demo.terminology.rxnorm_client import RXNORM_SYSTEM_URI
@@ -314,6 +316,23 @@ def test_resolve_condition_unregistered_surface_returns_none(tmp_path: Path) -> 
     assert resolver.resolve_condition("acute pancreatitis") is None
 
 
+def test_resolve_condition_open_alias_maps_and_caches_qualified_hypertension(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, vsac_client=None)
+
+    out = resolver.resolve_condition("uncontrolled hypertension")
+
+    assert out is not None
+    assert out.name == "Essential hypertension"
+    assert "38341003" in out.codes
+    cached = cache.get_surface_resolution("condition", "Uncontrolled Hypertension")
+    assert cached is not None
+    assert cached.status == "resolved"
+    assert cached.concept_set == out
+
+
 def test_resolve_lab_soft_fails_when_cache_empty_and_no_client(
     tmp_path: Path,
 ) -> None:
@@ -325,6 +344,54 @@ def test_resolve_lab_soft_fails_when_cache_empty_and_no_client(
     cache = TerminologyCache(tmp_path)
     resolver = TerminologyResolver(cache, vsac_client=None)
     assert resolver.resolve_lab("hba1c") is None
+
+
+def test_resolve_lab_open_alias_maps_high_frequency_synthea_observations(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, vsac_client=None)
+
+    bmi = resolver.resolve_lab("body mass index")
+    hemoglobin = resolver.resolve_lab("hemoglobin")
+    platelet_count = resolver.resolve_lab("platelet count")
+
+    assert bmi is not None
+    assert hemoglobin is not None
+    assert platelet_count is not None
+    assert bmi.codes == frozenset({"39156-5"})
+    assert hemoglobin.codes == frozenset({"718-7"})
+    assert platelet_count.codes == frozenset({"777-3"})
+    assert cache_path_for_surface_resolution("lab", "hemoglobin", tmp_path).exists()
+
+
+def test_resolve_lab_open_alias_returns_cached_without_reconsulting_tables(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, vsac_client=None)
+    first = resolver.resolve_lab("body mass index")
+    assert first is not None
+
+    second = resolver.resolve_lab("  Body Mass Index  ")
+    assert second == first
+
+
+def test_resolve_lab_ambiguous_surface_is_cached_as_nonresolved(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, vsac_client=None)
+
+    out = resolver.resolve_lab("blood pressure")
+
+    assert out is None
+    cached = cache.get_surface_resolution("lab", "blood pressure")
+    assert cached is not None
+    assert cached.status == "ambiguous"
+    assert cached.concept_set is None
+    assert {c.name for c in cached.candidates} == {
+        "Systolic blood pressure",
+        "Diastolic blood pressure",
+    }
 
 
 def test_resolve_medication_soft_fails_when_cache_empty_and_no_client(
@@ -339,6 +406,43 @@ def test_resolve_medication_soft_fails_when_cache_empty_and_no_client(
     cache = TerminologyCache(tmp_path)
     resolver = TerminologyResolver(cache, rxnorm_client=None)
     assert resolver.resolve_medication("metformin") is None
+
+
+def test_resolve_medication_open_rxnorm_searches_any_surface_and_caches(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    body = RXNORM_FIXTURE.read_bytes()
+    client, captured = _rxnorm_client_with_body(body)
+    resolver = TerminologyResolver(cache, rxnorm_client=client)
+
+    first = resolver.resolve_medication("Glucophage")
+    second = resolver.resolve_medication("glucophage")
+
+    assert first is not None
+    assert first == second
+    assert len(captured) == 1
+    assert cache_path_for_rxnorm("Glucophage", tmp_path).exists()
+    cached = cache.get_surface_resolution("medication", "glucophage")
+    assert cached is not None
+    assert cached.status == "resolved"
+
+
+def test_resolve_medication_open_rxnorm_caches_true_miss(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    body = json.dumps({"drugGroup": {"name": "not-a-med", "conceptGroup": []}}).encode()
+    client, captured = _rxnorm_client_with_body(body)
+    resolver = TerminologyResolver(cache, rxnorm_client=client)
+
+    first = resolver.resolve_medication("not-a-med")
+    second = resolver.resolve_medication("NOT-A-MED")
+
+    assert first is None
+    assert second is None
+    assert len(captured) == 1
+    cached = cache.get_surface_resolution("medication", "not-a-med")
+    assert cached is not None
+    assert cached.status == "true_miss"
 
 
 # ---------- defensive ----------

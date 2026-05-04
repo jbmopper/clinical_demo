@@ -31,13 +31,16 @@ from __future__ import annotations
 
 from clinical_demo.profile import ConceptSet
 from clinical_demo.profile.concept_sets import (
+    BMI,
     CHRONIC_KIDNEY_DISEASE,
     DIASTOLIC_BP,
     EGFR,
     HBA1C,
+    HEMOGLOBIN,
     HYPERLIPIDEMIA,
     HYPERTENSION,
     LDL_CHOLESTEROL,
+    PLATELET_COUNT,
     PREDIABETES,
     SYSTOLIC_BP,
     T2DM,
@@ -74,6 +77,8 @@ _CONDITION_ALIASES: dict[str, ConceptSet] = {
     "essential hypertension": HYPERTENSION,
     "high blood pressure": HYPERTENSION,
     "htn": HYPERTENSION,
+    "uncontrolled hypertension": HYPERTENSION,
+    "poorly controlled hypertension": HYPERTENSION,
     # Hyperlipidemia
     "hyperlipidemia": HYPERLIPIDEMIA,
     "hyperlipidaemia": HYPERLIPIDEMIA,
@@ -113,6 +118,16 @@ _LAB_ALIASES: dict[str, ConceptSet] = {
     "diastolic blood pressure": DIASTOLIC_BP,
     "diastolic bp": DIASTOLIC_BP,
     "dbp": DIASTOLIC_BP,
+    # BMI
+    "bmi": BMI,
+    "body mass index": BMI,
+    "body mass index bmi": BMI,
+    # CBC-ish common screening measurements
+    "hemoglobin": HEMOGLOBIN,
+    "hemoglobin level": HEMOGLOBIN,
+    "hemoglobin concentration": HEMOGLOBIN,
+    "platelet count": PLATELET_COUNT,
+    "platelets": PLATELET_COUNT,
 }
 
 # Medications are intentionally NOT mapped in v0. The Synthea cohort

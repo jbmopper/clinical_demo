@@ -50,9 +50,11 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from clinical_demo.profile import ConceptSet
 from clinical_demo.terminology.rxnorm_client import RxNormConcepts
 from clinical_demo.terminology.vsac_client import VSACExpansion
 
@@ -102,6 +104,54 @@ class StoredRxNormConcepts(BaseModel):
     tty_filter: list[str] | None = None
 
 
+SurfaceResolutionKind = Literal["condition", "lab", "medication"]
+SurfaceResolutionStatus = Literal["resolved", "ambiguous", "true_miss", "composite_unhandled"]
+
+
+class SurfaceResolutionCandidate(BaseModel):
+    """One considered candidate for an arbitrary surface-form resolution.
+
+    This is intentionally source-agnostic: a candidate can come from a
+    local high-confidence table, RxNorm search, eventual UMLS/LOINC
+    search, or an LLM-assisted adjudicator. Recording candidates even
+    when the final status is not `resolved` gives us something useful
+    to audit instead of another opaque `unmapped_concept`.
+    """
+
+    name: str
+    system: str
+    codes: frozenset[str]
+    source: str
+    score: float | None = None
+    reason: str | None = None
+
+
+class SurfaceResolution(BaseModel):
+    """Cached decision for one raw trial-side surface form.
+
+    Unlike VSAC/RxNorm source caches, this is a *front-door* cache:
+    key by the user's extracted surface text and remember whether we
+    resolved it, found a true miss, found ambiguity, or recognized a
+    composite we cannot safely collapse yet.
+    """
+
+    kind: SurfaceResolutionKind
+    surface: str
+    normalized_surface: str
+    status: SurfaceResolutionStatus
+    concept_set: ConceptSet | None = None
+    candidates: list[SurfaceResolutionCandidate] = Field(default_factory=list)
+    reason: str
+    resolver_version: str
+
+
+class StoredSurfaceResolution(BaseModel):
+    """On-disk envelope for open surface-form resolution results."""
+
+    resolution: SurfaceResolution
+    cached_at: str
+
+
 # ---------- cache key helpers ----------
 
 
@@ -139,6 +189,12 @@ def rxnorm_envelope_fingerprint() -> str:
     does not invalidate VSAC cache entries (and vice versa).
     """
     return _envelope_fingerprint(StoredRxNormConcepts)
+
+
+@lru_cache(maxsize=1)
+def surface_resolution_envelope_fingerprint() -> str:
+    """8-char hex digest of the `StoredSurfaceResolution` JSON schema."""
+    return _envelope_fingerprint(StoredSurfaceResolution)
 
 
 def _filter_tag(system_filter: str | None) -> str:
@@ -210,6 +266,13 @@ def _rxnorm_query_tag(name: str) -> str:
     return digest[:12]
 
 
+def _surface_query_tag(surface: str) -> str:
+    """Filename-safe tag for an arbitrary extracted surface form."""
+    normalized = " ".join(surface.lower().strip().split())
+    digest = hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+    return digest[:12]
+
+
 def _rxnorm_filter_tag(tty_filter: frozenset[str] | None) -> str:
     """Stable tag for an RxNorm `tty_filter` argument.
 
@@ -244,6 +307,26 @@ def cache_path_for_rxnorm(
     """
     fp = schema_fp or rxnorm_envelope_fingerprint()
     return root / (f"rxnorm.{_rxnorm_query_tag(name)}.{_rxnorm_filter_tag(tty_filter)}.{fp}.json")
+
+
+def cache_path_for_surface_resolution(
+    kind: SurfaceResolutionKind,
+    surface: str,
+    root: Path,
+    *,
+    schema_fp: str | None = None,
+) -> Path:
+    """Resolve the cache filename for an open surface-form decision.
+
+    Filename pattern: `surface.<kind>.<query_tag>.<schema_fp>.json`.
+
+    The full surface text is recorded inside the envelope. The
+    filename stores only a short hash so arbitrary clinical strings
+    with punctuation, slashes, unicode comparators, or quotes cannot
+    produce filesystem trouble.
+    """
+    fp = schema_fp or surface_resolution_envelope_fingerprint()
+    return root / f"surface.{kind}.{_surface_query_tag(surface)}.{fp}.json"
 
 
 # ---------- main entry point ----------
@@ -406,13 +489,51 @@ class TerminologyCache:
         self.put_rxnorm_concepts(fresh, tty_filter=tty_filter)
         return fresh
 
+    # ----- open surface-form resolutions -----
+
+    def get_surface_resolution(
+        self,
+        kind: SurfaceResolutionKind,
+        surface: str,
+    ) -> SurfaceResolution | None:
+        """Return the cached open surface-form decision, or None on miss."""
+        path = cache_path_for_surface_resolution(kind, surface, self._root)
+        if not path.exists():
+            return None
+        stored = StoredSurfaceResolution.model_validate_json(path.read_text())
+        return stored.resolution
+
+    def put_surface_resolution(self, resolution: SurfaceResolution) -> Path:
+        """Persist an open surface-form decision and return the path."""
+        path = cache_path_for_surface_resolution(
+            resolution.kind,
+            resolution.surface,
+            self._root,
+        )
+        self._root.mkdir(parents=True, exist_ok=True)
+        envelope = StoredSurfaceResolution(
+            resolution=resolution,
+            cached_at=datetime.now(UTC).isoformat(),
+        )
+        tmp = path.with_suffix(f".{uuid.uuid4().hex}.tmp")
+        tmp.write_text(envelope.model_dump_json(indent=2))
+        os.replace(tmp, path)
+        return path
+
 
 __all__ = [
     "StoredRxNormConcepts",
+    "StoredSurfaceResolution",
     "StoredVSACExpansion",
+    "SurfaceResolution",
+    "SurfaceResolutionCandidate",
+    "SurfaceResolutionKind",
+    "SurfaceResolutionStatus",
     "TerminologyCache",
     "cache_path_for_rxnorm",
+    "cache_path_for_surface_resolution",
     "cache_path_for_vsac",
     "rxnorm_envelope_fingerprint",
+    "surface_resolution_envelope_fingerprint",
     "vsac_envelope_fingerprint",
 ]

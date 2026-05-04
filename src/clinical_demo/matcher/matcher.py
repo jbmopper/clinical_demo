@@ -499,6 +499,10 @@ _CONVENTIONAL_THRESHOLD_UNITS: dict[str, str] = {
     # Blood pressure thresholds conventionally use mmHg.
     "8480-6": "mmHg",
     "8462-4": "mmHg",
+    # Common screening labs / measurements.
+    "39156-5": "kg/m2",
+    "718-7": "g/dL",
+    "777-3": "10*3/uL",
 }
 
 

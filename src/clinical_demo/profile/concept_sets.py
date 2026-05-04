@@ -102,6 +102,24 @@ EGFR = ConceptSet(
     codes=frozenset({"33914-3"}),
 )
 
+BMI = ConceptSet(
+    name="Body mass index",
+    system=LOINC,
+    codes=frozenset({"39156-5"}),
+)
+
+HEMOGLOBIN = ConceptSet(
+    name="Hemoglobin",
+    system=LOINC,
+    codes=frozenset({"718-7"}),
+)
+
+PLATELET_COUNT = ConceptSet(
+    name="Platelet count",
+    system=LOINC,
+    codes=frozenset({"777-3"}),
+)
+
 SYSTOLIC_BP = ConceptSet(
     name="Systolic blood pressure",
     system=LOINC,
@@ -115,13 +133,16 @@ DIASTOLIC_BP = ConceptSet(
 )
 
 __all__ = [
+    "BMI",
     "CHRONIC_KIDNEY_DISEASE",
     "DIASTOLIC_BP",
     "EGFR",
     "HBA1C",
+    "HEMOGLOBIN",
     "HYPERLIPIDEMIA",
     "HYPERTENSION",
     "LDL_CHOLESTEROL",
+    "PLATELET_COUNT",
     "PREDIABETES",
     "SYSTOLIC_BP",
     "T2DM",

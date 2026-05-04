@@ -29,12 +29,17 @@ from clinical_demo.profile import ConceptSet
 from clinical_demo.terminology import (
     RxNormConcepts,
     StoredRxNormConcepts,
+    StoredSurfaceResolution,
     StoredVSACExpansion,
+    SurfaceResolution,
+    SurfaceResolutionCandidate,
     TerminologyCache,
     VSACExpansion,
     cache_path_for_rxnorm,
+    cache_path_for_surface_resolution,
     cache_path_for_vsac,
     rxnorm_envelope_fingerprint,
+    surface_resolution_envelope_fingerprint,
     vsac_envelope_fingerprint,
 )
 from clinical_demo.terminology.rxnorm_client import RXNORM_SYSTEM_URI
@@ -71,6 +76,33 @@ def _make_rxnorm(
             codes=codes if codes is not None else frozenset({"6809", "236211"}),
         ),
         term_types=term_types if term_types is not None else frozenset({"IN", "PIN"}),
+    )
+
+
+def _make_surface_resolution(*, surface: str = "body mass index") -> SurfaceResolution:
+    concept_set = ConceptSet(
+        name="Body mass index",
+        system="http://loinc.org",
+        codes=frozenset({"39156-5"}),
+    )
+    return SurfaceResolution(
+        kind="lab",
+        surface=surface,
+        normalized_surface=surface,
+        status="resolved",
+        concept_set=concept_set,
+        candidates=[
+            SurfaceResolutionCandidate(
+                name=concept_set.name,
+                system=concept_set.system,
+                codes=concept_set.codes,
+                source="local_open_alias",
+                score=1.0,
+                reason="test fixture",
+            )
+        ],
+        reason="test fixture",
+        resolver_version="test-v1",
     )
 
 
@@ -353,6 +385,71 @@ def test_settings_terminology_cache_dir_overridable_via_env(
     s = Settings()
 
     assert s.terminology_cache_dir == custom
+
+
+# ============================================================
+# Open surface-resolution cache
+# ============================================================
+
+
+def test_surface_resolution_cache_path_pattern_pins_filename_segments(tmp_path: Path) -> None:
+    p = cache_path_for_surface_resolution(
+        "lab",
+        "body mass index",
+        tmp_path,
+        schema_fp="abcd1234",
+    )
+    assert p.parent == tmp_path
+    assert p.name.startswith("surface.lab.")
+    assert p.name.endswith(".abcd1234.json")
+
+
+def test_surface_resolution_query_tag_is_case_and_whitespace_insensitive(
+    tmp_path: Path,
+) -> None:
+    a = cache_path_for_surface_resolution("lab", "body mass index", tmp_path)
+    b = cache_path_for_surface_resolution("lab", "  Body Mass Index  ", tmp_path)
+    assert a == b
+
+
+def test_surface_resolution_round_trips(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    original = _make_surface_resolution()
+
+    cache.put_surface_resolution(original)
+    loaded = cache.get_surface_resolution("lab", "Body Mass Index")
+
+    assert loaded == original
+    assert loaded is not None
+    assert loaded.concept_set is not None
+    assert loaded.concept_set.codes == frozenset({"39156-5"})
+
+
+def test_surface_resolution_envelope_fingerprint_is_stable_and_short() -> None:
+    fp = surface_resolution_envelope_fingerprint()
+    assert len(fp) == 8
+    assert fp == surface_resolution_envelope_fingerprint()
+    int(fp, 16)
+
+
+def test_old_surface_resolution_under_different_fingerprint_is_invisible(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    stale_path = cache_path_for_surface_resolution(
+        "lab",
+        "body mass index",
+        tmp_path,
+        schema_fp="deadbeef",
+    )
+    stale_path.parent.mkdir(parents=True, exist_ok=True)
+    envelope = StoredSurfaceResolution(
+        resolution=_make_surface_resolution(),
+        cached_at="2026-01-01T00:00:00+00:00",
+    )
+    stale_path.write_text(envelope.model_dump_json())
+
+    assert cache.get_surface_resolution("lab", "body mass index") is None
 
 
 # ============================================================

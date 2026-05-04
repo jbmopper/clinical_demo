@@ -88,7 +88,9 @@ _UNIT_ALIASES: dict[str, dict[str, str]] = {
         "mL/min/{1.73_m2}": "mL/min/1.73m2",
         "mL/min": "mL/min/1.73m2",  # treat as the same in this dataset
         "ml/min/1.73 m2": "mL/min/1.73m2",
+        "ml/min/1.73 m^2": "mL/min/1.73m2",
         "mL/min/1.73 m2": "mL/min/1.73m2",
+        "mL/min/1.73 m^2": "mL/min/1.73m2",
         "mL/min/1.73m2": "mL/min/1.73m2",
     },
     # HbA1c — only ever observed as percent in our data, but we log
@@ -100,12 +102,47 @@ _UNIT_ALIASES: dict[str, dict[str, str]] = {
     # Systolic / diastolic blood pressure.
     "8480-6": {"mm[Hg]": "mmHg", "mmHg": "mmHg"},
     "8462-4": {"mm[Hg]": "mmHg", "mmHg": "mmHg"},
+    # Body mass index.
+    "39156-5": {
+        "kg/m2": "kg/m2",
+        "Kg/m2": "kg/m2",
+        "kg/M2": "kg/m2",
+        "kg/m^2": "kg/m2",
+        "kg/m²": "kg/m2",
+        "kg/m*2": "kg/m2",
+    },
+    # Hemoglobin.
+    "718-7": {
+        "g/dL": "g/dL",
+        "g/dl": "g/dL",
+        "g/L": "g/L",
+        "g/l": "g/L",
+    },
+    # Platelet count. 10^9/L and 10*3/uL are numerically equivalent.
+    "777-3": {
+        "10*3/uL": "10*3/uL",
+        "10^3/uL": "10*3/uL",
+        "K/uL": "10*3/uL",
+        "x10^9/L": "10*3/uL",
+        "10^9/L": "10*3/uL",
+        "mm3": "count/uL",
+        "uL": "count/uL",
+        "μL": "count/uL",
+        "/uL": "count/uL",
+        "/μL": "count/uL",
+    },
 }
 
 _UNIT_CONVERSIONS: dict[tuple[str, str, str], float] = {
     # LDL-C molecular-weight conversion: mmol/L * 38.67 = mg/dL.
     ("18262-6", "mmol/L", "mg/dL"): 38.67,
     ("18262-6", "mg/dL", "mmol/L"): 1 / 38.67,
+    # Hemoglobin mass concentration: g/L / 10 = g/dL.
+    ("718-7", "g/L", "g/dL"): 0.1,
+    ("718-7", "g/dL", "g/L"): 10.0,
+    # Platelets: raw count/uL divided by 1000 = 10*3/uL.
+    ("777-3", "count/uL", "10*3/uL"): 0.001,
+    ("777-3", "10*3/uL", "count/uL"): 1000.0,
 }
 
 

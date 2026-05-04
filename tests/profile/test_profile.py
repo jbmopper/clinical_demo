@@ -343,6 +343,26 @@ def test_meets_threshold_bp_accepts_plain_mmhg_threshold() -> None:
     assert result == ThresholdResult.DOES_NOT_MEET
 
 
+def test_meets_threshold_bmi_accepts_common_trial_unit_spellings() -> None:
+    p = _patient(observations=[_lab("39156-5", 31.0, unit="kg/m2", on_date=AS_OF)])
+    prof = PatientProfile(p, AS_OF)
+    assert prof.meets_threshold("39156-5", ">", 45.0, "kg/m²") == ThresholdResult.DOES_NOT_MEET
+    assert prof.meets_threshold("39156-5", ">=", 19.0, "Kg/m2") == ThresholdResult.MEETS
+
+
+def test_meets_threshold_platelets_converts_count_per_microliter_to_thousands() -> None:
+    p = _patient(observations=[_lab("777-3", 426.72, unit="10*3/uL", on_date=AS_OF)])
+    prof = PatientProfile(p, AS_OF)
+    assert prof.meets_threshold("777-3", ">=", 75000.0, "μL") == ThresholdResult.MEETS
+    assert prof.meets_threshold("777-3", "<", 50000.0, "mm3") == ThresholdResult.DOES_NOT_MEET
+
+
+def test_meets_threshold_egfr_accepts_caret_squared_meter_unit() -> None:
+    p = _patient(observations=[_lab("33914-3", 54.0, unit="mL/min", on_date=AS_OF)])
+    prof = PatientProfile(p, AS_OF)
+    assert prof.meets_threshold("33914-3", ">=", 20.0, "ml/min/1.73 m^2") == ThresholdResult.MEETS
+
+
 @pytest.mark.parametrize(
     "op, value, expected",
     [

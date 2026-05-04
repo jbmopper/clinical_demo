@@ -19,7 +19,39 @@
 > rationale lives in §12.
 
 - **Active phase:** Phase 2 — Workflow + eval.
-- **Last completed:** PLAN task 2.11 — **deceased-patient structured-safety
+- **Current correction:** terminology resolution is no longer purely
+  registry-gated, but the open resolver is still only a first slice. The
+  2026-05-04 deterministic two-pass baseline had 551/1077 criteria
+  `unmapped_concept` (~51.2%). The first open-surface implementation adds a
+  cached resolver front door for raw `(kind, surface)` inputs, maps high-frequency
+  Synthea-backed labs (`hemoglobin`, `platelet count`, `bmi` / `body mass
+  index`), collapses qualifier-bearing hypertension to the hypertension
+  ConceptSet, records generic `blood pressure` as ambiguous instead of
+  pretending a single LOINC is safe, and lets arbitrary medication surfaces hit
+  RxNorm with cached success / true-miss outcomes. Smoke eval run `8f9900f3fefb`
+  (`--no-llm --binding-strategy two_pass --matcher-assumption-mode open_world
+  --llm-use-level none`) moved `unmapped_concept` to 507/1061 (47.8%; -44
+  criteria, -3.4 pp vs baseline) and indeterminate to 954/1061 (89.9%; -42
+  criteria, -2.6 pp). Remaining top unmapped surfaces are mostly PAH/PH
+  composites/out-of-scope oncology-adjacent concepts, pregnancy/breastfeeding,
+  generic BP, life expectancy, and ECOG performance status. Next priority is
+  PLAN task 2.18: turn top unmapped surfaces into a resolver work queue/cache
+  warmer and classify each as resolved, ambiguous, true miss, composite,
+  extractor bug, or out of scope.
+- **Last completed:** PLAN task 2.17 first slice — **open terminology resolver
+  front door with cached surface decisions.** `TerminologyCache` now has
+  schema-fingerprinted `surface.<kind>.<query>.<fp>.json` envelopes that store
+  `resolved`, `ambiguous`, `true_miss`, or `composite_unhandled` decisions plus
+  candidate/provenance metadata. `TerminologyResolver.resolve_*` checks this
+  surface cache before the old registry, writes resolved registry results into
+  the same front-door cache, then falls through to open lab/condition aliases or
+  raw RxNorm medication lookup. Added curated LOINC ConceptSets for BMI
+  (`39156-5`), hemoglobin (`718-7`), and platelet count (`777-3`), alias-mode
+  fallbacks for the same high-frequency surfaces, and unit normalization for
+  BMI spellings, eGFR `m^2`, hemoglobin `g/L` <-> `g/dL`, and platelet
+  count-per-microliter thresholds. Verification: `uv run pytest` 622/622,
+  `uv run ruff check .` clean, deterministic smoke eval `8f9900f3fefb`.
+  Previous: PLAN task 2.11 — **deceased-patient structured-safety
   guard wired through loader, scoring, and API.** `Patient.deceased_date:
   date | None` is parsed from FHIR `Patient.deceasedDateTime` (with a
   defensive fallback for `deceasedBoolean=true` that pins the date to
@@ -719,7 +751,10 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.14 | **Structured patient-evidence retrieval path.** Add the source-grounded retrieval layer that embodies the core product loop without asking an LLM to decide yet: for each unresolved criterion, retrieve relevant structured FHIR rows using lexical matching, normalized surface forms, code/ConceptSet anchors where available, and simple section/kind filters. Return ranked source rows with stable IDs and retrieval reasons. Leave vector retrieval behind an interface so Phase 3 can add embeddings or note snippets without reshaping the graph. This powers `retrieval_only` mode and gives reviewers a useful "what did the system look at?" view even when adjudication is off. *Done for structured rows — `clinical_demo.retrieval.patient_evidence` ranks patient source rows using ConceptSet/code anchors, lexical overlap, and row-kind preferences; the calibration packet includes retrieved row ids/reasons; `llm_use_level=\"retrieval_only\"` now attaches `retrieved_patient_row` evidence to indeterminate verdicts in both imperative and graph scoring; FastAPI `/score`, eval, CLI, and the Score UI expose/render it. Numeric-only overlaps are ignored so terms like `type 1 diabetes` do not highlight unrelated lab rows just because a unit contains `1`. The 2026-05-04 retrieval-only eval attached evidence to 627 unresolved criterion verdicts and, by design, changed 0 verdicts. Remaining work is the vector/note retrieval interface for Phase 3.* | 4 |
 | 2.15 | **Bounded LLM patient-evidence adjudicator.** Add the criterion-level adjudicator over retrieved evidence, not over the whole chart. Input is the extracted criterion, deterministic verdict/reason, retrieved patient rows, trial source text, and matcher assumption mode; output is strict `pass` / `fail` / `indeterminate` with cited source row IDs and a reason. Use terminology/code matches as precision anchors when available, but allow the adjudicator to classify supported, contradicted, or insufficiently supported evidence when concept mapping is incomplete. This is the architectural home for "does this patient appear to match enough to flag for CRC review?", not a post-hoc explanation layer. Evaluate against the reset 2.12 labels. *First pass implemented and rerun — `clinical_demo.adjudication.patient_evidence` defines the prompt, structured output, fail-closed citation validation, Langfuse generation span, and `PATIENT_EVIDENCE_ADJUDICATOR_VERSION`; `llm_use_level=\"bounded_adjudication\"` runs it after retrieval for indeterminate verdicts in imperative and graph scoring. The 2026-05-04 bounded run changed 39 criterion verdicts from indeterminate -> pass and 15 from indeterminate -> fail; top-level eligibility moved 9/49 cases from indeterminate -> fail and 0 -> pass. Remaining work is human calibration: `eval/calibration/patient_evidence_labels.json` still has 0/60 filled labels, so prompt tuning should wait for actual failures.* | 5 |
 | 2.16 | **Unit reconciliation / conventional-unit pass.** Add a hybrid unit layer for high-impact measurements before the cost-routing sweep. Deterministic code owns a small whitelisted registry and numeric conversions (initially BP mmHg, eGFR `mL/min/1.73 m2` variants, LDL-C `mmol/L` <-> `mg/dL`, and percent-like HbA1c); an LLM/source pass may infer the intended measurement/unit from trial text when the extractor omits or phrases it oddly, but it may not perform arbitrary conversions. Rerun eval and report reductions in `unit_mismatch` / `ambiguous_criterion`. *First pass implemented and rerun — profile unit normalization now covers eGFR variants and LDL-C `mmol/L` <-> `mg/dL`; matcher infers missing conventional units for eGFR, HbA1c, and BP thresholds when a matching patient observation exists. The refreshed deterministic eval has only 2 criterion-level `unit_mismatch` reasons left, but the current baseline is not enough to quantify pre/post reduction cleanly because extractor-v0.5 cache refresh also changed the criterion set. Remaining work is deciding whether any additional high-impact unit families deserve whitelisting.* | 3 |
-| **Phase 2 total** | | **~66 hr** |
+| 2.17 | **Open terminology resolver front door.** Replace the current registry-gated `two_pass` policy with an open resolver contract: input is `(kind, surface_text, optional criterion context)`, output is a cached `ConceptSet` resolution, cached ambiguity, cached true miss, or explicit composite/non-mappable classification. Resolution order: curated overrides first, resolved/negative cache second, terminology API search third. The existing bindings registry becomes curated overrides plus offline fixtures; it must not be the only path that can call NLM/RxNorm. High-confidence single hits may feed the deterministic matcher; ambiguous hits must return candidate metadata instead of pretending certainty; true misses remain `unmapped_concept`; composite phrases become `composite_unhandled` / `human_review_required` unless safely split into atomic concepts. Cache all outcomes, including misses and ambiguity, so repeated eval runs do not rediscover the same surfaces. Initial target surfaces come from the 2026-05-04 diagnostics: `hemoglobin`, `platelet count`, `bmi` / `body mass index`, generic `blood pressure`, pregnancy/breastfeeding, uncontrolled hypertension, common PAH/PH terms, and high-frequency medication/class surfaces. Exit criterion: the deterministic two-pass eval no longer has obviously mappable high-frequency concepts in `top_unmapped_surfaces`; remaining unmapped rows are true misses, composites, extractor errors, or out-of-scope concepts with explicit labels. | 8 |
+| 2.18 | **Mappable-unmapped regression gate and cache warmer.** Turn `evals.diagnostics.top_unmapped_surfaces` into an engineering work queue. Add a report that classifies each top surface as `resolved`, `ambiguous`, `true_miss`, `composite_unhandled`, `extractor_bug`, or `out_of_scope`, with resolver provenance and cache status. Add a cache-warming script that resolves the top-N surfaces for a run/dataset and writes reusable cache rows before scoring. CI/local regression should fail or warn loudly when a high-frequency surface marked `resolved` falls back to `unmapped_concept`. Snapshot a new baseline comparing alias, registry-only two-pass, and open-resolver two-pass. | 4 |
+| 2.19 | **Closed-world matcher semantics.** After open resolution is working, make assumption modes change behavior instead of only being metadata/prompt context. `open_world` remains default: no patient row means insufficient evidence / indeterminate. `closed_world_eval` may treat absence from the curated synthetic structured record as negative evidence for specific closed, structured kinds only (condition_absent, medication_absent, selected demographics/labs), and must record the assumption in evidence. `closed_world_demo` is allowed only for hand-picked demo pairs with a visible UI/API banner. Do not use closed-world behavior to mask terminology failures; mapping has to run first. | 3 |
+| **Phase 2 total** | | **~81 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
@@ -727,7 +762,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | # | Task | Est. (hr) |
 |---|---|---|
 | 3.1 | Model abstraction layer that lets the same node call any of 4–5 models with consistent JSON-schema enforcement. It must preserve the LLM-use levels from 2.13 (`none`, `retrieval_only`, `bounded_adjudication`, `critic`) so cost/quality experiments measure routing choices, not hidden behavior changes. | 3 |
-| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Precondition: fill the 60-row patient-evidence labels. Adjudicator token/cost telemetry now persists on `ScorePairResult.llm_calls` and the v3 `eval/runs.sqlite` schema (`adjudicator_cost_usd` / `adjudicator_input_tokens` / `adjudicator_output_tokens` / `adjudicator_calls`), so routing economics are already auditable from local eval artifacts. | 4 |
+| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Preconditions: complete the open terminology resolver baseline (2.17/2.18) so cost/quality is not dominated by avoidable `unmapped_concept`, then fill the 60-row patient-evidence labels. Adjudicator token/cost telemetry now persists on `ScorePairResult.llm_calls` and the v3 `eval/runs.sqlite` schema (`adjudicator_cost_usd` / `adjudicator_input_tokens` / `adjudicator_output_tokens` / `adjudicator_calls`), so routing economics are already auditable from local eval artifacts. | 4 |
 | 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). | 4 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
@@ -2177,6 +2212,60 @@ against the now-instrumented adjudicator path. Until then, `retrieval_only`
 is the credible
 cheap reviewer-evidence baseline and `bounded_adjudication` is a promising,
 uncalibrated option.
+
+### D-73. Make terminology resolution open, not registry-gated
+**Picked:** the matcher must be able to take any extracted clinical surface and
+attempt terminology resolution through a cache-backed resolver. The bindings
+registry remains useful, but only as curated overrides, provenance fixtures,
+and a way to pin known value sets. It is no longer allowed to be the front
+door that decides whether the resolver may call terminology APIs at all.
+
+**Why:** the current `two_pass` bridge works for registered surfaces, but the
+2026-05-04 deterministic run still has 551/1077 `unmapped_concept` criteria.
+Diagnostics show the registry resolved 24/24 observed registered surfaces, so
+the infrastructure is not the main blocker. The blocker is policy: if a
+surface such as `hemoglobin`, `platelet count`, `body mass index`, generic
+`blood pressure`, `pregnant or breastfeeding`, or `uncontrolled hypertension`
+is not in `terminology.bindings`, the matcher falls back to aliases and then
+declares it unmapped without giving NLM/RxNorm a chance. That is backwards for
+the product goal. The system should map everything that can be mapped, remember
+the result, and make the residual failure explicit.
+
+**New resolver contract:**
+
+1. Input is `(kind, surface_text, optional criterion context)`, not "surface
+   text that happens to exist in our registry."
+2. Normalize/canonicalize the surface first, including abbreviation and
+   punctuation cleanup.
+3. Check curated overrides and reviewed negative overrides first.
+4. Check resolved / ambiguous / miss cache second.
+5. On miss, query the appropriate terminology service:
+   - RxNorm for medications and medication ingredients/classes where supported,
+   - LOINC-oriented search for measurements/labs,
+   - SNOMED/UMLS/VSAC search for conditions and findings,
+   - value-set expansion only when a curated value-set OID is known and
+     appropriate.
+6. Rank candidates with deterministic rules. High-confidence single hits may
+   feed the matcher. Multiple plausible hits return `ambiguous_criterion` with
+   candidates and provenance. No plausible hit caches a true miss.
+7. Cache all outcomes, including true misses and ambiguity, so repeated evals
+   do not pay API cost or silently change behavior.
+8. Composite phrases are not "unmapped" by default. Safely splittable phrases
+   should yield atomic concepts; unsafely broad or procedural phrases should be
+   classified as `composite_unhandled` / `human_review_required` with the
+   reason visible.
+
+**Rejected:** continuing to expand `terminology.bindings` as the primary
+coverage strategy. It is still valuable for stable high-trust concepts and
+offline tests, but a registry-only front door guarantees that every unseen
+surface starts life as `unmapped_concept`, which is exactly the failure mode
+the project is supposed to eliminate.
+
+**Guardrail:** closed-world assumptions and LLM adjudication must not paper
+over terminology misses. The resolver gets first shot. Only after a surface is
+resolved, ambiguous, true-miss, or explicitly composite should retrieval,
+closed-world absence logic, or bounded adjudication decide what the patient
+evidence supports.
 
 ### D-9. Defer KPMG-specific framing of the writeup until Phase 3
 **Rejected:** writing the deployment readiness doc up front.

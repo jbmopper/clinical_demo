@@ -54,6 +54,14 @@ from functools import lru_cache
 import httpx
 
 from clinical_demo.profile import ConceptSet
+from clinical_demo.profile.concept_sets import (
+    BMI,
+    DIASTOLIC_BP,
+    HEMOGLOBIN,
+    HYPERTENSION,
+    PLATELET_COUNT,
+    SYSTOLIC_BP,
+)
 from clinical_demo.settings import Settings, get_settings
 from clinical_demo.terminology.bindings import (
     Binding,
@@ -63,11 +71,87 @@ from clinical_demo.terminology.bindings import (
     lookup_lab_binding,
     lookup_medication_binding,
 )
-from clinical_demo.terminology.cache import TerminologyCache
+from clinical_demo.terminology.cache import (
+    SurfaceResolution,
+    SurfaceResolutionCandidate,
+    SurfaceResolutionKind,
+    SurfaceResolutionStatus,
+    TerminologyCache,
+)
 from clinical_demo.terminology.rxnorm_client import RxNormClient, RxNormError
 from clinical_demo.terminology.vsac_client import VSACClient, VSACError
 
 log = logging.getLogger(__name__)
+
+OPEN_SURFACE_RESOLVER_VERSION = "open-surface-v0.1"
+
+
+def _normalize_surface(surface: str) -> str:
+    return " ".join(surface.lower().strip(".,;:()[]{}\"'").split())
+
+
+_OPEN_CONDITION_ALIASES: dict[str, tuple[ConceptSet, str]] = {
+    "uncontrolled hypertension": (
+        HYPERTENSION,
+        "Qualifier-bearing hypertension surface collapsed to the hypertension concept.",
+    ),
+    "poorly controlled hypertension": (
+        HYPERTENSION,
+        "Qualifier-bearing hypertension surface collapsed to the hypertension concept.",
+    ),
+}
+
+_OPEN_LAB_ALIASES: dict[str, tuple[ConceptSet, str]] = {
+    "bmi": (BMI, "High-confidence LOINC mapping for body mass index."),
+    "body mass index": (BMI, "High-confidence LOINC mapping for body mass index."),
+    "body mass index bmi": (BMI, "High-confidence LOINC mapping for body mass index."),
+    "hemoglobin": (HEMOGLOBIN, "High-confidence LOINC mapping for hemoglobin mass in blood."),
+    "hemoglobin level": (HEMOGLOBIN, "High-confidence LOINC mapping for hemoglobin mass in blood."),
+    "hemoglobin concentration": (
+        HEMOGLOBIN,
+        "High-confidence LOINC mapping for hemoglobin mass in blood.",
+    ),
+    "platelet count": (
+        PLATELET_COUNT,
+        "High-confidence LOINC mapping for platelet count in blood.",
+    ),
+    "platelets": (
+        PLATELET_COUNT,
+        "High-confidence LOINC mapping for platelet count in blood.",
+    ),
+}
+
+_OPEN_AMBIGUOUS_LABS: dict[str, tuple[list[ConceptSet], str]] = {
+    "blood pressure": (
+        [SYSTOLIC_BP, DIASTOLIC_BP],
+        "Blood pressure needs systolic or diastolic specificity before it can map to one LOINC.",
+    ),
+    "bp": (
+        [SYSTOLIC_BP, DIASTOLIC_BP],
+        "Blood pressure needs systolic or diastolic specificity before it can map to one LOINC.",
+    ),
+}
+
+
+def _candidate(
+    concept_set: ConceptSet,
+    *,
+    source: str,
+    reason: str,
+    score: float | None = None,
+) -> SurfaceResolutionCandidate:
+    return SurfaceResolutionCandidate(
+        name=concept_set.name,
+        system=concept_set.system,
+        codes=concept_set.codes,
+        source=source,
+        score=score,
+        reason=reason,
+    )
+
+
+def _is_rxnorm_true_miss(exc: RxNormError) -> bool:
+    return "no drug matched this surface form" in str(exc)
 
 
 class TerminologyResolver:
@@ -181,22 +265,241 @@ class TerminologyResolver:
     # one-line delegation.
 
     def resolve_condition(self, surface: str) -> ConceptSet | None:
+        cache_hit, cached = self._cached_surface_resolution("condition", surface)
+        if cache_hit:
+            return cached
+
         binding = lookup_condition_binding(surface)
-        if binding is None:
-            return None
-        return self.resolve(binding)
+        if binding is not None:
+            concept_set = self.resolve(binding)
+            if concept_set is not None:
+                self._cache_resolved_surface(
+                    "condition",
+                    surface,
+                    concept_set,
+                    source="bindings_registry",
+                    reason="Resolved through the curated terminology bindings registry.",
+                )
+                return concept_set
+
+        return self._resolve_open_condition(surface)
 
     def resolve_lab(self, surface: str) -> ConceptSet | None:
+        cache_hit, cached = self._cached_surface_resolution("lab", surface)
+        if cache_hit:
+            return cached
+
         binding = lookup_lab_binding(surface)
-        if binding is None:
-            return None
-        return self.resolve(binding)
+        if binding is not None:
+            concept_set = self.resolve(binding)
+            if concept_set is not None:
+                self._cache_resolved_surface(
+                    "lab",
+                    surface,
+                    concept_set,
+                    source="bindings_registry",
+                    reason="Resolved through the curated terminology bindings registry.",
+                )
+                return concept_set
+
+        return self._resolve_open_lab(surface)
 
     def resolve_medication(self, surface: str) -> ConceptSet | None:
+        cache_hit, cached = self._cached_surface_resolution("medication", surface)
+        if cache_hit:
+            return cached
+
         binding = lookup_medication_binding(surface)
-        if binding is None:
+        if binding is not None:
+            concept_set = self.resolve(binding)
+            if concept_set is not None:
+                self._cache_resolved_surface(
+                    "medication",
+                    surface,
+                    concept_set,
+                    source="bindings_registry",
+                    reason="Resolved through the curated terminology bindings registry.",
+                )
+                return concept_set
+
+        return self._resolve_open_medication(surface)
+
+    # ----- open surface-form resolver -----
+
+    def _cached_surface_resolution(
+        self,
+        kind: SurfaceResolutionKind,
+        surface: str,
+    ) -> tuple[bool, ConceptSet | None]:
+        """Return cached open-surface result when current and resolved.
+
+        Non-resolved current entries are also useful: returning None
+        here skips repeated network calls for known ambiguous or
+        composite inputs, while still letting the matcher emit its
+        existing honest `unmapped_concept` verdict downstream.
+        """
+        try:
+            cached = self._cache.get_surface_resolution(kind, surface)
+        except Exception as exc:  # pragma: no cover - defensive cache corruption path.
+            log.warning(
+                "TerminologyResolver: surface cache read for %s %r failed (%s); falling through.",
+                kind,
+                surface,
+                exc,
+            )
+            return False, None
+        if cached is None:
+            return False, None
+        if cached.resolver_version != OPEN_SURFACE_RESOLVER_VERSION:
+            return False, None
+        if cached.status == "resolved":
+            return True, cached.concept_set
+        return True, None
+
+    def _cache_resolved_surface(
+        self,
+        kind: SurfaceResolutionKind,
+        surface: str,
+        concept_set: ConceptSet,
+        *,
+        source: str,
+        reason: str,
+    ) -> ConceptSet:
+        resolution = SurfaceResolution(
+            kind=kind,
+            surface=surface,
+            normalized_surface=_normalize_surface(surface),
+            status="resolved",
+            concept_set=concept_set,
+            candidates=[
+                _candidate(concept_set, source=source, reason=reason, score=1.0),
+            ],
+            reason=reason,
+            resolver_version=OPEN_SURFACE_RESOLVER_VERSION,
+        )
+        try:
+            self._cache.put_surface_resolution(resolution)
+        except OSError as exc:
+            log.warning(
+                "TerminologyResolver: surface cache write for %s %r failed (%s).",
+                kind,
+                surface,
+                exc,
+            )
+        return concept_set
+
+    def _cache_nonresolved_surface(
+        self,
+        kind: SurfaceResolutionKind,
+        surface: str,
+        *,
+        status: SurfaceResolutionStatus,
+        reason: str,
+        candidates: list[SurfaceResolutionCandidate] | None = None,
+    ) -> None:
+        resolution = SurfaceResolution(
+            kind=kind,
+            surface=surface,
+            normalized_surface=_normalize_surface(surface),
+            status=status,
+            concept_set=None,
+            candidates=candidates or [],
+            reason=reason,
+            resolver_version=OPEN_SURFACE_RESOLVER_VERSION,
+        )
+        try:
+            self._cache.put_surface_resolution(resolution)
+        except OSError as exc:
+            log.warning(
+                "TerminologyResolver: surface cache write for %s %r failed (%s).",
+                kind,
+                surface,
+                exc,
+            )
+
+    def _resolve_open_condition(self, surface: str) -> ConceptSet | None:
+        normalized = _normalize_surface(surface)
+        local = _OPEN_CONDITION_ALIASES.get(normalized)
+        if local is None:
             return None
-        return self.resolve(binding)
+        concept_set, reason = local
+        return self._cache_resolved_surface(
+            "condition",
+            surface,
+            concept_set,
+            source="local_open_alias",
+            reason=reason,
+        )
+
+    def _resolve_open_lab(self, surface: str) -> ConceptSet | None:
+        normalized = _normalize_surface(surface)
+        local = _OPEN_LAB_ALIASES.get(normalized)
+        if local is not None:
+            concept_set, reason = local
+            return self._cache_resolved_surface(
+                "lab",
+                surface,
+                concept_set,
+                source="local_open_alias",
+                reason=reason,
+            )
+
+        ambiguous = _OPEN_AMBIGUOUS_LABS.get(normalized)
+        if ambiguous is not None:
+            concept_sets, reason = ambiguous
+            self._cache_nonresolved_surface(
+                "lab",
+                surface,
+                status="ambiguous",
+                reason=reason,
+                candidates=[
+                    _candidate(cs, source="local_open_alias", reason=reason, score=0.5)
+                    for cs in concept_sets
+                ],
+            )
+        return None
+
+    def _resolve_open_medication(self, surface: str) -> ConceptSet | None:
+        cached = self._cache.get_rxnorm_concepts(surface)
+        if cached is not None:
+            return self._cache_resolved_surface(
+                "medication",
+                surface,
+                cached.concept_set,
+                source="rxnorm_cache",
+                reason="Resolved from a cached RxNorm raw-surface lookup.",
+            )
+
+        if self._rxnorm is None:
+            return None
+
+        try:
+            concepts = self._cache.rxnorm_concepts_or_fetch(
+                surface,
+                fetch=lambda: self._rxnorm.find_drug_concepts(surface),  # type: ignore[union-attr]
+            )
+        except (RxNormError, httpx.HTTPError) as exc:
+            if isinstance(exc, RxNormError) and _is_rxnorm_true_miss(exc):
+                self._cache_nonresolved_surface(
+                    "medication",
+                    surface,
+                    status="true_miss",
+                    reason=str(exc),
+                )
+            log.warning(
+                "TerminologyResolver: RxNorm open fetch for %r failed (%s); falling through.",
+                surface,
+                exc,
+            )
+            return None
+
+        return self._cache_resolved_surface(
+            "medication",
+            surface,
+            concepts.concept_set,
+            source="rxnorm_open_search",
+            reason="Resolved by querying RxNorm with the raw extracted medication surface.",
+        )
 
 
 # ---------- process-wide singleton accessor ----------
