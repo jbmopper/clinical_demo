@@ -1,0 +1,246 @@
+"""Turn top unmapped surfaces into a terminology work queue.
+
+This is the small operational layer behind PLAN task 2.18. The eval
+diagnostic already tells us which surfaces dominate `unmapped_concept`;
+this module resolves or classifies those surfaces through the open
+terminology front door so the list becomes an actionable queue instead
+of another static report.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+from clinical_demo.evals.diagnostics import EvalDiagnostics, SurfaceCount
+from clinical_demo.profile import ConceptSet
+from clinical_demo.settings import get_settings
+from clinical_demo.terminology.cache import (
+    SurfaceResolution,
+    SurfaceResolutionCandidate,
+    SurfaceResolutionKind,
+    SurfaceResolutionStatus,
+    TerminologyCache,
+)
+from clinical_demo.terminology.resolver import (
+    OPEN_SURFACE_RESOLVER_VERSION,
+    TerminologyResolver,
+    get_resolver,
+)
+
+WorkQueueStatus = Literal[
+    "resolved",
+    "ambiguous",
+    "true_miss",
+    "composite_unhandled",
+    "extractor_bug",
+    "out_of_scope",
+    "unresolved",
+]
+
+
+class SurfaceWorkItem(BaseModel):
+    """One classified surface from `EvalDiagnostics.top_unmapped_surfaces`."""
+
+    surface: str
+    criterion_kind: str
+    resolver_kind: SurfaceResolutionKind | None
+    count: int
+    status: WorkQueueStatus
+    cache_status: Literal["hit", "written", "miss"]
+    concept_set: ConceptSet | None = None
+    candidates: list[SurfaceResolutionCandidate] = Field(default_factory=list)
+    reason: str
+
+
+def build_surface_work_queue(
+    diagnostics: EvalDiagnostics,
+    *,
+    cache: TerminologyCache | None = None,
+    resolver: TerminologyResolver | None = None,
+    limit: int | None = None,
+) -> list[SurfaceWorkItem]:
+    """Resolve/classify top unmapped surfaces and warm cache rows.
+
+    The resolver is still the source of truth for mappings. This layer
+    adds fallback classification for obvious composites and unsupported
+    criterion kinds so humans can triage the remaining queue quickly.
+    """
+
+    cache = cache or TerminologyCache(get_settings().terminology_cache_dir)
+    resolver = resolver or get_resolver()
+    surfaces = diagnostics.top_unmapped_surfaces[:limit]
+    return [_classify_surface(item, cache=cache, resolver=resolver) for item in surfaces]
+
+
+def render_surface_work_queue(items: list[SurfaceWorkItem]) -> str:
+    lines = ["terminology surface work queue"]
+    for item in items:
+        lines.append(f"{item.count:>3}  {item.status:<20} {item.criterion_kind:<24} {item.surface}")
+        if item.reason:
+            lines.append(f"     {item.reason}")
+    return "\n".join(lines) + "\n"
+
+
+def surface_work_queue_to_json(items: list[SurfaceWorkItem]) -> str:
+    return json.dumps([item.model_dump(mode="json") for item in items], indent=2)
+
+
+def write_surface_work_queue(path: Path | str, items: list[SurfaceWorkItem]) -> None:
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(surface_work_queue_to_json(items) + "\n")
+
+
+def _classify_surface(
+    item: SurfaceCount,
+    *,
+    cache: TerminologyCache,
+    resolver: TerminologyResolver,
+) -> SurfaceWorkItem:
+    resolver_kind = _resolver_kind(item.kind)
+    if resolver_kind is None:
+        return SurfaceWorkItem(
+            surface=item.surface,
+            criterion_kind=item.kind,
+            resolver_kind=None,
+            count=item.count,
+            status="out_of_scope",
+            cache_status="miss",
+            reason=f"No terminology resolver for criterion kind {item.kind!r}.",
+        )
+
+    before = cache.get_surface_resolution(resolver_kind, item.surface)
+    concept_set = _resolve(resolver, resolver_kind, item.surface)
+    after = cache.get_surface_resolution(resolver_kind, item.surface)
+
+    if concept_set is not None:
+        return SurfaceWorkItem(
+            surface=item.surface,
+            criterion_kind=item.kind,
+            resolver_kind=resolver_kind,
+            count=item.count,
+            status="resolved",
+            cache_status="hit" if before is not None else "written",
+            concept_set=concept_set,
+            candidates=after.candidates if after else [],
+            reason=(after.reason if after else "Resolved by terminology resolver."),
+        )
+
+    current = after or before
+    if current is not None and current.resolver_version == OPEN_SURFACE_RESOLVER_VERSION:
+        return SurfaceWorkItem(
+            surface=item.surface,
+            criterion_kind=item.kind,
+            resolver_kind=resolver_kind,
+            count=item.count,
+            status=current.status,
+            cache_status="hit" if before is not None else "written",
+            candidates=current.candidates,
+            reason=current.reason,
+        )
+
+    if _looks_composite(item.surface):
+        resolution = _nonresolved_resolution(
+            item,
+            resolver_kind,
+            status="composite_unhandled",
+            reason="Surface contains conjunction/list punctuation and should be split or reviewed.",
+        )
+        cache.put_surface_resolution(resolution)
+        return SurfaceWorkItem(
+            surface=item.surface,
+            criterion_kind=item.kind,
+            resolver_kind=resolver_kind,
+            count=item.count,
+            status="composite_unhandled",
+            cache_status="written",
+            reason=resolution.reason,
+        )
+
+    if item.kind == "temporal_window":
+        resolution = _nonresolved_resolution(
+            item,
+            resolver_kind,
+            status="composite_unhandled",
+            reason="Temporal-window event needs event extraction/review before terminology mapping.",
+        )
+        cache.put_surface_resolution(resolution)
+        return SurfaceWorkItem(
+            surface=item.surface,
+            criterion_kind=item.kind,
+            resolver_kind=resolver_kind,
+            count=item.count,
+            status="composite_unhandled",
+            cache_status="written",
+            reason=resolution.reason,
+        )
+
+    return SurfaceWorkItem(
+        surface=item.surface,
+        criterion_kind=item.kind,
+        resolver_kind=resolver_kind,
+        count=item.count,
+        status="unresolved",
+        cache_status="miss",
+        reason="No resolver hit or explicit non-resolution classification yet.",
+    )
+
+
+def _resolver_kind(criterion_kind: str) -> SurfaceResolutionKind | None:
+    if criterion_kind in {"condition_present", "condition_absent", "temporal_window"}:
+        return "condition"
+    if criterion_kind in {"medication_present", "medication_absent"}:
+        return "medication"
+    if criterion_kind == "measurement_threshold":
+        return "lab"
+    return None
+
+
+def _resolve(
+    resolver: TerminologyResolver,
+    kind: SurfaceResolutionKind,
+    surface: str,
+) -> ConceptSet | None:
+    if kind == "condition":
+        return resolver.resolve_condition(surface)
+    if kind == "lab":
+        return resolver.resolve_lab(surface)
+    return resolver.resolve_medication(surface)
+
+
+def _looks_composite(surface: str) -> bool:
+    normalized = f" {surface.lower()} "
+    return any(token in normalized for token in (" and ", " or ", ",", ";", "/"))
+
+
+def _nonresolved_resolution(
+    item: SurfaceCount,
+    kind: SurfaceResolutionKind,
+    *,
+    status: SurfaceResolutionStatus,
+    reason: str,
+) -> SurfaceResolution:
+    normalized = " ".join(item.surface.lower().strip().split())
+    return SurfaceResolution(
+        kind=kind,
+        surface=item.surface,
+        normalized_surface=normalized,
+        status=status,
+        concept_set=None,
+        candidates=[],
+        reason=reason,
+        resolver_version=OPEN_SURFACE_RESOLVER_VERSION,
+    )
+
+
+__all__ = [
+    "SurfaceWorkItem",
+    "build_surface_work_queue",
+    "render_surface_work_queue",
+    "surface_work_queue_to_json",
+    "write_surface_work_queue",
+]
