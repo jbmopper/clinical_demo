@@ -103,6 +103,7 @@ class JudgeTarget(BaseModel):
     pair_id: str
     patient_id: str
     nct_id: str
+    slice: str = ""
     criterion_index: int
     verdict: MatchVerdict
 
@@ -236,6 +237,7 @@ def select_judge_targets(
                     pair_id=record.case.pair_id,
                     patient_id=record.case.patient_id,
                     nct_id=record.case.nct_id,
+                    slice=record.case.slice,
                     criterion_index=index,
                     verdict=verdict,
                 )

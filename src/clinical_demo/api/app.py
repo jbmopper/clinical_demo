@@ -280,6 +280,7 @@ def create_app() -> FastAPI:
     def patient_evidence_calibration(
         candidate_path: str | None = None,
         label_path: str | None = None,
+        refresh_source_rows: bool = False,
     ) -> PatientEvidenceCalibrationResponse:
         candidates_path = (
             Path(candidate_path) if candidate_path else DEFAULT_PATIENT_EVIDENCE_CANDIDATES
@@ -303,7 +304,11 @@ def create_app() -> FastAPI:
                     "existing_label": labels.get(
                         (row.pair_id, row.criterion_index),
                     ),
-                    "source_rows": _patient_evidence_source_rows(row, source_row_cache),
+                    "source_rows": (
+                        _patient_evidence_source_rows(row, source_row_cache)
+                        if refresh_source_rows
+                        else row.source_rows
+                    ),
                 }
             )
             for row in rows

@@ -255,8 +255,10 @@ def test_patient_evidence_calibration_returns_candidates_with_existing_labels(
     assert body["candidate_path"] == str(candidates_path)
     assert body["label_path"] == str(labels_path)
     assert body["rows"][0]["criterion_source_text"] == "Diagnosis of diabetes"
+    assert body["rows"][0]["matcher_assumption_mode"] == "open_world"
     assert body["rows"][0]["source_rows"][0]["row_id"] == "patient:000"
     assert body["rows"][0]["existing_label"]["label"] == "supports_present"
+    assert body["rows"][0]["existing_label"]["matcher_assumption_mode"] == "open_world"
 
 
 def test_patient_evidence_calibration_save_merges_labels(
@@ -304,6 +306,7 @@ def test_patient_evidence_calibration_save_merges_labels(
     saved = labels_path.read_text()
     assert '"pair_id": "keep"' in saved
     assert '"pair_id": "p1__T1"' in saved
+    assert '"matcher_assumption_mode": "open_world"' in saved
     assert '"cited_source_row_ids": [' in saved
     assert '"patient:000"' in saved
 

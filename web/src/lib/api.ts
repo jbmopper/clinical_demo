@@ -14,6 +14,7 @@ export type PatientEvidenceLabel =
 	| 'supports_absent'
 	| 'supports_measurement_comparison'
 	| 'insufficient_evidence';
+export type MatcherAssumptionMode = 'open_world' | 'closed_world_eval' | 'closed_world_demo';
 
 export interface PatientRow {
 	patient_id: string;
@@ -215,6 +216,7 @@ export interface PatientEvidenceHumanLabel {
 	label: PatientEvidenceLabel | null;
 	cited_source_row_ids: string[];
 	expected_matcher_verdict: Verdict | null;
+	matcher_assumption_mode: MatcherAssumptionMode;
 	reviewer?: string | null;
 	rationale: string;
 }
@@ -223,6 +225,7 @@ export interface PatientEvidenceCalibrationRow {
 	pair_id: string;
 	patient_id: string;
 	nct_id: string;
+	eval_slice: string;
 	criterion_index: number;
 	candidate_bucket: string;
 	criterion_kind: string;
@@ -233,11 +236,14 @@ export interface PatientEvidenceCalibrationRow {
 	matcher_verdict: Verdict;
 	matcher_reason: VerdictReason;
 	matcher_rationale: string;
+	matcher_assumption_mode: MatcherAssumptionMode;
 	matcher_evidence: Evidence[];
 	judge_label?: JudgeLabel | null;
 	judge_error_categories: string[];
 	judge_rationale?: string | null;
 	source_rows: PatientEvidenceSourceRow[];
+	retrieved_source_row_ids: string[];
+	retrieval_reasons: Record<string, string[]>;
 	existing_label: PatientEvidenceHumanLabel | null;
 }
 

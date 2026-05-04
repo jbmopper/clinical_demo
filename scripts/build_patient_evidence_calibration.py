@@ -13,9 +13,10 @@ import json
 from pathlib import Path
 
 from clinical_demo.api.loaders import load_patient, load_trial
-from clinical_demo.evals.layer_three import build_source_context
+from clinical_demo.evals.layer_three import JudgeTarget, build_source_context
 from clinical_demo.evals.patient_evidence import (
     PatientEvidenceHumanLabel,
+    PatientEvidenceScope,
     build_patient_evidence_rows,
     load_layer_three_report,
     load_patient_evidence_labels_if_exists,
@@ -40,24 +41,33 @@ def main() -> None:
     parser.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--limit", type=int, default=60)
+    parser.add_argument(
+        "--scope",
+        choices=["cardiometabolic_core", "all"],
+        default="cardiometabolic_core",
+        help="Filter candidate targets before packet selection.",
+    )
+    parser.add_argument(
+        "--prune-labels",
+        action="store_true",
+        help="Rewrite the label template to exactly the selected targets, preserving matching labels.",
+    )
     args = parser.parse_args()
+    scope: PatientEvidenceScope = args.scope
 
     with open_store(args.db) as store:
         run = load_run(store, args.run_id)
     judge_report = load_layer_three_report(args.judge_report)
     existing_labels = load_patient_evidence_labels_if_exists(args.labels)
 
-    targets = select_patient_evidence_targets(run, judge_report=judge_report, limit=args.limit)
-    if existing_labels:
-        labels = existing_labels
-    else:
-        labels = [
-            PatientEvidenceHumanLabel(
-                pair_id=target.pair_id,
-                criterion_index=target.criterion_index,
-            )
-            for target in targets
-        ]
+    targets = select_patient_evidence_targets(
+        run,
+        judge_report=judge_report,
+        limit=args.limit,
+        scope=scope,
+    )
+    labels = _labels_for_targets(targets, existing_labels)
+    if args.prune_labels or not existing_labels:
         save_patient_evidence_labels(args.labels, labels)
 
     source_contexts = {}
@@ -80,9 +90,31 @@ def main() -> None:
     )
     save_patient_evidence_rows(args.output, rows)
 
-    print(f"wrote {len(rows)} patient-evidence calibration rows to {args.output}")
+    print(
+        f"wrote {len(rows)} patient-evidence calibration rows "
+        f"to {args.output} (scope={args.scope})"
+    )
     print(f"label template: {args.labels}")
     print(json.dumps(summarize_patient_evidence_rows(rows), indent=2, sort_keys=True))
+
+
+def _labels_for_targets(
+    targets: list[JudgeTarget],
+    existing_labels: list[PatientEvidenceHumanLabel],
+) -> list[PatientEvidenceHumanLabel]:
+    existing = {(label.pair_id, label.criterion_index): label for label in existing_labels}
+    labels = []
+    for target in targets:
+        labels.append(
+            existing.get(
+                (target.pair_id, target.criterion_index),
+                PatientEvidenceHumanLabel(
+                    pair_id=target.pair_id,
+                    criterion_index=target.criterion_index,
+                ),
+            )
+        )
+    return labels
 
 
 if __name__ == "__main__":

@@ -24,7 +24,8 @@ from clinical_demo.evals.layer_three import (
     select_judge_targets,
 )
 from clinical_demo.evals.run import RunResult
-from clinical_demo.matcher import Verdict
+from clinical_demo.matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode, Verdict
+from clinical_demo.retrieval import RetrievalSourceRow, retrieve_structured_patient_evidence
 
 PatientEvidenceLabel = Literal[
     "supports_present",
@@ -32,6 +33,18 @@ PatientEvidenceLabel = Literal[
     "supports_measurement_comparison",
     "insufficient_evidence",
 ]
+PatientEvidenceScope = Literal["cardiometabolic_core", "all"]
+
+CARDIOMETABOLIC_SLICES = frozenset(
+    {
+        "ckd",
+        "hyperlipidemia",
+        "hypertension-academic",
+        "hypertension-industry",
+        "t2dm-academic",
+        "t2dm-industry",
+    }
+)
 
 
 class PatientEvidenceHumanLabel(BaseModel):
@@ -42,6 +55,7 @@ class PatientEvidenceHumanLabel(BaseModel):
     label: PatientEvidenceLabel | None = None
     cited_source_row_ids: list[str] = Field(default_factory=list)
     expected_matcher_verdict: Verdict | None = None
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE
     reviewer: str | None = None
     rationale: str = ""
 
@@ -58,6 +72,7 @@ class PatientEvidenceCalibrationRow(BaseModel):
     pair_id: str
     patient_id: str
     nct_id: str
+    eval_slice: str = ""
     criterion_index: int
     candidate_bucket: str
     criterion_kind: str
@@ -68,11 +83,14 @@ class PatientEvidenceCalibrationRow(BaseModel):
     matcher_verdict: str
     matcher_reason: str
     matcher_rationale: str
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE
     matcher_evidence: list[dict] = Field(default_factory=list)
     judge_label: str | None = None
     judge_error_categories: list[str] = Field(default_factory=list)
     judge_rationale: str | None = None
     source_rows: list[PatientEvidenceSourceRow] = Field(default_factory=list)
+    retrieved_source_row_ids: list[str] = Field(default_factory=list)
+    retrieval_reasons: dict[str, list[str]] = Field(default_factory=dict)
     existing_label: PatientEvidenceHumanLabel | None = None
 
 
@@ -160,13 +178,17 @@ def select_patient_evidence_targets(
     *,
     judge_report: LayerThreeReport | None = None,
     limit: int = 60,
+    scope: PatientEvidenceScope = "cardiometabolic_core",
 ) -> list[JudgeTarget]:
     """Select a deterministic, evidence-focused calibration packet.
 
-    Judge-incorrect rows are included first because they are the most
-    actionable. The remaining slots round-robin across patient-evidence
-    buckets so the packet does not become 50 copies of the same
-    `unmapped_concept` failure.
+    In the core scope, oncology / NSCLC rows are filtered out unless
+    they are deliberately hand-crafted later. Judge-incorrect rows are
+    included first only when they are still patient-evidence targets;
+    wrong age/sex rows belong in Layer 1/Layer 3 diagnostics, not this
+    patient-side evidence packet. The remaining slots round-robin
+    across patient-evidence buckets so the packet does not become 50
+    copies of the same `unmapped_concept` failure.
     """
 
     if limit < 1:
@@ -178,9 +200,12 @@ def select_patient_evidence_targets(
     selected_keys: set[tuple[str, int]] = set()
 
     for target in targets:
+        if not _target_in_scope(target, scope):
+            continue
         key = (target.pair_id, target.criterion_index)
         judgment = judgments.get(key)
-        if judgment is None or judgment.judge_label != "incorrect":
+        bucket = patient_evidence_bucket(target, judgment)
+        if judgment is None or judgment.judge_label != "incorrect" or bucket is None:
             continue
         selected.append(target)
         selected_keys.add(key)
@@ -189,6 +214,8 @@ def select_patient_evidence_targets(
 
     buckets: dict[str, list[JudgeTarget]] = {}
     for target in targets:
+        if not _target_in_scope(target, scope):
+            continue
         key = (target.pair_id, target.criterion_index)
         if key in selected_keys:
             continue
@@ -231,11 +258,18 @@ def build_patient_evidence_rows(
         key = (target.pair_id, target.criterion_index)
         judgment = judgments.get(key)
         source_context = source_contexts[target.pair_id]
+        source_rows = _indexed_source_rows(source_context)
+        retrieved = retrieve_structured_patient_evidence(
+            criterion,
+            [RetrievalSourceRow.model_validate(row.model_dump()) for row in source_rows],
+            limit=12,
+        )
         rows.append(
             PatientEvidenceCalibrationRow(
                 pair_id=target.pair_id,
                 patient_id=target.patient_id,
                 nct_id=target.nct_id,
+                eval_slice=target.slice,
                 criterion_index=target.criterion_index,
                 candidate_bucket=patient_evidence_bucket(target, judgment) or "other",
                 criterion_kind=criterion.kind,
@@ -246,11 +280,14 @@ def build_patient_evidence_rows(
                 matcher_verdict=target.verdict.verdict,
                 matcher_reason=target.verdict.reason,
                 matcher_rationale=target.verdict.rationale,
+                matcher_assumption_mode=DEFAULT_MATCHER_ASSUMPTION_MODE,
                 matcher_evidence=[e.model_dump(mode="json") for e in target.verdict.evidence],
                 judge_label=judgment.judge_label if judgment else None,
                 judge_error_categories=list(judgment.error_categories) if judgment else [],
                 judge_rationale=judgment.rationale if judgment else None,
-                source_rows=_indexed_source_rows(source_context),
+                source_rows=source_rows,
+                retrieved_source_row_ids=[item.row.row_id for item in retrieved],
+                retrieval_reasons={item.row.row_id: item.reasons for item in retrieved},
                 existing_label=labels.get(key),
             )
         )
@@ -264,6 +301,8 @@ def patient_evidence_bucket(
     """Classify a target for patient-side evidence review."""
 
     if judgment is not None and judgment.judge_label == "incorrect":
+        if not _is_patient_evidence_target(target):
+            return None
         categories = ",".join(judgment.error_categories) or "uncategorized"
         return f"judge_incorrect:{categories}"
 
@@ -286,6 +325,37 @@ def patient_evidence_bucket(
     if reason == "human_review_required" and _looks_patient_evidence_relevant(text):
         return "free_text_patient_evidence"
     return None
+
+
+def _target_in_scope(target: JudgeTarget, scope: PatientEvidenceScope) -> bool:
+    if scope == "all":
+        return True
+    return target.slice in CARDIOMETABOLIC_SLICES
+
+
+def _is_patient_evidence_target(target: JudgeTarget) -> bool:
+    kind = target.verdict.criterion.kind
+    reason = target.verdict.reason
+    text = target.verdict.criterion.source_text.lower()
+    return (
+        kind
+        in {
+            "condition_present",
+            "condition_absent",
+            "medication_present",
+            "medication_absent",
+            "measurement_threshold",
+        }
+        or reason
+        in {
+            "ambiguous_criterion",
+            "extractor_invariant_violation",
+            "no_data",
+            "unit_mismatch",
+            "unmapped_concept",
+        }
+        or (reason == "human_review_required" and _looks_patient_evidence_relevant(text))
+    )
 
 
 def summarize_patient_evidence_rows(
@@ -360,9 +430,11 @@ def _source_row_with_id(
 
 
 __all__ = [
+    "CARDIOMETABOLIC_SLICES",
     "PatientEvidenceCalibrationRow",
     "PatientEvidenceHumanLabel",
     "PatientEvidenceLabel",
+    "PatientEvidenceScope",
     "PatientEvidenceSourceRow",
     "build_patient_evidence_rows",
     "load_layer_three_report",

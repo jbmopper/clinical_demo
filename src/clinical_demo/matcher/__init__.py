@@ -7,6 +7,12 @@ aggregator and reviewer UI consume.
 
 from .concept_lookup import lookup_condition, lookup_lab, lookup_medication
 from .matcher import MATCHER_VERSION, match_criterion, match_extracted
+from .modes import (
+    DEFAULT_LLM_USE_LEVEL,
+    DEFAULT_MATCHER_ASSUMPTION_MODE,
+    LLMUseLevel,
+    MatcherAssumptionMode,
+)
 from .verdict import (
     ConditionEvidence,
     DemographicsEvidence,
@@ -22,13 +28,17 @@ from .verdict import (
 )
 
 __all__ = [
+    "DEFAULT_LLM_USE_LEVEL",
+    "DEFAULT_MATCHER_ASSUMPTION_MODE",
     "MATCHER_VERSION",
     "ConditionEvidence",
     "DemographicsEvidence",
     "Evidence",
     "EvidenceKind",
+    "LLMUseLevel",
     "LabEvidence",
     "MatchVerdict",
+    "MatcherAssumptionMode",
     "MedicationEvidence",
     "MissingEvidence",
     "TrialFieldEvidence",

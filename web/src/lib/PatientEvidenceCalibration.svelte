@@ -6,6 +6,7 @@
 		type PatientEvidenceCalibrationRow,
 		type PatientEvidenceHumanLabel,
 		type PatientEvidenceLabel,
+		type MatcherAssumptionMode,
 		type PatientEvidenceSourceRow
 	} from '$lib/api';
 
@@ -62,6 +63,7 @@
 				label: null,
 				cited_source_row_ids: [],
 				expected_matcher_verdict: null,
+				matcher_assumption_mode: row.matcher_assumption_mode,
 				reviewer: reviewer || null,
 				rationale: ''
 			};
@@ -82,6 +84,13 @@
 	) {
 		const current = ensureLabel(row);
 		current.expected_matcher_verdict = verdict;
+		current.reviewer = reviewer || null;
+		labels = { ...labels, [rowKey(row)]: current };
+	}
+
+	function setAssumptionMode(row: PatientEvidenceCalibrationRow, mode: MatcherAssumptionMode) {
+		const current = ensureLabel(row);
+		current.matcher_assumption_mode = mode;
 		current.reviewer = reviewer || null;
 		labels = { ...labels, [rowKey(row)]: current };
 	}
@@ -116,6 +125,7 @@
 					label.label !== null ||
 					label.cited_source_row_ids.length > 0 ||
 					label.expected_matcher_verdict !== null ||
+					label.matcher_assumption_mode !== 'open_world' ||
 					label.rationale.trim().length > 0
 			);
 			const response = await savePatientEvidenceCalibration(payload, labelPath || undefined);
@@ -162,6 +172,14 @@
 		const parts = [sourceRow.date, sourceRow.code, sourceRow.status].filter(Boolean);
 		return parts.join(' · ');
 	}
+
+	function isRetrieved(row: PatientEvidenceCalibrationRow, sourceRow: PatientEvidenceSourceRow) {
+		return row.retrieved_source_row_ids.includes(sourceRow.row_id);
+	}
+
+	function retrievalReasons(row: PatientEvidenceCalibrationRow, sourceRow: PatientEvidenceSourceRow) {
+		return row.retrieval_reasons[sourceRow.row_id] ?? [];
+	}
 </script>
 
 <section class="patient-evidence">
@@ -186,7 +204,7 @@
 		</label>
 		<label class="search">
 			<span>Search source rows</span>
-			<input type="search" bind:value={sourceSearch} placeholder="cancer, NSCLC, lung…" />
+			<input type="search" bind:value={sourceSearch} placeholder="HbA1c, CKD, metformin…" />
 		</label>
 		<button onclick={loadRows} disabled={loading}>
 			{#if loading}loading…{:else}reload{/if}
@@ -228,6 +246,8 @@
 						</div>
 						<div class="tags">
 							<span>{row.criterion_kind}</span>
+							<span>{row.eval_slice}</span>
+							<span>{row.matcher_assumption_mode}</span>
 							<span>{row.polarity}</span>
 							<span>{row.matcher_verdict}</span>
 							<span>{row.matcher_reason}</span>
@@ -311,6 +331,23 @@
 							</div>
 
 							<label>
+								<span>Matcher assumption</span>
+								<select
+									value={current?.matcher_assumption_mode ?? row.matcher_assumption_mode}
+									onchange={(event) => {
+										setAssumptionMode(
+											row,
+											(event.currentTarget as HTMLSelectElement).value as MatcherAssumptionMode
+										);
+									}}
+								>
+									<option value="open_world">open world</option>
+									<option value="closed_world_eval">closed world eval</option>
+									<option value="closed_world_demo">closed world demo</option>
+								</select>
+							</label>
+
+							<label>
 								<span>Expected matcher verdict</span>
 								<select
 									value={current?.expected_matcher_verdict ?? ''}
@@ -354,7 +391,7 @@
 									<p class="no-matches">No patient rows match the current search.</p>
 								{/if}
 								{#each sourceRows(row, 'patient') as sourceRow (sourceRow.row_id)}
-									<label class="source-row">
+									<label class="source-row" class:suggested={isRetrieved(row, sourceRow)}>
 										<input
 											type="checkbox"
 											checked={current?.cited_source_row_ids.includes(sourceRow.row_id) ?? false}
@@ -366,6 +403,11 @@
 											<span>{sourceRow.value}</span>
 											{#if rowSummary(sourceRow)}
 												<small>{rowSummary(sourceRow)}</small>
+											{/if}
+											{#if retrievalReasons(row, sourceRow).length}
+												<small class="retrieval">
+													{retrievalReasons(row, sourceRow).join(', ')}
+												</small>
 											{/if}
 										</span>
 									</label>
@@ -383,7 +425,7 @@
 									<p class="no-matches">No trial rows match the current search.</p>
 								{/if}
 								{#each sourceRows(row, 'trial') as sourceRow (sourceRow.row_id)}
-									<label class="source-row">
+									<label class="source-row" class:suggested={isRetrieved(row, sourceRow)}>
 										<input
 											type="checkbox"
 											checked={current?.cited_source_row_ids.includes(sourceRow.row_id) ?? false}
@@ -395,6 +437,11 @@
 											<span>{sourceRow.value}</span>
 											{#if rowSummary(sourceRow)}
 												<small>{rowSummary(sourceRow)}</small>
+											{/if}
+											{#if retrievalReasons(row, sourceRow).length}
+												<small class="retrieval">
+													{retrievalReasons(row, sourceRow).join(', ')}
+												</small>
 											{/if}
 										</span>
 									</label>
@@ -635,6 +682,10 @@
 		padding: 8px 10px;
 		border-bottom: 1px solid #e2e8f0;
 	}
+	.source-row.suggested {
+		background: #f0fdf4;
+		border-left: 3px solid #16a34a;
+	}
 	.source-row:last-child {
 		border-bottom: 0;
 	}
@@ -666,6 +717,10 @@
 	}
 	.source-main small {
 		font-size: 0.73rem;
+	}
+	.source-main small.retrieval {
+		color: #166534;
+		font-weight: 700;
 	}
 	@media (max-width: 900px) {
 		.top,

@@ -32,20 +32,18 @@ AI Forward Deployed Engineer interview.
 > future review can judge both the deterministic verdict and the
 > source evidence behind it.
 >
-> **579 Python tests passing**; Svelte production build verified
-> locally. Up next in Phase 2: re-center the matcher on the core
+> **588 Python tests passing**; Svelte production build verified
+> locally. Current Phase 2 focus: re-center the matcher on the core
 > product loop -- feed trials + patients into the system, retrieve
 > relevant patient evidence, and decide whether there is enough
-> support to flag a possible match. The generated 60-row
-> patient-evidence packet now needs narrowing to in-scope
-> cardiometabolic rows before it becomes a gold set; oncology/NSCLC
-> rows are deferred unless paired with hand-crafted oncology
-> evidence. The next implementation steps are explicit matcher
-> assumption modes (`open_world` by default, `closed_world_eval`
-> only for synthetic/eval slices), LLM-use levels (`none`,
-> `retrieval_only`, `bounded_adjudication`, `critic`), structured
-> FHIR evidence retrieval, bounded LLM adjudication over retrieved
-> rows, and unit reconciliation before the Phase 3 cost-quality
+> support to flag a possible match. The 60-row patient-evidence
+> packet is now narrowed to cardiometabolic eval slices, records the
+> matcher assumption mode (`open_world` by default), and includes
+> structured retrieval suggestions for reviewer citation. Oncology/NSCLC
+> rows are deferred unless paired with hand-crafted oncology evidence.
+> The next implementation steps are bounded LLM adjudication over
+> retrieved rows, closed-world eval/demo behavior where explicitly
+> enabled, and unit reconciliation before the Phase 3 cost-quality
 > routing sweep.
 
 ## What it is (one paragraph)

@@ -1,154 +1,11 @@
 [
   {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 2,
+    "pair_id": "1293efbb__NCT06524960",
+    "criterion_index": 1,
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 4,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 5,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 6,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 7,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 8,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 9,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 10,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 11,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 14,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 15,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 16,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 17,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 18,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 19,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 21,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "060e72d3__NCT05713006",
-    "criterion_index": 23,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -158,6 +15,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -167,6 +25,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -176,6 +35,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -185,6 +45,17 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06524960",
+    "criterion_index": 6,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -194,6 +65,27 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06524960",
+    "criterion_index": 9,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06524960",
+    "criterion_index": 10,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -203,6 +95,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -212,6 +105,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -221,6 +115,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -230,6 +125,57 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06964087",
+    "criterion_index": 6,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06964087",
+    "criterion_index": 8,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06964087",
+    "criterion_index": 9,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06964087",
+    "criterion_index": 10,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06964087",
+    "criterion_index": 11,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -239,6 +185,27 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "1293efbb__NCT06964087",
+    "criterion_index": 17,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "28db1c55__NCT06941441",
+    "criterion_index": 1,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -248,6 +215,67 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "28db1c55__NCT06941441",
+    "criterion_index": 9,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "28db1c55__NCT06941441",
+    "criterion_index": 10,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "28db1c55__NCT06941441",
+    "criterion_index": 13,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "28db1c55__NCT06941441",
+    "criterion_index": 14,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "28db1c55__NCT06941441",
+    "criterion_index": 16,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "28db1c55__NCT06941441",
+    "criterion_index": 17,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -257,6 +285,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -266,6 +295,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -275,6 +305,17 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "2e555528__NCT06941441",
+    "criterion_index": 4,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -284,6 +325,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -293,6 +335,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -302,6 +345,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -311,6 +355,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -320,6 +365,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -329,6 +375,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -338,6 +385,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -347,6 +395,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -356,6 +405,17 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "407ef75b__NCT06941441",
+    "criterion_index": 4,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -365,6 +425,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -374,6 +435,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -383,6 +445,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -392,6 +455,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -401,6 +465,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -410,6 +475,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -419,6 +485,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -428,6 +495,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -437,15 +505,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "aa01ba4c__NCT07064473",
-    "criterion_index": 2,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -455,6 +515,17 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
+    "reviewer": null,
+    "rationale": ""
+  },
+  {
+    "pair_id": "aa01ba4c__NCT07064473",
+    "criterion_index": 10,
+    "label": null,
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -464,15 +535,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "c46a254d__NCT07335211",
-    "criterion_index": 0,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -482,6 +545,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -491,15 +555,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
-    "reviewer": null,
-    "rationale": ""
-  },
-  {
-    "pair_id": "e7d52393__NCT06568471",
-    "criterion_index": 1,
-    "label": null,
-    "cited_source_row_ids": [],
-    "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -509,6 +565,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -518,6 +575,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -527,6 +585,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   },
@@ -536,6 +595,7 @@
     "label": null,
     "cited_source_row_ids": [],
     "expected_matcher_verdict": null,
+    "matcher_assumption_mode": "open_world",
     "reviewer": null,
     "rationale": ""
   }

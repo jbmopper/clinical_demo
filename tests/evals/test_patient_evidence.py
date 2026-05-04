@@ -19,19 +19,25 @@ from clinical_demo.evals.patient_evidence import (
     summarize_patient_evidence_rows,
 )
 from clinical_demo.evals.run import CaseRecord, EvalCase, RunResult
-from clinical_demo.matcher import MATCHER_VERSION, MatchVerdict, Verdict, VerdictReason
+from clinical_demo.matcher import (
+    DEFAULT_MATCHER_ASSUMPTION_MODE,
+    MATCHER_VERSION,
+    MatchVerdict,
+    Verdict,
+    VerdictReason,
+)
 from tests.matcher._fixtures import crit_age, crit_condition, crit_measurement
 
 from ._fixtures import AS_OF, make_score_pair_result
 
 
-def _case(pair_id: str = "p1__T1") -> EvalCase:
+def _case(pair_id: str = "p1__T1", *, slice: str = "t2dm-industry") -> EvalCase:
     return EvalCase(
         pair_id=pair_id,
         patient_id="p1",
         nct_id="T1",
         as_of=AS_OF,
-        slice="test",
+        slice=slice,
     )
 
 
@@ -119,12 +125,42 @@ def test_select_patient_evidence_targets_prioritizes_judge_incorrect_rows() -> N
         for record in run.cases
         for index, verdict in enumerate(record.result.verdicts if record.result else [])
     ]
-    report = _report([_judgment(all_targets[1])])
+    report = _report([_judgment(all_targets[2])])
 
     selected = select_patient_evidence_targets(run, judge_report=report, limit=2)
 
-    assert selected[0].criterion_index == 1
+    assert selected[0].criterion_index == 2
     assert {target.criterion_index for target in selected[1:]} <= {0, 2}
+
+
+def test_select_patient_evidence_targets_filters_to_cardiometabolic_scope() -> None:
+    run = _run([])
+    run.cases = [
+        CaseRecord(
+            case=_case("oncology", slice="nsclc"),
+            result=make_score_pair_result(verdicts=[_verdict("condition_present")]),
+        ),
+        CaseRecord(
+            case=_case("diabetes", slice="t2dm-industry"),
+            result=make_score_pair_result(verdicts=[_verdict("condition_present")]),
+        ),
+    ]
+
+    selected = select_patient_evidence_targets(run, limit=10)
+
+    assert [target.pair_id for target in selected] == ["diabetes"]
+
+
+def test_patient_evidence_bucket_ignores_non_patient_evidence_judge_errors() -> None:
+    age = JudgeTarget(
+        pair_id="p1__T1",
+        patient_id="p1",
+        nct_id="T1",
+        criterion_index=0,
+        verdict=_verdict("age", verdict="pass", reason="ok"),
+    )
+
+    assert patient_evidence_bucket(age, _judgment(age)) is None
 
 
 def test_patient_evidence_bucket_focuses_patient_side_cases() -> None:
@@ -192,6 +228,11 @@ def test_build_patient_evidence_rows_attaches_source_row_ids_and_labels() -> Non
 
     assert rows[0].source_rows[0].row_id == "patient:000"
     assert rows[0].source_rows[1].row_id == "trial:000"
+    assert rows[0].eval_slice == ""
+    assert rows[0].matcher_assumption_mode == DEFAULT_MATCHER_ASSUMPTION_MODE
+    assert rows[0].retrieved_source_row_ids == ["patient:000"]
+    assert rows[0].retrieval_reasons["patient:000"]
     assert rows[0].existing_label is not None
     assert rows[0].existing_label.label == "supports_present"
+    assert rows[0].existing_label.matcher_assumption_mode == DEFAULT_MATCHER_ASSUMPTION_MODE
     assert summarize_patient_evidence_rows(rows) == {"condition_present": 1}
