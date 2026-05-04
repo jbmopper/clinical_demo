@@ -26,7 +26,12 @@ eval/runs.sqlite
 eval/runs.sqlite-*
 # `eval/baselines/` is intentionally tracked — committed numbers are
 # the regression artifact for layer-1 (and later) eval runs (see
-# PLAN task 2.7 / decision D-68).
+# PLAN task 2.7 / decision D-68). Per-pair `*_report.json` dumps are
+# the raw `ScorePairResult` per case and exceed the pre-commit
+# large-file limit; they're reproducible from `eval/runs.sqlite` and
+# the diagnostics/summary JSONs alongside them carry the actual
+# regression-relevant numbers.
+eval/baselines/**/*_report.json
 
 __marimo__/
 .playwright-mcp

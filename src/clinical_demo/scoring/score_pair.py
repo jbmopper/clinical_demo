@@ -39,14 +39,26 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from ..adjudication.patient_evidence import _ClientLike as _PatientEvidenceClient
+from ..adjudication.patient_evidence import adjudicate_patient_evidence
 from ..domain.patient import Patient
 from ..domain.trial import Trial
 from ..extractor.enrich import enrich_with_structured_fields
 from ..extractor.extractor import ExtractionResult, extract_criteria
 from ..extractor.schema import ExtractedCriteria, ExtractorRunMeta
-from ..matcher import MATCHER_VERSION, MatchVerdict, match_extracted
+from ..matcher import (
+    DEFAULT_LLM_USE_LEVEL,
+    DEFAULT_MATCHER_ASSUMPTION_MODE,
+    MATCHER_VERSION,
+    LLMUseLevel,
+    MatcherAssumptionMode,
+    MatchVerdict,
+    RetrievedPatientRowEvidence,
+    match_extracted,
+)
 from ..observability import traced
 from ..profile import PatientProfile
+from ..retrieval import retrieve_structured_patient_evidence, structured_source_rows_for_pair
 
 EligibilityRollup = Literal["pass", "fail", "indeterminate"]
 
@@ -72,6 +84,8 @@ class ScorePairResult(BaseModel):
     patient_id: str
     nct_id: str
     as_of: date
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE
+    llm_use_level: LLMUseLevel = DEFAULT_LLM_USE_LEVEL
     extraction: ExtractedCriteria
     extraction_meta: ExtractorRunMeta
     verdicts: list[MatchVerdict]
@@ -85,6 +99,9 @@ def score_pair(
     as_of: date,
     *,
     extraction: ExtractionResult | None = None,
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
+    llm_use_level: LLMUseLevel = DEFAULT_LLM_USE_LEVEL,
+    patient_evidence_client: _PatientEvidenceClient | None = None,
 ) -> ScorePairResult:
     """Score one patient against one trial end-to-end.
 
@@ -125,6 +142,8 @@ def score_pair(
             "patient_id": patient.patient_id,
             "nct_id": trial.nct_id,
             "matcher_version": MATCHER_VERSION,
+            "matcher_assumption_mode": matcher_assumption_mode,
+            "llm_use_level": llm_use_level,
         },
     ) as span:
         if extraction is None:
@@ -142,6 +161,14 @@ def score_pair(
 
         profile = PatientProfile(patient, as_of)
         verdicts = match_extracted(enriched_criteria.criteria, profile, trial)
+        verdicts = _apply_retrieval_only(
+            verdicts,
+            patient=patient,
+            trial=trial,
+            matcher_assumption_mode=matcher_assumption_mode,
+            llm_use_level=llm_use_level,
+            patient_evidence_client=patient_evidence_client,
+        )
         summary = _summarize(verdicts)
         eligibility = _rollup(verdicts)
 
@@ -161,6 +188,8 @@ def score_pair(
                 "patient_id": patient.patient_id,
                 "nct_id": trial.nct_id,
                 "matcher_version": MATCHER_VERSION,
+                "matcher_assumption_mode": matcher_assumption_mode,
+                "llm_use_level": llm_use_level,
                 "eligibility": eligibility,
                 "total_criteria": str(summary.total_criteria),
                 "fail_count": str(summary.by_verdict.get("fail", 0)),
@@ -173,6 +202,8 @@ def score_pair(
         patient_id=patient.patient_id,
         nct_id=trial.nct_id,
         as_of=as_of,
+        matcher_assumption_mode=matcher_assumption_mode,
+        llm_use_level=llm_use_level,
         # Persist the enriched view so eval-side and reviewer-UI
         # consumers see the same criterion set the matcher saw;
         # provenance of injected rows is inspectable via
@@ -182,6 +213,82 @@ def score_pair(
         verdicts=verdicts,
         summary=summary,
         eligibility=eligibility,
+    )
+
+
+def _apply_retrieval_only(
+    verdicts: list[MatchVerdict],
+    *,
+    patient: Patient,
+    trial: Trial,
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
+    llm_use_level: LLMUseLevel,
+    patient_evidence_client: _PatientEvidenceClient | None = None,
+) -> list[MatchVerdict]:
+    """Attach or adjudicate retrieved patient rows after deterministic matching."""
+
+    if llm_use_level not in {"retrieval_only", "bounded_adjudication"}:
+        return verdicts
+
+    source_rows = structured_source_rows_for_pair(patient, trial)
+    enriched: list[MatchVerdict] = []
+    for verdict in verdicts:
+        if verdict.verdict != "indeterminate":
+            enriched.append(verdict)
+            continue
+
+        retrieved = retrieve_structured_patient_evidence(
+            verdict.criterion,
+            source_rows,
+            limit=5,
+        )
+        if not retrieved:
+            enriched.append(verdict)
+            continue
+
+        if llm_use_level == "bounded_adjudication":
+            enriched.append(
+                adjudicate_patient_evidence(
+                    criterion=verdict.criterion,
+                    deterministic_verdict=verdict,
+                    retrieved=retrieved,
+                    trial_context=_trial_context(trial),
+                    matcher_assumption_mode=matcher_assumption_mode,
+                    client=patient_evidence_client,
+                )
+            )
+            continue
+
+        retrieval_evidence = [
+            RetrievedPatientRowEvidence(
+                note=f"{item.row.label}: {item.row.value}",
+                row_id=item.row.row_id,
+                row_kind=item.row.kind,
+                label=item.row.label,
+                value=item.row.value,
+                date=date.fromisoformat(item.row.date) if item.row.date else None,
+                code=item.row.code,
+                system=item.row.system,
+                status=item.row.status,
+                score=item.score,
+                reasons=item.reasons,
+            )
+            for item in retrieved
+        ]
+        enriched.append(
+            verdict.model_copy(
+                update={"evidence": [*verdict.evidence, *retrieval_evidence]},
+            )
+        )
+    return enriched
+
+
+def _trial_context(trial: Trial) -> str:
+    conditions = ", ".join(trial.conditions) if trial.conditions else "(none listed)"
+    return (
+        f"title={trial.title!r}; nct_id={trial.nct_id}; conditions={conditions}; "
+        f"minimum_age={trial.minimum_age or '(not specified)'}; "
+        f"maximum_age={trial.maximum_age or '(not specified)'}; sex={trial.sex}"
     )
 
 

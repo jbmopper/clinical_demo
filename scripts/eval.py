@@ -61,6 +61,12 @@ from clinical_demo.evals.report_layer_two import render_layer_two
 from clinical_demo.evals.run import EvalCase, RunResult, load_dataset, run_eval
 from clinical_demo.evals.store import list_runs, load_run, open_store, save_run
 from clinical_demo.extractor import ExtractionResult, extract_criteria
+from clinical_demo.matcher import (
+    DEFAULT_LLM_USE_LEVEL,
+    DEFAULT_MATCHER_ASSUMPTION_MODE,
+    LLMUseLevel,
+    MatcherAssumptionMode,
+)
 from clinical_demo.scoring import (
     StoredExtraction,
     cache_path_for,
@@ -128,6 +134,8 @@ def _make_scorer(
     *,
     no_llm: bool,
     critic_enabled: bool,
+    matcher_assumption_mode: MatcherAssumptionMode,
+    llm_use_level: LLMUseLevel,
 ):
     """Build a `Scorer` callable bound to one orchestrator + one
     extraction policy. The runner is orchestrator-agnostic (D-59);
@@ -143,7 +151,14 @@ def _make_scorer(
                 raise FileNotFoundError(f"--no-llm requires cached extraction at {cache_file}")
             extraction = load_cached_extraction(cache_file)
         if orchestrator == "imperative":
-            return score_pair(patient, trial, case.as_of, extraction=extraction)
+            return score_pair(
+                patient,
+                trial,
+                case.as_of,
+                extraction=extraction,
+                matcher_assumption_mode=matcher_assumption_mode,
+                llm_use_level=llm_use_level,
+            )
         from clinical_demo.graph import score_pair_graph
 
         return score_pair_graph(
@@ -152,6 +167,8 @@ def _make_scorer(
             case.as_of,
             extraction=extraction,
             critic_enabled=critic_enabled,
+            matcher_assumption_mode=matcher_assumption_mode,
+            llm_use_level=llm_use_level,
         )
 
     return _scorer
@@ -333,6 +350,8 @@ def _cmd_run(args: argparse.Namespace) -> int:
         args.orchestrator,
         no_llm=args.no_llm,
         critic_enabled=args.critic_enabled,
+        matcher_assumption_mode=args.matcher_assumption_mode,
+        llm_use_level=args.llm_use_level,
     )
 
     def _progress(record):
@@ -347,7 +366,11 @@ def _cmd_run(args: argparse.Namespace) -> int:
         scorer,
         cases,
         dataset_path=seed_path,
-        notes=_notes_with_binding_strategy(args.notes, args.binding_strategy),
+        notes=_notes_with_scoring_modes(
+            _notes_with_binding_strategy(args.notes, args.binding_strategy),
+            matcher_assumption_mode=args.matcher_assumption_mode,
+            llm_use_level=args.llm_use_level,
+        ),
         on_case_done=_progress,
     )
 
@@ -568,6 +591,16 @@ def _notes_with_binding_strategy(
     return f"{notes}; {suffix}" if notes else suffix
 
 
+def _notes_with_scoring_modes(
+    notes: str,
+    *,
+    matcher_assumption_mode: MatcherAssumptionMode,
+    llm_use_level: LLMUseLevel,
+) -> str:
+    suffix = f"matcher_assumption_mode={matcher_assumption_mode}; " f"llm_use_level={llm_use_level}"
+    return f"{notes}; {suffix}" if notes else suffix
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -596,6 +629,18 @@ def main(argv: list[str] | None = None) -> int:
         choices=("alias", "two_pass"),
         default=None,
         help="Override Settings.binding_strategy for this run.",
+    )
+    p_run.add_argument(
+        "--matcher-assumption-mode",
+        choices=("open_world", "closed_world_eval", "closed_world_demo"),
+        default=DEFAULT_MATCHER_ASSUMPTION_MODE,
+        help="Evidence assumption mode to record/use for this scoring run.",
+    )
+    p_run.add_argument(
+        "--llm-use-level",
+        choices=("none", "retrieval_only", "bounded_adjudication", "critic"),
+        default=DEFAULT_LLM_USE_LEVEL,
+        help="How far scoring may go beyond deterministic matching.",
     )
     p_run.add_argument(
         "--pair-id",

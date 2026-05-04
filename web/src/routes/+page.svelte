@@ -7,7 +7,9 @@
 		score,
 		type PatientRow,
 		type ScorePairResult,
-		type TrialRow
+		type TrialRow,
+		type LLMUseLevel,
+		type MatcherAssumptionMode
 	} from '$lib/api';
 	import CriterionRow from '$lib/CriterionRow.svelte';
 	import LayerThreeCalibration from '$lib/LayerThreeCalibration.svelte';
@@ -29,6 +31,8 @@
 	let orchestrator = $state<'imperative' | 'graph'>('imperative');
 	let criticEnabled = $state<boolean>(false);
 	let useCachedExtraction = $state<boolean>(true);
+	let matcherAssumptionMode = $state<MatcherAssumptionMode>('open_world');
+	let llmUseLevel = $state<LLMUseLevel>('none');
 
 	// run state
 	let running = $state<boolean>(false);
@@ -67,7 +71,9 @@
 				as_of: asOf,
 				orchestrator,
 				critic_enabled: criticEnabled,
-				use_cached_extraction: useCachedExtraction
+				use_cached_extraction: useCachedExtraction,
+				matcher_assumption_mode: matcherAssumptionMode,
+				llm_use_level: llmUseLevel
 			});
 		} catch (err) {
 			runError = err instanceof Error ? err.message : String(err);
@@ -163,6 +169,25 @@
 			</select>
 		</label>
 
+		<label class="small">
+			<span>LLM use</span>
+			<select bind:value={llmUseLevel}>
+				<option value="none">none</option>
+				<option value="retrieval_only">retrieval only</option>
+				<option value="bounded_adjudication" disabled>bounded adjudication</option>
+				<option value="critic" disabled>critic</option>
+			</select>
+		</label>
+
+		<label class="small">
+			<span>Assumption</span>
+			<select bind:value={matcherAssumptionMode}>
+				<option value="open_world">open world</option>
+				<option value="closed_world_eval">closed world eval</option>
+				<option value="closed_world_demo">closed world demo</option>
+			</select>
+		</label>
+
 		<label class="check">
 			<input
 				type="checkbox"
@@ -204,6 +229,11 @@
 							fail {result.summary.by_verdict.fail ?? 0} ·
 							indet {result.summary.by_verdict.indeterminate ?? 0})
 						</span>
+					</div>
+					<div>
+						<span class="lbl">modes</span>
+						<code>{result.llm_use_level}</code>
+						<span class="muted">· {result.matcher_assumption_mode}</span>
 					</div>
 					<div>
 						<span class="lbl">extractor</span>

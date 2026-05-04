@@ -17,12 +17,19 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
+from ..adjudication.patient_evidence import _ClientLike as _PatientEvidenceClient
 from ..domain.patient import Patient
 from ..domain.trial import Trial
 from ..extractor.extractor import ExtractionResult
-from ..matcher import MATCHER_VERSION
+from ..matcher import (
+    DEFAULT_LLM_USE_LEVEL,
+    DEFAULT_MATCHER_ASSUMPTION_MODE,
+    MATCHER_VERSION,
+    LLMUseLevel,
+    MatcherAssumptionMode,
+)
 from ..observability import traced
-from ..scoring.score_pair import ScorePairResult
+from ..scoring.score_pair import ScorePairResult, _apply_retrieval_only, _rollup, _summarize
 from ..settings import Settings
 from .graph import DEFAULT_MAX_CRITIC_ITERATIONS, build_graph
 from .nodes.critic import LLM_CRITIC_VERSION
@@ -39,8 +46,11 @@ def score_pair_graph(
     extractor_client: Any | None = None,
     llm_matcher_client: _ClientLike | None = None,
     critic_client: _CriticClient | None = None,
+    patient_evidence_client: _PatientEvidenceClient | None = None,
     settings: Settings | None = None,
     critic_enabled: bool = False,
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
+    llm_use_level: LLMUseLevel = DEFAULT_LLM_USE_LEVEL,
     max_critic_iterations: int = DEFAULT_MAX_CRITIC_ITERATIONS,
     human_checkpoint: bool = False,
     thread_id: str | None = None,
@@ -131,6 +141,8 @@ def score_pair_graph(
         "llm_matcher_version": LLM_MATCHER_VERSION,
         "orchestrator": "langgraph",
         "critic_enabled": str(critic_enabled).lower(),
+        "matcher_assumption_mode": matcher_assumption_mode,
+        "llm_use_level": llm_use_level,
     }
     if critic_enabled:
         parent_metadata["llm_critic_version"] = LLM_CRITIC_VERSION
@@ -150,15 +162,35 @@ def score_pair_graph(
     ) as span:
         final_state = graph.invoke(initial_state, config=config or None)
 
+        verdicts = _apply_retrieval_only(
+            final_state["final_verdicts"],
+            patient=patient,
+            trial=trial,
+            llm_use_level=llm_use_level,
+            matcher_assumption_mode=matcher_assumption_mode,
+            patient_evidence_client=patient_evidence_client,
+        )
+        summary = (
+            _summarize(verdicts)
+            if verdicts is not final_state["final_verdicts"]
+            else final_state["summary"]
+        )
+        eligibility = (
+            _rollup(verdicts)
+            if verdicts is not final_state["final_verdicts"]
+            else final_state["eligibility"]
+        )
         result = ScorePairResult(
             patient_id=patient.patient_id,
             nct_id=trial.nct_id,
             as_of=as_of,
+            matcher_assumption_mode=matcher_assumption_mode,
+            llm_use_level=llm_use_level,
             extraction=final_state["extraction"].extracted,
             extraction_meta=final_state["extraction"].meta,
-            verdicts=final_state["final_verdicts"],
-            summary=final_state["summary"],
-            eligibility=final_state["eligibility"],
+            verdicts=verdicts,
+            summary=summary,
+            eligibility=eligibility,
         )
 
         critic_iterations = final_state.get("critic_iterations", 0)

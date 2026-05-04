@@ -10,6 +10,10 @@
 		const pol = v.criterion.polarity === 'inclusion' ? 'INCL' : 'EXCL';
 		return `${pol} · ${k}`;
 	}
+
+	function isRetrievedPatientRow(e: MatchVerdict['evidence'][number]) {
+		return e.kind === 'retrieved_patient_row';
+	}
 </script>
 
 <div class="row" class:open>
@@ -29,9 +33,19 @@
 			{:else}
 				<ul class="evidence">
 					{#each v.evidence as e (e.kind + e.note)}
-						<li>
+						<li class:retrieved={isRetrievedPatientRow(e)}>
 							<span class="ekind">{e.kind}</span>
-							<span class="enote">{e.note}</span>
+							<span class="enote">
+								{e.note}
+								{#if e.kind === 'retrieved_patient_row'}
+									<small>
+										{e.row_id} · {e.row_kind}
+										{#if e.date} · {e.date}{/if}
+										{#if e.code} · {e.system}:{e.code}{/if}
+										{#if e.reasons.length} · {e.reasons.join(', ')}{/if}
+									</small>
+								{/if}
+							</span>
 						</li>
 					{/each}
 				</ul>
@@ -118,6 +132,10 @@
 		border: 1px solid #e2e8f0;
 		border-radius: 6px;
 	}
+	.evidence li.retrieved {
+		border-color: #bfdbfe;
+		background: #eff6ff;
+	}
 	.ekind {
 		font-weight: 600;
 		color: #475569;
@@ -129,6 +147,12 @@
 	.enote {
 		min-width: 0;
 		word-break: break-word;
+	}
+	.enote small {
+		display: block;
+		margin-top: 2px;
+		color: #64748b;
+		font-size: 0.74rem;
 	}
 	.raw {
 		margin-top: 8px;

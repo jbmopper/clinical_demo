@@ -19,7 +19,46 @@
 > rationale lives in §12.
 
 - **Active phase:** Phase 2 — Workflow + eval.
-- **Last completed:** PLAN task 2.6 follow-up —
+- **Last completed:** PLAN tasks 2.15/2.16 empirical rerun —
+  **Bounded adjudication plus deterministic unit reconciliation evaluated.**
+  Added `clinical_demo.adjudication.patient_evidence`, a citation-required
+  structured-output LLM adjudicator that sees exactly one criterion, its
+  deterministic verdict, retrieved patient source rows, trial context, and the
+  matcher assumption mode. `llm_use_level="bounded_adjudication"` now runs this
+  pass after retrieval for indeterminate verdicts; decisive LLM answers are
+  fail-closed back to `indeterminate/human_review_required` if they do not cite
+  valid retrieved row IDs. Also added a small deterministic conventional-unit
+  layer: eGFR/BP/HbA1c missing-unit inference, eGFR unit aliases, and LDL-C
+  `mmol/L` <-> `mg/dL` conversion against Synthea observations. Refreshed all
+  30 curated trial extraction caches under extractor-v0.5 on 2026-05-04
+  (641 criteria, $0.0870 extractor cost, 35.2 min wall). Three cached 49-pair
+  eval runs are snapshotted under `eval/baselines/2026-05-04/`: deterministic
+  `none` run `8e718e87c3fa` (18 fail / 31 indeterminate cases),
+  `retrieval_only` run `dd8a939ea584` (same verdicts, 627 unresolved
+  criterion verdicts now carrying retrieved source-row evidence), and
+  `bounded_adjudication` run `4458ecd2199a` (27 fail / 22 indeterminate cases).
+  Bounded adjudication changed 624 criterion-level verdict/reason pairs:
+  39 indeterminate -> pass, 15 indeterminate -> fail, and 570 still
+  indeterminate but mostly clarified to `no_data`. Top-level movement was
+  9 cases from indeterminate -> fail, 0 cases -> pass. The 60-row
+  patient-evidence label file still has 0 filled labels, so this is an
+  empirical mode comparison, not calibrated quality yet. Verification:
+  `uv run pytest` passes 597 tests, `uv run ruff check .` passes, and
+  `npm run build` passes.
+  Previous: PLAN tasks 2.13/2.14 product move —
+  **Retrieval-only scoring mode wired through the product surface.**
+  `ScorePairResult` now records `matcher_assumption_mode` and
+  `llm_use_level`; `score_pair`, `score_pair_graph`, `scripts/score_pair.py`,
+  `scripts/eval.py run`, and FastAPI `/score` accept the same controls.
+  `llm_use_level="retrieval_only"` leaves deterministic verdicts unchanged
+  but appends ranked `retrieved_patient_row` evidence to indeterminate
+  verdicts using stable patient source-row IDs, lexical overlap, and
+  ConceptSet/code anchors. The Svelte score view exposes LLM-use and
+  assumption-mode controls and renders retrieved rows inline with their row
+  IDs and retrieval reasons. Targeted Python tests and the Svelte production
+  build pass; a no-LLM eval smoke was blocked by stale/missing extractor-v0.5
+  cache files, not by retrieval plumbing.
+  Previous: PLAN task 2.6 follow-up —
   **Patient-side FHIR evidence calibration packet scaffold (PLAN 2.12)**.
   Added `clinical_demo.evals.patient_evidence` with reviewer-facing schemas,
   deterministic evidence-focused target selection, source-row IDs for
@@ -641,10 +680,10 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.10 | **Terminology API bridge (D-69).** Replace the hand-curated trial-term bridge with NLM-backed resolution in slices. First slice: `clinical_demo.terminology` with a VSAC FHIR `$expand` client, `Settings.umls_api_key`, a live probe script, and offline parser/error-path tests. Follow-on slices: add RxNorm medication normalization, UMLS source-vocabulary search, a small cache of reviewed trial-side bindings, matcher wiring through `concept_lookup.py`, and an eval rerun comparing against the D-68 `unmapped_concept` baseline. | 10 |
 | 2.11 | **Patient structured-safety cleanup.** Carry `Patient.deceasedDateTime` through the Synthea loader/domain model and make scoring fail/skip explicitly when the patient is deceased before `as_of`. Keep it deterministic, cite the source field in evidence or API error detail, and test it before any public-demo run. | 1 |
 | 2.12 | **Core-scope and calibration reset.** Keep the patient-side analogue to Chia, but make it serve the product rather than block it. Filter or regenerate the 60-row packet so the gold set focuses on in-scope cardiometabolic rows the system can reasonably adjudicate from Synthea FHIR: condition presence, explicit absence where available, medication evidence, measurements/units, no-data, and insufficient-evidence cases. Exclude or separately mark out-of-scope terminology gaps such as NSCLC unless paired with hand-crafted oncology evidence. Persist reviewed labels with `patient_id`, `nct_id`, `criterion_index`, criterion source text, cited source-row IDs, human evidence label (`supports_present` / `supports_absent` / `supports_measurement_comparison` / `insufficient_evidence`), expected matcher verdict, and the matcher assumption mode used. *Done for first pass — candidate selection now defaults to `cardiometabolic_core`, filters out the NSCLC slice, ignores non-patient-evidence judge errors, records `eval_slice`, and regenerated the 60-row packet with 0 NSCLC rows. Labels are still intentionally blank; human review is next before treating it as gold.* | 2 |
-| 2.13 | **Matcher assumption modes and LLM-use levels.** Make the workflow explicit about what kind of evidence contract it is operating under before adding more model behavior. Default `open_world`: absence of a patient row means `insufficient_evidence` / `indeterminate`, not fail. Optional `closed_world_eval`: for synthetic benchmark slices only, absence from the curated structured record may count as negative evidence. Optional `closed_world_demo`: allowed only for hand-picked demo cases with a visible banner explaining the assumption. Pair this with LLM-use levels that the API, UI, and eval harness can toggle: `none` (deterministic only), `retrieval_only` (retrieve/cite evidence, no adjudication), `bounded_adjudication` (criterion-level LLM over retrieved sources), and `critic` (frontier review of aggregate reasoning). *Started — `MatcherAssumptionMode` and `LLMUseLevel` are typed contracts; patient-evidence candidate rows and human labels now persist `matcher_assumption_mode` with default `open_world`, and the calibration UI exposes the assumption selector. Remaining work is to wire closed-world behavior into matcher/eval execution and expose LLM-use levels in scoring rather than only the calibration packet.* | 3 |
-| 2.14 | **Structured patient-evidence retrieval path.** Add the source-grounded retrieval layer that embodies the core product loop without asking an LLM to decide yet: for each unresolved criterion, retrieve relevant structured FHIR rows using lexical matching, normalized surface forms, code/ConceptSet anchors where available, and simple section/kind filters. Return ranked source rows with stable IDs and retrieval reasons. Leave vector retrieval behind an interface so Phase 3 can add embeddings or note snippets without reshaping the graph. This powers `retrieval_only` mode and gives reviewers a useful "what did the system look at?" view even when adjudication is off. *Started — `clinical_demo.retrieval.patient_evidence` ranks patient source rows using ConceptSet/code anchors, lexical overlap, and row-kind preferences; the regenerated packet includes retrieved row ids/reasons for 33/60 rows and the UI highlights them. Numeric-only overlaps are ignored so terms like `type 1 diabetes` do not highlight unrelated lab rows just because a unit contains `1`. Remaining work is graph/API integration as an explicit scoring mode plus the vector/note interface for Phase 3.* | 4 |
-| 2.15 | **Bounded LLM patient-evidence adjudicator.** Add the criterion-level adjudicator over retrieved evidence, not over the whole chart. Input is the extracted criterion, deterministic verdict/reason, retrieved patient rows, trial source text, and matcher assumption mode; output is strict `pass` / `fail` / `indeterminate` with cited source row IDs and a reason. Use terminology/code matches as precision anchors when available, but allow the adjudicator to classify supported, contradicted, or insufficiently supported evidence when concept mapping is incomplete. This is the architectural home for "does this patient appear to match enough to flag for CRC review?", not a post-hoc explanation layer. Evaluate against the reset 2.12 labels. | 5 |
-| 2.16 | **Unit reconciliation / conventional-unit pass.** Add a hybrid unit layer for high-impact measurements before the cost-routing sweep. Deterministic code owns a small whitelisted registry and numeric conversions (initially BP mmHg, eGFR `mL/min/1.73 m2` variants, LDL-C `mmol/L` ↔ `mg/dL`, and percent-like HbA1c); an LLM/source pass may infer the intended measurement/unit from trial text when the extractor omits or phrases it oddly, but it may not perform arbitrary conversions. Rerun eval and report reductions in `unit_mismatch` / `ambiguous_criterion`. | 3 |
+| 2.13 | **Matcher assumption modes and LLM-use levels.** Make the workflow explicit about what kind of evidence contract it is operating under before adding more model behavior. Default `open_world`: absence of a patient row means `insufficient_evidence` / `indeterminate`, not fail. Optional `closed_world_eval`: for synthetic benchmark slices only, absence from the curated structured record may count as negative evidence. Optional `closed_world_demo`: allowed only for hand-picked demo cases with a visible banner explaining the assumption. Pair this with LLM-use levels that the API, UI, and eval harness can toggle: `none` (deterministic only), `retrieval_only` (retrieve/cite evidence, no adjudication), `bounded_adjudication` (criterion-level LLM over retrieved sources), and `critic` (frontier review of aggregate reasoning). *Mostly done for product plumbing — `MatcherAssumptionMode` and `LLMUseLevel` are typed contracts; patient-evidence candidate rows and human labels persist `matcher_assumption_mode`; scorer/API/eval/CLI/UI now accept the controls; `ScorePairResult` records both modes. 2026-05-04 eval snapshots compare `none`, `retrieval_only`, and `bounded_adjudication`. Remaining work is true closed-world behavior in matcher/eval execution plus cost/quality accounting for routing.* | 3 |
+| 2.14 | **Structured patient-evidence retrieval path.** Add the source-grounded retrieval layer that embodies the core product loop without asking an LLM to decide yet: for each unresolved criterion, retrieve relevant structured FHIR rows using lexical matching, normalized surface forms, code/ConceptSet anchors where available, and simple section/kind filters. Return ranked source rows with stable IDs and retrieval reasons. Leave vector retrieval behind an interface so Phase 3 can add embeddings or note snippets without reshaping the graph. This powers `retrieval_only` mode and gives reviewers a useful "what did the system look at?" view even when adjudication is off. *Done for structured rows — `clinical_demo.retrieval.patient_evidence` ranks patient source rows using ConceptSet/code anchors, lexical overlap, and row-kind preferences; the calibration packet includes retrieved row ids/reasons; `llm_use_level=\"retrieval_only\"` now attaches `retrieved_patient_row` evidence to indeterminate verdicts in both imperative and graph scoring; FastAPI `/score`, eval, CLI, and the Score UI expose/render it. Numeric-only overlaps are ignored so terms like `type 1 diabetes` do not highlight unrelated lab rows just because a unit contains `1`. The 2026-05-04 retrieval-only eval attached evidence to 627 unresolved criterion verdicts and, by design, changed 0 verdicts. Remaining work is the vector/note retrieval interface for Phase 3.* | 4 |
+| 2.15 | **Bounded LLM patient-evidence adjudicator.** Add the criterion-level adjudicator over retrieved evidence, not over the whole chart. Input is the extracted criterion, deterministic verdict/reason, retrieved patient rows, trial source text, and matcher assumption mode; output is strict `pass` / `fail` / `indeterminate` with cited source row IDs and a reason. Use terminology/code matches as precision anchors when available, but allow the adjudicator to classify supported, contradicted, or insufficiently supported evidence when concept mapping is incomplete. This is the architectural home for "does this patient appear to match enough to flag for CRC review?", not a post-hoc explanation layer. Evaluate against the reset 2.12 labels. *First pass implemented and rerun — `clinical_demo.adjudication.patient_evidence` defines the prompt, structured output, fail-closed citation validation, Langfuse generation span, and `PATIENT_EVIDENCE_ADJUDICATOR_VERSION`; `llm_use_level=\"bounded_adjudication\"` runs it after retrieval for indeterminate verdicts in imperative and graph scoring. The 2026-05-04 bounded run changed 39 criterion verdicts from indeterminate -> pass and 15 from indeterminate -> fail; top-level eligibility moved 9/49 cases from indeterminate -> fail and 0 -> pass. Remaining work is human calibration: `eval/calibration/patient_evidence_labels.json` still has 0/60 filled labels, so prompt tuning should wait for actual failures.* | 5 |
+| 2.16 | **Unit reconciliation / conventional-unit pass.** Add a hybrid unit layer for high-impact measurements before the cost-routing sweep. Deterministic code owns a small whitelisted registry and numeric conversions (initially BP mmHg, eGFR `mL/min/1.73 m2` variants, LDL-C `mmol/L` <-> `mg/dL`, and percent-like HbA1c); an LLM/source pass may infer the intended measurement/unit from trial text when the extractor omits or phrases it oddly, but it may not perform arbitrary conversions. Rerun eval and report reductions in `unit_mismatch` / `ambiguous_criterion`. *First pass implemented and rerun — profile unit normalization now covers eGFR variants and LDL-C `mmol/L` <-> `mg/dL`; matcher infers missing conventional units for eGFR, HbA1c, and BP thresholds when a matching patient observation exists. The refreshed deterministic eval has only 2 criterion-level `unit_mismatch` reasons left, but the current baseline is not enough to quantify pre/post reduction cleanly because extractor-v0.5 cache refresh also changed the criterion set. Remaining work is deciding whether any additional high-impact unit families deserve whitelisting.* | 3 |
 | **Phase 2 total** | | **~66 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 
@@ -653,8 +692,8 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | # | Task | Est. (hr) |
 |---|---|---|
 | 3.1 | Model abstraction layer that lets the same node call any of 4–5 models with consistent JSON-schema enforcement. It must preserve the LLM-use levels from 2.13 (`none`, `retrieval_only`, `bounded_adjudication`, `critic`) so cost/quality experiments measure routing choices, not hidden behavior changes. | 3 |
-| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. | 4 |
-| 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, and unit layer; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). | 4 |
+| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Precondition: fill the 60-row patient-evidence labels and persist adjudicator token/cost metadata in `ScorePairResult` / eval rows; the 2026-05-04 bounded run recorded latency but not adjudicator cost in SQLite. | 4 |
+| 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). | 4 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
 | 3.6 | **Patient note evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
@@ -2075,6 +2114,29 @@ evidence, and classify the case as supported, contradicted, or insufficiently
 supported. Closed-world assumptions are useful for synthetic evals, but they
 must be explicit matcher modes (`open_world` default; `closed_world_eval` only
 where the data contract justifies it), not hidden assumptions.
+
+### D-72. Treat the 2026-05-04 mode rerun as movement, not calibration
+**Picked:** keep the 2026-05-04 `none` / `retrieval_only` /
+`bounded_adjudication` evals as baseline artifacts, but do not claim
+bounded adjudication quality until the patient-evidence labels are filled.
+
+**Why:** the rerun proves the new architecture is functioning: retrieval-only
+adds cited source rows without changing deterministic verdicts, and bounded
+adjudication can convert some unresolved criterion verdicts into decisive
+pass/fail while leaving unsupported rows as `no_data`. The top-level effect is
+still conservative: 9/49 cases moved indeterminate -> fail and 0 moved -> pass.
+That may be clinically reasonable, but without the 60-row gold labels the
+project cannot distinguish "good conservative rejection" from "missed
+opportunity to identify a possible match." The same rerun also exposed a Phase
+3 blocker: adjudicator token/cost telemetry is captured in Langfuse spans but
+not persisted into `eval/runs.sqlite`, so routing economics are not yet
+auditable from local eval artifacts.
+
+**Placement:** fill `eval/calibration/patient_evidence_labels.json` before
+prompt tuning or routing claims; then add adjudicator cost persistence before
+the Phase 3.2 cost-quality sweep. Until then, `retrieval_only` is the credible
+cheap reviewer-evidence baseline and `bounded_adjudication` is a promising,
+uncalibrated option.
 
 ### D-9. Defer KPMG-specific framing of the writeup until Phase 3
 **Rejected:** writing the deployment readiness doc up front.

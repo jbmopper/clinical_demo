@@ -14,6 +14,8 @@ from collections.abc import Iterable, Sequence
 
 from pydantic import BaseModel, Field
 
+from clinical_demo.domain.patient import LabObservation, Medication, Patient
+from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.matcher.concept_lookup import lookup_condition, lookup_lab, lookup_medication
 
@@ -38,6 +40,82 @@ class RetrievedPatientEvidence(BaseModel):
     row: RetrievalSourceRow
     score: int = Field(ge=1)
     reasons: list[str] = Field(default_factory=list)
+
+
+def structured_source_rows_for_pair(
+    patient: Patient,
+    trial: Trial,
+    *,
+    max_conditions: int = 40,
+    max_observations: int = 40,
+    max_medications: int = 30,
+) -> list[RetrievalSourceRow]:
+    """Build compact patient/trial source rows with stable local IDs."""
+
+    patient_rows = [
+        RetrievalSourceRow(
+            row_id="patient:000",
+            source="patient",
+            kind="demographics",
+            label="Sex",
+            value=patient.sex,
+        ),
+        RetrievalSourceRow(
+            row_id="patient:001",
+            source="patient",
+            kind="demographics",
+            label="Birth date",
+            value=patient.birth_date.isoformat(),
+        ),
+        *_patient_condition_rows(patient, start_index=2, limit=max_conditions),
+    ]
+    observation_start = len(patient_rows)
+    patient_rows.extend(
+        _patient_observation_rows(patient, start_index=observation_start, limit=max_observations)
+    )
+    medication_start = len(patient_rows)
+    patient_rows.extend(
+        _patient_medication_rows(patient, start_index=medication_start, limit=max_medications)
+    )
+
+    trial_rows = [
+        RetrievalSourceRow(
+            row_id="trial:000",
+            source="trial",
+            kind="trial_field",
+            label="Title",
+            value=trial.title,
+        ),
+        RetrievalSourceRow(
+            row_id="trial:001",
+            source="trial",
+            kind="trial_field",
+            label="Conditions",
+            value=", ".join(trial.conditions) if trial.conditions else "(none listed)",
+        ),
+        RetrievalSourceRow(
+            row_id="trial:002",
+            source="trial",
+            kind="trial_field",
+            label="Minimum age",
+            value=trial.minimum_age or "(not specified)",
+        ),
+        RetrievalSourceRow(
+            row_id="trial:003",
+            source="trial",
+            kind="trial_field",
+            label="Maximum age",
+            value=trial.maximum_age or "(not specified)",
+        ),
+        RetrievalSourceRow(
+            row_id="trial:004",
+            source="trial",
+            kind="trial_field",
+            label="Sex",
+            value=trial.sex,
+        ),
+    ]
+    return [*patient_rows, *trial_rows]
 
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
@@ -202,8 +280,106 @@ def _tokens(text: str) -> set[str]:
     }
 
 
+def _patient_condition_rows(
+    patient: Patient,
+    *,
+    start_index: int,
+    limit: int,
+) -> list[RetrievalSourceRow]:
+    conditions = sorted(
+        patient.conditions,
+        key=lambda c: (c.onset_date is not None, c.onset_date),
+        reverse=True,
+    )
+    return [
+        RetrievalSourceRow(
+            row_id=f"patient:{start_index + index:03d}",
+            source="patient",
+            kind="condition",
+            label=c.concept.display or c.concept.code or "Condition",
+            value=c.concept.display or c.concept.code or "",
+            date=c.onset_date.isoformat() if c.onset_date else None,
+            code=c.concept.code or None,
+            system=c.concept.system or None,
+            status=_condition_status(c),
+        )
+        for index, c in enumerate(conditions[:limit])
+    ]
+
+
+def _patient_observation_rows(
+    patient: Patient,
+    *,
+    start_index: int,
+    limit: int,
+) -> list[RetrievalSourceRow]:
+    latest_by_code: dict[str, LabObservation] = {}
+    for obs in patient.observations:
+        existing = latest_by_code.get(obs.concept.code)
+        if existing is None or obs.effective_date > existing.effective_date:
+            latest_by_code[obs.concept.code] = obs
+    observations = sorted(
+        latest_by_code.values(),
+        key=lambda obs: (obs.concept.display or obs.concept.code, obs.effective_date),
+    )
+    return [
+        RetrievalSourceRow(
+            row_id=f"patient:{start_index + index:03d}",
+            source="patient",
+            kind="observation",
+            label=obs.concept.display or obs.concept.code or "Observation",
+            value=f"{obs.value:g} {obs.unit}".strip(),
+            date=obs.effective_date.isoformat(),
+            code=obs.concept.code or None,
+            system=obs.concept.system or None,
+        )
+        for index, obs in enumerate(observations[:limit])
+    ]
+
+
+def _patient_medication_rows(
+    patient: Patient,
+    *,
+    start_index: int,
+    limit: int,
+) -> list[RetrievalSourceRow]:
+    medications = sorted(patient.medications, key=_medication_sort_key, reverse=True)
+    return [
+        RetrievalSourceRow(
+            row_id=f"patient:{start_index + index:03d}",
+            source="patient",
+            kind="medication",
+            label=m.concept.display or m.concept.code or "Medication",
+            value=m.concept.display or m.concept.code or "",
+            date=m.start_date.isoformat(),
+            code=m.concept.code or None,
+            system=m.concept.system or None,
+            status="active" if m.end_date is None else f"ended {m.end_date.isoformat()}",
+        )
+        for index, m in enumerate(medications[:limit])
+    ]
+
+
+def _condition_status(condition: object) -> str:
+    if not getattr(condition, "is_clinical", False):
+        return "non-clinical"
+    abatement_date = getattr(condition, "abatement_date", None)
+    if abatement_date is None:
+        return "active or unresolved"
+    return f"ended {abatement_date.isoformat()}"
+
+
+def _medication_sort_key(medication: Medication) -> tuple:
+    return (
+        medication.end_date is None,
+        medication.start_date,
+        medication.concept.display or medication.concept.code or "",
+    )
+
+
 __all__ = [
     "RetrievalSourceRow",
     "RetrievedPatientEvidence",
     "retrieve_structured_patient_evidence",
+    "structured_source_rows_for_pair",
 ]

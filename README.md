@@ -32,7 +32,7 @@ AI Forward Deployed Engineer interview.
 > future review can judge both the deterministic verdict and the
 > source evidence behind it.
 >
-> **588 Python tests passing**; Svelte production build verified
+> **597 Python tests passing**; Svelte production build verified
 > locally. Current Phase 2 focus: re-center the matcher on the core
 > product loop -- feed trials + patients into the system, retrieve
 > relevant patient evidence, and decide whether there is enough
@@ -41,10 +41,23 @@ AI Forward Deployed Engineer interview.
 > matcher assumption mode (`open_world` by default), and includes
 > structured retrieval suggestions for reviewer citation. Oncology/NSCLC
 > rows are deferred unless paired with hand-crafted oncology evidence.
-> The next implementation steps are bounded LLM adjudication over
-> retrieved rows, closed-world eval/demo behavior where explicitly
-> enabled, and unit reconciliation before the Phase 3 cost-quality
-> routing sweep.
+> `retrieval_only` is now exposed through the scorer, eval CLI, FastAPI
+> `/score`, and the reviewer UI; it attaches ranked patient source rows
+> to unresolved criterion verdicts without changing pass/fail decisions.
+> `bounded_adjudication` now adds a citation-required LLM pass over
+> those retrieved rows, and the deterministic unit layer handles
+> whitelisted conventional units/conversions for BP, eGFR, HbA1c,
+> and LDL-C. The 2026-05-04 post-2.15/2.16 eval snapshots are under
+> `eval/baselines/2026-05-04/`: deterministic `none` run
+> `8e718e87c3fa` scored 18 fail / 31 indeterminate cases;
+> `retrieval_only` run `dd8a939ea584` preserved those verdicts while
+> attaching retrieved source rows to 627 unresolved criterion verdicts;
+> `bounded_adjudication` run `4458ecd2199a` moved 9 cases from
+> indeterminate to fail and 54 criterion verdicts from indeterminate to
+> decisive pass/fail. No cases moved to pass. The patient-evidence
+> label template still has 0/60 filled labels, so Phase 3's
+> cost-quality routing sweep should wait for calibration labels and
+> adjudicator cost persistence.
 
 ## What it is (one paragraph)
 
@@ -296,15 +309,17 @@ predicate of the criterion. The LLM matcher's verdicts carry
 `matcher_version="llm-matcher-v0.1"` so eval consumers can pivot
 on which path produced each verdict.
 
-Routing rule (planned v1, Phase 2.12-2.16): keep the deterministic
-matcher as the first pass, then route selected unresolved rows through
-retrieval before any LLM adjudication. Terminology/code matches are
-precision anchors, not the sole gateway. `retrieval_only` mode returns
-ranked patient source rows with stable citation IDs; `bounded_adjudication`
-lets a criterion-level LLM decide only over those retrieved rows under the
-active matcher assumption mode. Numeric conversions remain deterministic
-and whitelisted; the LLM is used to interpret sources and propose the
-intended measurement/unit, not to silently do math.
+Routing rule (Phase 2.12-2.16 v1): keep the deterministic matcher as
+the first pass, then route selected unresolved rows through retrieval
+before any LLM adjudication. Terminology/code matches are precision
+anchors, not the sole gateway. `retrieval_only` mode returns ranked
+patient source rows with stable citation IDs; `bounded_adjudication`
+lets a criterion-level LLM decide only over those retrieved rows under
+the active matcher assumption mode. Numeric conversions remain
+deterministic and whitelisted. The 2026-05-04 mode comparison keeps
+`retrieval_only` as the cheap reviewer-evidence baseline and treats
+`bounded_adjudication` as promising but uncalibrated until the 60-row
+patient-evidence labels are filled.
 
 ### Critic loop (Phase 2.2)
 

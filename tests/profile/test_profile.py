@@ -228,6 +228,7 @@ def test_has_active_medication_in_basic() -> None:
         ("33914-3", "mL/min", "mL/min/1.73m2"),  # alias to canonical
         ("4548-4", "%", "%"),
         ("4548-4", "mmol/mol", None),  # not in our alias table → fail-closed
+        ("18262-6", "mmol/L", "mmol/L"),
         ("8480-6", "mm[Hg]", "mmHg"),
         ("99999-9", "anything", None),  # unknown LOINC
     ],
@@ -322,6 +323,15 @@ def test_meets_threshold_unit_aliases_recognized() -> None:
     p = _patient(observations=[_lab("33914-3", 65.0, unit="mL/min", on_date=date(2024, 12, 1))])
     prof = PatientProfile(p, AS_OF)
     result = prof.meets_threshold("33914-3", ">=", 60.0, "mL/min/{1.73_m2}")
+    assert result == ThresholdResult.MEETS
+
+
+def test_meets_threshold_ldl_converts_mmol_l_threshold_to_mg_dl_observation() -> None:
+    p = _patient(observations=[_lab("18262-6", 134.78, unit="mg/dL", on_date=AS_OF)])
+    prof = PatientProfile(p, AS_OF)
+
+    result = prof.meets_threshold("18262-6", ">=", 2.6, "mmol/L")
+
     assert result == ThresholdResult.MEETS
 
 

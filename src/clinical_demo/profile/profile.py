@@ -87,15 +87,25 @@ _UNIT_ALIASES: dict[str, dict[str, str]] = {
     "33914-3": {
         "mL/min/{1.73_m2}": "mL/min/1.73m2",
         "mL/min": "mL/min/1.73m2",  # treat as the same in this dataset
+        "ml/min/1.73 m2": "mL/min/1.73m2",
+        "mL/min/1.73 m2": "mL/min/1.73m2",
+        "mL/min/1.73m2": "mL/min/1.73m2",
     },
     # HbA1c — only ever observed as percent in our data, but we log
     # mmol/mol explicitly so the matcher knows to refuse it.
-    "4548-4": {"%": "%"},
-    # LDL — only mg/dL in our data; mmol/L would need conversion.
-    "18262-6": {"mg/dL": "mg/dL"},
+    "4548-4": {"%": "%", "percent": "%"},
+    # LDL-C — Synthea observations are mg/dL; trial criteria often
+    # use SI units. Convert only this whitelisted lipid measure.
+    "18262-6": {"mg/dL": "mg/dL", "mg/dl": "mg/dL", "mmol/L": "mmol/L", "mmol/l": "mmol/L"},
     # Systolic / diastolic blood pressure.
     "8480-6": {"mm[Hg]": "mmHg", "mmHg": "mmHg"},
     "8462-4": {"mm[Hg]": "mmHg", "mmHg": "mmHg"},
+}
+
+_UNIT_CONVERSIONS: dict[tuple[str, str, str], float] = {
+    # LDL-C molecular-weight conversion: mmol/L * 38.67 = mg/dL.
+    ("18262-6", "mmol/L", "mg/dL"): 38.67,
+    ("18262-6", "mg/dL", "mmol/L"): 1 / 38.67,
 }
 
 
@@ -252,10 +262,11 @@ class PatientProfile:
           match the threshold's unit (e.g. lab is mmol/mol, threshold
           is %); the matcher should not silently coerce.
 
-        The function fails closed on units it doesn't recognize. Only
-        when *both* the observation unit and the threshold unit
-        canonicalize to the same string under the same LOINC do we
-        actually compare values.
+        The function fails closed on units it doesn't recognize. Most
+        comparisons require both units to canonicalize to the same
+        string under the same LOINC; a small whitelisted conversion
+        registry handles common clinical units such as LDL-C
+        `mmol/L` ↔ `mg/dL`.
         """
         obs, is_stale = self._latest_lab_with_freshness(loinc_code, max_age_days)
         if obs is None:
@@ -267,7 +278,10 @@ class PatientProfile:
         if obs_canonical is None or threshold_canonical is None:
             return ThresholdResult.UNIT_MISMATCH
         if obs_canonical != threshold_canonical:
-            return ThresholdResult.UNIT_MISMATCH
+            factor = _UNIT_CONVERSIONS.get((loinc_code, threshold_canonical, obs_canonical))
+            if factor is None:
+                return ThresholdResult.UNIT_MISMATCH
+            value = value * factor
         if _compare(obs.value, op, value):
             return ThresholdResult.MEETS
         return ThresholdResult.DOES_NOT_MEET

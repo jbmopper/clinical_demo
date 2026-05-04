@@ -1,0 +1,208 @@
+{
+  "date": "2026-05-04",
+  "none_to_bounded_case_eligibility_transitions": {
+    "fail -> fail": 18,
+    "indeterminate -> fail": 9,
+    "indeterminate -> indeterminate": 22
+  },
+  "none_to_bounded_changed_criterion_count": 624,
+  "none_to_bounded_criterion_verdict_transitions": {
+    "indeterminate -> fail": 15,
+    "indeterminate -> indeterminate": 570,
+    "indeterminate -> pass": 39
+  },
+  "none_to_bounded_reason_transitions": {
+    "extractor_invariant_violation -> no_data": 4,
+    "human_review_required -> no_data": 279,
+    "human_review_required -> ok": 19,
+    "unit_mismatch -> no_data": 2,
+    "unmapped_concept -> no_data": 276,
+    "unmapped_concept -> ok": 35,
+    "unsupported_mood -> no_data": 9
+  },
+  "patient_evidence_labels": {
+    "calibration_status": "blocked_until_human_labels_are_filled",
+    "filled_label_count": 0,
+    "path": "eval/calibration/patient_evidence_labels.json",
+    "row_count": 60
+  },
+  "purpose": "Compare llm_use_level modes after extractor-v0.5 cache refresh and PLAN 2.15/2.16 implementation.",
+  "run_ids": {
+    "bounded_adjudication": "4458ecd2199a",
+    "none": "8e718e87c3fa",
+    "retrieval_only": "dd8a939ea584"
+  },
+  "runs": {
+    "bounded_adjudication": {
+      "avg_scoring_latency_ms": 16892.79,
+      "by_slice_eligibility_counts": {
+        "ckd": {
+          "fail": 5,
+          "indeterminate": 2
+        },
+        "hyperlipidemia": {
+          "fail": 3,
+          "indeterminate": 4
+        },
+        "hypertension-academic": {
+          "fail": 2,
+          "indeterminate": 5
+        },
+        "hypertension-industry": {
+          "fail": 4,
+          "indeterminate": 3
+        },
+        "nsclc": {
+          "indeterminate": 7
+        },
+        "t2dm-academic": {
+          "fail": 7
+        },
+        "t2dm-industry": {
+          "fail": 6,
+          "indeterminate": 1
+        }
+      },
+      "case_count": 49,
+      "case_eligibility_counts": {
+        "fail": 27,
+        "indeterminate": 22
+      },
+      "criterion_reason_counts": {
+        "extractor_invariant_violation": 4,
+        "human_review_required": 119,
+        "no_data": 572,
+        "ok": 135,
+        "unmapped_concept": 240,
+        "unsupported_mood": 7
+      },
+      "criterion_verdict_counts": {
+        "fail": 38,
+        "indeterminate": 942,
+        "pass": 97
+      },
+      "matcher_version_counts": {
+        "matcher-v0.1": 450,
+        "patient-evidence-adjudicator-v0.1": 627
+      },
+      "retrieved_patient_row_evidence_count": 1404,
+      "retrieved_verdict_count": 627,
+      "run_id": "4458ecd2199a",
+      "total_scoring_latency_ms": 827746.95
+    },
+    "none": {
+      "avg_scoring_latency_ms": 520.86,
+      "by_slice_eligibility_counts": {
+        "ckd": {
+          "fail": 4,
+          "indeterminate": 3
+        },
+        "hyperlipidemia": {
+          "fail": 2,
+          "indeterminate": 5
+        },
+        "hypertension-academic": {
+          "indeterminate": 7
+        },
+        "hypertension-industry": {
+          "fail": 1,
+          "indeterminate": 6
+        },
+        "nsclc": {
+          "indeterminate": 7
+        },
+        "t2dm-academic": {
+          "fail": 5,
+          "indeterminate": 2
+        },
+        "t2dm-industry": {
+          "fail": 6,
+          "indeterminate": 1
+        }
+      },
+      "case_count": 49,
+      "case_eligibility_counts": {
+        "fail": 18,
+        "indeterminate": 31
+      },
+      "criterion_reason_counts": {
+        "extractor_invariant_violation": 8,
+        "human_review_required": 417,
+        "no_data": 2,
+        "ok": 81,
+        "unit_mismatch": 2,
+        "unmapped_concept": 551,
+        "unsupported_mood": 16
+      },
+      "criterion_verdict_counts": {
+        "fail": 23,
+        "indeterminate": 996,
+        "pass": 58
+      },
+      "matcher_version_counts": {
+        "matcher-v0.1": 1077
+      },
+      "retrieved_patient_row_evidence_count": 0,
+      "retrieved_verdict_count": 0,
+      "run_id": "8e718e87c3fa",
+      "total_scoring_latency_ms": 25522.18
+    },
+    "retrieval_only": {
+      "avg_scoring_latency_ms": 422.21,
+      "by_slice_eligibility_counts": {
+        "ckd": {
+          "fail": 4,
+          "indeterminate": 3
+        },
+        "hyperlipidemia": {
+          "fail": 2,
+          "indeterminate": 5
+        },
+        "hypertension-academic": {
+          "indeterminate": 7
+        },
+        "hypertension-industry": {
+          "fail": 1,
+          "indeterminate": 6
+        },
+        "nsclc": {
+          "indeterminate": 7
+        },
+        "t2dm-academic": {
+          "fail": 5,
+          "indeterminate": 2
+        },
+        "t2dm-industry": {
+          "fail": 6,
+          "indeterminate": 1
+        }
+      },
+      "case_count": 49,
+      "case_eligibility_counts": {
+        "fail": 18,
+        "indeterminate": 31
+      },
+      "criterion_reason_counts": {
+        "extractor_invariant_violation": 8,
+        "human_review_required": 417,
+        "no_data": 2,
+        "ok": 81,
+        "unit_mismatch": 2,
+        "unmapped_concept": 551,
+        "unsupported_mood": 16
+      },
+      "criterion_verdict_counts": {
+        "fail": 23,
+        "indeterminate": 996,
+        "pass": 58
+      },
+      "matcher_version_counts": {
+        "matcher-v0.1": 1077
+      },
+      "retrieved_patient_row_evidence_count": 2115,
+      "retrieved_verdict_count": 627,
+      "run_id": "dd8a939ea584",
+      "total_scoring_latency_ms": 20688.53
+    }
+  }
+}

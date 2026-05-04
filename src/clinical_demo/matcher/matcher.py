@@ -448,13 +448,19 @@ def _match_measurement(
             ],
         )
     if payload.unit is None:
-        return (
-            "indeterminate",
-            "ambiguous_criterion",
-            f"Threshold for {payload.measurement_text!r} has no unit; cannot "
-            f"safely compare against patient lab values.",
-            [],
-        )
+        inferred_unit = _infer_conventional_threshold_unit(payload, concept_set, profile)
+        if inferred_unit is None:
+            return (
+                "indeterminate",
+                "ambiguous_criterion",
+                f"Threshold for {payload.measurement_text!r} has no unit; cannot "
+                f"safely compare against patient lab values.",
+                [],
+            )
+        payload = payload.model_copy(update={"unit": inferred_unit})
+        unit: str = inferred_unit
+    else:
+        unit = payload.unit
 
     op = payload.operator
     if op in ("in_range", "out_of_range"):
@@ -473,6 +479,7 @@ def _match_measurement(
             f"One-sided operator {op!r} requires `value`, got None.",
             [],
         )
+    value: float = payload.value
 
     obs = _latest_lab_for_concept_set(profile, concept_set)
     if obs is None:
@@ -480,8 +487,32 @@ def _match_measurement(
     loinc_code = obs.concept.code
 
     profile_op = _to_profile_op(op)
-    result = profile.meets_threshold(loinc_code, profile_op, payload.value, payload.unit)
+    result = profile.meets_threshold(loinc_code, profile_op, value, unit)
     return _threshold_to_verdict(result, payload, loinc_code, profile)
+
+
+_CONVENTIONAL_THRESHOLD_UNITS: dict[str, str] = {
+    # eGFR is often written as a bare number in trial text.
+    "33914-3": "mL/min/{1.73_m2}",
+    # HbA1c thresholds are conventionally percentages in US trial text.
+    "4548-4": "%",
+    # Blood pressure thresholds conventionally use mmHg.
+    "8480-6": "mmHg",
+    "8462-4": "mmHg",
+}
+
+
+def _infer_conventional_threshold_unit(
+    payload: MeasurementCriterion,
+    concept_set: ConceptSet,
+    profile: PatientProfile,
+) -> str | None:
+    """Infer a missing threshold unit only for whitelisted measures."""
+
+    obs = _latest_lab_for_concept_set(profile, concept_set)
+    if obs is None:
+        return None
+    return _CONVENTIONAL_THRESHOLD_UNITS.get(obs.concept.code)
 
 
 def _to_profile_op(op: str) -> ThresholdOp:
@@ -510,21 +541,29 @@ def _match_range(
             f"Range operator {op!r} requires both value_low and value_high.",
             [],
         )
+    value_low: float = payload.value_low
+    value_high: float = payload.value_high
     if payload.unit is None:
-        return (
-            "indeterminate",
-            "ambiguous_criterion",
-            f"Range threshold for {payload.measurement_text!r} has no unit.",
-            [],
-        )
+        inferred_unit = _infer_conventional_threshold_unit(payload, concept_set, profile)
+        if inferred_unit is None:
+            return (
+                "indeterminate",
+                "ambiguous_criterion",
+                f"Range threshold for {payload.measurement_text!r} has no unit.",
+                [],
+            )
+        payload = payload.model_copy(update={"unit": inferred_unit})
+        unit: str = inferred_unit
+    else:
+        unit = payload.unit
 
     obs = _latest_lab_for_concept_set(profile, concept_set)
     if obs is None:
         return _no_lab_data(payload, concept_set)
     loinc_code = obs.concept.code
 
-    low_result = profile.meets_threshold(loinc_code, ">=", payload.value_low, payload.unit)
-    high_result = profile.meets_threshold(loinc_code, "<=", payload.value_high, payload.unit)
+    low_result = profile.meets_threshold(loinc_code, ">=", value_low, unit)
+    high_result = profile.meets_threshold(loinc_code, "<=", value_high, unit)
 
     # Either probe being indeterminate is the verdict reason — both
     # see the same lab so any data/unit problem propagates.

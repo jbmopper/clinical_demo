@@ -40,6 +40,12 @@ from ..evals.patient_evidence import (
     save_patient_evidence_labels,
 )
 from ..evals.store import list_runs, load_run, open_store
+from ..matcher import (
+    DEFAULT_LLM_USE_LEVEL,
+    DEFAULT_MATCHER_ASSUMPTION_MODE,
+    LLMUseLevel,
+    MatcherAssumptionMode,
+)
 from ..research import (
     CriterionResearchBlurb,
     CriterionResearchRequest,
@@ -88,6 +94,8 @@ class ScoreRequest(BaseModel):
     orchestrator: Literal["imperative", "graph"] = "imperative"
     critic_enabled: bool = False
     use_cached_extraction: bool = True
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE
+    llm_use_level: LLMUseLevel = DEFAULT_LLM_USE_LEVEL
 
 
 class TrialRow(BaseModel):
@@ -375,7 +383,14 @@ def create_app() -> FastAPI:
         as_of = req.as_of or date.today()
         try:
             if req.orchestrator == "imperative":
-                return score_pair(patient, trial, as_of, extraction=extraction)
+                return score_pair(
+                    patient,
+                    trial,
+                    as_of,
+                    extraction=extraction,
+                    matcher_assumption_mode=req.matcher_assumption_mode,
+                    llm_use_level=req.llm_use_level,
+                )
             from ..graph import score_pair_graph
 
             return score_pair_graph(
@@ -384,6 +399,8 @@ def create_app() -> FastAPI:
                 as_of,
                 extraction=extraction,
                 critic_enabled=req.critic_enabled,
+                matcher_assumption_mode=req.matcher_assumption_mode,
+                llm_use_level=req.llm_use_level,
             )
         except Exception as exc:
             log.exception("scoring failed for %s x %s", req.patient_id, req.nct_id)

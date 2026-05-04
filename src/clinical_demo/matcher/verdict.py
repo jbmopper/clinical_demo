@@ -30,7 +30,7 @@ Design notes
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date as Date
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
@@ -73,6 +73,7 @@ EvidenceKind = Literal[
     "demographics",
     "trial_field",
     "missing",
+    "retrieved_patient_row",
 ]
 
 
@@ -94,7 +95,7 @@ class LabEvidence(_BaseEvidence):
     concept: CodedConcept
     value: float
     unit: str
-    effective_date: date
+    effective_date: Date
 
 
 class ConditionEvidence(_BaseEvidence):
@@ -102,8 +103,8 @@ class ConditionEvidence(_BaseEvidence):
 
     kind: Literal["condition"] = "condition"
     concept: CodedConcept
-    onset_date: date | None
-    abatement_date: date | None
+    onset_date: Date | None
+    abatement_date: Date | None
 
 
 class MedicationEvidence(_BaseEvidence):
@@ -111,8 +112,8 @@ class MedicationEvidence(_BaseEvidence):
 
     kind: Literal["medication"] = "medication"
     concept: CodedConcept
-    start_date: date
-    end_date: date | None
+    start_date: Date
+    end_date: Date | None
 
 
 class DemographicsEvidence(_BaseEvidence):
@@ -147,13 +148,35 @@ class MissingEvidence(_BaseEvidence):
     looked_for: str
 
 
+class RetrievedPatientRowEvidence(_BaseEvidence):
+    """A patient source row retrieved for review/adjudication.
+
+    Retrieval-only mode uses these rows to show what the system would
+    inspect next. They are intentionally evidence candidates, not
+    proof that the criterion is satisfied.
+    """
+
+    kind: Literal["retrieved_patient_row"] = "retrieved_patient_row"
+    row_id: str
+    row_kind: str
+    label: str
+    value: str
+    date: Date | None = None
+    code: str | None = None
+    system: str | None = None
+    status: str | None = None
+    score: int
+    reasons: list[str] = Field(default_factory=list)
+
+
 Evidence = Annotated[
     LabEvidence
     | ConditionEvidence
     | MedicationEvidence
     | DemographicsEvidence
     | TrialFieldEvidence
-    | MissingEvidence,
+    | MissingEvidence
+    | RetrievedPatientRowEvidence,
     Field(discriminator="kind"),
 ]
 
@@ -178,6 +201,7 @@ __all__ = [
     "MatchVerdict",
     "MedicationEvidence",
     "MissingEvidence",
+    "RetrievedPatientRowEvidence",
     "TrialFieldEvidence",
     "Verdict",
     "VerdictReason",

@@ -1,0 +1,155 @@
+{
+  "run_id": "dd8a939ea584",
+  "notes": "v05-retrieval-only-after-2.15-2.16; binding_strategy=two_pass; matcher_assumption_mode=open_world; llm_use_level=retrieval_only",
+  "n_cases": 49,
+  "n_errors": 0,
+  "scored_cases": 49,
+  "total_criteria": 1077,
+  "total_scoring_latency_ms": 20688.52666579187,
+  "avg_scoring_latency_ms": 422.2148299141198,
+  "verdict_counts": {
+    "fail": 23,
+    "indeterminate": 996,
+    "pass": 58
+  },
+  "reason_counts": {
+    "extractor_invariant_violation": 8,
+    "human_review_required": 417,
+    "no_data": 2,
+    "ok": 81,
+    "unit_mismatch": 2,
+    "unmapped_concept": 551,
+    "unsupported_mood": 16
+  },
+  "kind_counts": {
+    "age": 47,
+    "condition_absent": 272,
+    "condition_present": 120,
+    "free_text": 432,
+    "measurement_threshold": 147,
+    "medication_absent": 20,
+    "medication_present": 9,
+    "sex": 6,
+    "temporal_window": 24
+  },
+  "unmapped_count": 551,
+  "unmapped_rate": 0.5116063138347261,
+  "indeterminate_count": 996,
+  "indeterminate_rate": 0.924791086350975,
+  "binding_registered_total": 24,
+  "binding_registered_resolved": 24,
+  "binding_registered_unmapped": 0,
+  "binding_registered_by_kind": {
+    "condition": {
+      "resolved": 11
+    },
+    "lab": {
+      "resolved": 12
+    },
+    "medication": {
+      "resolved": 1
+    }
+  },
+  "top_unmapped_surfaces": [
+    {
+      "surface": "hemoglobin",
+      "kind": "measurement_threshold",
+      "count": 10
+    },
+    {
+      "surface": "platelet count",
+      "kind": "measurement_threshold",
+      "count": 9
+    },
+    {
+      "surface": "symptomatic pulmonary hypertension (PH) classified as WHO FC II or III",
+      "kind": "condition_present",
+      "count": 7
+    },
+    {
+      "surface": "pulmonary vascular resistance (PVR)",
+      "kind": "measurement_threshold",
+      "count": 7
+    },
+    {
+      "surface": "stable background therapy for PAH",
+      "kind": "temporal_window",
+      "count": 7
+    },
+    {
+      "surface": "PH WHO Groups 2, 3, 4, or 5",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "HIV-associated PAH, PAH associated with portal hypertension, schistosomiasis-associated PAH, pulmonary veno-occlusive disease",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "pregnant or breastfeeding females",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "liver and kidney function tests",
+      "kind": "measurement_threshold",
+      "count": 7
+    },
+    {
+      "surface": "prior exposure to sotatercept (ACE-011) or luspatercept (ACE-536) or known allergic reaction",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "history of full pneumonectomy",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "known history of portal hypertension or chronic liver disease",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "mitral regurgitation or aortic regurgitation",
+      "kind": "measurement_threshold",
+      "count": 7
+    },
+    {
+      "surface": "bmi",
+      "kind": "measurement_threshold",
+      "count": 6
+    },
+    {
+      "surface": "body mass index",
+      "kind": "measurement_threshold",
+      "count": 6
+    },
+    {
+      "surface": "pregnant or breastfeeding",
+      "kind": "condition_absent",
+      "count": 5
+    },
+    {
+      "surface": "uncontrolled hypertension",
+      "kind": "condition_absent",
+      "count": 5
+    },
+    {
+      "surface": "blood pressure",
+      "kind": "measurement_threshold",
+      "count": 5
+    },
+    {
+      "surface": "life expectancy",
+      "kind": "measurement_threshold",
+      "count": 4
+    },
+    {
+      "surface": "ecog performance status",
+      "kind": "measurement_threshold",
+      "count": 4
+    }
+  ]
+}

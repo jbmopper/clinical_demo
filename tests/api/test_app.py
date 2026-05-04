@@ -376,11 +376,21 @@ def test_score_imperative_round_trips_score_pair_result(
 ) -> None:
     seen: dict[str, object] = {}
 
-    def _stub_score_pair(patient, trial, as_of, *, extraction=None):
+    def _stub_score_pair(
+        patient,
+        trial,
+        as_of,
+        *,
+        extraction=None,
+        matcher_assumption_mode="open_world",
+        llm_use_level="none",
+    ):
         seen["patient_id"] = patient.patient_id
         seen["nct_id"] = trial.nct_id
         seen["as_of"] = as_of
         seen["extraction"] = extraction
+        seen["matcher_assumption_mode"] = matcher_assumption_mode
+        seen["llm_use_level"] = llm_use_level
         return make_score_pair_result(patient_id=patient.patient_id, nct_id=trial.nct_id)
 
     monkeypatch.setattr(api_app, "load_patient", lambda _: stub_patient)
@@ -403,6 +413,8 @@ def test_score_imperative_round_trips_score_pair_result(
     assert body["eligibility"] in {"pass", "fail", "indeterminate"}
     assert seen["as_of"] == date(2025, 1, 1)
     assert seen["extraction"] is None
+    assert seen["matcher_assumption_mode"] == "open_world"
+    assert seen["llm_use_level"] == "none"
 
 
 def test_score_defaults_as_of_to_today(
@@ -413,7 +425,15 @@ def test_score_defaults_as_of_to_today(
 ) -> None:
     seen: dict[str, object] = {}
 
-    def _stub_score_pair(patient, trial, as_of, *, extraction=None):
+    def _stub_score_pair(
+        patient,
+        trial,
+        as_of,
+        *,
+        extraction=None,
+        matcher_assumption_mode="open_world",
+        llm_use_level="none",
+    ):
         seen["as_of"] = as_of
         return make_score_pair_result()
 
@@ -532,9 +552,20 @@ def test_score_dispatches_to_graph_when_requested(
     fired."""
     seen: dict[str, object] = {}
 
-    def _stub_graph(patient, trial, as_of, *, extraction=None, critic_enabled=False):
+    def _stub_graph(
+        patient,
+        trial,
+        as_of,
+        *,
+        extraction=None,
+        critic_enabled=False,
+        matcher_assumption_mode="open_world",
+        llm_use_level="none",
+    ):
         seen["called"] = True
         seen["critic_enabled"] = critic_enabled
+        seen["matcher_assumption_mode"] = matcher_assumption_mode
+        seen["llm_use_level"] = llm_use_level
         return make_score_pair_result(patient_id=patient.patient_id, nct_id=trial.nct_id)
 
     import clinical_demo.graph as graph_pkg
@@ -554,7 +585,12 @@ def test_score_dispatches_to_graph_when_requested(
         },
     )
     assert response.status_code == 200, response.text
-    assert seen == {"called": True, "critic_enabled": True}
+    assert seen == {
+        "called": True,
+        "critic_enabled": True,
+        "matcher_assumption_mode": "open_world",
+        "llm_use_level": "none",
+    }
 
 
 def _save_stub_run(db_path: Path) -> None:

@@ -263,6 +263,53 @@ def test_measurement_bp_accepts_trial_mmhg_against_synthea_ucum() -> None:
     assert any(e.kind == "lab" for e in v.evidence)
 
 
+def test_measurement_bp_infers_missing_conventional_unit() -> None:
+    """Bare BP thresholds in trial text conventionally mean mmHg."""
+    profile = make_profile(
+        observations=[make_lab(loinc="8480-6", value=138.0, unit="mm[Hg]")],
+    )
+    v = match_criterion(
+        crit_measurement(
+            text="systolic blood pressure",
+            operator="<",
+            value=140.0,
+            unit=None,
+        ),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "pass"
+    assert v.reason == "ok"
+
+
+def test_measurement_egfr_infers_missing_conventional_unit() -> None:
+    """eGFR thresholds are often written as bare values in trial text."""
+    profile = make_profile(
+        observations=[make_lab(loinc="33914-3", value=65.0, unit="mL/min")],
+    )
+    v = match_criterion(
+        crit_measurement(text="egfr", operator="<", value=25.0, unit=None),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "fail"
+    assert v.reason == "ok"
+
+
+def test_measurement_ldl_converts_trial_mmol_l_against_patient_mg_dl() -> None:
+    """LDL-C trial threshold in mmol/L should compare against Synthea mg/dL."""
+    profile = make_profile(
+        observations=[make_lab(loinc="18262-6", value=134.78, unit="mg/dL")],
+    )
+    v = match_criterion(
+        crit_measurement(text="ldl-c", operator=">=", value=2.6, unit="mmol/L"),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "pass"
+    assert v.reason == "ok"
+
+
 def test_measurement_equality_operator_translates_to_profile() -> None:
     """The extractor's clinical-style `=` must be translated to the
     profile's Pythonic `==`; this is the small but load-bearing glue

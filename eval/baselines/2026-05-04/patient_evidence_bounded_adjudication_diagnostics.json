@@ -1,0 +1,154 @@
+{
+  "run_id": "4458ecd2199a",
+  "notes": "v05-bounded-adjudication-after-2.15-2.16; binding_strategy=two_pass; matcher_assumption_mode=open_world; llm_use_level=bounded_adjudication",
+  "n_cases": 49,
+  "n_errors": 0,
+  "scored_cases": 49,
+  "total_criteria": 1077,
+  "total_scoring_latency_ms": 827746.95191317,
+  "avg_scoring_latency_ms": 16892.79493700347,
+  "verdict_counts": {
+    "fail": 38,
+    "indeterminate": 942,
+    "pass": 97
+  },
+  "reason_counts": {
+    "extractor_invariant_violation": 4,
+    "human_review_required": 119,
+    "no_data": 572,
+    "ok": 135,
+    "unmapped_concept": 240,
+    "unsupported_mood": 7
+  },
+  "kind_counts": {
+    "age": 47,
+    "condition_absent": 272,
+    "condition_present": 120,
+    "free_text": 432,
+    "measurement_threshold": 147,
+    "medication_absent": 20,
+    "medication_present": 9,
+    "sex": 6,
+    "temporal_window": 24
+  },
+  "unmapped_count": 240,
+  "unmapped_rate": 0.22284122562674094,
+  "indeterminate_count": 942,
+  "indeterminate_rate": 0.8746518105849582,
+  "binding_registered_total": 24,
+  "binding_registered_resolved": 24,
+  "binding_registered_unmapped": 0,
+  "binding_registered_by_kind": {
+    "condition": {
+      "resolved": 11
+    },
+    "lab": {
+      "resolved": 12
+    },
+    "medication": {
+      "resolved": 1
+    }
+  },
+  "top_unmapped_surfaces": [
+    {
+      "surface": "PH WHO Groups 2, 3, 4, or 5",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "pregnant or breastfeeding females",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "prior exposure to sotatercept (ACE-011) or luspatercept (ACE-536) or known allergic reaction",
+      "kind": "condition_absent",
+      "count": 7
+    },
+    {
+      "surface": "mitral regurgitation or aortic regurgitation",
+      "kind": "measurement_threshold",
+      "count": 7
+    },
+    {
+      "surface": "pregnant or breastfeeding",
+      "kind": "condition_absent",
+      "count": 5
+    },
+    {
+      "surface": "symptomatic pulmonary hypertension (PH) classified as WHO FC II or III",
+      "kind": "condition_present",
+      "count": 5
+    },
+    {
+      "surface": "HIV-associated PAH, PAH associated with portal hypertension, schistosomiasis-associated PAH, pulmonary veno-occlusive disease",
+      "kind": "condition_absent",
+      "count": 5
+    },
+    {
+      "surface": "liver and kidney function tests",
+      "kind": "measurement_threshold",
+      "count": 5
+    },
+    {
+      "surface": "life expectancy",
+      "kind": "measurement_threshold",
+      "count": 4
+    },
+    {
+      "surface": "pregnancy",
+      "kind": "condition_present",
+      "count": 3
+    },
+    {
+      "surface": "aspartate aminotransferase",
+      "kind": "measurement_threshold",
+      "count": 3
+    },
+    {
+      "surface": "glucocorticoids",
+      "kind": "medication_present",
+      "count": 3
+    },
+    {
+      "surface": "orthostatic hypotension",
+      "kind": "condition_present",
+      "count": 2
+    },
+    {
+      "surface": "cardiovascular or cerebrovascular event",
+      "kind": "temporal_window",
+      "count": 2
+    },
+    {
+      "surface": "ph-ild",
+      "kind": "condition_present",
+      "count": 2
+    },
+    {
+      "surface": "6-minute walk distance",
+      "kind": "measurement_threshold",
+      "count": 2
+    },
+    {
+      "surface": "clinical laboratory values",
+      "kind": "measurement_threshold",
+      "count": 2
+    },
+    {
+      "surface": "participation in pulmonary rehabilitation",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "prior or concurrent use of any investigational drug/device/therapy",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "concomitant disease that confers a life expectancy of <6 months",
+      "kind": "condition_absent",
+      "count": 2
+    }
+  ]
+}

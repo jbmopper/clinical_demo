@@ -15,6 +15,7 @@ export type PatientEvidenceLabel =
 	| 'supports_measurement_comparison'
 	| 'insufficient_evidence';
 export type MatcherAssumptionMode = 'open_world' | 'closed_world_eval' | 'closed_world_demo';
+export type LLMUseLevel = 'none' | 'retrieval_only' | 'bounded_adjudication' | 'critic';
 
 export interface PatientRow {
 	patient_id: string;
@@ -76,13 +77,27 @@ export interface MissingEvidence extends EvidenceBase {
 	kind: 'missing';
 	looked_for: string;
 }
+export interface RetrievedPatientRowEvidence extends EvidenceBase {
+	kind: 'retrieved_patient_row';
+	row_id: string;
+	row_kind: string;
+	label: string;
+	value: string;
+	date: string | null;
+	code: string | null;
+	system: string | null;
+	status: string | null;
+	score: number;
+	reasons: string[];
+}
 export type Evidence =
 	| LabEvidence
 	| ConditionEvidence
 	| MedicationEvidence
 	| DemographicsEvidence
 	| TrialFieldEvidence
-	| MissingEvidence;
+	| MissingEvidence
+	| RetrievedPatientRowEvidence;
 
 export interface MatchVerdict {
 	criterion: ExtractedCriterion;
@@ -130,6 +145,8 @@ export interface ScorePairResult {
 	patient_id: string;
 	nct_id: string;
 	as_of: string;
+	matcher_assumption_mode: MatcherAssumptionMode;
+	llm_use_level: LLMUseLevel;
 	extraction: { criteria: ExtractedCriterion[]; metadata: { notes: string } };
 	extraction_meta: ExtractorRunMeta;
 	verdicts: MatchVerdict[];
@@ -144,6 +161,8 @@ export interface ScoreRequest {
 	orchestrator?: 'imperative' | 'graph';
 	critic_enabled?: boolean;
 	use_cached_extraction?: boolean;
+	matcher_assumption_mode?: MatcherAssumptionMode;
+	llm_use_level?: LLMUseLevel;
 }
 
 export interface EvalRunRow {

@@ -44,6 +44,7 @@ from clinical_demo.data.synthea import iter_bundles
 from clinical_demo.domain.patient import Patient
 from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor import ExtractorError, ExtractorRefusalError
+from clinical_demo.matcher import DEFAULT_LLM_USE_LEVEL, DEFAULT_MATCHER_ASSUMPTION_MODE
 from clinical_demo.scoring import (
     ScorePairResult,
     cache_path_for,
@@ -199,6 +200,18 @@ def main(argv: list[str] | None = None) -> int:
         help="Write the ScorePairResult as JSON to stdout instead of the pretty table.",
     )
     parser.add_argument(
+        "--matcher-assumption-mode",
+        choices=("open_world", "closed_world_eval", "closed_world_demo"),
+        default=DEFAULT_MATCHER_ASSUMPTION_MODE,
+        help="Evidence assumption mode to record/use for this scoring run.",
+    )
+    parser.add_argument(
+        "--llm-use-level",
+        choices=("none", "retrieval_only", "bounded_adjudication", "critic"),
+        default=DEFAULT_LLM_USE_LEVEL,
+        help="How far scoring may go beyond deterministic matching.",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -241,7 +254,14 @@ def main(argv: list[str] | None = None) -> int:
         logger.info("extracting trial %s from scratch (LLM call) …", args.nct_id)
 
     try:
-        result = score_pair(patient, trial, as_of, extraction=extraction)
+        result = score_pair(
+            patient,
+            trial,
+            as_of,
+            extraction=extraction,
+            matcher_assumption_mode=args.matcher_assumption_mode,
+            llm_use_level=args.llm_use_level,
+        )
     except ExtractorRefusalError as e:
         logger.error("extractor refused: %s", e.refusal_text)
         return 3

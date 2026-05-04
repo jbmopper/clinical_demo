@@ -11,7 +11,10 @@ the demo.
 from __future__ import annotations
 
 from datetime import date
+from types import SimpleNamespace
+from typing import Any
 
+from clinical_demo.adjudication import PatientEvidenceAdjudicatorOutput
 from clinical_demo.extractor.extractor import ExtractionResult
 from clinical_demo.extractor.schema import (
     ExtractedCriteria,
@@ -99,6 +102,87 @@ def test_rollup_indeterminate_when_no_fail_but_at_least_one_indeterminate() -> N
     )
     result = score_pair(patient, make_trial(), AS_OF, extraction=extraction)
     assert result.eligibility == "indeterminate"
+
+
+def test_retrieval_only_attaches_patient_rows_without_changing_verdict() -> None:
+    """Retrieval-only mode should make indeterminates inspectable, not decisive."""
+    patient = make_patient(
+        conditions=[
+            make_condition(
+                code="custom-smoking",
+                display="Smoking history",
+            )
+        ]
+    )
+    extraction = _make_extraction([crit_condition(text="smoking history")])
+
+    result = score_pair(
+        patient,
+        make_trial(),
+        AS_OF,
+        extraction=extraction,
+        llm_use_level="retrieval_only",
+    )
+
+    assert result.llm_use_level == "retrieval_only"
+    assert result.eligibility == "indeterminate"
+    assert result.verdicts[0].reason == "unmapped_concept"
+    retrieved = [e for e in result.verdicts[0].evidence if e.kind == "retrieved_patient_row"]
+    assert len(retrieved) == 1
+    assert retrieved[0].label == "Smoking history"
+    assert "term:smoking" in retrieved[0].reasons
+
+
+def test_bounded_adjudication_can_replace_indeterminate_with_cited_verdict() -> None:
+    """Bounded adjudication may decide, but only through retrieved evidence."""
+
+    class _StubCompletions:
+        captured: dict[str, Any] | None = None
+
+        def parse(self, **kwargs: Any) -> Any:
+            self.captured = kwargs
+            parsed = PatientEvidenceAdjudicatorOutput(
+                verdict="pass",
+                reason="ok",
+                cited_source_row_ids=["patient:002"],
+                rationale="patient:002 records smoking history.",
+            )
+            return SimpleNamespace(
+                choices=[
+                    SimpleNamespace(
+                        finish_reason="stop",
+                        message=SimpleNamespace(refusal=None, parsed=parsed),
+                    )
+                ],
+                usage=None,
+            )
+
+    completions = _StubCompletions()
+    client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
+    patient = make_patient(
+        conditions=[
+            make_condition(
+                code="custom-smoking",
+                display="Smoking history",
+            )
+        ]
+    )
+    extraction = _make_extraction([crit_condition(text="smoking history")])
+
+    result = score_pair(
+        patient,
+        make_trial(),
+        AS_OF,
+        extraction=extraction,
+        llm_use_level="bounded_adjudication",
+        patient_evidence_client=client,
+    )
+
+    assert result.llm_use_level == "bounded_adjudication"
+    assert result.eligibility == "pass"
+    assert result.verdicts[0].matcher_version == "patient-evidence-adjudicator-v0.1"
+    assert result.verdicts[0].evidence[1].kind == "retrieved_patient_row"
+    assert completions.captured is not None
 
 
 def test_rollup_pass_on_empty_verdicts_documents_vacuous_truth() -> None:
