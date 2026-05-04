@@ -58,6 +58,14 @@ from clinical_demo.terminology.rxnorm_client import (
     RxNormConcepts,
     RxNormError,
 )
+from clinical_demo.terminology.umls_search_client import (
+    LOINC_SOURCE,
+    SNOMEDCT_SOURCE,
+    UMLSSearchClient,
+    UMLSSearchError,
+    UMLSSearchHit,
+    UMLSSearchResult,
+)
 from clinical_demo.terminology.vsac_client import (
     VSACClient,
     VSACError,
@@ -70,8 +78,10 @@ __all__ = [
     "ECQM_HBA1C_LAB_OID",
     "ECQM_HYPERTENSION_OID",
     "LAB_BINDINGS",
+    "LOINC_SOURCE",
     "LOINC_SYSTEM",
     "MEDICATION_BINDINGS",
+    "SNOMEDCT_SOURCE",
     "SNOMED_SYSTEM",
     "Binding",
     "RxNormBinding",
@@ -87,6 +97,10 @@ __all__ = [
     "SurfaceResolutionStatus",
     "TerminologyCache",
     "TerminologyResolver",
+    "UMLSSearchClient",
+    "UMLSSearchError",
+    "UMLSSearchHit",
+    "UMLSSearchResult",
     "VSACBinding",
     "VSACClient",
     "VSACError",

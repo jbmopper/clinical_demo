@@ -36,6 +36,11 @@ from clinical_demo.terminology import (
     cache_path_for_vsac,
 )
 from clinical_demo.terminology.rxnorm_client import RXNORM_SYSTEM_URI
+from clinical_demo.terminology.umls_search_client import (
+    LOINC_SOURCE,
+    SNOMEDCT_SOURCE,
+    UMLSSearchClient,
+)
 
 VSAC_FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "vsac" / "diabetes_expansion.json"
 RXNORM_FIXTURE = (
@@ -443,6 +448,240 @@ def test_resolve_medication_open_rxnorm_caches_true_miss(tmp_path: Path) -> None
     cached = cache.get_surface_resolution("medication", "not-a-med")
     assert cached is not None
     assert cached.status == "true_miss"
+
+
+# ---------- UMLS open search (conditions + labs) ----------
+
+
+def _umls_client_with_body(body: bytes) -> tuple[UMLSSearchClient, list[httpx.Request]]:
+    captured: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append(request)
+        return httpx.Response(200, content=body, headers={"content-type": "application/json"})
+
+    return (
+        UMLSSearchClient(api_key="dummy-key", transport=httpx.MockTransport(handler)),
+        captured,
+    )
+
+
+def _snomed_body(codes: list[tuple[str, str]]) -> bytes:
+    return json.dumps(
+        {
+            "result": {
+                "results": [
+                    {"ui": ui, "name": name, "rootSource": SNOMEDCT_SOURCE} for ui, name in codes
+                ]
+            }
+        }
+    ).encode()
+
+
+def _loinc_body(codes: list[tuple[str, str]]) -> bytes:
+    return json.dumps(
+        {
+            "result": {
+                "results": [
+                    {"ui": ui, "name": name, "rootSource": LOINC_SOURCE} for ui, name in codes
+                ]
+            }
+        }
+    ).encode()
+
+
+def _umls_empty_body() -> bytes:
+    return json.dumps({"result": {"results": [{"ui": "NONE", "name": "NO RESULTS"}]}}).encode()
+
+
+def test_resolve_open_condition_uses_umls_search_and_caches_resolved(tmp_path: Path) -> None:
+    """Surface not in the alias table + UMLS exact-match returns hits
+    -> resolved ConceptSet cached under the open-surface fingerprint.
+    This is the whole point of D-73: the system must actually look
+    things up, not declare them unmapped because they're not in a
+    hand-coded dict."""
+    cache = TerminologyCache(tmp_path)
+    body = _snomed_body(
+        [
+            ("195967001", "Asthma"),
+            ("304527002", "Acute asthma"),
+        ]
+    )
+    umls_client, captured = _umls_client_with_body(body)
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    result = resolver.resolve_condition("asthma")
+
+    assert result is not None
+    assert result.system == "http://snomed.info/sct"
+    assert result.codes == frozenset({"195967001", "304527002"})
+    assert len(captured) == 1
+    cached = cache.get_surface_resolution("condition", "asthma")
+    assert cached is not None
+    assert cached.status == "resolved"
+    assert cached.resolver_version.startswith("open-surface-v")
+    # Candidate metadata carries UMLS atom names for auditability.
+    assert {c.name for c in cached.candidates} >= {"Asthma"}
+
+
+def test_resolve_open_condition_caches_true_miss_on_zero_hits(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    umls_client, captured = _umls_client_with_body(_umls_empty_body())
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    first = resolver.resolve_condition("notarealconditionphrase")
+    second = resolver.resolve_condition("notarealconditionphrase")
+
+    assert first is None
+    assert second is None
+    assert len(captured) == 1  # second call served by cache
+    cached = cache.get_surface_resolution("condition", "notarealconditionphrase")
+    assert cached is not None
+    assert cached.status == "true_miss"
+
+
+def test_resolve_open_condition_without_umls_client_soft_fails(tmp_path: Path) -> None:
+    """No UMLS_API_KEY -> no umls_client -> resolver returns None and
+    does NOT write a cache row. Later, once an API key is set, the
+    next call can still resolve; a premature miss cache would
+    freeze alias-only behaviour forever."""
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, umls_client=None)
+
+    assert resolver.resolve_condition("asthma") is None
+    assert cache.get_surface_resolution("condition", "asthma") is None
+
+
+def test_resolve_open_condition_skips_umls_for_composite_surfaces(tmp_path: Path) -> None:
+    """Composite phrases like 'pregnant or breastfeeding' must NOT
+    hit UMLS with an exact-match (guaranteed zero hits, wasted API
+    traffic, and the resulting `true_miss` would also mislead
+    downstream triage). Cache `composite_unhandled` without a
+    network call."""
+    cache = TerminologyCache(tmp_path)
+    umls_client, captured = _umls_client_with_body(_umls_empty_body())
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    out = resolver.resolve_condition("pregnant or breastfeeding")
+    assert out is None
+    assert len(captured) == 0
+    cached = cache.get_surface_resolution("condition", "pregnant or breastfeeding")
+    assert cached is not None
+    assert cached.status == "composite_unhandled"
+
+
+def test_resolve_open_condition_soft_fails_on_umls_transport_error(tmp_path: Path) -> None:
+    """UMLS 500 / network error -> resolver returns None and MUST
+    NOT cache anything; a transient outage must not freeze into a
+    cached true miss."""
+
+    def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(500, content=b"server error")
+
+    cache = TerminologyCache(tmp_path)
+    umls_client = UMLSSearchClient(api_key="k", transport=httpx.MockTransport(handler))
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    assert resolver.resolve_condition("asthma") is None
+    assert cache.get_surface_resolution("condition", "asthma") is None
+
+
+def test_resolve_open_lab_uses_umls_loinc_search_when_alias_misses(tmp_path: Path) -> None:
+    """A lab surface not in `_OPEN_LAB_ALIASES` / `_OPEN_AMBIGUOUS_LABS`
+    goes to UMLS with `sabs=LNC`. Example: LDL cholesterol."""
+    cache = TerminologyCache(tmp_path)
+    body = _loinc_body(
+        [
+            ("18262-6", "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"),
+            ("13457-7", "Cholesterol in LDL [Mass/volume] in Serum or Plasma by calculation"),
+        ]
+    )
+    umls_client, captured = _umls_client_with_body(body)
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    result = resolver.resolve_lab("ldl cholesterol")
+
+    assert result is not None
+    assert result.system == "http://loinc.org"
+    assert result.codes == frozenset({"18262-6", "13457-7"})
+    # sabs=LNC was sent. searchType=words for labs (vs. exact for
+    # conditions) because LOINC stores common names on Parts, not
+    # on numeric test codes -- see the `_resolve_open_lab` comment.
+    assert captured[0].url.params["sabs"] == LOINC_SOURCE
+    assert captured[0].url.params["searchType"] == "words"
+
+
+def test_resolve_open_lab_filters_out_loinc_component_parts(tmp_path: Path) -> None:
+    """UMLS `words` search over LNC returns both numeric LOINC test
+    codes (`777-3`, `718-7`, ...) and LOINC Parts (`LP*`, `LA*`,
+    `MTHU*`). Parts are component atoms, not observations a patient
+    can carry. Drop them so a resolved ConceptSet is actually
+    matchable against `PatientProfile.observations`."""
+    cache = TerminologyCache(tmp_path)
+    body = _loinc_body(
+        [
+            ("MTHU004672", "Hemoglobin"),  # Part, must be filtered
+            ("LP32067-8", "Hemoglobin"),  # Part, must be filtered
+            ("718-7", "Hemoglobin [Mass/volume] in Blood"),  # numeric test code, kept
+        ]
+    )
+    umls_client, _ = _umls_client_with_body(body)
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    # Pick a surface NOT in `_OPEN_LAB_ALIASES` to force the UMLS
+    # path. "hgb" isn't currently aliased.
+    result = resolver.resolve_lab("hgb")
+    assert result is not None
+    assert result.codes == frozenset({"718-7"})
+
+
+def test_resolve_open_lab_caches_true_miss_when_only_loinc_parts_returned(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    body = _loinc_body([("LP32067-8", "Hemoglobin"), ("MTHU004672", "Hemoglobin")])
+    umls_client, _ = _umls_client_with_body(body)
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    out = resolver.resolve_lab("hgb")
+    assert out is None
+    cached = cache.get_surface_resolution("lab", "hgb")
+    assert cached is not None
+    assert cached.status == "true_miss"
+
+
+def test_resolve_open_lab_ambiguous_alias_still_wins_over_umls(tmp_path: Path) -> None:
+    """`blood pressure` is known-ambiguous (systolic vs diastolic).
+    The ambiguous-alias table must run BEFORE UMLS search so a
+    generic LOINC hit cluster does not silently paper over the
+    ambiguity. This pins the precedence against future refactors."""
+    cache = TerminologyCache(tmp_path)
+    umls_client, captured = _umls_client_with_body(_loinc_body([("8480-6", "Systolic BP")]))
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    out = resolver.resolve_lab("blood pressure")
+    assert out is None  # still surfaced as ambiguous, not resolved
+    assert len(captured) == 0  # and UMLS was never consulted
+    cached = cache.get_surface_resolution("lab", "blood pressure")
+    assert cached is not None
+    assert cached.status == "ambiguous"
+
+
+def test_resolve_open_condition_skips_umls_on_repeat_resolved_hit(tmp_path: Path) -> None:
+    """After the first resolved cache write, repeat calls must not
+    re-query UMLS. This is the cost-control property: eval re-runs
+    converge on cache-only traffic."""
+    cache = TerminologyCache(tmp_path)
+    umls_client, captured = _umls_client_with_body(_snomed_body([("195967001", "Asthma")]))
+    resolver = TerminologyResolver(cache, umls_client=umls_client)
+
+    first = resolver.resolve_condition("asthma")
+    second = resolver.resolve_condition("Asthma  ")
+    third = resolver.resolve_condition("ASTHMA")
+
+    assert first == second == third
+    assert first is not None
+    assert len(captured) == 1
 
 
 # ---------- defensive ----------

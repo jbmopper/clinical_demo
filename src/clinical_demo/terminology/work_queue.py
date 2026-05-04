@@ -113,7 +113,30 @@ def _classify_surface(
             reason=f"No terminology resolver for criterion kind {item.kind!r}.",
         )
 
+    # Hand-curated overrides win over terminology resolution. Some
+    # surfaces (life expectancy, ECOG performance status) do have
+    # UMLS/LOINC hits, but those hits are not usefully matchable
+    # against Synthea patients -- the correct triage label is
+    # `extractor_bug` / `out_of_scope`, not a resolved ConceptSet
+    # that the matcher will silently fail against. Apply the manual
+    # classification first; let the resolver run only if no manual
+    # override exists for this surface.
+    manual = _manual_nonresolved(item)
     before = cache.get_surface_resolution(resolver_kind, item.surface)
+    if manual is not None:
+        status, reason = manual
+        resolution = _nonresolved_resolution(item, resolver_kind, status=status, reason=reason)
+        cache.put_surface_resolution(resolution)
+        return SurfaceWorkItem(
+            surface=item.surface,
+            criterion_kind=item.kind,
+            resolver_kind=resolver_kind,
+            count=item.count,
+            status=status,
+            cache_status="hit" if before is not None and before.status == status else "written",
+            reason=reason,
+        )
+
     concept_set = _resolve(resolver, resolver_kind, item.surface)
     after = cache.get_surface_resolution(resolver_kind, item.surface)
 
@@ -141,21 +164,6 @@ def _classify_surface(
             cache_status="hit" if before is not None else "written",
             candidates=current.candidates,
             reason=current.reason,
-        )
-
-    manual = _manual_nonresolved(item)
-    if manual is not None:
-        status, reason = manual
-        resolution = _nonresolved_resolution(item, resolver_kind, status=status, reason=reason)
-        cache.put_surface_resolution(resolution)
-        return SurfaceWorkItem(
-            surface=item.surface,
-            criterion_kind=item.kind,
-            resolver_kind=resolver_kind,
-            count=item.count,
-            status=status,
-            cache_status="written",
-            reason=reason,
         )
 
     if _looks_composite(item.surface):
