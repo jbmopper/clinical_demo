@@ -143,6 +143,21 @@ def _classify_surface(
             reason=current.reason,
         )
 
+    manual = _manual_nonresolved(item)
+    if manual is not None:
+        status, reason = manual
+        resolution = _nonresolved_resolution(item, resolver_kind, status=status, reason=reason)
+        cache.put_surface_resolution(resolution)
+        return SurfaceWorkItem(
+            surface=item.surface,
+            criterion_kind=item.kind,
+            resolver_kind=resolver_kind,
+            count=item.count,
+            status=status,
+            cache_status="written",
+            reason=reason,
+        )
+
     if _looks_composite(item.surface):
         resolution = _nonresolved_resolution(
             item,
@@ -215,6 +230,38 @@ def _resolve(
 def _looks_composite(surface: str) -> bool:
     normalized = f" {surface.lower()} "
     return any(token in normalized for token in (" and ", " or ", ",", ";", "/"))
+
+
+def _manual_nonresolved(item: SurfaceCount) -> tuple[SurfaceResolutionStatus, str] | None:
+    """Known top-surface decisions that are not terminology API wins.
+
+    These should stay tiny and empirical. They separate "map this next"
+    from "this cannot work with the current patient data model or extractor
+    type" without pretending a ConceptSet exists.
+    """
+
+    surface = item.surface.lower().strip()
+    if surface in {"pulmonary vascular resistance (pvr)", "pulmonary vascular resistance"}:
+        return (
+            "out_of_scope",
+            "Requires right-heart catheterization/hemodynamic observations not modeled in the current Synthea profile.",
+        )
+    if surface == "history of full pneumonectomy":
+        return (
+            "out_of_scope",
+            "Procedure-history evidence is not modeled by the current condition/medication/lab matcher primitives.",
+        )
+    if surface == "life expectancy":
+        return (
+            "extractor_bug",
+            "Life expectancy is prognostic/free-text review, not a structured measurement threshold in the current matcher.",
+        )
+    if surface == "ecog performance status":
+        return (
+            "out_of_scope",
+            "Functional-status observations such as ECOG are not present in the current Synthea profile.",
+        )
+    return None
 
 
 def _nonresolved_resolution(

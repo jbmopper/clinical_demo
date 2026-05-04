@@ -35,14 +35,16 @@
   criteria, -2.6 pp). Task 2.18 now has its first implementation:
   `scripts/warm_terminology_surfaces.py` loads `EvalDiagnostics`, runs the top
   unmapped surfaces through the resolver/cache, and emits a queue with
-  `resolved`, `ambiguous`, `composite_unhandled`, `out_of_scope`, or
-  `unresolved` statuses. On the 2026-05-04 no-LLM diagnostics, the top 20 now
+  `resolved`, `ambiguous`, `composite_unhandled`, `out_of_scope`,
+  `extractor_bug`, or `unresolved` statuses. On the 2026-05-04 no-LLM
+  diagnostics, the top 20 now
   classify as resolved for hemoglobin / platelet count / BMI / uncontrolled
   hypertension, ambiguous for generic blood pressure, composite for many
-  PAH/pregnancy/liver-function phrases, and still unresolved for PVR, full
-  pneumonectomy, life expectancy, and ECOG performance status. Next priority:
-  add targeted resolver decisions for those remaining unresolved surfaces and
-  snapshot a fresh open-resolver baseline.
+  PAH/pregnancy/liver-function phrases, out-of-scope for PVR / full
+  pneumonectomy / ECOG, and extractor-bug for life expectancy. No generic
+  `unresolved` rows remain in the top-20 queue. Next priority: snapshot a fresh
+  open-resolver baseline and decide whether to exclude or separately track the
+  out-of-scope oncology/PAH-heavy surfaces.
 - **Last completed:** PLAN task 2.18 first slice — **top-unmapped work queue
   and cache warmer.** Added `clinical_demo.terminology.work_queue` with
   `SurfaceWorkItem`, `build_surface_work_queue`, JSON/text renderers, and
@@ -52,9 +54,11 @@
   eval/baselines/2026-05-04/patient_evidence_none_diagnostics.json --limit 20`.
   Focused tests cover resolved alias warming, ambiguous BP cache reuse,
   composite pregnancy/breastfeeding classification, temporal-window review
-  classification, and text rendering. Verification: `uv run pytest
-  tests/terminology/test_work_queue.py tests/terminology/test_resolver.py
-  tests/terminology/test_cache.py` 64/64 and targeted ruff clean.
+  classification, known data-model gaps (PVR, pneumonectomy, ECOG), life
+  expectancy extractor-kind misclassification, and text rendering.
+  Verification: `uv run pytest tests/terminology/test_work_queue.py
+  tests/terminology/test_cache.py tests/terminology/test_resolver.py` 66/66
+  and targeted ruff clean.
   Previous: PLAN task 2.17 first slice — **open terminology resolver
   front door with cached surface decisions.** `TerminologyCache` now has
   schema-fingerprinted `surface.<kind>.<query>.<fp>.json` envelopes that store

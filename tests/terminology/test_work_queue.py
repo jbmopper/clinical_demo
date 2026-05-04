@@ -95,6 +95,36 @@ def test_work_queue_classifies_temporal_windows_as_review_work(tmp_path: Path) -
     assert "Temporal-window event" in items[0].reason
 
 
+def test_work_queue_classifies_known_data_model_gaps(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, vsac_client=None, rxnorm_client=None)
+    diagnostics = _diagnostics(
+        SurfaceCount(
+            kind="measurement_threshold", surface="pulmonary vascular resistance (PVR)", count=7
+        ),
+        SurfaceCount(kind="condition_absent", surface="history of full pneumonectomy", count=7),
+        SurfaceCount(kind="measurement_threshold", surface="ecog performance status", count=4),
+    )
+
+    items = build_surface_work_queue(diagnostics, cache=cache, resolver=resolver)
+
+    assert [item.status for item in items] == ["out_of_scope", "out_of_scope", "out_of_scope"]
+    assert all(item.cache_status == "written" for item in items)
+
+
+def test_work_queue_classifies_life_expectancy_as_extractor_bug(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, vsac_client=None, rxnorm_client=None)
+    diagnostics = _diagnostics(
+        SurfaceCount(kind="measurement_threshold", surface="life expectancy", count=4)
+    )
+
+    items = build_surface_work_queue(diagnostics, cache=cache, resolver=resolver)
+
+    assert items[0].status == "extractor_bug"
+    assert "not a structured measurement" in items[0].reason
+
+
 def test_render_work_queue_keeps_high_frequency_surface_visible(tmp_path: Path) -> None:
     cache = TerminologyCache(tmp_path)
     resolver = TerminologyResolver(cache, vsac_client=None, rxnorm_client=None)

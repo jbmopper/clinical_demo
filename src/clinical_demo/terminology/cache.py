@@ -105,7 +105,14 @@ class StoredRxNormConcepts(BaseModel):
 
 
 SurfaceResolutionKind = Literal["condition", "lab", "medication"]
-SurfaceResolutionStatus = Literal["resolved", "ambiguous", "true_miss", "composite_unhandled"]
+SurfaceResolutionStatus = Literal[
+    "resolved",
+    "ambiguous",
+    "true_miss",
+    "composite_unhandled",
+    "extractor_bug",
+    "out_of_scope",
+]
 
 
 class SurfaceResolutionCandidate(BaseModel):
