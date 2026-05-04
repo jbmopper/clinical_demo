@@ -58,7 +58,9 @@ flowchart TD
         E["Per-Criterion Matcher<br/><i>fan out per criterion</i>"]
         E --> F["Deterministic first pass<br/><i>age, sex, mapped conditions,<br/>known labs and units</i>"]
         F -->|resolved| G["Deterministic verdict"]
-        F -->|unresolved condition/source evidence| H["LLM patient-evidence adjudicator<br/><i>presence, absence, social history,<br/>compound criteria with citations</i>"]
+        F -->|unresolved condition/source evidence| R["Evidence retrieval<br/><i>lexical + code anchors;<br/>stable source-row citations</i>"]
+        R -->|retrieval_only| I
+        R -->|bounded_adjudication| H["LLM patient-evidence adjudicator<br/><i>only over retrieved rows;<br/>presence, absence, social history,<br/>compound criteria with citations</i>"]
         F -->|unit ambiguity| U["Unit reconciliation<br/><i>LLM infers intended unit;<br/>deterministic code converts</i>"]
         F -->|free text| L["LLM matcher<br/><i>free-text, temporal, negation</i>"]
         G --> I["Per-criterion verdict<br/>+ reason + citations"]
@@ -92,8 +94,12 @@ flowchart TD
                      - For each criterion:
                        - Try deterministic match first (age, sex, mapped facts,
                          known lab units)
-                       - Escalate unresolved condition/source-evidence cases
-                         to a cited LLM patient-evidence adjudicator
+                       - Retrieve relevant patient rows for unresolved
+                         condition/source-evidence cases
+                       - In retrieval-only mode, cite what was found without
+                         asking an LLM to decide
+                       - In bounded-adjudication mode, ask an LLM to decide
+                         only over retrieved rows and cited trial text
                        - Reconcile high-impact unit ambiguity through a small
                          whitelisted deterministic conversion layer
                        - Escalate true free-text/temporal/negation cases to LLM
@@ -165,8 +171,10 @@ This is what gets the most time and what the presentation centers on.
   synthetic CRC user.
 - Production FHIR server — read Synthea ndjson off disk. Don't stand up
   HAPI.
-- More than ~3 disease areas — primary cardiometabolic cluster, lung cancer
-  as a stretch generalization probe.
+- More than one validated disease cluster — primary cardiometabolic is the
+  core. Lung cancer is deferred unless paired with hand-crafted oncology
+  evidence, because the current Synthea cohort cannot validate NSCLC staging
+  or biomarker matching.
 - Agentic search of CT.gov — pre-fetch ~30 trials. Don't build live search.
 - Beautiful UI — functional and clear beats pretty. Reviewer UI is the only
   screen that matters.

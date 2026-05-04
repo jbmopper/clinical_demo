@@ -401,12 +401,18 @@
   baseline regression with indeterminacy diagnostic): layer-1
   agreement 81.0%, coverage 55.3%, 89% of all indeterminates are
   `unmapped_concept`. Snapshots in `eval/baselines/2026-04-21/`.
-- **Next:** Human-review `eval/calibration/patient_evidence_labels.json` using
-  `eval/calibration/patient_evidence_candidates.json` as the source packet.
-  After the 60 labels are filled, rerun the builder so labels attach back onto
-  the candidate rows, then implement 2.13 (LLM patient-evidence adjudication)
-  against that gold set. 2.14 (unit reconciliation / conventional-unit pass)
-  follows after or in parallel if the labels confirm the current unit buckets.
+- **Next:** Re-center Phase 2 on the core product loop: feed trials + patients
+  into the system, retrieve relevant patient evidence, and decide whether there
+  is enough support to flag a possible match. The current 60-row
+  patient-evidence packet exposed design drift: too many rows are terminology
+  or scope gaps (`unmapped_concept`, especially oncology) being treated as
+  calibration work. Do **not** make "label every row in the current packet" the
+  next gate. The next build sequence is: (1) narrow the core eval/calibration
+  scope to cardiometabolic rows, (2) add explicit matcher assumption modes and
+  LLM-use levels, (3) implement a retrieval-only evidence path over structured
+  FHIR rows, (4) add bounded LLM adjudication over retrieved evidence, and
+  (5) add the unit reconciliation pass. Terminology APIs remain precision
+  anchors inside retrieval/adjudication, not the sole gateway to matching.
 - **Gates at HEAD:** `ruff check` + `ruff format --check` clean; `pytest`
   579 / 579 passing; `npm run build` clean.
 - **Branch:** `main`, local changes pending.
@@ -527,12 +533,13 @@ hyperlipidemia, related CKD. Picked because Synthea models this domain richly
 trials in this space lean heavily on numeric criteria — which gives clean
 deterministic ground truth for the eval.
 
-**Stretch domain: lung cancer.** One or two trials. Picked to demonstrate
-generalization to a domain with shallower Synthea data and more
-categorical/temporal/biomarker criteria (TNM staging, histology, EGFR/ALK
-status, prior lines of therapy). Expect to supplement with hand-crafted
-patient profiles. The goal is to *show* the system's confidence appropriately
-drops and routing escalates — not to claim oncology mastery.
+**Stretch domain: lung cancer is deferred unless explicitly hand-crafted.**
+Oncology is useful for demonstrating where confidence should drop, but it is
+not part of the core demo unless we also add oncology-capable patient evidence
+(pathology/staging/biomarker records or notes). The project should not ask the
+cardiometabolic Synthea cohort to prove NSCLC matching. If time gets tight,
+remove oncology from the eval seed and presentation entirely rather than
+letting unmapped oncology concepts dominate the next engineering step.
 
 **Explicitly out of scope:** all other Synthea modules. If asked "why not X?"
 in the interview, the answer is "I prioritized depth in domains where I could
@@ -544,7 +551,7 @@ prove correctness over breadth I couldn't validate."
 
 | Source | Role | Risks |
 |---|---|---|
-| **Synthea v4.0.0** (sample data, FHIR R4) | Synthetic patient records. Provides deterministic ground truth for numeric criteria. | Oncology depth is shallow; will need supplementation. |
+| **Synthea v4.0.0** (sample data, FHIR R4) | Synthetic patient records. Provides deterministic ground truth for numeric cardiometabolic criteria. | Structured FHIR rows are not a full chart. Absence of a row should be treated as insufficient evidence unless a closed-world eval mode is explicitly enabled. Oncology depth is shallow; do not use it for core validation without supplementation. |
 | **ClinicalTrials.gov v2 API** | Real trial protocols (eligibility text, conditions, phase, sponsor). | Eligibility criteria are free text — extraction is the hard part. |
 | **Chia corpus** (Phase IV, 1,000 trials, hand-annotated) | Golden ground truth for the criterion-extraction step (entities + relationships per the Chia schema). | Doesn't overlap perfectly with our chosen domains; use the schema everywhere, use the labels where they fit. |
 
@@ -553,15 +560,19 @@ prove correctness over breadth I couldn't validate."
 - ~150 Synthea patients tilted to the cardiometabolic profile, with
   multi-condition overlap (a patient with T2DM + HTN + CKD3 is realistic and
   great for stress-testing).
-- ~30 trials from CT.gov (≈25 cardiometabolic, ≈5 lung cancer). Mix of
-  industry Phase 2/3 and NIH-sponsored to vary criterion style.
+- ~30 trials from CT.gov, focused on cardiometabolic disease for the core demo.
+  Lung cancer trials are optional stretch examples only if paired with
+  hand-crafted oncology evidence; otherwise exclude them from the correctness
+  story.
 - ~50–100 Chia-annotated trials retained as extraction golden set, filtered
   toward overlap with our domains.
 - A small patient-side FHIR evidence gold/calibration set drawn from the eval
-  seed: criterion text + patient source rows + human labels for whether the
-  chart supports presence, absence, a measurement comparison, or insufficient
-  evidence. This is the patient-side analogue to Chia, scoped to matcher
-  adjudication rather than full enrollment truth.
+  seed: criterion text + retrieved patient source rows + human labels for
+  whether the chart supports presence, explicit absence, a measurement
+  comparison, or insufficient evidence. This is the patient-side analogue to
+  Chia, scoped to matcher adjudication rather than full enrollment truth. It
+  should contain rows the current project is actually trying to adjudicate, not
+  out-of-scope terminology misses masquerading as evidence labels.
 
 Generation parameters, Synthea-vs-real-EHR gaps, and the follow-up plan for a
 more robust generated cohort are captured in
@@ -623,25 +634,27 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.3 | Eval harness scaffolding: dataset format, runner, results store, basic CLI (`eval run`, `eval report`). *Done — new `clinical_demo.evals` package adds `EvalCase` / `CaseRecord` / `RunResult` pydantic envelopes, `load_dataset()` reusing the existing `eval_seed.json` shape, and a one-call `run_eval(scorer, cases)` that's deliberately orchestrator-agnostic (the scorer is a `Callable[[EvalCase], ScorePairResult]`, so `score_pair()`, `score_pair_graph()`, and any future variants are all "just a scorer"). SQLite store (`evals.store`) is two append-only tables — `runs` plus `cases` carrying flat per-case summary cols **and** the full `ScorePairResult` as a `result_json` blob (D-60); a normalized verdicts table is deferred until a layer query motivates it. Per-case scorer exceptions are caught and recorded on the row instead of failing the run (D-62). New `scripts/eval.py` exposes `run` (with `--orchestrator`, `--no-llm`, `--critic-enabled`, `--pair-id`, `--limit`, `--notes`) and `report` (id-or-list, `--format text\|json`); `eval/runs.sqlite` is gitignored. 20 new tests across `test_run.py` (dataset round-trip, filtering, runner success + failure isolation + callback ordering) and `test_store.py` (idempotent schema + `user_version`, save/load round-trip including `extraction_meta`, append-only enforcement, failed-case persistence, listing newest-first). 360 total passing. Decisions D-59..D-63.* | 4 |
 | 2.4 | Layer 1 eval — deterministic: per-criterion accuracy on numeric/structured criteria. *Done — `evals/layer_one.py` aligns seed `CriterionVerdict`s against matcher `MatchVerdict`s per field (`min_age`, `max_age`, `sex`; `healthy_volunteers` documented uncoverable in v0), produces `LayerOneCell`s with `agree`/`disagree`/`missing` status, and rolls up per-field + overall agreement (excludes missing) and coverage (includes missing). `evals/report_layer_one.py` is a one-screen text renderer; `scripts/eval.py report --layer 1` dispatches to it (`--format json` also supported). 13 new tests. 373 total passing.* | 2 |
 | 2.5 | Layer 2 eval — reference-based: criterion extraction F1 vs. Chia annotations. *v0 done — entity-mention F1 over normalized `(type, surface)` pairs, because the extractor emits flat `mentions` but not Chia relations/equivalence groups. Added `evals.layer_two`, `report_layer_two`, and `scripts/eval.py chia` with prompt/schema/model-aware extraction caching under `data/curated/chia_extractions/`. 5-document live smoke: 275 gold, 114 predicted, 50 TP; micro precision 43.9%, recall 18.2%, F1 25.7%; macro F1 24.9%; cost $0.0078; JSON snapshot in `eval/baselines/2026-04-30/layer2_chia_entity_f1_smoke.json`. Retained 50-document sample frozen with `--sample-size 50 --sample-seed 20260430`: baseline micro F1 34.4%, macro F1 33.0%, cost $0.0588. `extractor-v0.3` mention-discipline pass improved retained micro F1 to 37.5% (+3.2 pp) and macro F1 to 35.4% (+2.4 pp), mostly via `Value`, `Temporal`, `Procedure`, `Reference_point`, and `Measurement`, but over-predicted `Observation` and barely moved `Scope`. Added overlap/containment diagnostics: same v0.3 retained sample has 159 same-type partial matches, lenient micro F1 57.4%, lenient macro F1 54.3%. `extractor-v0.4` prompt tightening regressed and was not retained. `extractor-v0.5` recovered aggregate metrics: micro F1 37.7%, macro F1 35.3%, lenient micro F1 58.6%, lenient macro F1 55.3%; it cuts `Observation` false positives but still does not solve `Observation` exact TP or `Scope` recall. Error profile in `docs/chia-layer2-error-profile.md`; next layer-2 work should be narrow `Scope` / `Observation` analysis or else moving on to layer 3, not graph-schema expansion yet.* | 4 |
-| 2.6 | Layer 3 eval — LLM-as-judge: rubric, prompt, calibration against ~30–50 hand-graded examples; report inter-rater agreement. *Done — `evals.layer_three` adds a pinned judge/rubric (`llm-judge-v0.1` / `llm-judge-rubric-v0.2`), structured judge labels (`correct` / `incorrect` / `unjudgeable`), persisted-run target selection, optional human labels, agreement-rate + Cohen's kappa, and `report_layer_three`. `scripts/eval.py judge` runs the judge over a stored eval run with `--limit`, `--only-free-text`, `--human-labels`, and `--output-json`. 5-verdict live smoke on run `98568ccd090d` cost $0.0008 and saved `eval/baselines/2026-04-30/layer3_judge_smoke.json`; the smoke caught and fixed an important rubric issue so justified `indeterminate` verdicts are graded `correct`, not `unjudgeable`. Calibration GUI follow-up done — FastAPI exposes `/eval/runs` plus `/layer3/calibration` GET/POST over deterministic stratified judge targets and JSON label persistence, and the Svelte reviewer has a `Layer-3 calibration` mode for reviewing criterion/verdict/evidence JSON, assigning human labels, adding rationale, and saving `eval/calibration/layer3_human_labels.json`. First human pass: 25 labels, all `correct`. Full calibrated judge run on `394703892184`: 1,086 judgments, 1,066 correct, 20 incorrect, cost `$0.1738`; calibration agreement 25/25, kappa 1.0. Interpretation: the judge/matcher rubric is calibrated for conservative verdicts, but the result highlights the deterministic matcher's patient-evidence coverage weakness. Use 2.12-2.14 to reduce correct-but-not-useful indeterminates and the 20 judged incorrect rows.* | 6 |
+| 2.6 | Layer 3 eval — LLM-as-judge: rubric, prompt, calibration against ~30–50 hand-graded examples; report inter-rater agreement. *Done — `evals.layer_three` adds a pinned judge/rubric (`llm-judge-v0.1` / `llm-judge-rubric-v0.2`), structured judge labels (`correct` / `incorrect` / `unjudgeable`), persisted-run target selection, optional human labels, agreement-rate + Cohen's kappa, and `report_layer_three`. `scripts/eval.py judge` runs the judge over a stored eval run with `--limit`, `--only-free-text`, `--human-labels`, and `--output-json`. 5-verdict live smoke on run `98568ccd090d` cost $0.0008 and saved `eval/baselines/2026-04-30/layer3_judge_smoke.json`; the smoke caught and fixed an important rubric issue so justified `indeterminate` verdicts are graded `correct`, not `unjudgeable`. Calibration GUI follow-up done — FastAPI exposes `/eval/runs` plus `/layer3/calibration` GET/POST over deterministic stratified judge targets and JSON label persistence, and the Svelte reviewer has a `Layer-3 calibration` mode for reviewing criterion/verdict/evidence JSON, assigning human labels, adding rationale, and saving `eval/calibration/layer3_human_labels.json`. First human pass: 25 labels, all `correct`. Full calibrated judge run on `394703892184`: 1,086 judgments, 1,066 correct, 20 incorrect, cost `$0.1738`; calibration agreement 25/25, kappa 1.0. Interpretation: the judge/matcher rubric is calibrated for conservative verdicts, but the result highlights the deterministic matcher's patient-evidence coverage weakness. Use 2.12-2.16 to reduce correct-but-not-useful indeterminates and the 20 judged incorrect rows while keeping terminology gaps distinct from patient-evidence adjudication gaps.* | 6 |
 | 2.7 | First baseline regression run; commit numbers to repo as `eval/baselines/`. *Done — fresh extraction over all 30 curated trials under the D-66 cache scheme (570 criteria, $0.067, ~18 min wall), then two eval runs against the 49-pair seed: imperative (`b55783ff962f`, ~14s scoring on cache-warm) and graph + critic (`ae7ac16936b8`, ~5 min). Both runs written to `eval/runs.sqlite`; layer-1 reports + pretty run summaries snapshotted under `eval/baselines/2026-04-21/` with a `SUMMARY.md` (provenance + per-field numbers + slice rollup) and an `INDETERMINACY.md` (per-criterion diagnostic answering "why so much indeterminacy"). Headline: layer-1 overall agreement 81.0%, coverage 55.3%, and identical between orchestrators (critic acts on rollup/rationale, not per-criterion structured-field dispatch). All 8 layer-1 disagreements are matcher-correct + seed-partial-label artifacts (mechanical labeler scored `min_age` independently of `max_age`). 0 `pass` eligibility verdicts across 49 pairs is real — synthea cohort × these specific trials don't align well, and the rollup is correctly conservative. Diagnostic finding: 92% of all 841 per-criterion verdicts are `indeterminate`, of which 89% are `unmapped_concept`; conditions dominate (73% of unmapped) over labs (17%) over medications (6%); top investment is concept-vocabulary expansion (D-67). Side fix landed in this task: store schema bumped v1→v2 with an additive `ALTER TABLE` migration to persist `expected_structured` and `free_text_review_status` per case, so layer-1+ analyses run from a self-contained persisted run instead of re-loading the seed file (was a silent layer-1-empty-report bug). 2 new store tests (v1→v2 migration, label round-trip), 1 existing test edited for the version bump. 393 total passing. Decisions D-67, D-68.* | 2 |
 | 2.8 | Svelte reviewer UI v0: side-by-side trial criteria + patient evidence; per-criterion verdict pills; click-to-source. *Done — SvelteKit single-page app under `web/` (Svelte 5, TypeScript, static adapter). Hand-typed `lib/api.ts` over the four FastAPI routes (no codegen — surface is ~30 lines and `juliusm.com` will retype anyway). Single `+page.svelte` mounts patient + trial selectors from `/patients` and `/trials`, posts `/score` with toggles for orchestrator (`imperative` \| `graph`), critic loop, cached extraction, and `as_of`; renders the `ScorePairResult` as a header card (eligibility pill + verdict counts + extractor model / cost / token meta) and a list of `<CriterionRow>`s. Each row is a click-to-expand affordance: collapsed shows polarity + kind + source bullet + verdict pill; expanded shows the matcher's rationale, typed evidence rows (lab / condition / medication / demographics / trial_field / missing), and a `<details>` with the raw extracted criterion JSON for debugging. Layer-3 calibration mode now also shows patient-record and trial-record source context so reviewers can inspect whether mappings, absence claims, and unit assumptions are grounded in the actual source rows. `<VerdictPill>` is a closed-enum component over `pass` \| `fail` \| `indeterminate` with a per-verdict palette. Health badge in the header probes `/health` on mount; catalog and score errors are surfaced inline as banners (no toasts, no router). API base URL defaults to `http://127.0.0.1:8000` and is overridable via `VITE_API_BASE`. Per **D-64** this lives here as a *dev rig only* — the production reviewer surface ports into the `juliusm.com` repo, so this directory carries no JS test runner, no build pipeline beyond `vite dev`, and no deploy adapter. `web/.gitignore` covers `node_modules` / `.svelte-kit` / `build` so the repo root stays Python-only. Decision D-64. | 8 |
 | 2.9 | Backend: minimal FastAPI endpoint that the Svelte UI calls; CORS; deploy plan for `juliusm.com`. *Done — `clinical_demo.api` package: `create_app()` factory exposing `GET /health`, `GET /patients`, `GET /trials`, `POST /score`. `/score` accepts `patient_id`, `nct_id`, optional `as_of` (defaults to today), `orchestrator` (`imperative` or `graph`), `critic_enabled`, `use_cached_extraction`, returns the existing `ScorePairResult` envelope verbatim. Loader helpers promoted out of `scripts/` into `api/loaders.py` (third caller threshold) with process-scope caches and a `CuratedDataMissing` exception for clean 503 mapping. Wide-open CORS for the v0 demo (lock down before public deploy). `scripts/serve.py` boots uvicorn. 12 new TestClient tests pin /health, listing endpoints, scoring round-trip, error mapping (404 unknown patient/trial, 503 missing curated data, 500 scorer raises, 422 missing field), and the orchestrator switch. Built ahead of 2.4-2.7 per user direction to bias toward end-to-end usability. 385 total passing.* | 3 |
 | 2.10 | **Terminology API bridge (D-69).** Replace the hand-curated trial-term bridge with NLM-backed resolution in slices. First slice: `clinical_demo.terminology` with a VSAC FHIR `$expand` client, `Settings.umls_api_key`, a live probe script, and offline parser/error-path tests. Follow-on slices: add RxNorm medication normalization, UMLS source-vocabulary search, a small cache of reviewed trial-side bindings, matcher wiring through `concept_lookup.py`, and an eval rerun comparing against the D-68 `unmapped_concept` baseline. | 10 |
 | 2.11 | **Patient structured-safety cleanup.** Carry `Patient.deceasedDateTime` through the Synthea loader/domain model and make scoring fail/skip explicitly when the patient is deceased before `as_of`. Keep it deterministic, cite the source field in evidence or API error detail, and test it before any public-demo run. | 1 |
-| 2.12 | **Patient-side FHIR evidence gold/calibration set.** Create the patient-side analogue to Chia before building the new adjudicator: select ~40–60 patient/criterion examples from the eval seed and layer-3 calibration rows, stratified across condition present, condition absent, social-history/substance-use, measurement/unit, no-data, and insufficient-evidence cases. Persist a reviewed JSON artifact with `patient_id`, `nct_id`, `criterion_index`, criterion source text, cited FHIR/source rows, human evidence label (`supports_present` / `supports_absent` / `supports_measurement_comparison` / `insufficient_evidence`), and expected matcher verdict under polarity. This calibrates patient evidence use; it is not a full real-world enrollment gold set. *Scaffold/candidate packet done — new `evals.patient_evidence` module and `scripts/build_patient_evidence_calibration.py`; generated 60 candidate rows plus blank label template under `eval/calibration/`. Remaining work: human-review the 60 labels.* | 2 |
-| 2.13 | **LLM patient-evidence adjudicator.** Add a bounded source-grounded LLM matcher pass for unresolved structured criteria where deterministic fail-closed behavior is honest but weak: unmapped/compound condition criteria, social-history and substance-use absence criteria, malformed extractor payloads with recoverable source text, and selected `no_data` rows where patient source rows can support a presence/absence decision. Input is the extracted criterion, deterministic verdict/reason, retrieved patient rows, and trial source text; output is strict `pass` / `fail` / `indeterminate` with cited source row IDs and a reason. Evaluate it against the 2.12 patient-side labels. This is the architectural home for "is this condition present/absent in the chart?", not a Phase 3 polish item. | 5 |
-| 2.14 | **Unit reconciliation / conventional-unit pass.** Add a hybrid unit layer for high-impact measurements before the cost-routing sweep. Deterministic code owns a small whitelisted registry and numeric conversions (initially BP mmHg, eGFR `mL/min/1.73 m2` variants, LDL-C `mmol/L` ↔ `mg/dL`, and percent-like HbA1c); an LLM/source pass may infer the intended measurement/unit from trial text when the extractor omits or phrases it oddly, but it may not perform arbitrary conversions. Rerun eval and report reductions in `unit_mismatch` / `ambiguous_criterion`. | 3 |
-| **Phase 2 total** | | **~59 hr** |
+| 2.12 | **Core-scope and calibration reset.** Keep the patient-side analogue to Chia, but make it serve the product rather than block it. Filter or regenerate the 60-row packet so the gold set focuses on in-scope cardiometabolic rows the system can reasonably adjudicate from Synthea FHIR: condition presence, explicit absence where available, medication evidence, measurements/units, no-data, and insufficient-evidence cases. Exclude or separately mark out-of-scope terminology gaps such as NSCLC unless paired with hand-crafted oncology evidence. Persist reviewed labels with `patient_id`, `nct_id`, `criterion_index`, criterion source text, cited source-row IDs, human evidence label (`supports_present` / `supports_absent` / `supports_measurement_comparison` / `insufficient_evidence`), expected matcher verdict, and the matcher assumption mode used. *Scaffold/candidate packet done — new `evals.patient_evidence` module, builder script, API routes, and Svelte label UI exist. Remaining work is to narrow the packet and label the rows that actually measure the next matcher behavior.* | 2 |
+| 2.13 | **Matcher assumption modes and LLM-use levels.** Make the workflow explicit about what kind of evidence contract it is operating under before adding more model behavior. Default `open_world`: absence of a patient row means `insufficient_evidence` / `indeterminate`, not fail. Optional `closed_world_eval`: for synthetic benchmark slices only, absence from the curated structured record may count as negative evidence. Optional `closed_world_demo`: allowed only for hand-picked demo cases with a visible banner explaining the assumption. Pair this with LLM-use levels that the API, UI, and eval harness can toggle: `none` (deterministic only), `retrieval_only` (retrieve/cite evidence, no adjudication), `bounded_adjudication` (criterion-level LLM over retrieved sources), and `critic` (frontier review of aggregate reasoning). | 3 |
+| 2.14 | **Structured patient-evidence retrieval path.** Add the source-grounded retrieval layer that embodies the core product loop without asking an LLM to decide yet: for each unresolved criterion, retrieve relevant structured FHIR rows using lexical matching, normalized surface forms, code/ConceptSet anchors where available, and simple section/kind filters. Return ranked source rows with stable IDs and retrieval reasons. Leave vector retrieval behind an interface so Phase 3 can add embeddings or note snippets without reshaping the graph. This powers `retrieval_only` mode and gives reviewers a useful "what did the system look at?" view even when adjudication is off. | 4 |
+| 2.15 | **Bounded LLM patient-evidence adjudicator.** Add the criterion-level adjudicator over retrieved evidence, not over the whole chart. Input is the extracted criterion, deterministic verdict/reason, retrieved patient rows, trial source text, and matcher assumption mode; output is strict `pass` / `fail` / `indeterminate` with cited source row IDs and a reason. Use terminology/code matches as precision anchors when available, but allow the adjudicator to classify supported, contradicted, or insufficiently supported evidence when concept mapping is incomplete. This is the architectural home for "does this patient appear to match enough to flag for CRC review?", not a post-hoc explanation layer. Evaluate against the reset 2.12 labels. | 5 |
+| 2.16 | **Unit reconciliation / conventional-unit pass.** Add a hybrid unit layer for high-impact measurements before the cost-routing sweep. Deterministic code owns a small whitelisted registry and numeric conversions (initially BP mmHg, eGFR `mL/min/1.73 m2` variants, LDL-C `mmol/L` ↔ `mg/dL`, and percent-like HbA1c); an LLM/source pass may infer the intended measurement/unit from trial text when the extractor omits or phrases it oddly, but it may not perform arbitrary conversions. Rerun eval and report reductions in `unit_mismatch` / `ambiguous_criterion`. | 3 |
+| **Phase 2 total** | | **~66 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 
 | # | Task | Est. (hr) |
 |---|---|---|
-| 3.1 | Model abstraction layer that lets the same node call any of 4–5 models with consistent JSON-schema enforcement. | 3 |
-| 3.2 | Cost/quality sweep: same 50–100 pairs, every model at every node, log cost + composite quality score. | 4 |
-| 3.3 | Define and implement the routing policy after 2.12-2.14 establish the patient-side labels and correctness-oriented matcher nodes; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). | 4 |
+| 3.1 | Model abstraction layer that lets the same node call any of 4–5 models with consistent JSON-schema enforcement. It must preserve the LLM-use levels from 2.13 (`none`, `retrieval_only`, `bounded_adjudication`, `critic`) so cost/quality experiments measure routing choices, not hidden behavior changes. | 3 |
+| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. | 4 |
+| 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, and unit layer; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). | 4 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
 | 3.6 | **Patient note evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
@@ -718,6 +731,8 @@ production discipline.
 Cut from the bottom up:
 
 1. Drop the oncology stretch domain entirely — present only cardiometabolic.
+   This is now the default unless hand-crafted oncology patient evidence is
+   added; do not let NSCLC terminology gaps drive the core roadmap.
 2. Drop reviewer UI accept/override; show read-only verdicts.
 3. Drop one of the 4–5 models from the cost sweep (keep at least 3 spanning a real price range).
 4. Drop the FastAPI deployment to `juliusm.com`; demo locally with a screen recording as backup.
@@ -2025,14 +2040,41 @@ to build a source-grounded path that resolves the cases where a
 clinical coordinator would reasonably expect the system to use the
 patient chart and trial text.
 
-**Placement:** these are Phase 2 correctness tasks (2.12-2.14),
+**Placement:** these are Phase 2 correctness tasks (2.12-2.16),
 after terminology expansion (2.10) and before Phase 3's model
 cost-quality sweep (3.2) and routing dashboard (3.3). Task 2.12
-creates the patient-side FHIR evidence labels needed to measure the
-new matcher behavior; 2.13 and 2.14 build the adjudicator and unit
-paths. Routing economics only become meaningful once the graph has
-the right kinds of matcher nodes to route between and labels that
-can tell whether those routes improved usefulness.
+resets the patient-side FHIR evidence labels around in-scope rows;
+2.13 makes assumption modes and LLM-use levels explicit; 2.14 builds
+retrieval-only evidence plumbing; 2.15 adds bounded adjudication; and
+2.16 adds the unit path. Routing economics only become meaningful once
+the graph has the right kinds of matcher nodes to route between and
+labels that can tell whether those routes improved usefulness.
+
+### D-71. Re-center matching on retrieved evidence, not concept mapping gates
+**Picked:** the core product loop is now stated as: feed trials and
+patients into the system, retrieve relevant patient evidence, and decide
+whether there is enough support to flag a possible match for CRC review.
+Terminology APIs and ConceptSets remain important, but as precision anchors
+inside retrieval/adjudication, not as the only door into matching. If a
+criterion says "NSCLC" and no reviewed ConceptSet exists, the system should
+not simply stop at `unmapped_concept`; it should either retrieve candidate
+patient evidence and adjudicate it, or clearly report that the required
+evidence is missing/out of scope.
+
+**Rejected:** treating the current 60-row patient-evidence packet as a
+mandatory annotation gate when many rows are really scope or terminology
+gaps. In particular, oncology/NSCLC rows should not define the next core
+work unless oncology-capable patient evidence is deliberately added.
+
+**Why:** the reviewer UI surfaced a bad failure mode in the plan itself:
+`Extract criterion -> require deterministic ConceptSet mapping -> fail into
+unmapped_concept -> build calibration around the failures`. That is auditable,
+but it is not the coordinator workflow. The demo should show that the system
+can take real trial criteria and patient records, retrieve/cite relevant
+evidence, and classify the case as supported, contradicted, or insufficiently
+supported. Closed-world assumptions are useful for synthetic evals, but they
+must be explicit matcher modes (`open_world` default; `closed_world_eval` only
+where the data contract justifies it), not hidden assumptions.
 
 ### D-9. Defer KPMG-specific framing of the writeup until Phase 3
 **Rejected:** writing the deployment readiness doc up front.
@@ -2078,8 +2120,9 @@ match the writeup rather than the other way around.
   the borderline cases for the metric to mean anything? (Initial Phase 2.6
   pass: 25/25 human labels marked `correct`, so the rubric is usable for
   checking matcher honesty. Remaining question: whether judge scores should
-  be weighted by usefulness / resolved-case movement once 2.12-2.14 add
-  patient-side labels and source-grounded matcher paths.)
+  be weighted by usefulness / resolved-case movement once 2.12-2.16 add
+  patient-side labels, explicit assumption modes, source-grounded matcher
+  paths, and unit reconciliation.)
 - Will the Svelte reviewer UI integration land cleanly into the Astro
   routing on `juliusm.com`, or should it be a sibling subdomain? (Decide at
   Phase 2 task 2.9.)

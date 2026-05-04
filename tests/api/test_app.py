@@ -186,6 +186,128 @@ def test_layer3_calibration_save_merges_labels(
     assert "conventional eGFR unit" in saved
 
 
+def test_patient_evidence_calibration_returns_candidates_with_existing_labels(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    candidates_path = tmp_path / "patient_evidence_candidates.json"
+    labels_path = tmp_path / "patient_evidence_labels.json"
+    candidates_path.write_text(
+        """
+[
+  {
+    "pair_id": "p1__T1",
+    "patient_id": "p1",
+    "nct_id": "T1",
+    "criterion_index": 0,
+    "candidate_bucket": "condition_present",
+    "criterion_kind": "condition_present",
+    "criterion_source_text": "Diagnosis of diabetes",
+    "polarity": "inclusion",
+    "negated": false,
+    "mood": "actual",
+    "matcher_verdict": "indeterminate",
+    "matcher_reason": "unmapped_concept",
+    "matcher_rationale": "No ConceptSet mapping.",
+    "matcher_evidence": [],
+    "judge_label": "correct",
+    "judge_error_categories": [],
+    "judge_rationale": "Conservative.",
+    "source_rows": [
+      {
+        "source": "patient",
+        "kind": "condition",
+        "label": "Type 2 diabetes mellitus",
+        "value": "Type 2 diabetes mellitus",
+        "row_id": "patient:000"
+      }
+    ],
+    "existing_label": null
+  }
+]
+""".strip()
+        + "\n"
+    )
+    labels_path.write_text(
+        """
+[
+  {
+    "pair_id": "p1__T1",
+    "criterion_index": 0,
+    "label": "supports_present",
+    "cited_source_row_ids": ["patient:000"],
+    "expected_matcher_verdict": "pass",
+    "reviewer": "jm",
+    "rationale": "condition row supports it"
+  }
+]
+""".strip()
+        + "\n"
+    )
+    monkeypatch.setattr(api_app, "DEFAULT_PATIENT_EVIDENCE_CANDIDATES", candidates_path)
+    monkeypatch.setattr(api_app, "DEFAULT_PATIENT_EVIDENCE_LABELS", labels_path)
+
+    response = client.get("/patient-evidence/calibration")
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["candidate_path"] == str(candidates_path)
+    assert body["label_path"] == str(labels_path)
+    assert body["rows"][0]["criterion_source_text"] == "Diagnosis of diabetes"
+    assert body["rows"][0]["source_rows"][0]["row_id"] == "patient:000"
+    assert body["rows"][0]["existing_label"]["label"] == "supports_present"
+
+
+def test_patient_evidence_calibration_save_merges_labels(
+    client: TestClient,
+    tmp_path: Path,
+) -> None:
+    labels_path = tmp_path / "patient_evidence_labels.json"
+    labels_path.write_text(
+        """
+[
+  {
+    "pair_id": "keep",
+    "criterion_index": 1,
+    "label": "insufficient_evidence",
+    "cited_source_row_ids": [],
+    "expected_matcher_verdict": "indeterminate",
+    "reviewer": null,
+    "rationale": "keep"
+  }
+]
+""".strip()
+        + "\n"
+    )
+
+    response = client.post(
+        "/patient-evidence/calibration",
+        json={
+            "label_path": str(labels_path),
+            "labels": [
+                {
+                    "pair_id": "p1__T1",
+                    "criterion_index": 0,
+                    "label": "supports_present",
+                    "cited_source_row_ids": ["patient:000"],
+                    "expected_matcher_verdict": "pass",
+                    "reviewer": "jm",
+                    "rationale": "condition row supports the criterion",
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["saved"] == 2
+    saved = labels_path.read_text()
+    assert '"pair_id": "keep"' in saved
+    assert '"pair_id": "p1__T1"' in saved
+    assert '"cited_source_row_ids": [' in saved
+    assert '"patient:000"' in saved
+
+
 # ---------------- research helper
 
 

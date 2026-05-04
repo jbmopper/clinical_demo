@@ -11,9 +11,10 @@
 	} from '$lib/api';
 	import CriterionRow from '$lib/CriterionRow.svelte';
 	import LayerThreeCalibration from '$lib/LayerThreeCalibration.svelte';
+	import PatientEvidenceCalibration from '$lib/PatientEvidenceCalibration.svelte';
 	import VerdictPill from '$lib/VerdictPill.svelte';
 
-	let mode = $state<'score' | 'calibration'>('score');
+	let mode = $state<'score' | 'calibration' | 'patient-evidence'>('score');
 
 	// catalog state
 	let patients = $state<PatientRow[]>([]);
@@ -109,6 +110,9 @@
 	<button class:active={mode === 'calibration'} onclick={() => (mode = 'calibration')}>
 		Layer-3 calibration
 	</button>
+	<button class:active={mode === 'patient-evidence'} onclick={() => (mode = 'patient-evidence')}>
+		Patient evidence labels
+	</button>
 </nav>
 
 {#if catalogError}
@@ -120,6 +124,8 @@
 
 {#if mode === 'calibration'}
 	<LayerThreeCalibration />
+{:else if mode === 'patient-evidence'}
+	<PatientEvidenceCalibration />
 {:else}
 	<section class="form">
 		<label>

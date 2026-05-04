@@ -29,6 +29,16 @@ from ..evals.layer_three import (
     save_human_labels,
     select_stratified_judge_targets,
 )
+from ..evals.patient_evidence import (
+    PatientEvidenceCalibrationRow,
+    PatientEvidenceHumanLabel,
+    PatientEvidenceSourceRow,
+    load_patient_evidence_labels_if_exists,
+    load_patient_evidence_rows,
+    merge_patient_evidence_labels,
+    patient_evidence_source_rows,
+    save_patient_evidence_labels,
+)
 from ..evals.store import list_runs, load_run, open_store
 from ..research import (
     CriterionResearchBlurb,
@@ -51,6 +61,9 @@ log = logging.getLogger(__name__)
 
 DEFAULT_EVAL_DB = Path("eval/runs.sqlite")
 DEFAULT_LAYER3_LABELS = Path("eval/calibration/layer3_human_labels.json")
+DEFAULT_PATIENT_EVIDENCE_CANDIDATES = Path("eval/calibration/patient_evidence_candidates.json")
+DEFAULT_PATIENT_EVIDENCE_LABELS = Path("eval/calibration/patient_evidence_labels.json")
+PATIENT_EVIDENCE_SOURCE_LIMIT = 500
 
 
 # --------------------- request / response schemas
@@ -109,6 +122,22 @@ class LayerThreeCalibrationSaveRequest(BaseModel):
 
 
 class LayerThreeCalibrationSaveResponse(BaseModel):
+    label_path: str
+    saved: int
+
+
+class PatientEvidenceCalibrationResponse(BaseModel):
+    candidate_path: str
+    label_path: str
+    rows: list[PatientEvidenceCalibrationRow]
+
+
+class PatientEvidenceCalibrationSaveRequest(BaseModel):
+    labels: list[PatientEvidenceHumanLabel]
+    label_path: str | None = None
+
+
+class PatientEvidenceCalibrationSaveResponse(BaseModel):
     label_path: str
     saved: int
 
@@ -243,6 +272,65 @@ def create_app() -> FastAPI:
             saved=len(merged),
         )
 
+    @app.get(
+        "/patient-evidence/calibration",
+        response_model=PatientEvidenceCalibrationResponse,
+        tags=["eval"],
+    )
+    def patient_evidence_calibration(
+        candidate_path: str | None = None,
+        label_path: str | None = None,
+    ) -> PatientEvidenceCalibrationResponse:
+        candidates_path = (
+            Path(candidate_path) if candidate_path else DEFAULT_PATIENT_EVIDENCE_CANDIDATES
+        )
+        labels_path = Path(label_path) if label_path else DEFAULT_PATIENT_EVIDENCE_LABELS
+        if not candidates_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"patient evidence candidate packet not found at {candidates_path}",
+            )
+
+        rows = load_patient_evidence_rows(candidates_path)
+        labels = {
+            (label.pair_id, label.criterion_index): label
+            for label in load_patient_evidence_labels_if_exists(labels_path)
+        }
+        source_row_cache: dict[tuple[str, str], list[PatientEvidenceSourceRow]] = {}
+        rows_with_labels = [
+            row.model_copy(
+                update={
+                    "existing_label": labels.get(
+                        (row.pair_id, row.criterion_index),
+                    ),
+                    "source_rows": _patient_evidence_source_rows(row, source_row_cache),
+                }
+            )
+            for row in rows
+        ]
+        return PatientEvidenceCalibrationResponse(
+            candidate_path=str(candidates_path),
+            label_path=str(labels_path),
+            rows=rows_with_labels,
+        )
+
+    @app.post(
+        "/patient-evidence/calibration",
+        response_model=PatientEvidenceCalibrationSaveResponse,
+        tags=["eval"],
+    )
+    def save_patient_evidence_calibration(
+        req: PatientEvidenceCalibrationSaveRequest,
+    ) -> PatientEvidenceCalibrationSaveResponse:
+        labels_path = Path(req.label_path) if req.label_path else DEFAULT_PATIENT_EVIDENCE_LABELS
+        existing = load_patient_evidence_labels_if_exists(labels_path)
+        merged = merge_patient_evidence_labels(existing, req.labels)
+        save_patient_evidence_labels(labels_path, merged)
+        return PatientEvidenceCalibrationSaveResponse(
+            label_path=str(labels_path),
+            saved=len(merged),
+        )
+
     @app.post(
         "/research/criterion",
         response_model=CriterionResearchBlurb,
@@ -300,6 +388,37 @@ def create_app() -> FastAPI:
             ) from exc
 
     return app
+
+
+def _patient_evidence_source_rows(
+    row: PatientEvidenceCalibrationRow,
+    cache: dict[tuple[str, str], list[PatientEvidenceSourceRow]],
+) -> list[PatientEvidenceSourceRow]:
+    """Return full parsed source rows for patient-evidence review when available."""
+
+    key = (row.patient_id, row.nct_id)
+    if key in cache:
+        return cache[key]
+    try:
+        context = build_source_context(
+            load_patient(row.patient_id),
+            load_trial(row.nct_id),
+            max_conditions=PATIENT_EVIDENCE_SOURCE_LIMIT,
+            max_observations=PATIENT_EVIDENCE_SOURCE_LIMIT,
+            max_medications=PATIENT_EVIDENCE_SOURCE_LIMIT,
+        )
+    except (CuratedDataMissing, FileNotFoundError) as exc:
+        log.warning(
+            "falling back to persisted patient-evidence source rows for %s/%s: %s",
+            row.patient_id,
+            row.nct_id,
+            exc,
+        )
+        cache[key] = row.source_rows
+        return row.source_rows
+    source_rows = patient_evidence_source_rows(context)
+    cache[key] = source_rows
+    return source_rows
 
 
 __all__ = [

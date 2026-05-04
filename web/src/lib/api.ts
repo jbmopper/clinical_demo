@@ -9,6 +9,11 @@ const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000';
 export type Eligibility = 'pass' | 'fail' | 'indeterminate';
 export type Verdict = 'pass' | 'fail' | 'indeterminate';
 export type JudgeLabel = 'correct' | 'incorrect' | 'unjudgeable';
+export type PatientEvidenceLabel =
+	| 'supports_present'
+	| 'supports_absent'
+	| 'supports_measurement_comparison'
+	| 'insufficient_evidence';
 
 export interface PatientRow {
 	patient_id: string;
@@ -170,6 +175,10 @@ export interface LayerThreeSourceRecord {
 	status?: string | null;
 }
 
+export interface PatientEvidenceSourceRow extends LayerThreeSourceRecord {
+	row_id: string;
+}
+
 export interface LayerThreeSourceContext {
 	patient: LayerThreeSourceRecord[];
 	trial: LayerThreeSourceRecord[];
@@ -198,6 +207,44 @@ export interface LayerThreeCalibrationResponse {
 	run_id: string;
 	label_path: string;
 	rows: LayerThreeCalibrationRow[];
+}
+
+export interface PatientEvidenceHumanLabel {
+	pair_id: string;
+	criterion_index: number;
+	label: PatientEvidenceLabel | null;
+	cited_source_row_ids: string[];
+	expected_matcher_verdict: Verdict | null;
+	reviewer?: string | null;
+	rationale: string;
+}
+
+export interface PatientEvidenceCalibrationRow {
+	pair_id: string;
+	patient_id: string;
+	nct_id: string;
+	criterion_index: number;
+	candidate_bucket: string;
+	criterion_kind: string;
+	criterion_source_text: string;
+	polarity: string;
+	negated: boolean;
+	mood: string;
+	matcher_verdict: Verdict;
+	matcher_reason: VerdictReason;
+	matcher_rationale: string;
+	matcher_evidence: Evidence[];
+	judge_label?: JudgeLabel | null;
+	judge_error_categories: string[];
+	judge_rationale?: string | null;
+	source_rows: PatientEvidenceSourceRow[];
+	existing_label: PatientEvidenceHumanLabel | null;
+}
+
+export interface PatientEvidenceCalibrationResponse {
+	candidate_path: string;
+	label_path: string;
+	rows: PatientEvidenceCalibrationRow[];
 }
 
 export interface ResearchSource {
@@ -285,6 +332,23 @@ export async function saveLayerThreeCalibration(
 ): Promise<{ label_path: string; saved: number }> {
 	return jsonOrThrow(
 		await fetch(`${API_BASE}/layer3/calibration`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ labels, label_path: labelPath })
+		})
+	);
+}
+
+export async function getPatientEvidenceCalibration(): Promise<PatientEvidenceCalibrationResponse> {
+	return jsonOrThrow(await fetch(`${API_BASE}/patient-evidence/calibration`));
+}
+
+export async function savePatientEvidenceCalibration(
+	labels: PatientEvidenceHumanLabel[],
+	labelPath?: string
+): Promise<{ label_path: string; saved: number }> {
+	return jsonOrThrow(
+		await fetch(`${API_BASE}/patient-evidence/calibration`, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({ labels, label_path: labelPath })

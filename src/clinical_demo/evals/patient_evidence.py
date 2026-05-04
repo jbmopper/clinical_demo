@@ -122,6 +122,33 @@ def save_patient_evidence_rows(
     )
 
 
+def load_patient_evidence_rows(path: Path | str) -> list[PatientEvidenceCalibrationRow]:
+    """Load a persisted patient-side evidence candidate packet."""
+
+    raw = json.loads(Path(path).read_text())
+    return [PatientEvidenceCalibrationRow.model_validate(item) for item in raw]
+
+
+def merge_patient_evidence_labels(
+    existing: list[PatientEvidenceHumanLabel],
+    updates: list[PatientEvidenceHumanLabel],
+) -> list[PatientEvidenceHumanLabel]:
+    """Merge reviewer updates into existing labels by target key."""
+
+    merged = {(label.pair_id, label.criterion_index): label for label in existing}
+    for label in updates:
+        merged[(label.pair_id, label.criterion_index)] = label
+    return list(merged.values())
+
+
+def patient_evidence_source_rows(
+    context: LayerThreeSourceContext,
+) -> list[PatientEvidenceSourceRow]:
+    """Convert a source context into stable row ids for patient-evidence review."""
+
+    return _indexed_source_rows(context)
+
+
 def load_layer_three_report(path: Path | str) -> LayerThreeReport:
     """Load a persisted Layer-3 judge report."""
 
@@ -341,7 +368,10 @@ __all__ = [
     "load_layer_three_report",
     "load_patient_evidence_labels",
     "load_patient_evidence_labels_if_exists",
+    "load_patient_evidence_rows",
+    "merge_patient_evidence_labels",
     "patient_evidence_bucket",
+    "patient_evidence_source_rows",
     "save_patient_evidence_labels",
     "save_patient_evidence_rows",
     "select_patient_evidence_targets",

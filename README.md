@@ -33,12 +33,20 @@ AI Forward Deployed Engineer interview.
 > source evidence behind it.
 >
 > **579 Python tests passing**; Svelte production build verified
-> locally. Up next in Phase 2: review the generated 60-row
-> patient-side FHIR evidence label template, then keep the
-> deterministic matcher as the first pass while adding bounded LLM
-> passes over retrieved patient/trial sources for condition
-> presence/absence and unit reconciliation before the Phase 3
-> cost-quality routing sweep.
+> locally. Up next in Phase 2: re-center the matcher on the core
+> product loop -- feed trials + patients into the system, retrieve
+> relevant patient evidence, and decide whether there is enough
+> support to flag a possible match. The generated 60-row
+> patient-evidence packet now needs narrowing to in-scope
+> cardiometabolic rows before it becomes a gold set; oncology/NSCLC
+> rows are deferred unless paired with hand-crafted oncology
+> evidence. The next implementation steps are explicit matcher
+> assumption modes (`open_world` by default, `closed_world_eval`
+> only for synthetic/eval slices), LLM-use levels (`none`,
+> `retrieval_only`, `bounded_adjudication`, `critic`), structured
+> FHIR evidence retrieval, bounded LLM adjudication over retrieved
+> rows, and unit reconciliation before the Phase 3 cost-quality
+> routing sweep.
 
 ## What it is (one paragraph)
 
@@ -290,15 +298,15 @@ predicate of the criterion. The LLM matcher's verdicts carry
 `matcher_version="llm-matcher-v0.1"` so eval consumers can pivot
 on which path produced each verdict.
 
-Routing rule (planned v1, Phase 2.12-2.14): keep the deterministic
-matcher as the first pass, then route selected unresolved rows to
-bounded LLM/source-evidence passes. Examples include compound or
-unmapped condition criteria, social-history absence criteria,
-malformed extractor payloads that still have useful source text,
-and measurement thresholds whose clinical unit can be inferred
-from conventional usage. Numeric conversions remain deterministic
-and whitelisted; the LLM is used to interpret sources and propose
-the intended measurement/unit, not to silently do math.
+Routing rule (planned v1, Phase 2.12-2.16): keep the deterministic
+matcher as the first pass, then route selected unresolved rows through
+retrieval before any LLM adjudication. Terminology/code matches are
+precision anchors, not the sole gateway. `retrieval_only` mode returns
+ranked patient source rows with stable citation IDs; `bounded_adjudication`
+lets a criterion-level LLM decide only over those retrieved rows under the
+active matcher assumption mode. Numeric conversions remain deterministic
+and whitelisted; the LLM is used to interpret sources and propose the
+intended measurement/unit, not to silently do math.
 
 ### Critic loop (Phase 2.2)
 
