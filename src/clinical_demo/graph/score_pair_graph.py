@@ -162,7 +162,7 @@ def score_pair_graph(
     ) as span:
         final_state = graph.invoke(initial_state, config=config or None)
 
-        verdicts = _apply_retrieval_only(
+        verdicts, llm_calls = _apply_retrieval_only(
             final_state["final_verdicts"],
             patient=patient,
             trial=trial,
@@ -170,16 +170,17 @@ def score_pair_graph(
             matcher_assumption_mode=matcher_assumption_mode,
             patient_evidence_client=patient_evidence_client,
         )
-        summary = (
-            _summarize(verdicts)
-            if verdicts is not final_state["final_verdicts"]
-            else final_state["summary"]
-        )
-        eligibility = (
-            _rollup(verdicts)
-            if verdicts is not final_state["final_verdicts"]
-            else final_state["eligibility"]
-        )
+        # Recompute summary/eligibility only when retrieval changed
+        # the verdict list; the graph's own summary already covers
+        # the deterministic-only path, but it does not know about
+        # adjudicator cost so we recompute when we collected any
+        # `llm_calls` to pick those up.
+        if verdicts is not final_state["final_verdicts"] or llm_calls:
+            summary = _summarize(verdicts, llm_calls)
+            eligibility = _rollup(verdicts)
+        else:
+            summary = final_state["summary"]
+            eligibility = final_state["eligibility"]
         result = ScorePairResult(
             patient_id=patient.patient_id,
             nct_id=trial.nct_id,
@@ -191,6 +192,7 @@ def score_pair_graph(
             verdicts=verdicts,
             summary=summary,
             eligibility=eligibility,
+            llm_calls=llm_calls,
         )
 
         critic_iterations = final_state.get("critic_iterations", 0)

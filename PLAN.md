@@ -19,7 +19,29 @@
 > rationale lives in §12.
 
 - **Active phase:** Phase 2 — Workflow + eval.
-- **Last completed:** PLAN tasks 2.15/2.16 empirical rerun —
+- **Last completed:** D-72 follow-up — **adjudicator cost telemetry persisted
+  on `ScorePairResult` and `eval/runs.sqlite`.** New
+  `clinical_demo.cost_telemetry.LLMCallCost` carries per-call `stage`,
+  `criterion_index`, model + prompt version, token counts, USD, and latency.
+  `adjudicate_patient_evidence` now returns `(MatchVerdict, LLMCallCost | None)`;
+  `_apply_retrieval_only` collects them into a list that rides on
+  `ScorePairResult.llm_calls`. `ScoringSummary` gains `adjudicator_calls`,
+  `adjudicator_input_tokens`, `adjudicator_output_tokens`, and
+  `adjudicator_cost_usd` aggregates so the SQLite store can persist them as
+  flat columns for fast pivots. `eval/runs.sqlite` schema bumped v2 -> v3 with
+  an additive migration adding the four `adjudicator_*` columns; `save_run`
+  populates them from the rolled-up summary. `scripts/eval.py` summary printer
+  now prints "adjudicator calls: N  cost (sum over M cases): $X". Web typings
+  (`web/src/lib/api.ts`) gained `LLMCallCost` and the new summary fields so
+  the reviewer dashboard can surface adjudicator spend without re-walking
+  evidence. Tests: new adjudicator no-op-returns-no-cost pin, updated
+  `test_bounded_adjudication_can_replace_indeterminate_with_cited_verdict` to
+  assert `llm_calls` / summary aggregates, and a new v2 -> v3 migration test.
+  Verification: `uv run pytest` 599/599, `uv run ruff check .` clean,
+  `uv run mypy src` clean. This unblocks the Phase 3.2 cost-quality sweep
+  precondition called out in D-72; the remaining blocker is filling the
+  60-row `eval/calibration/patient_evidence_labels.json` gold set.
+  Previous: PLAN tasks 2.15/2.16 empirical rerun —
   **Bounded adjudication plus deterministic unit reconciliation evaluated.**
   Added `clinical_demo.adjudication.patient_evidence`, a citation-required
   structured-output LLM adjudicator that sees exactly one criterion, its
@@ -692,7 +714,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | # | Task | Est. (hr) |
 |---|---|---|
 | 3.1 | Model abstraction layer that lets the same node call any of 4–5 models with consistent JSON-schema enforcement. It must preserve the LLM-use levels from 2.13 (`none`, `retrieval_only`, `bounded_adjudication`, `critic`) so cost/quality experiments measure routing choices, not hidden behavior changes. | 3 |
-| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Precondition: fill the 60-row patient-evidence labels and persist adjudicator token/cost metadata in `ScorePairResult` / eval rows; the 2026-05-04 bounded run recorded latency but not adjudicator cost in SQLite. | 4 |
+| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Precondition: fill the 60-row patient-evidence labels. Adjudicator token/cost telemetry now persists on `ScorePairResult.llm_calls` and the v3 `eval/runs.sqlite` schema (`adjudicator_cost_usd` / `adjudicator_input_tokens` / `adjudicator_output_tokens` / `adjudicator_calls`), so routing economics are already auditable from local eval artifacts. | 4 |
 | 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). | 4 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
@@ -2127,14 +2149,19 @@ pass/fail while leaving unsupported rows as `no_data`. The top-level effect is
 still conservative: 9/49 cases moved indeterminate -> fail and 0 moved -> pass.
 That may be clinically reasonable, but without the 60-row gold labels the
 project cannot distinguish "good conservative rejection" from "missed
-opportunity to identify a possible match." The same rerun also exposed a Phase
-3 blocker: adjudicator token/cost telemetry is captured in Langfuse spans but
-not persisted into `eval/runs.sqlite`, so routing economics are not yet
-auditable from local eval artifacts.
+opportunity to identify a possible match." The same rerun originally also
+exposed a second Phase 3 blocker — adjudicator cost telemetry was captured in
+Langfuse spans but not persisted into `eval/runs.sqlite` — which has now been
+cleared by the `LLMCallCost` plumbing on `ScorePairResult.llm_calls` plus the
+v2 -> v3 SQLite migration adding `adjudicator_cost_usd` /
+`adjudicator_input_tokens` / `adjudicator_output_tokens` /
+`adjudicator_calls`. Routing economics are auditable from local eval
+artifacts now; the remaining D-72 blocker is just the gold-label fill.
 
 **Placement:** fill `eval/calibration/patient_evidence_labels.json` before
-prompt tuning or routing claims; then add adjudicator cost persistence before
-the Phase 3.2 cost-quality sweep. Until then, `retrieval_only` is the credible
+prompt tuning or routing claims, then run the Phase 3.2 cost-quality sweep
+against the now-instrumented adjudicator path. Until then, `retrieval_only`
+is the credible
 cheap reviewer-evidence baseline and `bounded_adjudication` is a promising,
 uncalibrated option.
 

@@ -37,10 +37,11 @@ from collections import Counter
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..adjudication.patient_evidence import _ClientLike as _PatientEvidenceClient
 from ..adjudication.patient_evidence import adjudicate_patient_evidence
+from ..cost_telemetry import LLMCallCost
 from ..domain.patient import Patient
 from ..domain.trial import Trial
 from ..extractor.enrich import enrich_with_structured_fields
@@ -70,12 +71,21 @@ class ScoringSummary(BaseModel):
     pivot on summary counts (e.g. "matcher's `unmapped_concept` rate
     on this slice jumped 30% after extractor-v0.2") without
     re-aggregating from raw verdict lists every time.
+
+    Adjudicator cost aggregates surface here (sum / call count) so the
+    SQLite store can persist them as flat columns for fast pivots in
+    the cost-quality dashboard. Per-call detail still lives on
+    `ScorePairResult.llm_calls` for fine-grained routing analyses.
     """
 
     total_criteria: int
     by_verdict: dict[str, int]
     by_reason: dict[str, int]
     by_polarity: dict[str, int]
+    adjudicator_calls: int = 0
+    adjudicator_input_tokens: int | None = None
+    adjudicator_output_tokens: int | None = None
+    adjudicator_cost_usd: float | None = None
 
 
 class ScorePairResult(BaseModel):
@@ -91,6 +101,7 @@ class ScorePairResult(BaseModel):
     verdicts: list[MatchVerdict]
     summary: ScoringSummary
     eligibility: EligibilityRollup
+    llm_calls: list[LLMCallCost] = Field(default_factory=list)
 
 
 def score_pair(
@@ -161,7 +172,7 @@ def score_pair(
 
         profile = PatientProfile(patient, as_of)
         verdicts = match_extracted(enriched_criteria.criteria, profile, trial)
-        verdicts = _apply_retrieval_only(
+        verdicts, llm_calls = _apply_retrieval_only(
             verdicts,
             patient=patient,
             trial=trial,
@@ -169,7 +180,7 @@ def score_pair(
             llm_use_level=llm_use_level,
             patient_evidence_client=patient_evidence_client,
         )
-        summary = _summarize(verdicts)
+        summary = _summarize(verdicts, llm_calls)
         eligibility = _rollup(verdicts)
 
         # Stringify count dicts because Langfuse v4 propagated
@@ -213,6 +224,7 @@ def score_pair(
         verdicts=verdicts,
         summary=summary,
         eligibility=eligibility,
+        llm_calls=llm_calls,
     )
 
 
@@ -224,15 +236,21 @@ def _apply_retrieval_only(
     matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
     llm_use_level: LLMUseLevel,
     patient_evidence_client: _PatientEvidenceClient | None = None,
-) -> list[MatchVerdict]:
-    """Attach or adjudicate retrieved patient rows after deterministic matching."""
+) -> tuple[list[MatchVerdict], list[LLMCallCost]]:
+    """Attach or adjudicate retrieved patient rows after deterministic matching.
+
+    Returns the (possibly enriched) verdict list plus an ordered list
+    of `LLMCallCost` records for any LLM-backed adjudications that
+    fired. Empty list when `llm_use_level` is `none` or
+    `retrieval_only` (deterministic-only retrieval doesn't bill)."""
 
     if llm_use_level not in {"retrieval_only", "bounded_adjudication"}:
-        return verdicts
+        return verdicts, []
 
     source_rows = structured_source_rows_for_pair(patient, trial)
     enriched: list[MatchVerdict] = []
-    for verdict in verdicts:
+    llm_calls: list[LLMCallCost] = []
+    for criterion_index, verdict in enumerate(verdicts):
         if verdict.verdict != "indeterminate":
             enriched.append(verdict)
             continue
@@ -247,16 +265,18 @@ def _apply_retrieval_only(
             continue
 
         if llm_use_level == "bounded_adjudication":
-            enriched.append(
-                adjudicate_patient_evidence(
-                    criterion=verdict.criterion,
-                    deterministic_verdict=verdict,
-                    retrieved=retrieved,
-                    trial_context=_trial_context(trial),
-                    matcher_assumption_mode=matcher_assumption_mode,
-                    client=patient_evidence_client,
-                )
+            adjudicated, cost = adjudicate_patient_evidence(
+                criterion=verdict.criterion,
+                criterion_index=criterion_index,
+                deterministic_verdict=verdict,
+                retrieved=retrieved,
+                trial_context=_trial_context(trial),
+                matcher_assumption_mode=matcher_assumption_mode,
+                client=patient_evidence_client,
             )
+            enriched.append(adjudicated)
+            if cost is not None:
+                llm_calls.append(cost)
             continue
 
         retrieval_evidence = [
@@ -280,7 +300,7 @@ def _apply_retrieval_only(
                 update={"evidence": [*verdict.evidence, *retrieval_evidence]},
             )
         )
-    return enriched
+    return enriched, llm_calls
 
 
 def _trial_context(trial: Trial) -> str:
@@ -307,20 +327,48 @@ def _rollup(verdicts: list[MatchVerdict]) -> EligibilityRollup:
     return "pass"
 
 
-def _summarize(verdicts: list[MatchVerdict]) -> ScoringSummary:
+def _summarize(
+    verdicts: list[MatchVerdict],
+    llm_calls: list[LLMCallCost] | None = None,
+) -> ScoringSummary:
     """Roll the per-criterion verdicts into the counts the dashboard
-    and the CLI summary printer want."""
+    and the CLI summary printer want.
+
+    `llm_calls` is the list of LLM cost records gathered during
+    scoring; the adjudicator subtotal is computed from the entries
+    whose `stage == "patient_evidence_adjudicator"` so future stages
+    can be added without re-shaping the summary."""
     # Cast the Counter keys to plain str on the way out so the
     # ScoringSummary's API doesn't leak the closed Literal types of
     # the upstream enums into every consumer's type signature.
     by_verdict: Counter[str] = Counter(str(v.verdict) for v in verdicts)
     by_reason: Counter[str] = Counter(str(v.reason) for v in verdicts)
     by_polarity: Counter[str] = Counter(str(v.criterion.polarity) for v in verdicts)
+
+    adjudicator_calls = 0
+    adjudicator_in: int | None = None
+    adjudicator_out: int | None = None
+    adjudicator_cost: float | None = None
+    for call in llm_calls or []:
+        if call.stage != "patient_evidence_adjudicator":
+            continue
+        adjudicator_calls += 1
+        if call.input_tokens is not None:
+            adjudicator_in = (adjudicator_in or 0) + call.input_tokens
+        if call.output_tokens is not None:
+            adjudicator_out = (adjudicator_out or 0) + call.output_tokens
+        if call.cost_usd is not None:
+            adjudicator_cost = (adjudicator_cost or 0.0) + call.cost_usd
+
     return ScoringSummary(
         total_criteria=len(verdicts),
         by_verdict=dict(by_verdict),
         by_reason=dict(by_reason),
         by_polarity=dict(by_polarity),
+        adjudicator_calls=adjudicator_calls,
+        adjudicator_input_tokens=adjudicator_in,
+        adjudicator_output_tokens=adjudicator_out,
+        adjudicator_cost_usd=adjudicator_cost,
     )
 
 

@@ -100,8 +100,9 @@ def test_adjudicator_returns_cited_verdict() -> None:
     )
     client = _StubClient(parsed)
 
-    verdict = adjudicate_patient_evidence(
+    verdict, cost = adjudicate_patient_evidence(
         criterion=_deterministic_verdict().criterion,
+        criterion_index=3,
         deterministic_verdict=_deterministic_verdict(),
         retrieved=_retrieved(),
         trial_context="test trial",
@@ -118,6 +119,17 @@ def test_adjudicator_returns_cited_verdict() -> None:
     assert client.captured is not None
     assert client.captured["response_format"] is PatientEvidenceAdjudicatorOutput
     assert "RETRIEVED PATIENT ROWS" in client.captured["messages"][1]["content"]
+    assert cost is not None
+    assert cost.stage == "patient_evidence_adjudicator"
+    assert cost.criterion_index == 3
+    assert cost.prompt_version  # the pinned prompt version, non-empty
+    # Stub client has no usage payload, so token / cost fields are
+    # nullable; latency_ms is observed from the Python clock and is
+    # always populated.
+    assert cost.input_tokens is None
+    assert cost.output_tokens is None
+    assert cost.cost_usd is None
+    assert cost.latency_ms is not None and cost.latency_ms >= 0.0
 
 
 def test_adjudicator_fails_closed_when_decisive_verdict_has_no_valid_citation() -> None:
@@ -128,8 +140,9 @@ def test_adjudicator_fails_closed_when_decisive_verdict_has_no_valid_citation() 
         rationale="unsupported decisive answer",
     )
 
-    verdict = adjudicate_patient_evidence(
+    verdict, cost = adjudicate_patient_evidence(
         criterion=_deterministic_verdict().criterion,
+        criterion_index=0,
         deterministic_verdict=_deterministic_verdict(),
         retrieved=_retrieved(),
         trial_context="test trial",
@@ -141,3 +154,35 @@ def test_adjudicator_fails_closed_when_decisive_verdict_has_no_valid_citation() 
     assert verdict.verdict == "indeterminate"
     assert verdict.reason == "human_review_required"
     assert "did not cite" in verdict.rationale
+    # Even fail-closed adjudications still incur the LLM call, so
+    # the cost record must be returned for billing accounting.
+    assert cost is not None
+    assert cost.stage == "patient_evidence_adjudicator"
+
+
+def test_adjudicator_no_retrieved_evidence_returns_no_cost() -> None:
+    """No-op path returns the deterministic verdict and a None cost record.
+
+    The caller distinguishes "ran but free" (None) from "ran and
+    billed" (an `LLMCallCost`) so we don't accidentally double-bill
+    by counting a no-op as a zero-USD adjudication."""
+    parsed = PatientEvidenceAdjudicatorOutput(
+        verdict="pass",
+        reason="ok",
+        cited_source_row_ids=[],
+        rationale="unused",
+    )
+    deterministic = _deterministic_verdict()
+    verdict, cost = adjudicate_patient_evidence(
+        criterion=deterministic.criterion,
+        criterion_index=0,
+        deterministic_verdict=deterministic,
+        retrieved=[],
+        trial_context="test trial",
+        matcher_assumption_mode="open_world",
+        client=_StubClient(parsed),
+        settings=_settings(),
+    )
+
+    assert verdict is deterministic
+    assert cost is None

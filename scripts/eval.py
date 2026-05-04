@@ -287,6 +287,9 @@ def _summarize(run: RunResult) -> str:
     total_cost = 0.0
     total_latency = 0.0
     n_with_cost = 0
+    adjudicator_cost = 0.0
+    adjudicator_calls = 0
+    n_with_adjudicator = 0
     for c in run.cases:
         if c.result is None:
             continue
@@ -299,6 +302,10 @@ def _summarize(run: RunResult) -> str:
         if c.result.extraction_meta.cost_usd is not None:
             total_cost += c.result.extraction_meta.cost_usd
             n_with_cost += 1
+        if c.result.summary.adjudicator_cost_usd is not None:
+            adjudicator_cost += c.result.summary.adjudicator_cost_usd
+            n_with_adjudicator += 1
+        adjudicator_calls += c.result.summary.adjudicator_calls
         total_latency += c.scoring_latency_ms
 
     lines: list[str] = []
@@ -315,6 +322,11 @@ def _summarize(run: RunResult) -> str:
     )
     if n_with_cost:
         lines.append(f"  extraction cost (sum over {n_with_cost} cases): ${total_cost:.4f}")
+    if adjudicator_calls:
+        lines.append(
+            f"  adjudicator calls: {adjudicator_calls}"
+            f"  cost (sum over {n_with_adjudicator} cases): ${adjudicator_cost:.4f}"
+        )
     lines.append("  eligibility: " + "  ".join(f"{k}={v}" for k, v in sorted(elig.items())))
     if by_slice:
         lines.append("  by slice:")

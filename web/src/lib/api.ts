@@ -129,9 +129,31 @@ export interface ScoringSummary {
 	by_verdict: Record<string, number>;
 	by_reason: Record<string, number>;
 	by_polarity: Record<string, number>;
+	adjudicator_calls: number;
+	adjudicator_input_tokens: number | null;
+	adjudicator_output_tokens: number | null;
+	adjudicator_cost_usd: number | null;
 }
 
 export interface ExtractorRunMeta {
+	model: string;
+	prompt_version: string;
+	input_tokens: number | null;
+	output_tokens: number | null;
+	cached_input_tokens: number | null;
+	cost_usd: number | null;
+	latency_ms: number | null;
+}
+
+export type LLMCallStage =
+	| 'extractor'
+	| 'llm_match'
+	| 'patient_evidence_adjudicator'
+	| 'critic';
+
+export interface LLMCallCost {
+	stage: LLMCallStage;
+	criterion_index: number | null;
 	model: string;
 	prompt_version: string;
 	input_tokens: number | null;
@@ -152,6 +174,7 @@ export interface ScorePairResult {
 	verdicts: MatchVerdict[];
 	summary: ScoringSummary;
 	eligibility: Eligibility;
+	llm_calls: LLMCallCost[];
 }
 
 export interface ScoreRequest {

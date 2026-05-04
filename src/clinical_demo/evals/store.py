@@ -23,7 +23,7 @@ from pathlib import Path
 
 from .run import CaseRecord, EvalCase, RunResult
 
-_SCHEMA_VERSION = 2
+_SCHEMA_VERSION = 3
 """SQLite `PRAGMA user_version` for this build's expected schema.
 
 Bump rules:
@@ -35,6 +35,14 @@ Bump rules:
     migration which is a no-op `ALTER TABLE` for fresh DBs and an
     additive `ALTER TABLE ADD COLUMN` for v1 DBs (NULL for old rows
     is the documented "no labels recorded for this run" sentinel).
+  - v3: added `adjudicator_cost_usd`, `adjudicator_input_tokens`,
+    `adjudicator_output_tokens`, `adjudicator_calls` on `cases` so
+    cost-quality dashboards can pivot on adjudicator spend without
+    re-walking the `result_json` blob. The full per-call detail is
+    still on `ScorePairResult.llm_calls` inside the blob. NULL on a
+    v2 row means "no adjudicator data captured for this row" and
+    `adjudicator_calls=0` is the documented zero-call sentinel for
+    v3+ rows that didn't fire the adjudicator at all.
 """
 
 _SCHEMA_SQL = """
@@ -49,24 +57,28 @@ CREATE TABLE IF NOT EXISTS runs (
 );
 
 CREATE TABLE IF NOT EXISTS cases (
-    run_id                   TEXT NOT NULL REFERENCES runs(run_id),
-    pair_id                  TEXT NOT NULL,
-    patient_id               TEXT NOT NULL,
-    nct_id                   TEXT NOT NULL,
-    slice                    TEXT NOT NULL DEFAULT '',
-    as_of                    TEXT NOT NULL,
-    eligibility              TEXT,
-    total_criteria           INTEGER,
-    fail_count               INTEGER,
-    pass_count               INTEGER,
-    indeterminate_count      INTEGER,
-    extraction_cost_usd      REAL,
-    extraction_tokens        INTEGER,
-    scoring_latency_ms       REAL NOT NULL,
-    error                    TEXT,
-    result_json              TEXT,
-    expected_structured_json TEXT,
-    free_text_review_status  TEXT,
+    run_id                    TEXT NOT NULL REFERENCES runs(run_id),
+    pair_id                   TEXT NOT NULL,
+    patient_id                TEXT NOT NULL,
+    nct_id                    TEXT NOT NULL,
+    slice                     TEXT NOT NULL DEFAULT '',
+    as_of                     TEXT NOT NULL,
+    eligibility               TEXT,
+    total_criteria            INTEGER,
+    fail_count                INTEGER,
+    pass_count                INTEGER,
+    indeterminate_count       INTEGER,
+    extraction_cost_usd       REAL,
+    extraction_tokens         INTEGER,
+    adjudicator_cost_usd      REAL,
+    adjudicator_input_tokens  INTEGER,
+    adjudicator_output_tokens INTEGER,
+    adjudicator_calls         INTEGER,
+    scoring_latency_ms        REAL NOT NULL,
+    error                     TEXT,
+    result_json               TEXT,
+    expected_structured_json  TEXT,
+    free_text_review_status   TEXT,
     PRIMARY KEY (run_id, pair_id)
 );
 
@@ -83,6 +95,18 @@ def _migrate_v1_to_v2(conn: sqlite3.Connection) -> None:
     transactional so a half-applied schema is impossible."""
     conn.execute("ALTER TABLE cases ADD COLUMN expected_structured_json TEXT")
     conn.execute("ALTER TABLE cases ADD COLUMN free_text_review_status TEXT")
+
+
+def _migrate_v2_to_v3(conn: sqlite3.Connection) -> None:
+    """Additive migration: add adjudicator-cost columns to `cases`.
+
+    NULL columns on v2 rows = "no adjudicator data captured", which
+    matches the empty `llm_calls` blob those rows already serialize.
+    """
+    conn.execute("ALTER TABLE cases ADD COLUMN adjudicator_cost_usd REAL")
+    conn.execute("ALTER TABLE cases ADD COLUMN adjudicator_input_tokens INTEGER")
+    conn.execute("ALTER TABLE cases ADD COLUMN adjudicator_output_tokens INTEGER")
+    conn.execute("ALTER TABLE cases ADD COLUMN adjudicator_calls INTEGER")
 
 
 @contextmanager
@@ -112,6 +136,9 @@ def open_store(db_path: Path | str) -> Iterator[sqlite3.Connection]:
             if current == 1:
                 _migrate_v1_to_v2(conn)
                 current = 2
+            if current == 2:
+                _migrate_v2_to_v3(conn)
+                current = 3
             conn.execute(f"PRAGMA user_version = {_SCHEMA_VERSION}")
         elif current > _SCHEMA_VERSION:
             raise RuntimeError(
@@ -152,9 +179,11 @@ def save_run(conn: sqlite3.Connection, run: RunResult) -> None:
         " (run_id, pair_id, patient_id, nct_id, slice, as_of,"
         "  eligibility, total_criteria, fail_count, pass_count,"
         "  indeterminate_count, extraction_cost_usd,"
-        "  extraction_tokens, scoring_latency_ms, error, result_json,"
+        "  extraction_tokens, adjudicator_cost_usd,"
+        "  adjudicator_input_tokens, adjudicator_output_tokens,"
+        "  adjudicator_calls, scoring_latency_ms, error, result_json,"
         "  expected_structured_json, free_text_review_status)"
-        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [_case_row(run.run_id, c) for c in run.cases],
     )
     conn.commit()
@@ -289,6 +318,10 @@ def _case_row(run_id: str, c: CaseRecord) -> tuple:
             s.by_verdict.get("indeterminate", 0),
             meta.cost_usd,
             (meta.input_tokens or 0) + (meta.output_tokens or 0),
+            s.adjudicator_cost_usd,
+            s.adjudicator_input_tokens,
+            s.adjudicator_output_tokens,
+            s.adjudicator_calls,
             c.scoring_latency_ms,
             None,
             c.result.model_dump_json(),
@@ -302,6 +335,10 @@ def _case_row(run_id: str, c: CaseRecord) -> tuple:
         c.case.nct_id,
         c.case.slice,
         c.case.as_of.isoformat(),
+        None,
+        None,
+        None,
+        None,
         None,
         None,
         None,

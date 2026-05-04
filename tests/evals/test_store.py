@@ -48,11 +48,12 @@ def test_open_store_creates_db_and_sets_user_version(tmp_path: Path) -> None:
     assert not db.exists()
     with open_store(db) as conn:
         version = conn.execute("PRAGMA user_version").fetchone()[0]
-        # Bumped to 2 by the v1→v2 migration that added
-        # `expected_structured_json` and `free_text_review_status`
-        # so layer-1+ analyses can read self-contained persisted
-        # runs without re-loading the seed file.
-        assert version == 2
+        # Bumped to 3 by the v2→v3 migration that added the
+        # adjudicator-cost columns so cost-quality dashboards can
+        # pivot without re-walking `result_json` blobs. The earlier
+        # v1→v2 step added `expected_structured_json` and
+        # `free_text_review_status` for layer-1+ label-aware reads.
+        assert version == 3
 
 
 def test_open_store_is_idempotent(tmp_path: Path) -> None:
@@ -145,7 +146,9 @@ def test_v1_to_v2_migration_adds_label_columns_and_bumps_version(
 
     with open_store(db) as conn:
         version = conn.execute("PRAGMA user_version").fetchone()[0]
-        assert version == 2
+        # Migration chain runs forward to the current schema —
+        # opening a v1 DB goes v1 → v2 → v3 in one shot.
+        assert version == 3
         cols = {r[1] for r in conn.execute("PRAGMA table_info(cases)").fetchall()}
         assert "expected_structured_json" in cols
         assert "free_text_review_status" in cols
@@ -157,9 +160,87 @@ def test_v1_to_v2_migration_adds_label_columns_and_bumps_version(
         assert legacy == ("p1__T1", None, None)
 
 
+def test_v2_to_v3_migration_adds_adjudicator_cost_columns(
+    tmp_path: Path,
+) -> None:
+    """A DB synthesized at the v2 shape opens to v3 with the four
+    adjudicator-cost columns added and existing rows preserved
+    (NULL adjudicator data — the documented "no adjudicator data
+    captured for this row" sentinel)."""
+    db = tmp_path / "runs.sqlite"
+    conn = sqlite3.connect(str(db))
+    conn.executescript(
+        """
+        CREATE TABLE runs (
+            run_id        TEXT PRIMARY KEY,
+            started_at    TEXT NOT NULL,
+            finished_at   TEXT NOT NULL,
+            dataset_path  TEXT NOT NULL,
+            notes         TEXT NOT NULL DEFAULT '',
+            n_cases       INTEGER NOT NULL,
+            n_errors      INTEGER NOT NULL
+        );
+        CREATE TABLE cases (
+            run_id                   TEXT NOT NULL REFERENCES runs(run_id),
+            pair_id                  TEXT NOT NULL,
+            patient_id               TEXT NOT NULL,
+            nct_id                   TEXT NOT NULL,
+            slice                    TEXT NOT NULL DEFAULT '',
+            as_of                    TEXT NOT NULL,
+            eligibility              TEXT,
+            total_criteria           INTEGER,
+            fail_count               INTEGER,
+            pass_count               INTEGER,
+            indeterminate_count      INTEGER,
+            extraction_cost_usd      REAL,
+            extraction_tokens        INTEGER,
+            scoring_latency_ms       REAL NOT NULL,
+            error                    TEXT,
+            result_json              TEXT,
+            expected_structured_json TEXT,
+            free_text_review_status  TEXT,
+            PRIMARY KEY (run_id, pair_id)
+        );
+        """
+    )
+    conn.execute("PRAGMA user_version = 2")
+    conn.execute(
+        "INSERT INTO runs (run_id, started_at, finished_at, dataset_path,"
+        " notes, n_cases, n_errors)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?)",
+        ("legacy", "2025-01-01T00:00:00", "2025-01-01T00:00:01", "x", "", 1, 0),
+    )
+    conn.execute(
+        "INSERT INTO cases (run_id, pair_id, patient_id, nct_id, slice,"
+        " as_of, scoring_latency_ms)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?)",
+        ("legacy", "p1__T1", "p1", "T1", "s", "2025-01-01", 0.0),
+    )
+    conn.commit()
+    conn.close()
+
+    with open_store(db) as conn:
+        version = conn.execute("PRAGMA user_version").fetchone()[0]
+        assert version == 3
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(cases)").fetchall()}
+        for added in (
+            "adjudicator_cost_usd",
+            "adjudicator_input_tokens",
+            "adjudicator_output_tokens",
+            "adjudicator_calls",
+        ):
+            assert added in cols
+        legacy = conn.execute(
+            "SELECT pair_id, adjudicator_cost_usd, adjudicator_calls"
+            " FROM cases WHERE run_id = ?",
+            ("legacy",),
+        ).fetchone()
+        assert legacy == ("p1__T1", None, None)
+
+
 def test_open_store_rejects_newer_db_than_build_expects(tmp_path: Path) -> None:
-    """If a teammate runs a future build that bumps to v3, then this
-    older build re-opens that DB, refuse rather than silently
+    """If a teammate runs a future build that bumps past us, then
+    this older build re-opens that DB, refuse rather than silently
     truncating columns we don't know about."""
     db = tmp_path / "runs.sqlite"
     with open_store(db) as conn:

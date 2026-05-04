@@ -16,6 +16,7 @@ from openai import OpenAI
 from openai.types.chat import ParsedChatCompletion
 from pydantic import BaseModel, Field
 
+from clinical_demo.cost_telemetry import LLMCallCost
 from clinical_demo.extractor.extractor import (
     ExtractorError,
     ExtractorMissingParsedError,
@@ -111,17 +112,25 @@ Hard rules:
 def adjudicate_patient_evidence(
     *,
     criterion: ExtractedCriterion,
+    criterion_index: int,
     deterministic_verdict: MatchVerdict,
     retrieved: list[RetrievedPatientEvidence],
     trial_context: str,
     matcher_assumption_mode: MatcherAssumptionMode,
     client: _ClientLike | None = None,
     settings: Settings | None = None,
-) -> MatchVerdict:
-    """Return a source-grounded verdict over retrieved rows."""
+) -> tuple[MatchVerdict, LLMCallCost | None]:
+    """Return a source-grounded verdict plus this call's LLM cost record.
+
+    `criterion_index` is the 0-based position of this criterion in
+    the extraction so the cost record can be joined back to the
+    verdict it adjudicated. The cost record is `None` when the
+    adjudicator was a no-op (no retrieved evidence) — callers can use
+    that to distinguish "ran but free" from "ran and billed."
+    """
 
     if not retrieved:
-        return deterministic_verdict
+        return deterministic_verdict, None
 
     settings = settings or get_settings()
     if client is None:
@@ -227,7 +236,7 @@ def adjudicate_patient_evidence(
         )
 
     final_verdict = _apply_polarity(parsed.verdict, criterion.polarity, criterion.negated)
-    return MatchVerdict(
+    verdict = MatchVerdict(
         criterion=criterion,
         verdict=final_verdict,
         reason=_reason_for_output(parsed),
@@ -239,6 +248,17 @@ def adjudicate_patient_evidence(
         ),
         matcher_version=PATIENT_EVIDENCE_ADJUDICATOR_VERSION,
     )
+    cost = LLMCallCost(
+        stage="patient_evidence_adjudicator",
+        criterion_index=criterion_index,
+        model=settings.extractor_model,
+        prompt_version=PATIENT_EVIDENCE_PROMPT_VERSION,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        cost_usd=cost_usd,
+        latency_ms=latency_ms,
+    )
+    return verdict, cost
 
 
 def _build_user_message(

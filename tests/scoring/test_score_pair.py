@@ -183,6 +183,17 @@ def test_bounded_adjudication_can_replace_indeterminate_with_cited_verdict() -> 
     assert result.verdicts[0].matcher_version == "patient-evidence-adjudicator-v0.1"
     assert result.verdicts[0].evidence[1].kind == "retrieved_patient_row"
     assert completions.captured is not None
+    # Cost telemetry is captured per LLM call so the eval store can
+    # persist adjudicator spend without re-walking verdict evidence.
+    assert len(result.llm_calls) == 1
+    assert result.llm_calls[0].stage == "patient_evidence_adjudicator"
+    assert result.llm_calls[0].criterion_index == 0
+    assert result.summary.adjudicator_calls == 1
+    # Stub usage payload is None, so the rolled-up tokens / cost are
+    # left as None (we deliberately don't synthesize zeroes — the
+    # documented "no usage data" sentinel is None).
+    assert result.summary.adjudicator_input_tokens is None
+    assert result.summary.adjudicator_cost_usd is None
 
 
 def test_rollup_pass_on_empty_verdicts_documents_vacuous_truth() -> None:
