@@ -91,8 +91,7 @@ def main() -> None:
     save_patient_evidence_rows(args.output, rows)
 
     print(
-        f"wrote {len(rows)} patient-evidence calibration rows "
-        f"to {args.output} (scope={args.scope})"
+        f"wrote {len(rows)} patient-evidence calibration rows to {args.output} (scope={args.scope})"
     )
     print(f"label template: {args.labels}")
     print(json.dumps(summarize_patient_evidence_rows(rows), indent=2, sort_keys=True))

@@ -609,7 +609,7 @@ def _notes_with_scoring_modes(
     matcher_assumption_mode: MatcherAssumptionMode,
     llm_use_level: LLMUseLevel,
 ) -> str:
-    suffix = f"matcher_assumption_mode={matcher_assumption_mode}; " f"llm_use_level={llm_use_level}"
+    suffix = f"matcher_assumption_mode={matcher_assumption_mode}; llm_use_level={llm_use_level}"
     return f"{notes}; {suffix}" if notes else suffix
 
 

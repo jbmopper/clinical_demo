@@ -231,8 +231,7 @@ def test_v2_to_v3_migration_adds_adjudicator_cost_columns(
         ):
             assert added in cols
         legacy = conn.execute(
-            "SELECT pair_id, adjudicator_cost_usd, adjudicator_calls"
-            " FROM cases WHERE run_id = ?",
+            "SELECT pair_id, adjudicator_cost_usd, adjudicator_calls FROM cases WHERE run_id = ?",
             ("legacy",),
         ).fetchone()
         assert legacy == ("p1__T1", None, None)
