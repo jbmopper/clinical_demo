@@ -113,6 +113,7 @@ def _patient_from_bundle(bundle: dict[str, Any]) -> Patient:
         patient_id=patient_resource["id"],
         birth_date=date.fromisoformat(patient_resource["birthDate"]),
         sex=_parse_sex(patient_resource.get("gender")),
+        deceased_date=_parse_deceased(patient_resource),
         conditions=[
             _parse_condition(e["resource"])
             for e in entries
@@ -154,6 +155,29 @@ def _parse_date(value: str | None) -> date | None:
     if not value:
         return None
     return datetime.fromisoformat(value).date()
+
+
+def _parse_deceased(patient_resource: dict[str, Any]) -> date | None:
+    """Resolve `Patient.deceased[x]` into a `date | None`.
+
+    Synthea consistently uses `deceasedDateTime` when generating dead
+    patients; we don't currently encounter `deceasedBoolean`. If a
+    bundle ever ships with `deceasedBoolean=true` and no date, treat
+    it as deceased on `birth_date` (the most conservative possible
+    "the patient was already deceased by any plausible eligibility
+    `as_of`") and log a warning so we notice and add real handling.
+    """
+    if "deceasedDateTime" in patient_resource:
+        return _parse_date(patient_resource["deceasedDateTime"])
+    if patient_resource.get("deceasedBoolean") is True:
+        logger.warning(
+            "patient %s has deceasedBoolean=true but no deceasedDateTime; "
+            "treating as deceased on birth_date for safety. Capture a real "
+            "date in the source bundle if possible.",
+            patient_resource.get("id"),
+        )
+        return date.fromisoformat(patient_resource["birthDate"])
+    return None
 
 
 def _parse_concept(coding_owner: dict[str, Any]) -> CodedConcept:

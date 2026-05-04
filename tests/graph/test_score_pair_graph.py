@@ -20,6 +20,7 @@ from clinical_demo.graph.nodes.llm_match import (
     _LLMMatcherOutput,
 )
 from clinical_demo.matcher import MATCHER_VERSION
+from clinical_demo.scoring import PatientDeceasedError
 from clinical_demo.scoring.score_pair import ScorePairResult
 from clinical_demo.settings import Settings
 from tests.extractor.test_extractor import (
@@ -90,6 +91,24 @@ def test_returns_score_pair_result_envelope() -> None:
     assert isinstance(result, ScorePairResult)
     assert result.summary.total_criteria == 1
     assert result.eligibility in ("pass", "fail", "indeterminate")
+
+
+def test_score_pair_graph_refuses_deceased_patient() -> None:
+    """Mirror the imperative orchestrator's deceased-patient guard so
+    operators cannot accidentally pick an orchestrator that quietly
+    drops the safety check."""
+    from datetime import date as _date
+
+    deceased = make_patient(deceased_date=_date(2024, 6, 1))
+    with pytest.raises(PatientDeceasedError):
+        score_pair_graph(
+            deceased,
+            make_trial(eligibility_text="Age >= 18."),
+            AS_OF,
+            extractor_client=_extractor_stub([crit_age(minimum_years=18.0)]),
+            llm_matcher_client=_llm_matcher_stub(),
+            settings=_settings(),
+        )
 
 
 # ---------- routing ----------

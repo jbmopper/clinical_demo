@@ -12,6 +12,7 @@ from .cache import (
 )
 from .score_pair import (
     EligibilityRollup,
+    PatientDeceasedError,
     ScorePairResult,
     ScoringSummary,
     score_pair,
@@ -19,6 +20,7 @@ from .score_pair import (
 
 __all__ = [
     "EligibilityRollup",
+    "PatientDeceasedError",
     "ScorePairResult",
     "ScoringSummary",
     "StoredExtraction",

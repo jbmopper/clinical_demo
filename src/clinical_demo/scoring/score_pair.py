@@ -64,6 +64,33 @@ from ..retrieval import retrieve_structured_patient_evidence, structured_source_
 EligibilityRollup = Literal["pass", "fail", "indeterminate"]
 
 
+class PatientDeceasedError(ValueError):
+    """Raised when scoring is asked to evaluate a deceased patient.
+
+    Refusal is deterministic and source-cited: we know from
+    `Patient.deceasedDateTime` (FHIR R4) that the patient was deceased
+    on or before the evaluation `as_of`, so any extracted criterion
+    we'd score against — current age, current labs, active
+    medications — is by construction stale. The matcher could happily
+    return a structurally valid verdict; the *clinical* contract says
+    we should not. Eval harness already records errors per case; the
+    API maps this to a 422 so the reviewer sees the refusal reason
+    instead of a 500.
+
+    Attrs are exposed so callers can build structured error payloads
+    without re-parsing the message."""
+
+    def __init__(self, patient_id: str, deceased_date: date, as_of: date) -> None:
+        self.patient_id = patient_id
+        self.deceased_date = deceased_date
+        self.as_of = as_of
+        super().__init__(
+            f"patient {patient_id!r} is deceased as of "
+            f"FHIR Patient.deceasedDateTime={deceased_date.isoformat()}; "
+            f"refusing to score against as_of={as_of.isoformat()}"
+        )
+
+
 class ScoringSummary(BaseModel):
     """Counts derived from the per-criterion verdicts.
 
@@ -130,7 +157,16 @@ def score_pair(
         Pre-computed extraction. If provided, skip the LLM call —
         useful for replay / caching, evals, and offline tests. If
         None, calls `extract_criteria(trial.eligibility_text)`.
+
+    Raises
+    ------
+    PatientDeceasedError
+        If the patient's FHIR `deceasedDateTime` is on or before
+        `as_of`. Scoring refuses rather than producing a verdict
+        that would inevitably be misleading.
     """
+    if patient.deceased_date is not None and patient.deceased_date <= as_of:
+        raise PatientDeceasedError(patient.patient_id, patient.deceased_date, as_of)
     # One parent span per (patient, trial) pair. The extractor's
     # `generation` observation nests under it automatically because
     # `traced(...)` uses `start_as_current_observation`. Tags

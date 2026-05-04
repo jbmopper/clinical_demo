@@ -38,6 +38,7 @@ def make_patient(
     *,
     birth: date = date(1990, 6, 15),
     sex: str = "male",
+    deceased_date: date | None = None,
     conditions: list[Condition] | None = None,
     observations: list[LabObservation] | None = None,
     medications: list[Medication] | None = None,
@@ -46,6 +47,7 @@ def make_patient(
         patient_id="P-test",
         birth_date=birth,
         sex=sex,  # type: ignore[arg-type]
+        deceased_date=deceased_date,
         conditions=conditions or [],
         observations=observations or [],
         medications=medications or [],

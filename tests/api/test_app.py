@@ -538,6 +538,49 @@ def test_score_400_on_missing_required_field(client: TestClient) -> None:
     assert response.status_code == 422
 
 
+def test_score_422_when_patient_deceased(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    stub_patient: Patient,
+    stub_trial: Trial,
+) -> None:
+    """A `PatientDeceasedError` from the scorer must surface as a 422
+    with structured detail (patient_id, deceased_date, as_of, source
+    field) rather than a 500. The reviewer UI uses the structured
+    payload to show a refusal banner instead of a generic error."""
+    from datetime import date as _date
+
+    from clinical_demo.scoring import PatientDeceasedError
+
+    def _refuse(*args, **kwargs):
+        raise PatientDeceasedError(
+            patient_id=stub_patient.patient_id,
+            deceased_date=_date(2024, 6, 1),
+            as_of=_date(2025, 1, 1),
+        )
+
+    monkeypatch.setattr(api_app, "load_patient", lambda _: stub_patient)
+    monkeypatch.setattr(api_app, "load_trial", lambda _: stub_trial)
+    monkeypatch.setattr(api_app, "score_pair", _refuse)
+
+    response = client.post(
+        "/score",
+        json={
+            "patient_id": "P-1",
+            "nct_id": "NCT00000001",
+            "as_of": "2025-01-01",
+            "use_cached_extraction": False,
+        },
+    )
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert detail["error"] == "patient_deceased"
+    assert detail["patient_id"] == stub_patient.patient_id
+    assert detail["deceased_date"] == "2024-06-01"
+    assert detail["as_of"] == "2025-01-01"
+    assert detail["source_field"] == "Patient.deceasedDateTime"
+
+
 # ---------------- orchestrator switch
 
 

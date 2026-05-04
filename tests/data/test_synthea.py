@@ -178,6 +178,76 @@ def test_load_bundle_raises_on_empty() -> None:
         _patient_from_bundle({"entry": []})
 
 
+def test_loads_deceased_date_when_present() -> None:
+    """Synthea encodes death as `Patient.deceasedDateTime`; the loader
+    must surface it on the domain model so scoring can refuse to
+    evaluate a deceased patient."""
+    bundle = {
+        "entry": [
+            {
+                "resource": {
+                    "resourceType": "Patient",
+                    "id": "p1",
+                    "gender": "male",
+                    "birthDate": "1950-01-01",
+                    "deceasedDateTime": "2020-06-15T00:00:00-05:00",
+                }
+            }
+        ]
+    }
+    patient = _patient_from_bundle(bundle)
+    assert patient.deceased_date == date(2020, 6, 15)
+
+
+def test_living_patient_has_no_deceased_date() -> None:
+    """A bundle without `deceasedDateTime` round-trips to
+    `deceased_date is None`."""
+    bundle = {
+        "entry": [
+            {
+                "resource": {
+                    "resourceType": "Patient",
+                    "id": "alive",
+                    "gender": "female",
+                    "birthDate": "1990-01-01",
+                }
+            }
+        ]
+    }
+    patient = _patient_from_bundle(bundle)
+    assert patient.deceased_date is None
+
+
+def test_loads_fixture_deceased_date_from_synthea_bundle(francisco: Patient) -> None:
+    """The Francisco fixture happens to be a deceased Synthea patient
+    (deceasedDateTime=1988-09-22). Pin the round-trip on real
+    upstream data so the loader regresses noisily if the parser
+    silently stops reading the field."""
+    assert francisco.deceased_date == date(1988, 9, 22)
+
+
+def test_deceased_boolean_only_falls_back_to_birth_date() -> None:
+    """Defensive path for FHIR bundles that record death as a boolean
+    without a date. The loader logs and treats the patient as
+    deceased on `birth_date` so the scoring guard still fires; if real
+    Synthea data ever does this, we'll need to revisit."""
+    bundle = {
+        "entry": [
+            {
+                "resource": {
+                    "resourceType": "Patient",
+                    "id": "p1",
+                    "gender": "male",
+                    "birthDate": "1960-04-10",
+                    "deceasedBoolean": True,
+                }
+            }
+        ]
+    }
+    patient = _patient_from_bundle(bundle)
+    assert patient.deceased_date == date(1960, 4, 10)
+
+
 def test_blood_pressure_panel_emits_systolic_and_diastolic_components() -> None:
     """Synthea encodes BP as a panel (LOINC 85354-9) with no top-level value;
     systolic (8480-6) and diastolic (8462-4) live in `component[]`. The

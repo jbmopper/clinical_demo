@@ -14,6 +14,8 @@ from datetime import date
 from types import SimpleNamespace
 from typing import Any
 
+import pytest
+
 from clinical_demo.adjudication import PatientEvidenceAdjudicatorOutput
 from clinical_demo.extractor.extractor import ExtractionResult
 from clinical_demo.extractor.schema import (
@@ -22,6 +24,7 @@ from clinical_demo.extractor.schema import (
     ExtractionMetadata,
     ExtractorRunMeta,
 )
+from clinical_demo.scoring import PatientDeceasedError
 from clinical_demo.scoring.score_pair import _rollup, _summarize, score_pair
 from tests.matcher._fixtures import (
     AS_OF,
@@ -55,6 +58,57 @@ def _make_extraction(criteria: list[ExtractedCriterion]) -> ExtractionResult:
             latency_ms=0.0,
         ),
     )
+
+
+# ---------- patient safety: deceased ----------
+
+
+def test_score_pair_refuses_deceased_patient_before_as_of() -> None:
+    """A patient who died on or before `as_of` cannot be scored.
+
+    Refusal is structured (typed exception with citation attrs) so
+    the API can map it to a clean 422 and the eval harness records
+    the per-case error rather than producing a misleading verdict
+    against a patient who could not consent."""
+    deceased = make_patient(
+        birth=date(1950, 1, 1),
+        deceased_date=date(2024, 6, 1),
+    )
+    extraction = _make_extraction([crit_age(minimum_years=18.0)])
+    with pytest.raises(PatientDeceasedError) as excinfo:
+        score_pair(deceased, make_trial(), AS_OF, extraction=extraction)
+    assert excinfo.value.patient_id == "P-test"
+    assert excinfo.value.deceased_date == date(2024, 6, 1)
+    assert excinfo.value.as_of == AS_OF
+    assert "Patient.deceasedDateTime" in str(excinfo.value)
+
+
+def test_score_pair_refuses_when_deceased_on_as_of_exactly() -> None:
+    """Equality boundary is closed: died on `as_of` is still deceased.
+
+    The clinical-screening contract is that we evaluate eligibility
+    on a date the patient is alive; same-day death means the chart
+    is by definition stale for any forward-looking decision."""
+    same_day = make_patient(birth=date(1950, 1, 1), deceased_date=AS_OF)
+    extraction = _make_extraction([crit_age(minimum_years=18.0)])
+    with pytest.raises(PatientDeceasedError):
+        score_pair(same_day, make_trial(), AS_OF, extraction=extraction)
+
+
+def test_score_pair_allows_patient_who_died_after_as_of() -> None:
+    """Retrospective eligibility replays at a historical `as_of` date
+    must still work even if the patient later died — that's the
+    whole point of carrying a date rather than a boolean."""
+    later_deceased = make_patient(
+        birth=date(1990, 1, 1),
+        deceased_date=date(AS_OF.year + 10, 1, 1),
+        conditions=[make_condition(code="44054006")],
+    )
+    extraction = _make_extraction(
+        [crit_age(minimum_years=18.0), crit_condition(text="type 2 diabetes")]
+    )
+    result = score_pair(later_deceased, make_trial(), AS_OF, extraction=extraction)
+    assert result.eligibility == "pass"
 
 
 # ---------- rollup ----------

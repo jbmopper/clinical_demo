@@ -52,7 +52,12 @@ from ..research import (
     ResearchFetchError,
     fetch_criterion_research,
 )
-from ..scoring import cache_path_for, load_cached_extraction, score_pair
+from ..scoring import (
+    PatientDeceasedError,
+    cache_path_for,
+    load_cached_extraction,
+    score_pair,
+)
 from ..scoring.score_pair import ScorePairResult
 from .loaders import (
     EXTRACTIONS_DIR,
@@ -402,6 +407,21 @@ def create_app() -> FastAPI:
                 matcher_assumption_mode=req.matcher_assumption_mode,
                 llm_use_level=req.llm_use_level,
             )
+        except PatientDeceasedError as exc:
+            # 422 (not 500) — the request shape is fine but the
+            # patient was deceased on/before as_of, which is a
+            # client-actionable refusal, not a server bug.
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "error": "patient_deceased",
+                    "patient_id": exc.patient_id,
+                    "deceased_date": exc.deceased_date.isoformat(),
+                    "as_of": exc.as_of.isoformat(),
+                    "source_field": "Patient.deceasedDateTime",
+                    "message": str(exc),
+                },
+            ) from exc
         except Exception as exc:
             log.exception("scoring failed for %s x %s", req.patient_id, req.nct_id)
             raise HTTPException(

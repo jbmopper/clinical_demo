@@ -29,7 +29,13 @@ from ..matcher import (
     MatcherAssumptionMode,
 )
 from ..observability import traced
-from ..scoring.score_pair import ScorePairResult, _apply_retrieval_only, _rollup, _summarize
+from ..scoring.score_pair import (
+    PatientDeceasedError,
+    ScorePairResult,
+    _apply_retrieval_only,
+    _rollup,
+    _summarize,
+)
 from ..settings import Settings
 from .graph import DEFAULT_MAX_CRITIC_ITERATIONS, build_graph
 from .nodes.critic import LLM_CRITIC_VERSION
@@ -100,7 +106,14 @@ def score_pair_graph(
         through to LangGraph's runtime config. Default None means
         LangGraph's own default (currently 25), which is plenty for
         our 2-iteration soft budget but cheap insurance.
-    """
+
+    Raises
+    ------
+    PatientDeceasedError
+        Mirrors `score_pair`: if the patient was deceased on or
+        before `as_of`, refuse before the graph even compiles."""
+    if patient.deceased_date is not None and patient.deceased_date <= as_of:
+        raise PatientDeceasedError(patient.patient_id, patient.deceased_date, as_of)
     graph = build_graph(
         extractor_client=extractor_client,
         llm_matcher_client=llm_matcher_client,

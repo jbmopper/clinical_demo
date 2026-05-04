@@ -94,6 +94,13 @@ class Patient(BaseModel):
     patient_id: str
     birth_date: date
     sex: Sex
+    deceased_date: date | None = None
+    """Date the patient died, sourced from FHIR `Patient.deceasedDateTime`.
+
+    `None` means "no record of death," which Synthea encodes as the
+    absence of a `deceasedDateTime` field. Eligibility scoring refuses
+    to evaluate a patient who was deceased on or before the
+    evaluation `as_of` date — see `clinical_demo.scoring.score_pair`."""
     conditions: list[Condition] = Field(default_factory=list)
     observations: list[LabObservation] = Field(default_factory=list)
     medications: list[Medication] = Field(default_factory=list)
