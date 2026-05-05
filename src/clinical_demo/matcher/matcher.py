@@ -961,8 +961,7 @@ def _match_temporal_window(
         )
 
     looked_for = (
-        f"{concept_set.name!r} event between "
-        f"{cutoff.isoformat()} and {profile.as_of.isoformat()}"
+        f"{concept_set.name!r} event between {cutoff.isoformat()} and {profile.as_of.isoformat()}"
     )
     if mode in _CLOSED_WORLD_MODES:
         return (
