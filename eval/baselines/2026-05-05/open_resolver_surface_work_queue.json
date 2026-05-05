@@ -1,0 +1,243 @@
+[
+  {
+    "surface": "symptomatic pulmonary hypertension (PH) classified as WHO FC II or III",
+    "criterion_kind": "condition_present",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "pulmonary vascular resistance (PVR)",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 7,
+    "status": "out_of_scope",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Requires right-heart catheterization/hemodynamic observations not modeled in the current Synthea profile."
+  },
+  {
+    "surface": "stable background therapy for PAH",
+    "criterion_kind": "temporal_window",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "true_miss",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "UMLS `searchType=exact` against SNOMEDCT_US returned no usable source codes for this surface."
+  },
+  {
+    "surface": "PH WHO Groups 2, 3, 4, or 5",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "HIV-associated PAH, PAH associated with portal hypertension, schistosomiasis-associated PAH, pulmonary veno-occlusive disease",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "pregnant or breastfeeding females",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "liver and kidney function tests",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "prior exposure to sotatercept (ACE-011) or luspatercept (ACE-536) or known allergic reaction",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "history of full pneumonectomy",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "out_of_scope",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Procedure-history evidence is not modeled by the current condition/medication/lab matcher primitives."
+  },
+  {
+    "surface": "known history of portal hypertension or chronic liver disease",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "mitral regurgitation or aortic regurgitation",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 7,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "pregnant or breastfeeding",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 5,
+    "status": "composite_unhandled",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Surface contains conjunction/list punctuation; open UMLS search is skipped because exact-match on a composite is never a clean concept. Needs split or human review."
+  },
+  {
+    "surface": "blood pressure",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 5,
+    "status": "ambiguous",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [
+      {
+        "name": "Systolic blood pressure",
+        "system": "http://loinc.org",
+        "codes": [
+          "8480-6"
+        ],
+        "source": "local_open_alias",
+        "score": 0.5,
+        "reason": "Blood pressure needs systolic or diastolic specificity before it can map to one LOINC."
+      },
+      {
+        "name": "Diastolic blood pressure",
+        "system": "http://loinc.org",
+        "codes": [
+          "8462-4"
+        ],
+        "source": "local_open_alias",
+        "score": 0.5,
+        "reason": "Blood pressure needs systolic or diastolic specificity before it can map to one LOINC."
+      }
+    ],
+    "reason": "Blood pressure needs systolic or diastolic specificity before it can map to one LOINC."
+  },
+  {
+    "surface": "life expectancy",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 4,
+    "status": "extractor_bug",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Life expectancy is prognostic/free-text review, not a structured measurement threshold in the current matcher."
+  },
+  {
+    "surface": "ecog performance status",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 4,
+    "status": "out_of_scope",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "Functional-status observations such as ECOG are not present in the current Synthea profile."
+  },
+  {
+    "surface": "type 1 diabetes",
+    "criterion_kind": "condition_present",
+    "resolver_kind": "condition",
+    "count": 2,
+    "status": "true_miss",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "UMLS `searchType=exact` against SNOMEDCT_US returned no usable source codes for this surface."
+  },
+  {
+    "surface": "type 1 diabetes associated autoantibody",
+    "criterion_kind": "condition_present",
+    "resolver_kind": "condition",
+    "count": 2,
+    "status": "true_miss",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "UMLS `searchType=exact` against SNOMEDCT_US returned no usable source codes for this surface."
+  },
+  {
+    "surface": "T1D diagnosis",
+    "criterion_kind": "temporal_window",
+    "resolver_kind": "condition",
+    "count": 2,
+    "status": "true_miss",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "UMLS `searchType=exact` against SNOMEDCT_US returned no usable source codes for this surface."
+  },
+  {
+    "surface": "C-peptide concentrations",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 2,
+    "status": "true_miss",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "UMLS `searchType=words` against LNC returned no usable source codes for this surface (after filtering out LOINC component parts)."
+  },
+  {
+    "surface": "mild to moderate hypertension",
+    "criterion_kind": "condition_present",
+    "resolver_kind": "condition",
+    "count": 2,
+    "status": "true_miss",
+    "cache_status": "hit",
+    "concept_set": null,
+    "candidates": [],
+    "reason": "UMLS `searchType=exact` against SNOMEDCT_US returned no usable source codes for this surface."
+  }
+]

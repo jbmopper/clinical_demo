@@ -72,10 +72,25 @@
   `out_of_scope` classifications win over resolver hits in the work
   queue. UMLS fair-use is ~20 req/s with no published daily cap;
   one-time cold warmup of ~149 unique surfaces, then served from
-  the on-disk surface cache. Remaining work on 2.18: regression
+  the on-disk surface cache. New snapshot on 2026-05-05:
+  `eval/baselines/2026-05-05/open_resolver_none_diagnostics.json`
+  (`17fc2bc0a9cd`) moves deterministic no-LLM `unmapped_concept` to
+  445/1061 (41.9%), down 106 criteria / 9.2 pp from the 2026-05-04
+  no-LLM baseline; the paired
+  `open_resolver_surface_work_queue.json` captures the remaining
+  top surfaces as composites, out-of-scope data-model gaps,
+  ambiguity, extractor bug, or true misses. Remaining work on 2.18: regression
   gate that fails loudly when a `resolved` high-frequency surface
   regresses back to `unmapped_concept`.
-- **Last completed:** PLAN task 2.19 — **closed-world matcher
+- **Last completed:** 2026-05-05 **open-resolver deterministic baseline
+  snapshot.** Created `eval/baselines/2026-05-05/` with
+  `open_resolver_none_diagnostics.json`,
+  `open_resolver_surface_work_queue.json`, and `SUMMARY.md`. The run
+  used `--no-llm --binding-strategy two_pass --matcher-assumption-mode
+  open_world --llm-use-level none`; it scored 47/49 cases, with the
+  same 2 deceased-patient refusals as prior baselines. Verification:
+  both JSON artifacts validate with `uv run python -m json.tool`.
+  Previous: PLAN task 2.19 — **closed-world matcher
   semantics + open-world honesty fix.** Bumped `MATCHER_VERSION` to
   `matcher-v0.2`. `match_criterion` /  `match_extracted` now take
   `matcher_assumption_mode` as a kwarg, threaded down through
