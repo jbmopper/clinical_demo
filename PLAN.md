@@ -19,40 +19,100 @@
 > rationale lives in §12.
 
 - **Active phase:** Phase 2 — Workflow + eval.
-- **Current correction:** open terminology resolution is now genuinely
-  open for conditions and labs, not just medications. Previously the
-  "open resolver" fell through to a ~8-entry hand-coded alias dict for
-  conditions and labs with no path to UMLS / LOINC search -- so any
-  surface not in that dict got declared `unmapped_concept` without an
-  actual terminology lookup. The D-73 slice adds a `UMLSSearchClient`
-  against `https://uts-ws.nlm.nih.gov/rest/search/current` (auth via
-  `?apiKey=`) and wires it into `_resolve_open_condition` (SNOMED CT
-  via `sabs=SNOMEDCT_US`, `searchType=exact`) and `_resolve_open_lab`
-  (LOINC via `sabs=LNC`, `searchType=words` + numeric-test-code filter
-  so LOINC component Parts don't pollute the resolved ConceptSet).
-  Composite surfaces short-circuit before the API call and cache
-  `composite_unhandled`; hand-curated `extractor_bug` / `out_of_scope`
-  classifications in the work queue run before the resolver so surfaces
-  like `life expectancy` and `ECOG performance status` keep their
-  triage labels even though UMLS has LOINC hits for them. Smoke eval
-  `43c765d1dbcc` (`--no-llm --binding-strategy two_pass
-  --matcher-assumption-mode open_world --llm-use-level none`) moved
-  `unmapped_concept` to 445/1061 (41.9%; **−106 criteria, −9.2 pp** vs
-  `8e718e87c3fa`), indeterminate to 919/1061 (86.6%; −77, −5.9 pp),
-  pass verdicts from 58 to 110 (+52), fail verdicts from 23 to 32 (+9),
-  and the `ok` reason from 81 to 142 (+61). All 15 surfaces remaining
-  in `top_unmapped_surfaces` are legitimately non-atomic: composites,
-  out-of-scope for Synthea (PVR / pneumonectomy / ECOG), extractor
-  bugs (life expectancy), ambiguous (blood pressure), or composite
-  condition-specific phrases. That satisfies the 2.17 exit criterion.
-  Rate-limit footprint: UMLS fair-use is ~20 req/s per authenticated
-  key with no published daily cap; our workload is a one-time ~few-
-  hundred-request cold warmup (149 unique condition+lab surfaces
-  across 49 cases) after which repeat runs serve entirely from the
-  on-disk surface cache. Remaining work on 2.18: add the regression
+- **Current correction:** matcher v0.2 (PLAN 2.19) makes
+  `matcher_assumption_mode` change behavior, not just metadata, and
+  fixes the silent-flip bug in v0.1. Before: `_match_condition` /
+  `_match_medication` / `_match_temporal_window` returned raw `fail`
+  on resolved-but-absent concepts regardless of mode. For
+  `condition_present` inclusion criteria that came out as the
+  expected hard `fail`; for `condition_absent` inclusion criteria
+  the polarity helper silently flipped that to `pass` — so the
+  matcher was claiming the patient *did not have* the condition any
+  time we couldn't find a row, which is the literal definition of
+  conflating absence-of-evidence with evidence-of-absence. Now:
+  `open_world` returns `indeterminate(no_data)` on resolved-but-
+  absent for those three kinds (an honest "the record is silent");
+  `closed_world_eval` and `closed_world_demo` opt back into
+  absence-as-negative for the same kinds and stamp
+  `evidence_under_assumption=True` on the verdict so audits can
+  pivot on which decisions depend on the closed-world contract.
+  Labs (`measurement_threshold`) deliberately stay
+  `indeterminate(no_data)` in every mode — a missing lab is not the
+  same as a normal lab, and the user prefers N/A visibility. The
+  unmapped-concept guardrail is preserved: terminology gaps remain
+  `indeterminate(unmapped_concept)` in every mode, so closed-world
+  cannot mask resolution failures (D-73). The case-level rollup
+  gains a fourth state `pass_pending_review` for "no fails, every
+  remaining indeterminate is `human_review_required`" — i.e.
+  structured criteria all decided positively and only free-text is
+  left for a human eye. `MatchVerdict` now carries `assumption` and
+  `evidence_under_assumption` for the trail.
+
+  Twin baselines (`eval/baselines/2026-05-04-2.19/`):
+  `7ad02d2ce814` (open_world) and `505d88763f00`
+  (closed_world_eval), same seed, same binding strategy, no LLM. The
+  closed-world numbers exactly match the previous v0.1 baseline
+  (`pass`=110 / `fail`=32 / `indeterminate`=919 / `ok`=142),
+  confirming v0.2 closed-world is a faithful re-implementation of
+  the prior implicit behavior; open-world is the new honest default
+  (`pass`=77 / `fail`=21 / `indeterminate`=963 / `ok`=98 / `no_data`
+  62 vs 18). The 44-criterion swing between modes is exactly the
+  resolved-but-absent verdicts, which is the toggle's whole point.
+  `pass_pending_review` does not fire on the current eval seed yet
+  because every case carries at least one non-free-text
+  indeterminate (composites or missing labs); it becomes a real
+  state once Phase 3 LLM disambiguation eats into the
+  unmapped-concept floor.
+
+  Previous correction (still relevant): open terminology resolution
+  is genuinely open for conditions and labs via `UMLSSearchClient`
+  (SNOMED `searchType=exact`, LOINC `searchType=words` + numeric
+  Parts filter); composites short-circuit to
+  `composite_unhandled`; hand-curated `extractor_bug` /
+  `out_of_scope` classifications win over resolver hits in the work
+  queue. UMLS fair-use is ~20 req/s with no published daily cap;
+  one-time cold warmup of ~149 unique surfaces, then served from
+  the on-disk surface cache. Remaining work on 2.18: regression
   gate that fails loudly when a `resolved` high-frequency surface
   regresses back to `unmapped_concept`.
-- **Last completed:** PLAN task 2.17 final slice + 2.18 partial —
+- **Last completed:** PLAN task 2.19 — **closed-world matcher
+  semantics + open-world honesty fix.** Bumped `MATCHER_VERSION` to
+  `matcher-v0.2`. `match_criterion` /  `match_extracted` now take
+  `matcher_assumption_mode` as a kwarg, threaded down through
+  `_dispatch` to per-kind handlers. Per-kind handler signature
+  changed to a 5-tuple
+  `(verdict, reason, rationale, evidence, evidence_under_assumption)`
+  via `_HandlerResult`. `_match_condition`, `_match_medication`,
+  `_match_temporal_window` got an explicit closed-world branch that
+  returns `fail` with `evidence_under_assumption=True` for
+  resolved-but-absent inputs under `closed_world_eval` /
+  `closed_world_demo`; the open-world branch returns
+  `indeterminate(no_data)`. `_match_measurement` and the demographics
+  / age / sex paths return `evidence_under_assumption=False` — labs
+  stay `no_data` in every mode. `unmapped_concept` is unchanged in
+  every mode (D-73 guardrail). `MatchVerdict` gained `assumption:
+  MatcherAssumptionMode | None` and `evidence_under_assumption:
+  bool`. `score_pair` and `score_pair_graph` thread the mode into
+  `match_extracted`; the graph carries the mode on `ScoringState`
+  so `deterministic_match_node`, `revise_node`, and
+  `llm_match_node` can pick it up without closure tricks.
+  `EligibilityRollup` gained `pass_pending_review` and `_rollup`
+  reason-aware: `fail > non-HRR indeterminate > HRR-only-indeterminate
+  (pass_pending_review) > pass`. Tests updated:
+  `tests/matcher/test_matcher.py` now has explicit open vs
+  closed-world tests for `condition_present`, `condition_absent`,
+  `temporal_window`, and the unmapped-concept guardrail; the
+  pre-fix "absent silently flips to pass" test was rewritten to
+  pin both modes' new behaviors.
+  `tests/scoring/test_score_pair.py` got
+  `pass_pending_review` integration + helper coverage and updated
+  `_build` callsites for the new required kwargs.
+  `tests/adjudication/test_patient_evidence.py` similarly. Twin
+  no-LLM baselines saved at `eval/baselines/2026-05-04-2.19/`
+  (`open_world_diagnostics.json`, `closed_world_eval_diagnostics.json`,
+  `SUMMARY.md`). Verification: `uv run pytest` 656/656,
+  `uv run ruff check .` clean.
+  Previous: PLAN task 2.17 final slice + 2.18 partial —
   **open UMLS/LOINC search wired into the resolver front door.** Added
   `clinical_demo.terminology.umls_search_client.UMLSSearchClient` with
   `httpx.MockTransport`-driven offline tests (13 new tests in
@@ -633,6 +693,28 @@ so they don't get lost between sessions.
   for VSAC/RxNorm/UMLS binding work; the current slice starts with
   VSAC expansion support and keeps runtime matcher behavior on the
   existing aliases until the resolver is wired and measured.
+- **Chia-style trial annotation as calibration scaffold (Phase 3 idea).**
+  User raised this during the 2.19 review: rather than continuing
+  to score the matcher indirectly through the eligibility rollup,
+  produce Chia-shaped entity annotations on our 30-trial seed and
+  measure extractor F1 against ground truth we control. This gives
+  Layer-2 a corpus that overlaps our actual cardiometabolic /
+  oncology slices (Chia itself doesn't), and unblocks a clean
+  cost/quality story for the staged introduction of LLM
+  disambiguation, free-text classifiers, and research helpers in
+  Phase 3. Sequencing: do this *after* (a) the Phase-3 LLM phases
+  start landing so we have something whose performance to score
+  against the scaffold, or (b) we want a hard quality-floor before
+  shipping. Until then, layer-2 stays Chia-corpus-only. Tracked
+  here so it doesn't get lost; not a blocker for 2.19 or 3.x slice
+  zero.
+- **`closed_world_demo` UI/API banner.** PLAN 2.19 left this
+  deferred. The matcher already accepts `closed_world_demo` and
+  treats it identically to `closed_world_eval` in the deterministic
+  layer; the missing piece is the visible "this score is computed
+  under the closed-world assumption" affordance in the API
+  response and the Svelte reviewer header. Pick this up when we
+  start polishing for the demo.
 ### Maintenance contract for this section
 
 When closing out a task:
@@ -801,7 +883,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.16 | **Unit reconciliation / conventional-unit pass.** Add a hybrid unit layer for high-impact measurements before the cost-routing sweep. Deterministic code owns a small whitelisted registry and numeric conversions (initially BP mmHg, eGFR `mL/min/1.73 m2` variants, LDL-C `mmol/L` <-> `mg/dL`, and percent-like HbA1c); an LLM/source pass may infer the intended measurement/unit from trial text when the extractor omits or phrases it oddly, but it may not perform arbitrary conversions. Rerun eval and report reductions in `unit_mismatch` / `ambiguous_criterion`. *First pass implemented and rerun — profile unit normalization now covers eGFR variants and LDL-C `mmol/L` <-> `mg/dL`; matcher infers missing conventional units for eGFR, HbA1c, and BP thresholds when a matching patient observation exists. The refreshed deterministic eval has only 2 criterion-level `unit_mismatch` reasons left, but the current baseline is not enough to quantify pre/post reduction cleanly because extractor-v0.5 cache refresh also changed the criterion set. Remaining work is deciding whether any additional high-impact unit families deserve whitelisting.* | 3 |
 | 2.17 | **Open terminology resolver front door.** Replace the current registry-gated `two_pass` policy with an open resolver contract: input is `(kind, surface_text, optional criterion context)`, output is a cached `ConceptSet` resolution, cached ambiguity, cached true miss, or explicit composite/non-mappable classification. Resolution order: curated overrides first, resolved/negative cache second, terminology API search third. The existing bindings registry becomes curated overrides plus offline fixtures; it must not be the only path that can call NLM/RxNorm. High-confidence single hits may feed the deterministic matcher; ambiguous hits must return candidate metadata instead of pretending certainty; true misses remain `unmapped_concept`; composite phrases become `composite_unhandled` / `human_review_required` unless safely split into atomic concepts. Cache all outcomes, including misses and ambiguity, so repeated eval runs do not rediscover the same surfaces. Initial target surfaces come from the 2026-05-04 diagnostics: `hemoglobin`, `platelet count`, `bmi` / `body mass index`, generic `blood pressure`, pregnancy/breastfeeding, uncontrolled hypertension, common PAH/PH terms, and high-frequency medication/class surfaces. Exit criterion: the deterministic two-pass eval no longer has obviously mappable high-frequency concepts in `top_unmapped_surfaces`; remaining unmapped rows are true misses, composites, extractor errors, or out-of-scope concepts with explicit labels. *Done — `UMLSSearchClient` against `https://uts-ws.nlm.nih.gov/rest/search/current` is wired into `_resolve_open_condition` (SNOMED exact) and `_resolve_open_lab` (LOINC words + numeric-code filter) with `composite_unhandled` short-circuit before the API call and `true_miss` caching on clean zero-hit responses. RxNorm raw-surface search stays the med path. Smoke eval `43c765d1dbcc` moved `unmapped_concept` from 551/1077 (51.2%) to 445/1061 (41.9%), `indeterminate` from 92.5% to 86.6%, and added +52 pass / +9 fail / +61 `ok` verdicts. All 15 surfaces remaining in `top_unmapped_surfaces` are legitimately non-atomic (composites, out-of-scope for Synthea, extractor bugs, ambiguous). Snapshot lives at `eval/baselines/2026-05-04-umls/`.* | 8 |
 | 2.18 | **Mappable-unmapped regression gate and cache warmer.** Turn `evals.diagnostics.top_unmapped_surfaces` into an engineering work queue. Add a report that classifies each top surface as `resolved`, `ambiguous`, `true_miss`, `composite_unhandled`, `extractor_bug`, or `out_of_scope`, with resolver provenance and cache status. Add a cache-warming script that resolves the top-N surfaces for a run/dataset and writes reusable cache rows before scoring. CI/local regression should fail or warn loudly when a high-frequency surface marked `resolved` falls back to `unmapped_concept`. Snapshot a new baseline comparing alias, registry-only two-pass, and open-resolver two-pass. *Partial — work queue, warmer, and new baseline shipped with the D-73 slice. Remaining: the regression gate that fails loudly when a previously-`resolved` high-frequency surface regresses back to `unmapped_concept` on a later run.* | 4 |
-| 2.19 | **Closed-world matcher semantics.** After open resolution is working, make assumption modes change behavior instead of only being metadata/prompt context. `open_world` remains default: no patient row means insufficient evidence / indeterminate. `closed_world_eval` may treat absence from the curated synthetic structured record as negative evidence for specific closed, structured kinds only (condition_absent, medication_absent, selected demographics/labs), and must record the assumption in evidence. `closed_world_demo` is allowed only for hand-picked demo pairs with a visible UI/API banner. Do not use closed-world behavior to mask terminology failures; mapping has to run first. | 3 |
+| 2.19 | **Closed-world matcher semantics.** After open resolution is working, make assumption modes change behavior instead of only being metadata/prompt context. `open_world` remains default: no patient row means insufficient evidence / indeterminate. `closed_world_eval` may treat absence from the curated synthetic structured record as negative evidence for specific closed, structured kinds only (condition_absent, medication_absent, selected demographics/labs), and must record the assumption in evidence. `closed_world_demo` is allowed only for hand-picked demo pairs with a visible UI/API banner. Do not use closed-world behavior to mask terminology failures; mapping has to run first. *Done — matcher v0.2 threads `matcher_assumption_mode` into `_match_condition` / `_match_medication` / `_match_temporal_window` (labs deliberately excluded; user wants N/A visibility). `open_world` returns `indeterminate(no_data)` for resolved-but-absent (also fixes a pre-existing silent-flip bug where `condition_absent` criteria silently flipped `fail` to `pass`); closed-world modes return `fail` with `evidence_under_assumption=True` stamped on the verdict. `unmapped_concept` is unchanged across modes (D-73 guardrail). `MatchVerdict` carries `assumption` + `evidence_under_assumption`. `EligibilityRollup` gains `pass_pending_review` for "no fails, every remaining indeterminate is `human_review_required`" — useful in any mode. UI/API banner for `closed_world_demo` deferred to follow-up (we are nowhere near demo polish yet). Twin baselines in `eval/baselines/2026-05-04-2.19/`: closed-world v0.2 reproduces v0.1 numbers exactly (`pass`=110 / `fail`=32 / `indeterminate`=919 / `ok`=142), confirming faithful re-implementation; honest open-world is `pass`=77 / `fail`=21 / `indeterminate`=963 / `ok`=98 / `no_data` 62 vs 18.* | 3 |
 | **Phase 2 total** | | **~81 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 

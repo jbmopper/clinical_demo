@@ -112,28 +112,70 @@ def test_condition_present_pass() -> None:
     assert any(e.kind == "condition" for e in v.evidence)
 
 
-def test_condition_present_fail_without_match() -> None:
-    """No matching active condition → fail (with a MissingEvidence
-    row citing what we looked for)."""
+def test_condition_present_open_world_no_match_indeterminate() -> None:
+    """Open-world (default) treats a missing FHIR row as silence,
+    not as evidence of absence: indeterminate(no_data) with a
+    MissingEvidence trail citing what we looked for. This is the
+    PLAN 2.19 / D-73 honesty fix; before, the matcher returned
+    `fail` here (silently flipped to `pass` for `*_absent`
+    criteria), which papered over real terminology gaps."""
     profile = make_profile(conditions=[])
     v = match_criterion(crit_condition(text="type 2 diabetes"), profile, make_trial())
+    assert v.verdict == "indeterminate"
+    assert v.reason == "no_data"
+    assert v.assumption == "open_world"
+    assert v.evidence_under_assumption is False
+    assert any(e.kind == "missing" for e in v.evidence)
+
+
+def test_condition_present_closed_world_no_match_fails() -> None:
+    """Closed-world treats the curated record as authoritative for
+    resolved concepts: no T2DM row ⇒ patient does not have T2DM,
+    raw=fail, and `evidence_under_assumption=True` so audits can
+    spot which verdicts depend on the closed-world contract."""
+    profile = make_profile(conditions=[])
+    v = match_criterion(
+        crit_condition(text="type 2 diabetes"),
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )
     assert v.verdict == "fail"
+    assert v.reason == "ok"
+    assert v.assumption == "closed_world_eval"
+    assert v.evidence_under_assumption is True
     assert any(e.kind == "missing" for e in v.evidence)
 
 
 def test_condition_unmapped_text_indeterminate() -> None:
-    """Surface form not in the lookup table → indeterminate."""
+    """Surface form not in the lookup table → indeterminate
+    regardless of mode (closed-world cannot paper over terminology
+    failures; D-73 guardrail)."""
     profile = make_profile(conditions=[make_condition()])
-    v = match_criterion(crit_condition(text="rare unknown disease"), profile, make_trial())
-    assert v.verdict == "indeterminate"
-    assert v.reason == "unmapped_concept"
+    v_open = match_criterion(crit_condition(text="rare unknown disease"), profile, make_trial())
+    assert v_open.verdict == "indeterminate"
+    assert v_open.reason == "unmapped_concept"
+    assert v_open.evidence_under_assumption is False
+
+    v_closed = match_criterion(
+        crit_condition(text="rare unknown disease"),
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )
+    assert v_closed.verdict == "indeterminate"
+    assert v_closed.reason == "unmapped_concept"
+    assert v_closed.evidence_under_assumption is False
 
 
-def test_condition_absent_with_no_match_still_passes_after_polarity() -> None:
+def test_condition_absent_open_world_indeterminate_after_polarity() -> None:
     """`condition_absent` polarity='inclusion' negated=True means the
-    patient must NOT have the condition. Raw "no T2DM" → fail; the
-    inclusion-side single negation flips it to pass."""
-    profile = make_profile(conditions=[])  # no T2DM
+    patient must NOT have the condition. Under default open-world
+    semantics, raw "patient record has no T2DM row" is
+    `indeterminate(no_data)` (FHIR may be silent rather than
+    negative); polarity flip leaves indeterminate as indeterminate
+    so the verdict surfaces honestly."""
+    profile = make_profile(conditions=[])  # no T2DM row
     v = match_criterion(
         crit_condition(
             text="type 2 diabetes",
@@ -144,7 +186,30 @@ def test_condition_absent_with_no_match_still_passes_after_polarity() -> None:
         profile,
         make_trial(),
     )
+    assert v.verdict == "indeterminate"
+    assert v.reason == "no_data"
+    assert v.assumption == "open_world"
+
+
+def test_condition_absent_closed_world_passes_after_polarity() -> None:
+    """Same setup as the open-world test, but in closed-world the
+    curated record is authoritative: raw "no T2DM" → fail, the
+    `condition_absent` inclusion-side negation flips it to pass."""
+    profile = make_profile(conditions=[])  # no T2DM row
+    v = match_criterion(
+        crit_condition(
+            text="type 2 diabetes",
+            kind="condition_absent",
+            polarity="inclusion",
+            negated=True,
+        ),
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )
     assert v.verdict == "pass"
+    assert v.assumption == "closed_world_eval"
+    assert v.evidence_under_assumption is True
 
 
 # ---------- medication ----------
@@ -429,8 +494,11 @@ def test_temporal_window_recent_event_passes() -> None:
     assert v.verdict == "pass"
 
 
-def test_temporal_window_old_event_fails() -> None:
-    """Diagnosis 5 years before `as_of` is outside a 90-day window."""
+def test_temporal_window_open_world_old_event_indeterminate() -> None:
+    """Diagnosis 5 years before `as_of` is outside a 90-day window;
+    under default open-world semantics that's
+    `indeterminate(no_data)` (FHIR may not have captured a more
+    recent event), not a hard fail."""
     profile = make_profile(
         conditions=[make_condition(code="44054006", display="T2DM", onset=date(2020, 1, 1))]
     )
@@ -439,7 +507,25 @@ def test_temporal_window_old_event_fails() -> None:
         profile,
         make_trial(),
     )
+    assert v.verdict == "indeterminate"
+    assert v.reason == "no_data"
+
+
+def test_temporal_window_closed_world_old_event_fails() -> None:
+    """Same setup but in closed-world: the curated record is
+    authoritative, so "no event in the last 90 days" is a hard
+    fail with `evidence_under_assumption=True`."""
+    profile = make_profile(
+        conditions=[make_condition(code="44054006", display="T2DM", onset=date(2020, 1, 1))]
+    )
+    v = match_criterion(
+        crit_temporal_window(event_text="type 2 diabetes", window_days=90),
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )
     assert v.verdict == "fail"
+    assert v.evidence_under_assumption is True
 
 
 def test_temporal_window_future_direction_unsupported() -> None:

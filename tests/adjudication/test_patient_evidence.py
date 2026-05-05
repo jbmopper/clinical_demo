@@ -88,6 +88,8 @@ def _deterministic_verdict():
         reason="unmapped_concept",
         rationale="No ConceptSet mapping.",
         evidence=[],
+        assumption="open_world",
+        evidence_under_assumption=False,
     )
 
 

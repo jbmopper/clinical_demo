@@ -37,6 +37,7 @@ from pydantic import BaseModel, Field
 
 from ..domain.patient import CodedConcept
 from ..extractor.schema import ExtractedCriterion
+from .modes import MatcherAssumptionMode
 
 Verdict = Literal["pass", "fail", "indeterminate"]
 """Top-level eligibility outcome for one criterion. Mirrors
@@ -182,7 +183,22 @@ Evidence = Annotated[
 
 
 class MatchVerdict(BaseModel):
-    """One matcher verdict for one ExtractedCriterion."""
+    """One matcher verdict for one ExtractedCriterion.
+
+    `assumption` records the `MatcherAssumptionMode` the verdict was
+    produced under so audit trails (and any downstream LLM
+    adjudicator that looks at the deterministic verdict) can see
+    whether absence-as-negative evidence was in play. `None` is
+    legacy/test-only.
+
+    `evidence_under_assumption` is `True` only when the closed-world
+    assumption *changed* the answer relative to what `open_world`
+    would have produced — in practice, when a resolved-but-absent
+    condition / medication / temporal event triggered a hard
+    `pass`/`fail` instead of `indeterminate(no_data)`. Reviewers can
+    pivot on this flag to see exactly which verdicts depend on the
+    closed-world contract holding (D-73 / PLAN 2.19 guardrail).
+    """
 
     criterion: ExtractedCriterion
     verdict: Verdict
@@ -190,6 +206,8 @@ class MatchVerdict(BaseModel):
     rationale: str
     evidence: list[Evidence] = Field(default_factory=list)
     matcher_version: str
+    assumption: MatcherAssumptionMode | None = None
+    evidence_under_assumption: bool = False
 
 
 __all__ = [

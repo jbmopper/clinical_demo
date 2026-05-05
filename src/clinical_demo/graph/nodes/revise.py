@@ -48,7 +48,7 @@ from __future__ import annotations
 from typing import Any
 
 from ...extractor.schema import ExtractedCriterion, Polarity
-from ...matcher import MatchVerdict, match_criterion
+from ...matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, MatchVerdict, match_criterion
 from ...observability import traced
 from ...settings import Settings
 from ..critic_types import CriticActionKind, CriticFinding, CriticRevision
@@ -208,7 +208,8 @@ def _dispatch(
             result = llm_match_node(focused, client=client, settings=settings)
             new_verdict = result["indexed_verdicts"][0][1]
         else:
-            new_verdict = match_criterion(flipped, profile, trial)
+            mode = state.get("matcher_assumption_mode", DEFAULT_MATCHER_ASSUMPTION_MODE)
+            new_verdict = match_criterion(flipped, profile, trial, matcher_assumption_mode=mode)
         return (
             new_verdict,
             f"flipped polarity ({criterion.polarity} → {flipped.polarity}) and re-matched",

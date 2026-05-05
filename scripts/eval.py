@@ -282,7 +282,7 @@ def _load_or_extract_chia_document(
 
 def _summarize(run: RunResult) -> str:
     """One-screen summary of a run; same shape `eval report` prints."""
-    elig: dict[str, int] = {"pass": 0, "fail": 0, "indeterminate": 0}
+    elig: dict[str, int] = {"pass": 0, "fail": 0, "indeterminate": 0, "pass_pending_review": 0}
     by_slice: dict[str, dict[str, int]] = {}
     total_cost = 0.0
     total_latency = 0.0
@@ -296,7 +296,7 @@ def _summarize(run: RunResult) -> str:
         elig[c.result.eligibility] = elig.get(c.result.eligibility, 0) + 1
         slot = by_slice.setdefault(
             c.case.slice or "(none)",
-            {"pass": 0, "fail": 0, "indeterminate": 0},
+            {"pass": 0, "fail": 0, "indeterminate": 0, "pass_pending_review": 0},
         )
         slot[c.result.eligibility] = slot.get(c.result.eligibility, 0) + 1
         if c.result.extraction_meta.cost_usd is not None:

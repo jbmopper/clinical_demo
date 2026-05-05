@@ -52,6 +52,7 @@ from ..extractor.schema import (
 from ..profile import PatientProfile, ThresholdResult
 from ..profile.profile import ConceptSet, ThresholdOp
 from .concept_lookup import lookup_condition, lookup_lab, lookup_medication
+from .modes import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode
 from .verdict import (
     ConditionEvidence,
     DemographicsEvidence,
@@ -65,9 +66,29 @@ from .verdict import (
     VerdictReason,
 )
 
-MATCHER_VERSION = "matcher-v0.1"
+MATCHER_VERSION = "matcher-v0.2"
 """Bumped on any change that could shift verdicts on the eval set.
-Recorded on every `MatchVerdict` for run attribution."""
+Recorded on every `MatchVerdict` for run attribution.
+
+v0.2 (PLAN 2.19): the matcher now consumes
+`matcher_assumption_mode`. Default `open_world` correctly returns
+`indeterminate(no_data)` when a resolved condition / medication /
+temporal event is absent (was returning a hard `fail` raw which got
+silently flipped to `pass` for `*_absent` criteria). Closed-world
+modes opt back into the absence-as-negative behavior on a
+controlled per-kind whitelist (conditions, medications, temporal
+windows). Labs continue to land on `no_data` in every mode."""
+
+_HandlerResult = tuple[Verdict, VerdictReason, str, list[Evidence], bool]
+"""Per-kind handler return: `(raw_verdict, reason, rationale,
+evidence, evidence_under_assumption)`. The trailing bool is `True`
+only when closed-world assumption *changed* the verdict relative
+to the open-world answer; reviewers pivot on this to audit which
+decisions depend on the closed-world contract holding."""
+
+_CLOSED_WORLD_MODES: frozenset[MatcherAssumptionMode] = frozenset(
+    {"closed_world_eval", "closed_world_demo"}
+)
 
 
 # ---------- top-level entry ----------
@@ -77,14 +98,27 @@ def match_criterion(
     criterion: ExtractedCriterion,
     profile: PatientProfile,
     trial: Trial,
+    *,
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
 ) -> MatchVerdict:
     """Return a `MatchVerdict` for one extracted criterion.
 
     The dispatch table is exhaustive over `CriterionKind`. Each
     per-kind handler returns `(raw_verdict, reason, rationale,
-    evidence)` — the *raw* answer to the criterion's claim, unflipped
-    by polarity. `match_criterion` then applies polarity / negation
-    to land on the final eligibility verdict.
+    evidence, evidence_under_assumption)` — the *raw* answer to the
+    criterion's claim, unflipped by polarity, plus a flag indicating
+    whether the closed-world assumption changed the answer.
+    `match_criterion` then applies polarity / negation to land on
+    the final eligibility verdict.
+
+    `matcher_assumption_mode` controls how absence is interpreted
+    for resolved-but-absent concepts on the closed-world whitelist
+    (conditions, medications, temporal windows). `open_world` (the
+    clinical-review default) returns `indeterminate(no_data)` so a
+    missing FHIR row never silently means "patient does not have
+    this." `closed_world_eval` and `closed_world_demo` opt back into
+    absence-as-negative for those kinds; verdicts they flipped get
+    `evidence_under_assumption=True` for downstream auditing.
 
     Soft-fails on extractor invariant violations (kind discriminator
     says one thing, payload slot is None) by emitting an
@@ -104,10 +138,14 @@ def match_criterion(
                 "patient-side data on planned events."
             ),
             evidence=[],
+            assumption=matcher_assumption_mode,
+            evidence_under_assumption=False,
         )
 
     try:
-        raw, reason, rationale, evidence = _dispatch(criterion, profile, trial)
+        raw, reason, rationale, evidence, under_assumption = _dispatch(
+            criterion, profile, trial, matcher_assumption_mode
+        )
     except _ExtractorInvariantViolation as exc:
         return _build(
             criterion,
@@ -120,6 +158,8 @@ def match_criterion(
                     note="extractor returned a discriminator/payload mismatch",
                 )
             ],
+            assumption=matcher_assumption_mode,
+            evidence_under_assumption=False,
         )
     final = _apply_polarity(raw, criterion.polarity, criterion.negated)
     return _build(
@@ -128,6 +168,8 @@ def match_criterion(
         reason=reason,
         rationale=rationale,
         evidence=evidence,
+        assumption=matcher_assumption_mode,
+        evidence_under_assumption=under_assumption,
     )
 
 
@@ -135,9 +177,14 @@ def match_extracted(
     criteria: list[ExtractedCriterion],
     profile: PatientProfile,
     trial: Trial,
+    *,
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
 ) -> list[MatchVerdict]:
     """Convenience: run `match_criterion` over a whole extraction."""
-    return [match_criterion(c, profile, trial) for c in criteria]
+    return [
+        match_criterion(c, profile, trial, matcher_assumption_mode=matcher_assumption_mode)
+        for c in criteria
+    ]
 
 
 # ---------- dispatch ----------
@@ -147,9 +194,11 @@ def _dispatch(
     criterion: ExtractedCriterion,
     profile: PatientProfile,
     trial: Trial,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
-    """Route to the per-kind handler. Each returns (verdict, reason,
-    rationale, evidence) with the *raw* polarity-unflipped verdict."""
+    mode: MatcherAssumptionMode,
+) -> _HandlerResult:
+    """Route to the per-kind handler. Each returns
+    `(verdict, reason, rationale, evidence, evidence_under_assumption)`
+    with the *raw* polarity-unflipped verdict."""
     kind: CriterionKind = criterion.kind
 
     if kind == "age":
@@ -157,14 +206,20 @@ def _dispatch(
     if kind == "sex":
         return _match_sex(_required(criterion.sex, "sex", kind), profile, trial)
     if kind in ("condition_present", "condition_absent"):
-        return _match_condition(_required(criterion.condition, "condition", kind), profile)
+        return _match_condition(
+            _required(criterion.condition, "condition", kind), profile, mode=mode
+        )
     if kind in ("medication_present", "medication_absent"):
-        return _match_medication(_required(criterion.medication, "medication", kind), profile)
+        return _match_medication(
+            _required(criterion.medication, "medication", kind), profile, mode=mode
+        )
     if kind == "measurement_threshold":
         return _match_measurement(_required(criterion.measurement, "measurement", kind), profile)
     if kind == "temporal_window":
         return _match_temporal_window(
-            _required(criterion.temporal_window, "temporal_window", kind), profile
+            _required(criterion.temporal_window, "temporal_window", kind),
+            profile,
+            mode=mode,
         )
     if kind == "free_text":
         return (
@@ -172,6 +227,7 @@ def _dispatch(
             "human_review_required",
             "Free-text criterion; deferred to human review.",
             [],
+            False,
         )
     # Defensive: every CriterionKind member must be handled above.
     return (
@@ -179,6 +235,7 @@ def _dispatch(
         "unsupported_kind",
         f"Matcher v0 does not handle kind={kind!r}.",
         [],
+        False,
     )
 
 
@@ -230,7 +287,7 @@ def _match_age(
     payload: AgeCriterion,
     profile: PatientProfile,
     trial: Trial,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+) -> _HandlerResult:
     """Age criteria are simple range checks against the profile.
 
     Trial's CT.gov-structured age fields are cited as auxiliary
@@ -263,8 +320,8 @@ def _match_age(
     max_ok = payload.maximum_years is None or age <= payload.maximum_years
 
     if min_ok and max_ok:
-        return ("pass", "ok", _age_rationale(age, payload, satisfied=True), evidence)
-    return ("fail", "ok", _age_rationale(age, payload, satisfied=False), evidence)
+        return ("pass", "ok", _age_rationale(age, payload, satisfied=True), evidence, False)
+    return ("fail", "ok", _age_rationale(age, payload, satisfied=False), evidence, False)
 
 
 def _age_rationale(age: int, payload: AgeCriterion, *, satisfied: bool) -> str:
@@ -282,7 +339,7 @@ def _match_sex(
     payload: SexCriterion,
     profile: PatientProfile,
     trial: Trial,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+) -> _HandlerResult:
     """Patient sex is `male|female|other|unknown`; criterion sex is
     `MALE|FEMALE|ALL`. `ALL` always passes; `other`/`unknown` patient
     sex returns indeterminate against a specific MALE/FEMALE
@@ -294,13 +351,14 @@ def _match_sex(
     ]
 
     if payload.sex == "ALL":
-        return ("pass", "ok", "Criterion accepts all sexes.", evidence)
+        return ("pass", "ok", "Criterion accepts all sexes.", evidence, False)
     if p_sex in ("other", "unknown"):
         return (
             "indeterminate",
             "no_data",
             f"Patient sex is {profile.sex!r}; criterion requires {payload.sex}.",
             evidence,
+            False,
         )
     expected = payload.sex.lower()
     if p_sex == expected:
@@ -309,23 +367,43 @@ def _match_sex(
             "ok",
             f"Patient sex {profile.sex!r} matches criterion {payload.sex}.",
             evidence,
+            False,
         )
     return (
         "fail",
         "ok",
         f"Patient sex {profile.sex!r} does not match criterion {payload.sex}.",
         evidence,
+        False,
     )
 
 
 def _match_condition(
     payload: ConditionCriterion,
     profile: PatientProfile,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+    *,
+    mode: MatcherAssumptionMode,
+) -> _HandlerResult:
     """Condition presence/absence — driven by the surface-form lookup.
 
     Caller's responsible for polarity flip; this returns the raw
-    "is the patient currently coded for this condition" answer."""
+    "is the patient currently coded for this condition" answer.
+
+    Absence semantics are mode-dependent (PLAN 2.19, D-73):
+
+    - `open_world`: a missing FHIR row is *not* evidence of absence.
+      Return `indeterminate(no_data)` so downstream review knows the
+      record is silent rather than implying the patient is negative
+      for the concept.
+    - `closed_world_eval` / `closed_world_demo`: the curated synthetic
+      record is treated as complete for resolved condition concepts;
+      no row in `profile.conditions` ⇒ patient does not have it. Raw
+      `fail` with `evidence_under_assumption=True` so audits can see
+      which verdicts depend on the closed-world contract.
+
+    `unmapped_concept` always returns indeterminate regardless of
+    mode -- closed-world cannot paper over terminology failures
+    (D-73 guardrail)."""
     concept_set = lookup_condition(payload.condition_text)
     if concept_set is None:
         return (
@@ -338,6 +416,7 @@ def _match_condition(
                     note="condition not in matcher v0 vocabulary",
                 )
             ],
+            False,
         )
 
     matches = profile.matching_active_conditions(concept_set)
@@ -359,28 +438,56 @@ def _match_condition(
             "ok",
             f"Patient has active condition matching {concept_set.name!r}.",
             evidence,
+            False,
+        )
+
+    looked_for = f"active condition in {concept_set.name!r} ({len(concept_set.codes)} codes)"
+    if mode in _CLOSED_WORLD_MODES:
+        return (
+            "fail",
+            "ok",
+            (
+                f"Patient has no active condition matching {concept_set.name!r} "
+                f"(closed-world: treating absence in the curated record as negative)."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=looked_for,
+                    note=(
+                        "no matching active conditions on profile; "
+                        f"absence treated as negative under {mode}"
+                    ),
+                )
+            ],
+            True,
         )
     return (
-        "fail",
-        "ok",
-        f"Patient has no active condition matching {concept_set.name!r}.",
+        "indeterminate",
+        "no_data",
+        (
+            f"Patient record has no active condition matching {concept_set.name!r}; "
+            f"under open_world this is insufficient evidence, not absence."
+        ),
         [
             MissingEvidence(
-                looked_for=f"active condition in {concept_set.name!r} "
-                f"({len(concept_set.codes)} codes)",
+                looked_for=looked_for,
                 note="no matching active conditions on profile",
             )
         ],
+        False,
     )
 
 
 def _match_medication(
     payload: MedicationCriterion,
     profile: PatientProfile,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
-    """Medication presence/absence. v0's concept-lookup table is
-    empty for meds; everything returns `unmapped_concept` until we do
-    the RxNorm work."""
+    *,
+    mode: MatcherAssumptionMode,
+) -> _HandlerResult:
+    """Medication presence/absence. Same closed-world semantics as
+    `_match_condition`: open-world treats a missing row as
+    insufficient evidence; closed-world treats the curated synthetic
+    record as authoritative for resolved concepts."""
     concept_set = lookup_medication(payload.medication_text)
     if concept_set is None:
         return (
@@ -394,6 +501,7 @@ def _match_medication(
                     note="medication not in matcher v0 vocabulary",
                 )
             ],
+            False,
         )
     matches = [m for m in profile.active_medications if m.concept.code in concept_set.codes]
     if matches:
@@ -414,26 +522,58 @@ def _match_medication(
             "ok",
             f"Patient has active medication matching {concept_set.name!r}.",
             evidence,
+            False,
+        )
+
+    looked_for = f"active medication in {concept_set.name!r}"
+    if mode in _CLOSED_WORLD_MODES:
+        return (
+            "fail",
+            "ok",
+            (
+                f"Patient has no active medication matching {concept_set.name!r} "
+                f"(closed-world: treating absence in the curated record as negative)."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=looked_for,
+                    note=(
+                        "no matching active medications on profile; "
+                        f"absence treated as negative under {mode}"
+                    ),
+                )
+            ],
+            True,
         )
     return (
-        "fail",
-        "ok",
-        f"Patient has no active medication matching {concept_set.name!r}.",
+        "indeterminate",
+        "no_data",
+        (
+            f"Patient record has no active medication matching {concept_set.name!r}; "
+            f"under open_world this is insufficient evidence, not absence."
+        ),
         [
             MissingEvidence(
-                looked_for=f"active medication in {concept_set.name!r}",
+                looked_for=looked_for,
                 note="no matching active medications on profile",
             )
         ],
+        False,
     )
 
 
 def _match_measurement(
     payload: MeasurementCriterion,
     profile: PatientProfile,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+) -> _HandlerResult:
     """Numeric threshold. Delegates to `PatientProfile.meets_threshold`,
-    which encapsulates the freshness and unit-mismatch decisions."""
+    which encapsulates the freshness and unit-mismatch decisions.
+
+    Labs are deliberately *not* on the closed-world whitelist: a
+    missing observation does not mean the value would be normal,
+    and a closed-world fail on `no_data` would silently sweep
+    real lab gaps under the rug. Stay `indeterminate(no_data)`
+    in every mode (PLAN 2.19 design call)."""
     concept_set = lookup_lab(payload.measurement_text)
     if concept_set is None:
         return (
@@ -446,6 +586,7 @@ def _match_measurement(
                     note="measurement not in matcher v0 vocabulary",
                 )
             ],
+            False,
         )
     if payload.unit is None:
         inferred_unit = _infer_conventional_threshold_unit(payload, concept_set, profile)
@@ -456,6 +597,7 @@ def _match_measurement(
                 f"Threshold for {payload.measurement_text!r} has no unit; cannot "
                 f"safely compare against patient lab values.",
                 [],
+                False,
             )
         payload = payload.model_copy(update={"unit": inferred_unit})
         unit: str = inferred_unit
@@ -471,6 +613,7 @@ def _match_measurement(
             "unsupported_kind",
             f"Operator {op!r} is not supported by matcher v0.",
             [],
+            False,
         )
     if payload.value is None:
         return (
@@ -478,6 +621,7 @@ def _match_measurement(
             "ambiguous_criterion",
             f"One-sided operator {op!r} requires `value`, got None.",
             [],
+            False,
         )
     value: float = payload.value
 
@@ -532,7 +676,7 @@ def _match_range(
     concept_set: ConceptSet,
     op: str,
     profile: PatientProfile,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+) -> _HandlerResult:
     """Range checks decompose into two one-sided threshold checks.
 
     A patient lab "in_range" must be >= low AND <= high; "out_of_range"
@@ -544,6 +688,7 @@ def _match_range(
             "ambiguous_criterion",
             f"Range operator {op!r} requires both value_low and value_high.",
             [],
+            False,
         )
     value_low: float = payload.value_low
     value_high: float = payload.value_high
@@ -555,6 +700,7 @@ def _match_range(
                 "ambiguous_criterion",
                 f"Range threshold for {payload.measurement_text!r} has no unit.",
                 [],
+                False,
             )
         payload = payload.model_copy(update={"unit": inferred_unit})
         unit: str = inferred_unit
@@ -598,7 +744,7 @@ def _match_range(
         f"{payload.measurement_text} {'is' if raw else 'is not'} "
         f"{op} [{payload.value_low}, {payload.value_high}] {payload.unit or ''}".rstrip()
     )
-    return ("pass" if raw else "fail", "ok", rationale, evidence)
+    return ("pass" if raw else "fail", "ok", rationale, evidence, False)
 
 
 def _threshold_to_verdict(
@@ -606,7 +752,7 @@ def _threshold_to_verdict(
     payload: MeasurementCriterion,
     loinc_code: str,
     profile: PatientProfile,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+) -> _HandlerResult:
     """Convert a single `ThresholdResult` into the matcher's verdict
     triple. Centralized so all threshold paths share the same
     indeterminate-reason taxonomy and evidence-building logic."""
@@ -631,6 +777,7 @@ def _threshold_to_verdict(
                 f"{payload.operator} {payload.value} {payload.unit or ''}".rstrip()
             ),
             evidence,
+            False,
         )
     if result == ThresholdResult.DOES_NOT_MEET:
         obs = profile.latest_lab(loinc_code)
@@ -653,6 +800,7 @@ def _threshold_to_verdict(
                 f"{payload.operator} {payload.value} {payload.unit or ''}".rstrip()
             ),
             evidence,
+            False,
         )
     if result == ThresholdResult.NO_DATA:
         return (
@@ -665,6 +813,7 @@ def _threshold_to_verdict(
                     note="patient has no observation for this lab",
                 )
             ],
+            False,
         )
     if result == ThresholdResult.STALE_DATA:
         return (
@@ -675,6 +824,7 @@ def _threshold_to_verdict(
                 f"older than the freshness window."
             ),
             [],
+            False,
         )
     return (
         "indeterminate",
@@ -684,6 +834,7 @@ def _threshold_to_verdict(
             f"units do not canonicalize to the same quantity."
         ),
         [],
+        False,
     )
 
 
@@ -715,7 +866,7 @@ def _latest_lab_for_concept_set(
 def _no_lab_data(
     payload: MeasurementCriterion,
     concept_set: ConceptSet,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+) -> _HandlerResult:
     codes = ", ".join(sorted(concept_set.codes))
     return (
         "indeterminate",
@@ -729,26 +880,36 @@ def _no_lab_data(
                 note="patient has no observation for this lab concept set",
             )
         ],
+        False,
     )
 
 
 def _match_temporal_window(
     payload: TemporalWindowCriterion,
     profile: PatientProfile,
-) -> tuple[Verdict, VerdictReason, str, list[Evidence]]:
+    *,
+    mode: MatcherAssumptionMode,
+) -> _HandlerResult:
     """Temporal-window criteria check whether an event of the
     specified type occurred within `window_days` of `as_of`.
 
     v0 routes the event_text through the condition lookup (most
     "history of MI" / "AP within 60 months" style criteria are
     diagnoses). Procedures and visits aren't covered by the lookup
-    and land as `unmapped_concept`."""
+    and land as `unmapped_concept`.
+
+    Same closed-world semantics as `_match_condition`: open-world
+    treats "no event found" as `indeterminate(no_data)` (FHIR may
+    just not have captured it); closed-world treats the curated
+    record as authoritative for the resolved concept and returns
+    `fail` with `evidence_under_assumption=True`."""
     if payload.direction == "within_future":
         return (
             "indeterminate",
             "unsupported_mood",
             "Future-window criteria require planned-event data; not in v0.",
             [],
+            False,
         )
 
     concept_set = lookup_condition(payload.event_text)
@@ -763,6 +924,7 @@ def _match_temporal_window(
                     note="temporal-window event not in matcher v0 vocabulary",
                 )
             ],
+            False,
         )
 
     cutoff = profile.as_of - _days_timedelta(payload.window_days)
@@ -795,20 +957,45 @@ def _match_temporal_window(
             "ok",
             (f"Patient has {concept_set.name!r} event within the last {payload.window_days} days."),
             evidence,
+            False,
+        )
+
+    looked_for = (
+        f"{concept_set.name!r} event between {cutoff.isoformat()} and {profile.as_of.isoformat()}"
+    )
+    if mode in _CLOSED_WORLD_MODES:
+        return (
+            "fail",
+            "ok",
+            (
+                f"Patient has no {concept_set.name!r} event within the last "
+                f"{payload.window_days} days (closed-world: treating absence as negative)."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=looked_for,
+                    note=(
+                        "no matching temporal events found; "
+                        f"absence treated as negative under {mode}"
+                    ),
+                )
+            ],
+            True,
         )
     return (
-        "fail",
-        "ok",
-        (f"Patient has no {concept_set.name!r} event within the last {payload.window_days} days."),
+        "indeterminate",
+        "no_data",
+        (
+            f"Patient record has no {concept_set.name!r} event within the last "
+            f"{payload.window_days} days; under open_world this is insufficient evidence."
+        ),
         [
             MissingEvidence(
-                looked_for=(
-                    f"{concept_set.name!r} event between "
-                    f"{cutoff.isoformat()} and {profile.as_of.isoformat()}"
-                ),
+                looked_for=looked_for,
                 note="no matching temporal events found",
             )
         ],
+        False,
     )
 
 
@@ -856,9 +1043,11 @@ def _build(
     reason: VerdictReason,
     rationale: str,
     evidence: list[Evidence],
+    assumption: MatcherAssumptionMode,
+    evidence_under_assumption: bool,
 ) -> MatchVerdict:
     """One-stop constructor so every code path stamps the matcher
-    version consistently."""
+    version, assumption mode, and assumption flag consistently."""
     return MatchVerdict(
         criterion=criterion,
         verdict=verdict,
@@ -866,6 +1055,8 @@ def _build(
         rationale=rationale,
         evidence=evidence,
         matcher_version=MATCHER_VERSION,
+        assumption=assumption,
+        evidence_under_assumption=evidence_under_assumption,
     )
 
 
