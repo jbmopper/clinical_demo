@@ -1,0 +1,77 @@
+[
+  {
+    "surface": "hemoglobin",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 10,
+    "status": "resolved",
+    "cache_status": "hit",
+    "concept_set": {
+      "name": "Hemoglobin",
+      "system": "http://loinc.org",
+      "codes": ["718-7"]
+    },
+    "candidates": [],
+    "reason": "High-confidence LOINC mapping for hemoglobin mass in blood."
+  },
+  {
+    "surface": "platelet count",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 9,
+    "status": "resolved",
+    "cache_status": "hit",
+    "concept_set": {
+      "name": "Platelet count",
+      "system": "http://loinc.org",
+      "codes": ["777-3"]
+    },
+    "candidates": [],
+    "reason": "High-confidence LOINC mapping for platelet count in blood."
+  },
+  {
+    "surface": "bmi",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 6,
+    "status": "resolved",
+    "cache_status": "hit",
+    "concept_set": {
+      "name": "Body mass index",
+      "system": "http://loinc.org",
+      "codes": ["39156-5"]
+    },
+    "candidates": [],
+    "reason": "High-confidence LOINC mapping for body mass index."
+  },
+  {
+    "surface": "body mass index",
+    "criterion_kind": "measurement_threshold",
+    "resolver_kind": "lab",
+    "count": 6,
+    "status": "resolved",
+    "cache_status": "hit",
+    "concept_set": {
+      "name": "Body mass index",
+      "system": "http://loinc.org",
+      "codes": ["39156-5"]
+    },
+    "candidates": [],
+    "reason": "High-confidence LOINC mapping for body mass index."
+  },
+  {
+    "surface": "uncontrolled hypertension",
+    "criterion_kind": "condition_absent",
+    "resolver_kind": "condition",
+    "count": 5,
+    "status": "resolved",
+    "cache_status": "hit",
+    "concept_set": {
+      "name": "Essential hypertension",
+      "system": "http://snomed.info/sct",
+      "codes": ["38341003", "59621000"]
+    },
+    "candidates": [],
+    "reason": "Qualifier-bearing hypertension surface collapsed to the hypertension concept."
+  }
+]
