@@ -10,11 +10,14 @@ AI Forward Deployed Engineer interview.
 > harness, FastAPI backend, and SvelteKit reviewer dev rig in
 > place. The terminology bridge has moved from hand-curated
 > aliases toward NLM-backed resolution: VSAC expansion, RxNorm
-> lookup, cached terminology envelopes, resolver wiring, and a
-> two-pass eval rerun are in. The latest two-pass regression
-> improved `unmapped_concept` rate from 81.9% to 60.8%, layer-1
-> coverage from 55.3% to 98.7%, and agreement from 81.0% to
-> 88.3%.
+> lookup, cached terminology envelopes, resolver wiring, open UMLS
+> / LOINC search, and a resolved-surface regression gate are in.
+> The 2026-05-05 open-resolver snapshot reduced deterministic
+> `unmapped_concept` to 445/1061 criteria (41.9%), down 106
+> criteria / 9.2 percentage points from the 2026-05-04 no-LLM
+> baseline. Remaining top unmapped surfaces are tracked as
+> composites, data-model gaps, ambiguity, extractor bugs, or true
+> misses rather than treated as generic calibration failures.
 >
 > Layer-2 Chia retained-sample work is also in: extractor-v0.5 is
 > the retained prompt with exact micro F1 37.7% and lenient micro
@@ -32,32 +35,29 @@ AI Forward Deployed Engineer interview.
 > future review can judge both the deterministic verdict and the
 > source evidence behind it.
 >
-> **597 Python tests passing**; Svelte production build verified
-> locally. Current Phase 2 focus: re-center the matcher on the core
-> product loop -- feed trials + patients into the system, retrieve
-> relevant patient evidence, and decide whether there is enough
-> support to flag a possible match. The 60-row patient-evidence
-> packet is now narrowed to cardiometabolic eval slices, records the
-> matcher assumption mode (`open_world` by default), and includes
-> structured retrieval suggestions for reviewer citation. Oncology/NSCLC
-> rows are deferred unless paired with hand-crafted oncology evidence.
+> Current Phase 2 focus: calibrated patient-trial matching -- feed
+> trials + patients into the system, retrieve relevant patient
+> evidence, and decide whether there is enough support to flag a
+> possible match. The 60-row patient-evidence packet is narrowed to
+> cardiometabolic eval slices, records the matcher assumption mode
+> (`open_world` by default), and includes structured retrieval
+> suggestions for reviewer citation. Oncology/NSCLC rows are
+> deferred unless paired with hand-crafted oncology evidence.
 > `retrieval_only` is now exposed through the scorer, eval CLI, FastAPI
 > `/score`, and the reviewer UI; it attaches ranked patient source rows
 > to unresolved criterion verdicts without changing pass/fail decisions.
 > `bounded_adjudication` now adds a citation-required LLM pass over
 > those retrieved rows, and the deterministic unit layer handles
 > whitelisted conventional units/conversions for BP, eGFR, HbA1c,
-> and LDL-C. The 2026-05-04 post-2.15/2.16 eval snapshots are under
-> `eval/baselines/2026-05-04/`: deterministic `none` run
-> `8e718e87c3fa` scored 18 fail / 31 indeterminate cases;
-> `retrieval_only` run `dd8a939ea584` preserved those verdicts while
-> attaching retrieved source rows to 627 unresolved criterion verdicts;
-> `bounded_adjudication` run `4458ecd2199a` moved 9 cases from
-> indeterminate to fail and 54 criterion verdicts from indeterminate to
-> decisive pass/fail. No cases moved to pass. The patient-evidence
-> label template still has 0/60 filled labels, so Phase 3's
-> cost-quality routing sweep should wait for calibration labels and
-> adjudicator cost persistence.
+> and LDL-C. A new patient-evidence report command compares `none`,
+> `retrieval_only`, and `bounded_adjudication` runs against filled
+> labels, including verdict accuracy, citation agreement, abstention,
+> case rollup movement, and adjudicator cost/call totals. The label
+> template still has 0/60 filled labels, so bounded-adjudication
+> quality claims and broad multi-model cost sweeps remain blocked on
+> human calibration, not plumbing. A local TrialGPT/TREC-style benchmark scaffold is
+> also available for patient-summary / trial-ranking framing; official
+> TREC ingestion is intentionally deferred.
 
 ## What it is (one paragraph)
 

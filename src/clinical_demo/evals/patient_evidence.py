@@ -25,6 +25,7 @@ from clinical_demo.evals.layer_three import (
 )
 from clinical_demo.evals.run import RunResult
 from clinical_demo.matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode, Verdict
+from clinical_demo.matcher.verdict import MatchVerdict
 from clinical_demo.retrieval import RetrievalSourceRow, retrieve_structured_patient_evidence
 
 PatientEvidenceLabel = Literal[
@@ -94,6 +95,57 @@ class PatientEvidenceCalibrationRow(BaseModel):
     existing_label: PatientEvidenceHumanLabel | None = None
 
 
+class PatientEvidenceLabelCompleteness(BaseModel):
+    """Completeness counts for the human patient-evidence label file."""
+
+    total_labels: int
+    filled_labels: int
+    usable_labels: int
+    missing_expected_verdict: list[str] = Field(default_factory=list)
+
+
+class PatientEvidenceRunMetrics(BaseModel):
+    """One run's agreement against the patient-evidence labels."""
+
+    run_id: str
+    notes: str = ""
+    llm_use_level: str = ""
+    matcher_assumption_mode: str = ""
+    total_label_targets: int
+    comparable_targets: int
+    missing_result_targets: int = 0
+    correct_verdicts: int = 0
+    verdict_accuracy: float | None = None
+    abstentions: int = 0
+    abstention_rate: float | None = None
+    citation_targets: int = 0
+    citation_matches: int = 0
+    citation_agreement: float | None = None
+    eligibility_counts: dict[str, int] = Field(default_factory=dict)
+    adjudicator_calls: int = 0
+    adjudicator_cost_usd: float = 0.0
+    adjudicator_input_tokens: int = 0
+    adjudicator_output_tokens: int = 0
+
+
+class PatientEvidenceModeDelta(BaseModel):
+    """Case-level rollup movement from the baseline run to a comparison run."""
+
+    baseline_run_id: str
+    comparison_run_id: str
+    changed_cases: int
+    movements: dict[str, int] = Field(default_factory=dict)
+
+
+class PatientEvidenceReport(BaseModel):
+    """Calibrated patient-evidence report across one or more eval runs."""
+
+    label_path: str
+    label_completeness: PatientEvidenceLabelCompleteness
+    runs: list[PatientEvidenceRunMetrics]
+    mode_deltas: list[PatientEvidenceModeDelta] = Field(default_factory=list)
+
+
 def load_patient_evidence_labels(path: Path | str) -> list[PatientEvidenceHumanLabel]:
     """Load a JSON list of patient-side evidence labels."""
 
@@ -157,6 +209,106 @@ def merge_patient_evidence_labels(
     for label in updates:
         merged[(label.pair_id, label.criterion_index)] = label
     return list(merged.values())
+
+
+def patient_evidence_label_completeness(
+    labels: list[PatientEvidenceHumanLabel],
+) -> PatientEvidenceLabelCompleteness:
+    """Summarize which labels are ready for calibrated reporting."""
+
+    filled = []
+    missing_expected = []
+    for label in labels:
+        has_content = (
+            label.label is not None
+            or label.expected_matcher_verdict is not None
+            or bool(label.cited_source_row_ids)
+            or bool(label.rationale)
+        )
+        if has_content:
+            filled.append(label)
+        if label.label is not None and label.expected_matcher_verdict is None:
+            missing_expected.append(_label_key(label))
+    usable = [label for label in labels if label.expected_matcher_verdict is not None]
+    return PatientEvidenceLabelCompleteness(
+        total_labels=len(labels),
+        filled_labels=len(filled),
+        usable_labels=len(usable),
+        missing_expected_verdict=missing_expected,
+    )
+
+
+def build_patient_evidence_report(
+    runs: list[RunResult],
+    labels: list[PatientEvidenceHumanLabel],
+    *,
+    label_path: Path | str,
+) -> PatientEvidenceReport:
+    """Compare eval runs against filled patient-evidence labels.
+
+    A label becomes comparable once `expected_matcher_verdict` is set.
+    Citation agreement is computed only for decisive expected verdicts
+    with at least one human-cited patient source row.
+    """
+
+    completeness = patient_evidence_label_completeness(labels)
+    metrics = [_run_metrics(run, labels) for run in runs]
+    return PatientEvidenceReport(
+        label_path=str(label_path),
+        label_completeness=completeness,
+        runs=metrics,
+        mode_deltas=_mode_deltas(runs),
+    )
+
+
+def render_patient_evidence_report(report: PatientEvidenceReport) -> str:
+    """Render a concise Markdown report for CLI / baseline snapshots."""
+
+    c = report.label_completeness
+    lines = [
+        "# Patient Evidence Calibration Report",
+        "",
+        "## Labels",
+        "",
+        f"- path: `{report.label_path}`",
+        f"- filled: {c.filled_labels}/{c.total_labels}",
+        f"- usable for verdict metrics: {c.usable_labels}/{c.total_labels}",
+    ]
+    if c.missing_expected_verdict:
+        lines.append(
+            f"- missing expected matcher verdict: {len(c.missing_expected_verdict)} label(s)"
+        )
+    lines.extend(["", "## Runs", ""])
+    lines.append(
+        "| Run | LLM use | Comparable | Accuracy | Abstention | Citation agreement | "
+        "Eligibility | Adjudicator |"
+    )
+    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
+    for item in report.runs:
+        eligibility = " / ".join(
+            f"{key}={value}" for key, value in sorted(item.eligibility_counts.items())
+        )
+        adjudicator = f"{item.adjudicator_calls} calls / ${item.adjudicator_cost_usd:.4f}"
+        lines.append(
+            f"| `{item.run_id}` | `{item.llm_use_level or 'unknown'}` | "
+            f"{item.comparable_targets}/{item.total_label_targets} | "
+            f"{_pct(item.verdict_accuracy)} | {_pct(item.abstention_rate)} | "
+            f"{_citation_cell(item)} | {eligibility or '(none)'} | {adjudicator} |"
+        )
+    if report.mode_deltas:
+        lines.extend(["", "## Case Rollup Movement", ""])
+        lines.append("| Baseline | Comparison | Changed cases | Movements |")
+        lines.append("|---|---|---:|---|")
+        for delta in report.mode_deltas:
+            movements = " / ".join(
+                f"{key}={value}" for key, value in sorted(delta.movements.items())
+            )
+            lines.append(
+                f"| `{delta.baseline_run_id}` | `{delta.comparison_run_id}` | "
+                f"{delta.changed_cases} | {movements or '(none)'} |"
+            )
+    lines.append("")
+    return "\n".join(lines)
 
 
 def patient_evidence_source_rows(
@@ -366,6 +518,145 @@ def summarize_patient_evidence_rows(
     return dict(sorted(Counter(row.candidate_bucket for row in rows).items()))
 
 
+def _run_metrics(
+    run: RunResult,
+    labels: list[PatientEvidenceHumanLabel],
+) -> PatientEvidenceRunMetrics:
+    verdicts = _verdicts_by_key(run)
+    comparable = [label for label in labels if label.expected_matcher_verdict is not None]
+    correct = 0
+    abstentions = 0
+    missing = 0
+    citation_targets = 0
+    citation_matches = 0
+    for label in comparable:
+        verdict = verdicts.get((label.pair_id, label.criterion_index))
+        if verdict is None:
+            missing += 1
+            continue
+        if verdict.verdict == label.expected_matcher_verdict:
+            correct += 1
+        if verdict.verdict == "indeterminate":
+            abstentions += 1
+        if label.expected_matcher_verdict != "indeterminate" and label.cited_source_row_ids:
+            citation_targets += 1
+            if set(label.cited_source_row_ids).issubset(_cited_patient_row_ids(verdict)):
+                citation_matches += 1
+
+    total_cost = 0.0
+    calls = 0
+    input_tokens = 0
+    output_tokens = 0
+    llm_use_level = ""
+    assumption = ""
+    eligibility: Counter[str] = Counter()
+    for record in run.cases:
+        if record.result is None:
+            continue
+        llm_use_level = llm_use_level or record.result.llm_use_level
+        assumption = assumption or record.result.matcher_assumption_mode
+        eligibility[record.result.eligibility] += 1
+        calls += record.result.summary.adjudicator_calls
+        total_cost += record.result.summary.adjudicator_cost_usd or 0.0
+        input_tokens += record.result.summary.adjudicator_input_tokens or 0
+        output_tokens += record.result.summary.adjudicator_output_tokens or 0
+
+    comparable_count = len(comparable)
+    return PatientEvidenceRunMetrics(
+        run_id=run.run_id,
+        notes=run.notes,
+        llm_use_level=llm_use_level,
+        matcher_assumption_mode=assumption,
+        total_label_targets=len(labels),
+        comparable_targets=comparable_count,
+        missing_result_targets=missing,
+        correct_verdicts=correct,
+        verdict_accuracy=_ratio(correct, comparable_count - missing),
+        abstentions=abstentions,
+        abstention_rate=_ratio(abstentions, comparable_count - missing),
+        citation_targets=citation_targets,
+        citation_matches=citation_matches,
+        citation_agreement=_ratio(citation_matches, citation_targets),
+        eligibility_counts=dict(sorted(eligibility.items())),
+        adjudicator_calls=calls,
+        adjudicator_cost_usd=total_cost,
+        adjudicator_input_tokens=input_tokens,
+        adjudicator_output_tokens=output_tokens,
+    )
+
+
+def _mode_deltas(runs: list[RunResult]) -> list[PatientEvidenceModeDelta]:
+    if len(runs) < 2:
+        return []
+    baseline = runs[0]
+    baseline_rollups = _rollups_by_pair(baseline)
+    deltas = []
+    for run in runs[1:]:
+        movements: Counter[str] = Counter()
+        changed = 0
+        for pair_id, baseline_rollup in baseline_rollups.items():
+            comparison_rollup = _rollups_by_pair(run).get(pair_id)
+            if comparison_rollup is None or comparison_rollup == baseline_rollup:
+                continue
+            changed += 1
+            movements[f"{baseline_rollup}->{comparison_rollup}"] += 1
+        deltas.append(
+            PatientEvidenceModeDelta(
+                baseline_run_id=baseline.run_id,
+                comparison_run_id=run.run_id,
+                changed_cases=changed,
+                movements=dict(sorted(movements.items())),
+            )
+        )
+    return deltas
+
+
+def _verdicts_by_key(run: RunResult) -> dict[tuple[str, int], MatchVerdict]:
+    out = {}
+    for record in run.cases:
+        if record.result is None:
+            continue
+        for index, verdict in enumerate(record.result.verdicts):
+            out[(record.case.pair_id, index)] = verdict
+    return out
+
+
+def _rollups_by_pair(run: RunResult) -> dict[str, str]:
+    return {
+        record.case.pair_id: record.result.eligibility
+        for record in run.cases
+        if record.result is not None
+    }
+
+
+def _cited_patient_row_ids(verdict: MatchVerdict) -> set[str]:
+    return {
+        evidence.row_id for evidence in verdict.evidence if evidence.kind == "retrieved_patient_row"
+    }
+
+
+def _label_key(label: PatientEvidenceHumanLabel) -> str:
+    return f"{label.pair_id}[{label.criterion_index}]"
+
+
+def _ratio(numerator: int, denominator: int) -> float | None:
+    if denominator <= 0:
+        return None
+    return numerator / denominator
+
+
+def _pct(value: float | None) -> str:
+    if value is None:
+        return "n/a"
+    return f"{value * 100:.1f}%"
+
+
+def _citation_cell(item: PatientEvidenceRunMetrics) -> str:
+    if item.citation_targets == 0:
+        return "n/a"
+    return f"{_pct(item.citation_agreement)} ({item.citation_matches}/{item.citation_targets})"
+
+
 def _looks_patient_evidence_relevant(text: str) -> bool:
     needles = (
         "diagnos",
@@ -434,8 +725,13 @@ __all__ = [
     "PatientEvidenceCalibrationRow",
     "PatientEvidenceHumanLabel",
     "PatientEvidenceLabel",
+    "PatientEvidenceLabelCompleteness",
+    "PatientEvidenceModeDelta",
+    "PatientEvidenceReport",
+    "PatientEvidenceRunMetrics",
     "PatientEvidenceScope",
     "PatientEvidenceSourceRow",
+    "build_patient_evidence_report",
     "build_patient_evidence_rows",
     "load_layer_three_report",
     "load_patient_evidence_labels",
@@ -443,7 +739,9 @@ __all__ = [
     "load_patient_evidence_rows",
     "merge_patient_evidence_labels",
     "patient_evidence_bucket",
+    "patient_evidence_label_completeness",
     "patient_evidence_source_rows",
+    "render_patient_evidence_report",
     "save_patient_evidence_labels",
     "save_patient_evidence_rows",
     "select_patient_evidence_targets",

@@ -1,0 +1,1250 @@
+{
+  "version": "trial-benchmark-v0.1",
+  "framing": "Local TrialGPT/TREC-style scaffold: patient-summary retrieval, criterion matching, and trial ranking.",
+  "queries": [
+    {
+      "query_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 060e72d3-912e-55cd-0c92-5faa6cb7a6db. age 55. sex male. active conditions: Received higher education (finding); Chronic low back pain (finding); Victim of intimate partner abuse (finding); Diabetes; Neuropathy due to type 2 diabetes mellitus (disorder); Hypertension; Hypertriglyceridemia (disorder); Metabolic syndrome X (disorder). recent observations: Body Height 178.1 cm on 2021-08-13; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-08-13; Body Weight 84.6 kg on 2021-08-13; Body Mass Index 26.67 kg/m2 on 2021-08-13; Diastolic Blood Pressure 79 mm[Hg] on 2021-08-13; Systolic Blood Pressure 114 mm[Hg] on 2021-08-13; Heart rate 60 /min on 2021-08-13; Respiratory rate 15 /min on 2021-08-13. active medications: Vitamin B 12 5 MG/ML Injectable Solution; Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Amoxicillin 250 MG / Clavulanate 125 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Naproxen sodium 220 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "060e72d3__NCT05713006",
+          "nct_id": "NCT05713006",
+          "title": "Alectinib Pharmacokinetic in Patients With NSCLC",
+          "conditions": [
+            "Non-small Cell Lung Cancer Stage IIIB",
+            "ALK Gene Mutation"
+          ],
+          "slice": "nsclc",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "1293efbb-72dc-8b15-3bd6-916f96ed54f4",
+      "patient_id": "1293efbb-72dc-8b15-3bd6-916f96ed54f4",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 1293efbb-72dc-8b15-3bd6-916f96ed54f4. age 65. sex male. active conditions: Received higher education (finding); Has a criminal record (finding); Sepsis (disorder); Body mass index 30+ - obesity (finding); Chronic sinusitis (disorder); Prediabetes; Anemia (disorder); Diabetes. recent observations: Body Height 174.5 cm on 2021-02-07; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-02-07; Body Weight 92.8 kg on 2021-02-07; Body Mass Index 30.48 kg/m2 on 2021-02-07; Diastolic Blood Pressure 86 mm[Hg] on 2021-02-07; Systolic Blood Pressure 124 mm[Hg] on 2021-02-07; Heart rate 97 /min on 2021-02-07; Respiratory rate 15 /min on 2021-02-07. active medications: piperacillin 2000 MG / tazobactam 250 MG Injection; 150 ML vancomycin 5 MG/ML Injection; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "1293efbb__NCT06524960",
+          "nct_id": "NCT06524960",
+          "title": "Denosumab for Type 1 Diabetes",
+          "conditions": [
+            "Type 1 Diabetes"
+          ],
+          "slice": "t2dm-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "1293efbb__NCT06964087",
+          "nct_id": "NCT06964087",
+          "title": "Pharmacokinetic and Early Efficacy of OPT101 in Patients With Type 1 Diabetes Mellitus",
+          "conditions": [
+            "Type I Diabetes"
+          ],
+          "slice": "t2dm-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "28db1c55-fe99-d5c8-8fc4-bffda09ab3be",
+      "patient_id": "28db1c55-fe99-d5c8-8fc4-bffda09ab3be",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 28db1c55-fe99-d5c8-8fc4-bffda09ab3be. age 47. sex female. active conditions: Housing unsatisfactory (finding); Received certificate of high school equivalency (finding); Miscarriage in first trimester; Diabetes; Hypertension; Hypertriglyceridemia (disorder); Anemia (disorder); Metabolic syndrome X (disorder). recent observations: Body Height 170.3 cm on 2021-03-25; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-03-25; Body Weight 87.5 kg on 2021-03-25; Body Mass Index 30.17 kg/m2 on 2021-03-25; Diastolic Blood Pressure 75 mm[Hg] on 2021-03-25; Systolic Blood Pressure 101 mm[Hg] on 2021-03-25; Heart rate 72 /min on 2021-03-25; Respiratory rate 14 /min on 2021-03-25. active medications: lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "28db1c55__NCT06941441",
+          "nct_id": "NCT06941441",
+          "title": "PAH Exercise Study",
+          "conditions": [
+            "Pulmonary Arterial Hypertension (PAH)",
+            "Exercise Therapy"
+          ],
+          "slice": "hypertension-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "28db1c55__NCT07297797",
+          "nct_id": "NCT07297797",
+          "title": "Phase II Clinical Study of HRS-9563 in Patients With Mild to Moderate Hypertension",
+          "conditions": [
+            "Mild to Moderate Hypertension"
+          ],
+          "slice": "hypertension-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 2e555528-3530-497a-222a-7a3bbb35d938. age 76. sex male. active conditions: Appendicitis; History of appendectomy; Hypertension; Received higher education (finding); Body mass index 30+ - obesity (finding); Prediabetes; Anemia (disorder); Victim of intimate partner abuse (finding). recent observations: Body Height 179 cm on 2021-08-17; Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} on 2021-08-17; Body Weight 101.2 kg on 2021-08-17; Body Mass Index 31.58 kg/m2 on 2021-08-17; Diastolic Blood Pressure 79 mm[Hg] on 2021-08-17; Systolic Blood Pressure 138 mm[Hg] on 2021-08-17; Heart rate 81 /min on 2021-08-17; Respiratory rate 14 /min on 2021-08-17. active medications: lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "2e555528__NCT06475781",
+          "nct_id": "NCT06475781",
+          "title": "Study to Evaluate Safety and Efficacy of Mirivadelgat in PH-ILD",
+          "conditions": [
+            "Group 3 Pulmonary Hypertension"
+          ],
+          "slice": "hypertension-industry",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "2e555528__NCT06941441",
+          "nct_id": "NCT06941441",
+          "title": "PAH Exercise Study",
+          "conditions": [
+            "Pulmonary Arterial Hypertension (PAH)",
+            "Exercise Therapy"
+          ],
+          "slice": "hypertension-academic",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 38f38890-b80f-6542-51d4-882c7b37b0bf. age 83. sex male. active conditions: Hypertension; Received certificate of high school equivalency (finding); Body mass index 30+ - obesity (finding); Hyperlipidemia; Limited social contact (finding); Full-time employment (finding); Social isolation (finding). recent observations: Glucose 81.64 mg/dL on 2021-08-15; Urea Nitrogen 18.8 mg/dL on 2021-08-15; Creatinine 3.3373 mg/dL on 2021-08-15; Calcium 8.75 mg/dL on 2021-08-15; Sodium 141.61 mmol/L on 2021-08-15; Potassium 4.95 mmol/L on 2021-08-15; Chloride 110.64 mmol/L on 2021-08-15; Carbon Dioxide 25.77 mmol/L on 2021-08-15. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "38f38890__NCT06217302",
+          "nct_id": "NCT06217302",
+          "title": "Sotagliflozin to Slow Kidney Function Decline in Persons With Type 1 Diabetes and Diabetic Kidney Disease",
+          "conditions": [
+            "Diabetic Nephropathies",
+            "Kidney Failure, Chronic",
+            "Diabetes Mellitus Type 1",
+            "Heart Failure"
+          ],
+          "slice": "ckd",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "38f38890__NCT07489209",
+          "nct_id": "NCT07489209",
+          "title": "A Dose-exploration Study of EDP167 in HoFH",
+          "conditions": [
+            "Homozygous Familial Hypercholesterolemia (HoFH)"
+          ],
+          "slice": "hyperlipidemia",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 3a364909-94ec-e0c4-0156-8a2e15fa354e. age 63. sex male. active conditions: Hypertension; Received certificate of high school equivalency (finding); Lack of access to transportation (finding); Transport problems (finding); Body mass index 30+ - obesity (finding); Hyperlipidemia; Social isolation (finding); Stress (finding). recent observations: Body Height 174.3 cm on 2021-05-27; Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} on 2021-05-27; Body Weight 92.6 kg on 2021-05-27; Body Mass Index 30.48 kg/m2 on 2021-05-27; Diastolic Blood Pressure 78 mm[Hg] on 2021-05-27; Systolic Blood Pressure 122 mm[Hg] on 2021-05-27; Heart rate 95 /min on 2021-05-27; Respiratory rate 15 /min on 2021-05-27. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "3a364909__NCT06220266",
+          "nct_id": "NCT06220266",
+          "title": "Effects of Phytoestrogen From Pueraria Mirifica in Improvement of Serum Lipid Parameters in Postmenopausal Women",
+          "conditions": [
+            "Dyslipidemias",
+            "Hypertriglyceridemia",
+            "Hypercholesterolemia",
+            "Hyper-LDL-cholesterolemia",
+            "Hypo HDL Cholesterolaemia",
+            "Postmenopausal Symptoms"
+          ],
+          "slice": "hyperlipidemia",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "3a364909__NCT07362459",
+          "nct_id": "NCT07362459",
+          "title": "A Study to Evaluate the Safety and Tolerability of SCTB14 as First-Line Therapy in Non-Small Cell Lung Cancer.",
+          "conditions": [
+            "Non-Small Cell Lung Carcinoma (NSCLC)"
+          ],
+          "slice": "nsclc",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
+      "patient_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 3beee40e-512b-420f-38a3-28e56cddbc9b. age 72. sex male. active conditions: Atopic dermatitis; Received certificate of high school equivalency (finding); Body mass index 30+ - obesity (finding); Prediabetes; Diabetes; Hypertension; Hypertriglyceridemia (disorder); Metabolic syndrome X (disorder). recent observations: Body Height 171.6 cm on 2021-06-21; Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} on 2021-06-21; Body Weight 85.5 kg on 2021-06-21; Body Mass Index 29.04 kg/m2 on 2021-06-21; Diastolic Blood Pressure 114 mm[Hg] on 2021-06-21; Systolic Blood Pressure 152 mm[Hg] on 2021-06-21; Heart rate 81 /min on 2021-06-21; Respiratory rate 14 /min on 2021-06-21. active medications: Chlorpheniramine Maleate 2 MG/ML Oral Solution; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Vitamin B 12 5 MG/ML Injectable Solution.",
+      "candidates": [
+        {
+          "pair_id": "3beee40e__NCT06143566",
+          "nct_id": "NCT06143566",
+          "title": "Polypill for Prevention of Cardiomyopathy",
+          "conditions": [
+            "Type 2 Diabetes",
+            "High Blood Pressure"
+          ],
+          "slice": "t2dm-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "3beee40e__NCT07394114",
+          "nct_id": "NCT07394114",
+          "title": "A Study of HDM1005 in Participants With Type 2 Diabetes Not Controlled With Diet and Exercise Alone",
+          "conditions": [
+            "Type 2 Diabetes"
+          ],
+          "slice": "t2dm-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "407ef75b-0a9c-ec23-60e5-c90ba86e27af",
+      "patient_id": "407ef75b-0a9c-ec23-60e5-c90ba86e27af",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 407ef75b-0a9c-ec23-60e5-c90ba86e27af. age 72. sex male. active conditions: Body mass index 30+ - obesity (finding); Risk activity involvement (finding); Hypertension; Received certificate of high school equivalency (finding); Drug overdose; Prediabetes; Anemia (disorder); Stress (finding). recent observations: Glucose 74.06 mg/dL on 2021-10-20; Urea Nitrogen 10.47 mg/dL on 2021-10-20; Creatinine 3.4455 mg/dL on 2021-10-20; Calcium 8.85 mg/dL on 2021-10-20; Sodium 140.45 mmol/L on 2021-10-20; Potassium 5.11 mmol/L on 2021-10-20; Chloride 106.95 mmol/L on 2021-10-20; Carbon Dioxide 26.88 mmol/L on 2021-10-20. active medications: lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "407ef75b__NCT06941441",
+          "nct_id": "NCT06941441",
+          "title": "PAH Exercise Study",
+          "conditions": [
+            "Pulmonary Arterial Hypertension (PAH)",
+            "Exercise Therapy"
+          ],
+          "slice": "hypertension-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "407ef75b__NCT07297797",
+          "nct_id": "NCT07297797",
+          "title": "Phase II Clinical Study of HRS-9563 in Patients With Mild to Moderate Hypertension",
+          "conditions": [
+            "Mild to Moderate Hypertension"
+          ],
+          "slice": "hypertension-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "509f9a77-2a22-f98b-c539-9a44057efb51",
+      "patient_id": "509f9a77-2a22-f98b-c539-9a44057efb51",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 509f9a77-2a22-f98b-c539-9a44057efb51. age 59. sex female. active conditions: Risk activity involvement (finding); Body mass index 30+ - obesity (finding); Hypertension; Received certificate of high school equivalency (finding); Has a criminal record (finding); Miscarriage in first trimester; Prediabetes; Anemia (disorder). recent observations: Body Height 165.3 cm on 2021-11-15; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-11-15; Body Weight 81.5 kg on 2021-11-15; Body Mass Index 29.83 kg/m2 on 2021-11-15; Diastolic Blood Pressure 97 mm[Hg] on 2021-11-15; Systolic Blood Pressure 149 mm[Hg] on 2021-11-15; Heart rate 96 /min on 2021-11-15; Respiratory rate 13 /min on 2021-11-15. active medications: lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "509f9a77__NCT06941441",
+          "nct_id": "NCT06941441",
+          "title": "PAH Exercise Study",
+          "conditions": [
+            "Pulmonary Arterial Hypertension (PAH)",
+            "Exercise Therapy"
+          ],
+          "slice": "hypertension-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "509f9a77__NCT07221513",
+          "nct_id": "NCT07221513",
+          "title": "Study of JK07 in Patients With Heart Failure and WHO Group 2 Combined Post- and Pre-Capillary Pulmonary Hypertension",
+          "conditions": [
+            "HFrEF - Heart Failure With Reduced Ejection Fraction",
+            "HFpEF - Heart Failure With Preserved Ejection Fraction",
+            "Group 2 Pulmonary Hypertension"
+          ],
+          "slice": "hypertension-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "55c5b8d3-99d0-58ad-8444-e42bb81bd5c7",
+      "patient_id": "55c5b8d3-99d0-58ad-8444-e42bb81bd5c7",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 55c5b8d3-99d0-58ad-8444-e42bb81bd5c7. age 83. sex male. active conditions: Risk activity involvement (finding); Received certificate of high school equivalency (finding); Diabetes; Hypertension; Hypertriglyceridemia (disorder); Metabolic syndrome X (disorder); Anemia (disorder); Neuropathy due to type 2 diabetes mellitus (disorder). recent observations: Body Height 181.4 cm on 2021-11-04; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-11-04; Body Weight 90 kg on 2021-11-04; Body Mass Index 27.35 kg/m2 on 2021-11-04; Diastolic Blood Pressure 77 mm[Hg] on 2021-11-04; Systolic Blood Pressure 129 mm[Hg] on 2021-11-04; Heart rate 91 /min on 2021-11-04; Respiratory rate 16 /min on 2021-11-04. active medications: lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "55c5b8d3__NCT06128278",
+          "nct_id": "NCT06128278",
+          "title": "Acute Equol Supplementation and Vascular Function in Women With and Without CKD",
+          "conditions": [
+            "Chronic Kidney Diseases",
+            "Vascular Function",
+            "Women"
+          ],
+          "slice": "ckd",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "55c5b8d3__NCT06564324",
+          "nct_id": "NCT06564324",
+          "title": "A Phase III Study Comparing Taletrectinib With Standard Therapy in ROS1 Positive Locally Advanced or Metastatic Non-small Cell Lung Cancer Patients",
+          "conditions": [
+            "Non Small Cell Lung Cancer"
+          ],
+          "slice": "nsclc",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 56cfe6a5-4835-d925-fd7a-84faf11306f0. age 55. sex male. active conditions: Body mass index 30+ - obesity (finding); Received higher education (finding); Chronic sinusitis (disorder); Limited social contact (finding); Diabetes; Anemia (disorder); Hypertension; Hyperglycemia (disorder). recent observations: Body Height 173.1 cm on 2021-03-06; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-03-06; Body Weight 101.4 kg on 2021-03-06; Body Mass Index 33.82 kg/m2 on 2021-03-06; Diastolic Blood Pressure 101 mm[Hg] on 2021-03-06; Systolic Blood Pressure 145 mm[Hg] on 2021-03-06; Heart rate 80 /min on 2021-03-06; Respiratory rate 16 /min on 2021-03-06. active medications: 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "56cfe6a5__NCT06475781",
+          "nct_id": "NCT06475781",
+          "title": "Study to Evaluate Safety and Efficacy of Mirivadelgat in PH-ILD",
+          "conditions": [
+            "Group 3 Pulmonary Hypertension"
+          ],
+          "slice": "hypertension-industry",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "56cfe6a5__NCT06941441",
+          "nct_id": "NCT06941441",
+          "title": "PAH Exercise Study",
+          "conditions": [
+            "Pulmonary Arterial Hypertension (PAH)",
+            "Exercise Therapy"
+          ],
+          "slice": "hypertension-academic",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 60b0873c-9665-b3f0-61f4-d09ae9667a27. age 77. sex female. active conditions: Received certificate of high school equivalency (finding); Unemployed (finding); Hypertension; Body mass index 30+ - obesity (finding); Cardiac Arrest; History of cardiac arrest (situation); Osteoarthritis of knee; Hyperlipidemia. recent observations: Body Height 160.3 cm on 2021-08-21; Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} on 2021-08-21; Body Weight 71.4 kg on 2021-08-21; Body Mass Index 27.79 kg/m2 on 2021-08-21; Diastolic Blood Pressure 86 mm[Hg] on 2021-08-21; Systolic Blood Pressure 124 mm[Hg] on 2021-08-21; Heart rate 73 /min on 2021-08-21; Respiratory rate 14 /min on 2021-08-21. active medications: amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "60b0873c__NCT06220266",
+          "nct_id": "NCT06220266",
+          "title": "Effects of Phytoestrogen From Pueraria Mirifica in Improvement of Serum Lipid Parameters in Postmenopausal Women",
+          "conditions": [
+            "Dyslipidemias",
+            "Hypertriglyceridemia",
+            "Hypercholesterolemia",
+            "Hyper-LDL-cholesterolemia",
+            "Hypo HDL Cholesterolaemia",
+            "Postmenopausal Symptoms"
+          ],
+          "slice": "hyperlipidemia",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "60b0873c__NCT07224763",
+          "nct_id": "NCT07224763",
+          "title": "Study to Evaluate the Safety and Efficacy of the GGTA1 KO Thymokidney in Patients With ESRD",
+          "conditions": [
+            "ESRD (End-Stage Renal Disease)",
+            "Kidney Transplantation",
+            "Xenotransplantation"
+          ],
+          "slice": "ckd",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "83f922a9-3567-cb65-b57f-2da9cc05af15",
+      "patient_id": "83f922a9-3567-cb65-b57f-2da9cc05af15",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 83f922a9-3567-cb65-b57f-2da9cc05af15. age 60. sex female. active conditions: Received higher education (finding); Transport problems (finding); Lack of access to transportation (finding); Refugee (person); Diabetes; Hypertension; Hypertriglyceridemia (disorder); Neuropathy due to type 2 diabetes mellitus (disorder). recent observations: Pain severity - 0-10 verbal numeric rating [Score] - Reported 8 {score} on 2021-09-10; Pain severity - 0-10 verbal numeric rating [Score] - Reported 5 {score} on 2021-08-28; Body Height 156.6 cm on 2020-12-12; Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} on 2020-12-12; Body Weight 68.7 kg on 2020-12-12; Body Mass Index 28.01 kg/m2 on 2020-12-12; Diastolic Blood Pressure 78 mm[Hg] on 2020-12-12; Systolic Blood Pressure 128 mm[Hg] on 2020-12-12. active medications: Vitamin B 12 5 MG/ML Injectable Solution; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "83f922a9__NCT05967689",
+          "nct_id": "NCT05967689",
+          "title": "A Study of Zipalertinib in Patients With Advanced Non-Small Cell Lung Cancer With Epidermal Growth Factor Receptor (EGFR) Exon 20 Insertions or Other Uncommon Mutation.",
+          "conditions": [
+            "Advanced or Metastatic NSCLC Harboring Epidermal Growth Factor Receptor (EGFR) Exon 20 Insertion (ex20ins) Mutations"
+          ],
+          "slice": "nsclc",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
+      "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 9cbf47d8-b59a-ef34-c330-77accc084c17. age 90. sex female. active conditions: Received higher education (finding); Hypertension; Prediabetes; Miscarriage in first trimester; Has a criminal record (finding); Malignant neoplasm of breast (disorder); Alzheimer's disease (disorder); Stress (finding). recent observations: Body Height 152 cm on 2020-11-22; Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} on 2020-11-22; Body Weight 67.8 kg on 2020-11-22; Body Mass Index 29.33 kg/m2 on 2020-11-22; Diastolic Blood Pressure 82 mm[Hg] on 2020-11-22; Systolic Blood Pressure 120 mm[Hg] on 2020-11-22; Heart rate 65 /min on 2020-11-22; Respiratory rate 15 /min on 2020-11-22. active medications: lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "9cbf47d8__NCT07362459",
+          "nct_id": "NCT07362459",
+          "title": "A Study to Evaluate the Safety and Tolerability of SCTB14 as First-Line Therapy in Non-Small Cell Lung Cancer.",
+          "conditions": [
+            "Non-Small Cell Lung Carcinoma (NSCLC)"
+          ],
+          "slice": "nsclc",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
+      "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 9e84e569-7adc-ff42-ccdb-9fe9c23842a6. age 79. sex male. active conditions: Hypertension; Received higher education (finding); Body mass index 30+ - obesity (finding); Prediabetes; Anemia (disorder); Diabetes; Hyperglycemia (disorder); Hypertriglyceridemia (disorder). recent observations: Body Height 179 cm on 2021-03-07; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-03-07; Body Weight 88.7 kg on 2021-03-07; Body Mass Index 27.68 kg/m2 on 2021-03-07; Diastolic Blood Pressure 72 mm[Hg] on 2021-03-07; Systolic Blood Pressure 125 mm[Hg] on 2021-03-07; Heart rate 99 /min on 2021-03-07; Respiratory rate 14 /min on 2021-03-07. active medications: Hydrochlorothiazide 25 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "9e84e569__NCT04602754",
+          "nct_id": "NCT04602754",
+          "title": "Efficacy and Safety of Berlim 25/20 Association in the Treatment of Type II Diabetes Mellitus and Dyslipidemia.",
+          "conditions": [
+            "Dyslipidemia Associated With Type II Diabetes Mellitus"
+          ],
+          "slice": "t2dm-industry",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "9e84e569__NCT06524960",
+          "nct_id": "NCT06524960",
+          "title": "Denosumab for Type 1 Diabetes",
+          "conditions": [
+            "Type 1 Diabetes"
+          ],
+          "slice": "t2dm-academic",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "9ef4db86-c427-ddfe-a607-737f08ffb0c1",
+      "patient_id": "9ef4db86-c427-ddfe-a607-737f08ffb0c1",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient 9ef4db86-c427-ddfe-a607-737f08ffb0c1. age 51. sex female. active conditions: Body mass index 30+ - obesity (finding); Hypertension; Received higher education (finding); Diabetes; Hypertriglyceridemia (disorder); Metabolic syndrome X (disorder); Refugee (person); Hyperglycemia (disorder). recent observations: Total Cholesterol 282.37 mg/dL on 2020-11-16; Triglycerides 187.89 mg/dL on 2020-11-16; Low Density Lipoprotein Cholesterol 133.97 mg/dL on 2020-11-16; High Density Lipoprotein Cholesterol 34.187 mg/dL on 2020-11-16; Glucose 67.59 mg/dL on 2020-11-16; Urea Nitrogen 12.96 mg/dL on 2020-11-16; Creatinine 2.58 mg/dL on 2020-11-16; Calcium 9.82 mg/dL on 2020-11-16. active medications: diphenhydrAMINE Hydrochloride 25 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "9ef4db86__NCT07082114",
+          "nct_id": "NCT07082114",
+          "title": "A Phase 3 Study to Evaluate Efficacy and Safety of HDM1002 Tablets in Adults With Type 2 Diabetes Mellitus",
+          "conditions": [
+            "Type 2 Diabetes"
+          ],
+          "slice": "t2dm-industry",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "9ef4db86__NCT07374328",
+          "nct_id": "NCT07374328",
+          "title": "Triple Hypoglycemic Regimens In Patients With Newly Diagnosed Type 2 Diabetes Mellitus",
+          "conditions": [
+            "Type 2 Diabetes"
+          ],
+          "slice": "t2dm-academic",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "a06bce31-d0dc-f345-df41-777fb453afaf",
+      "patient_id": "a06bce31-d0dc-f345-df41-777fb453afaf",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient a06bce31-d0dc-f345-df41-777fb453afaf. age 89. sex male. active conditions: Seizure disorder; History of single seizure (situation); Epilepsy; Hypertension; Received certificate of high school equivalency (finding); Hyperlipidemia; Prediabetes; Anemia (disorder). recent observations: Glucose 70.2 mg/dL on 2021-10-11; Urea Nitrogen 10.48 mg/dL on 2021-10-11; Creatinine 3.4934 mg/dL on 2021-10-11; Calcium 9.22 mg/dL on 2021-10-11; Sodium 138.95 mmol/L on 2021-10-11; Potassium 5.04 mmol/L on 2021-10-11; Chloride 109.9 mmol/L on 2021-10-11; Carbon Dioxide 26.66 mmol/L on 2021-10-11. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "a06bce31__NCT06941441",
+          "nct_id": "NCT06941441",
+          "title": "PAH Exercise Study",
+          "conditions": [
+            "Pulmonary Arterial Hypertension (PAH)",
+            "Exercise Therapy"
+          ],
+          "slice": "hypertension-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "a06bce31__NCT07221513",
+          "nct_id": "NCT07221513",
+          "title": "Study of JK07 in Patients With Heart Failure and WHO Group 2 Combined Post- and Pre-Capillary Pulmonary Hypertension",
+          "conditions": [
+            "HFrEF - Heart Failure With Reduced Ejection Fraction",
+            "HFpEF - Heart Failure With Preserved Ejection Fraction",
+            "Group 2 Pulmonary Hypertension"
+          ],
+          "slice": "hypertension-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "a9a2c4dd-a0c9-97d4-8983-c4dbe2a76ca2",
+      "patient_id": "a9a2c4dd-a0c9-97d4-8983-c4dbe2a76ca2",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient a9a2c4dd-a0c9-97d4-8983-c4dbe2a76ca2. age 73. sex male. active conditions: Hypertension; Received higher education (finding); Has a criminal record (finding); Coronary Heart Disease; Stress (finding); Hyperlipidemia; Full-time employment (finding). recent observations: Body Height 173.7 cm on 2021-09-19; Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} on 2021-09-19; Body Weight 85.5 kg on 2021-09-19; Body Mass Index 28.34 kg/m2 on 2021-09-19; Diastolic Blood Pressure 86 mm[Hg] on 2021-09-19; Systolic Blood Pressure 114 mm[Hg] on 2021-09-19; Heart rate 76 /min on 2021-09-19; Respiratory rate 14 /min on 2021-09-19. active medications: lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "a9a2c4dd__NCT05998863",
+          "nct_id": "NCT05998863",
+          "title": "EffCaMgCit to Prevent Mineral Metabolism and Renal Complications of Chronic PPI Therapy",
+          "conditions": [
+            "Osteoporosis",
+            "Hypomagnesemia"
+          ],
+          "slice": "ckd",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "a9a2c4dd__NCT07223658",
+          "nct_id": "NCT07223658",
+          "title": "Study of ARO-DIMERPA in Adult Participants With Mixed Hyperlipidemia",
+          "conditions": [
+            "Hyperlipidemia; Mixed"
+          ],
+          "slice": "hyperlipidemia",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f",
+      "patient_id": "aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f. age 61. sex female. active conditions: Received higher education (finding); Prediabetes; Anemia (disorder); Diabetes; Hypertriglyceridemia (disorder); Miscarriage in first trimester; Metabolic syndrome X (disorder); Hyperglycemia (disorder). recent observations: Body Height 155.4 cm on 2021-11-12; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-11-12; Body Weight 67.9 kg on 2021-11-12; Body Mass Index 28.12 kg/m2 on 2021-11-12; Diastolic Blood Pressure 85 mm[Hg] on 2021-11-12; Systolic Blood Pressure 127 mm[Hg] on 2021-11-12; Heart rate 85 /min on 2021-11-12; Respiratory rate 16 /min on 2021-11-12. active medications: 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "aa01ba4c__NCT07064473",
+          "nct_id": "NCT07064473",
+          "title": "EASi-PROTKT™ - A Study to Test Vicadrostat (BI 690517) Taken Together With Empagliflozin in People With Type 2 Diabetes, High Blood Pressure, and Cardiovascular Disease",
+          "conditions": [
+            "Diabetes Mellitus, Type 2",
+            "Hypertension",
+            "Cardiovascular Diseases"
+          ],
+          "slice": "t2dm-industry",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "aa01ba4c__NCT07374328",
+          "nct_id": "NCT07374328",
+          "title": "Triple Hypoglycemic Regimens In Patients With Newly Diagnosed Type 2 Diabetes Mellitus",
+          "conditions": [
+            "Type 2 Diabetes"
+          ],
+          "slice": "t2dm-academic",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient c2786fee-2b45-56cd-f36c-96ad2ce9ab01. age 73. sex male. active conditions: Seizure disorder; History of single seizure (situation); Hypertension; Received higher education (finding); Hyperlipidemia; Sepsis (disorder); Septic shock (disorder); Stress (finding). recent observations: Body Height 183.6 cm on 2021-10-14; Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} on 2021-10-14; Body Weight 77.4 kg on 2021-10-14; Body Mass Index 22.96 kg/m2 on 2021-10-14; Diastolic Blood Pressure 77 mm[Hg] on 2021-10-14; Systolic Blood Pressure 128 mm[Hg] on 2021-10-14; Heart rate 94 /min on 2021-10-14; Respiratory rate 13 /min on 2021-10-14. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "c2786fee__NCT06217302",
+          "nct_id": "NCT06217302",
+          "title": "Sotagliflozin to Slow Kidney Function Decline in Persons With Type 1 Diabetes and Diabetic Kidney Disease",
+          "conditions": [
+            "Diabetic Nephropathies",
+            "Kidney Failure, Chronic",
+            "Diabetes Mellitus Type 1",
+            "Heart Failure"
+          ],
+          "slice": "ckd",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "c2786fee__NCT06597006",
+          "nct_id": "NCT06597006",
+          "title": "Study to Evaluate Safety, Tolerability and Efficacy of Inclisiran in Children With Homozygous Familial Hypercholesterolemia",
+          "conditions": [
+            "Familial Hypercholesterolemia - Homozygous"
+          ],
+          "slice": "hyperlipidemia",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "c46a254d-cd25-4375-528b-e8d0da9c6a29",
+      "patient_id": "c46a254d-cd25-4375-528b-e8d0da9c6a29",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient c46a254d-cd25-4375-528b-e8d0da9c6a29. age 70. sex male. active conditions: Hypertension; Served in armed forces (finding); Received higher education (finding); Alcoholism; Smokes tobacco daily; Has a criminal record (finding); Sepsis (disorder); Prediabetes. recent observations: Body Height 174.7 cm on 2021-07-08; Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} on 2021-07-08; Body Weight 85 kg on 2021-07-08; Body Mass Index 27.85 kg/m2 on 2021-07-08; Diastolic Blood Pressure 70 mm[Hg] on 2021-07-08; Systolic Blood Pressure 113 mm[Hg] on 2021-07-08; Heart rate 69 /min on 2021-07-08; Respiratory rate 14 /min on 2021-07-08. active medications: lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "c46a254d__NCT06941441",
+          "nct_id": "NCT06941441",
+          "title": "PAH Exercise Study",
+          "conditions": [
+            "Pulmonary Arterial Hypertension (PAH)",
+            "Exercise Therapy"
+          ],
+          "slice": "hypertension-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "c46a254d__NCT07335211",
+          "nct_id": "NCT07335211",
+          "title": "Efficacy and Safety of HUC3-637 in Patients With Primary Open Angle Glaucoma or Ocular Hypertension",
+          "conditions": [
+            "Primary Open Angle Glaucoma (POAG)",
+            "Ocular Hypertension"
+          ],
+          "slice": "hypertension-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "d02b2ca5-7e63-1c3d-505f-3a7218bac46d",
+      "patient_id": "d02b2ca5-7e63-1c3d-505f-3a7218bac46d",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient d02b2ca5-7e63-1c3d-505f-3a7218bac46d. age 64. sex female. active conditions: Received higher education (finding); Hypertension; Body mass index 30+ - obesity (finding); Hyperlipidemia; Miscarriage in first trimester; Chronic low back pain (finding); Stress (finding); Full-time employment (finding). recent observations: Body Height 165.7 cm on 2021-07-04; Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} on 2021-07-04; Body Weight 75.7 kg on 2021-07-04; Body Mass Index 27.57 kg/m2 on 2021-07-04; Diastolic Blood Pressure 87 mm[Hg] on 2021-07-04; Systolic Blood Pressure 132 mm[Hg] on 2021-07-04; Heart rate 97 /min on 2021-07-04; Respiratory rate 16 /min on 2021-07-04. active medications: lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "d02b2ca5__NCT06128278",
+          "nct_id": "NCT06128278",
+          "title": "Acute Equol Supplementation and Vascular Function in Women With and Without CKD",
+          "conditions": [
+            "Chronic Kidney Diseases",
+            "Vascular Function",
+            "Women"
+          ],
+          "slice": "ckd",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "d02b2ca5__NCT07489209",
+          "nct_id": "NCT07489209",
+          "title": "A Dose-exploration Study of EDP167 in HoFH",
+          "conditions": [
+            "Homozygous Familial Hypercholesterolemia (HoFH)"
+          ],
+          "slice": "hyperlipidemia",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "d362f4e5-244f-cf80-f2d5-25bcd2c97785",
+      "patient_id": "d362f4e5-244f-cf80-f2d5-25bcd2c97785",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient d362f4e5-244f-cf80-f2d5-25bcd2c97785. age 50. sex female. active conditions: Risk activity involvement (finding); Received higher education (finding); Miscarriage in first trimester; Refugee (person); Body mass index 30+ - obesity (finding); Has a criminal record (finding); Diabetes; Anemia (disorder). recent observations: Body Height 148.2 cm on 2021-09-10; Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} on 2021-09-10; Body Weight 65.9 kg on 2021-09-10; Body Mass Index 29.99 kg/m2 on 2021-09-10; Diastolic Blood Pressure 95 mm[Hg] on 2021-09-10; Systolic Blood Pressure 149 mm[Hg] on 2021-09-10; Heart rate 82 /min on 2021-09-10; Respiratory rate 15 /min on 2021-09-10. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "d362f4e5__NCT06564324",
+          "nct_id": "NCT06564324",
+          "title": "A Phase III Study Comparing Taletrectinib With Standard Therapy in ROS1 Positive Locally Advanced or Metastatic Non-small Cell Lung Cancer Patients",
+          "conditions": [
+            "Non Small Cell Lung Cancer"
+          ],
+          "slice": "nsclc",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
+      "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient d57e867e-4896-9e07-f502-5f4f881bd80e. age 63. sex female. active conditions: Housing unsatisfactory (finding); Received higher education (finding); Body mass index 30+ - obesity (finding); Prediabetes; Anemia (disorder); Diabetes; Hypertension; Hypertriglyceridemia (disorder). recent observations: Body temperature 37.875 Cel on 2021-09-08; Body Height 168.8 cm on 2021-08-31; Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} on 2021-08-31; Body Weight 78.7 kg on 2021-08-31; Body Mass Index 27.62 kg/m2 on 2021-08-31; Diastolic Blood Pressure 88 mm[Hg] on 2021-08-31; Systolic Blood Pressure 104 mm[Hg] on 2021-08-31; Heart rate 83 /min on 2021-08-31. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "d57e867e__NCT06143566",
+          "nct_id": "NCT06143566",
+          "title": "Polypill for Prevention of Cardiomyopathy",
+          "conditions": [
+            "Type 2 Diabetes",
+            "High Blood Pressure"
+          ],
+          "slice": "t2dm-academic",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "d57e867e__NCT06845202",
+          "nct_id": "NCT06845202",
+          "title": "A Study to Evaluate ALN-4324 in Overweight to Obese Healthy Volunteers and in Overweight to Obese Patients With T2DM",
+          "conditions": [
+            "Obese or Overweight Healthy Volunteers",
+            "Type 2 Diabetes Mellitus (T2DM)"
+          ],
+          "slice": "t2dm-industry",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient e7d52393-d28b-96d3-fe60-5a19ef9ce171. age 76. sex male. active conditions: Hypertension; Received certificate of high school equivalency (finding); Body mass index 30+ - obesity (finding); Hyperlipidemia; Osteoporosis (disorder); Chronic low back pain (finding); Fibromyalgia (disorder); Full-time employment (finding). recent observations: Glucose 65.02 mg/dL on 2021-11-06; Urea Nitrogen 12.58 mg/dL on 2021-11-06; Creatinine 2.7488 mg/dL on 2021-11-06; Calcium 8.99 mg/dL on 2021-11-06; Sodium 140.25 mmol/L on 2021-11-06; Potassium 4.47 mmol/L on 2021-11-06; Chloride 107.34 mmol/L on 2021-11-06; Carbon Dioxide 23.37 mmol/L on 2021-11-06. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "e7d52393__NCT04040959",
+          "nct_id": "NCT04040959",
+          "title": "Nicotinamide Riboside Supplementation for Treating Arterial Stiffness and Elevated Systolic Blood Pressure in Patients With Moderate to Severe CKD",
+          "conditions": [
+            "Vascular Diseases",
+            "Kidney Disease",
+            "Blood Pressure",
+            "Oxidative Stress"
+          ],
+          "slice": "ckd",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "e7d52393__NCT06568471",
+          "nct_id": "NCT06568471",
+          "title": "A Study on Efficacy and Safety of HST101 in Chinese Patients with Hypercholesterolemia",
+          "conditions": [
+            "Hypercholesterolemia",
+            "Dyslipidemias",
+            "Primary Hypercholesterolemia",
+            "Heterozygous Familial Hypercholesterolemia",
+            "Hyperlipidemia; Mixed",
+            "Metabolic Disease",
+            "ASCVD"
+          ],
+          "slice": "hyperlipidemia",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "ed803173-5e55-aecd-5055-591164ee3005",
+      "patient_id": "ed803173-5e55-aecd-5055-591164ee3005",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient ed803173-5e55-aecd-5055-591164ee3005. age 69. sex male. active conditions: Hypertension; Only received primary school education (finding); Appendicitis; History of appendectomy; Chronic intractable migraine without aura; Chronic pain; Impacted molars; Body mass index 30+ - obesity (finding). recent observations: Body Height 187.3 cm on 2012-07-16; Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} on 2012-07-16; Body Weight 106.2 kg on 2012-07-16; Body Mass Index 30.27 kg/m2 on 2012-07-16; Diastolic Blood Pressure 96 mm[Hg] on 2012-07-16; Systolic Blood Pressure 153 mm[Hg] on 2012-07-16; Heart rate 64 /min on 2012-07-16; Respiratory rate 15 /min on 2012-07-16. active medications: Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Hydrochlorothiazide 25 MG Oral Tablet; lisinopril 10 MG Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "ed803173__NCT06558708",
+          "nct_id": "NCT06558708",
+          "title": "A Trial Comparing Efficacy, Tolerability, and Safety of GZR101 Injection Once Daily (OD) and GZR33-70 Injection OD",
+          "conditions": [
+            "Type 2 Diabetes"
+          ],
+          "slice": "t2dm-industry",
+          "relevance": "unknown"
+        },
+        {
+          "pair_id": "ed803173__NCT07374328",
+          "nct_id": "NCT07374328",
+          "title": "Triple Hypoglycemic Regimens In Patients With Newly Diagnosed Type 2 Diabetes Mellitus",
+          "conditions": [
+            "Type 2 Diabetes"
+          ],
+          "slice": "t2dm-academic",
+          "relevance": "unknown"
+        }
+      ]
+    },
+    {
+      "query_id": "fa2d28b1-de84-ac96-ee04-a20dc54832c1",
+      "patient_id": "fa2d28b1-de84-ac96-ee04-a20dc54832c1",
+      "as_of": "2025-01-01",
+      "patient_summary": "Patient fa2d28b1-de84-ac96-ee04-a20dc54832c1. age 51. sex female. active conditions: Chronic sinusitis (disorder); Housing unsatisfactory (finding); Only received primary school education (finding); Lack of access to transportation (finding); Transport problems (finding); Miscarriage in first trimester; Tubal pregnancy; Body mass index 30+ - obesity (finding). recent observations: Body Height 159.4 cm on 2021-05-27; Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} on 2021-05-27; Body Weight 73.1 kg on 2021-05-27; Body Mass Index 28.79 kg/m2 on 2021-05-27; Diastolic Blood Pressure 115 mm[Hg] on 2021-05-27; Systolic Blood Pressure 150 mm[Hg] on 2021-05-27; Heart rate 65 /min on 2021-05-27; Respiratory rate 16 /min on 2021-05-27. active medications: Camila 28 Day Pack; Errin 28 Day Pack; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; Camila 28 Day Pack; lisinopril 10 MG Oral Tablet; amLODIPine 2.5 MG Oral Tablet; 24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet.",
+      "candidates": [
+        {
+          "pair_id": "fa2d28b1__NCT06090266",
+          "nct_id": "NCT06090266",
+          "title": "A Study of OR502, a Monoclonal Antibody Targeting LILRB2, Alone and in Combination With Anticancer Agents",
+          "conditions": [
+            "Cancer",
+            "Tumor, Solid",
+            "Malignant Neoplasm",
+            "Metastatic Cancer",
+            "Advanced Solid Tumor",
+            "Cutaneous Melanoma",
+            "Non-small Cell Lung Cancer"
+          ],
+          "slice": "nsclc",
+          "relevance": "unknown"
+        }
+      ]
+    }
+  ],
+  "criterion_cases": [
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 2,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 3,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 4,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 5,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 6,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 8,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 9,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 10,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06524960",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06524960",
+      "criterion_index": 11,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 3,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 5,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 6,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 8,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 9,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 10,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 11,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 12,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb",
+      "nct_id": "NCT06964087",
+      "criterion_index": 17,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 4,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 9,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 10,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 13,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 14,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 16,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT06941441",
+      "criterion_index": 17,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "28db1c55__NCT07297797",
+      "patient_id": "28db1c55",
+      "nct_id": "NCT07297797",
+      "criterion_index": 7,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528",
+      "nct_id": "NCT06475781",
+      "criterion_index": 33,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528",
+      "nct_id": "NCT06475781",
+      "criterion_index": 34,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "2e555528__NCT06941441",
+      "patient_id": "2e555528",
+      "nct_id": "NCT06941441",
+      "criterion_index": 4,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "38f38890__NCT06217302",
+      "patient_id": "38f38890",
+      "nct_id": "NCT06217302",
+      "criterion_index": 5,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890",
+      "nct_id": "NCT07489209",
+      "criterion_index": 9,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890",
+      "nct_id": "NCT07489209",
+      "criterion_index": 10,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890",
+      "nct_id": "NCT07489209",
+      "criterion_index": 11,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890",
+      "nct_id": "NCT07489209",
+      "criterion_index": 12,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "3beee40e__NCT06143566",
+      "patient_id": "3beee40e",
+      "nct_id": "NCT06143566",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "3beee40e__NCT07394114",
+      "patient_id": "3beee40e",
+      "nct_id": "NCT07394114",
+      "criterion_index": 0,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "3beee40e__NCT07394114",
+      "patient_id": "3beee40e",
+      "nct_id": "NCT07394114",
+      "criterion_index": 2,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "3beee40e__NCT07394114",
+      "patient_id": "3beee40e",
+      "nct_id": "NCT07394114",
+      "criterion_index": 10,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "407ef75b__NCT06941441",
+      "patient_id": "407ef75b",
+      "nct_id": "NCT06941441",
+      "criterion_index": 4,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "55c5b8d3__NCT06128278",
+      "patient_id": "55c5b8d3",
+      "nct_id": "NCT06128278",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "55c5b8d3__NCT06128278",
+      "patient_id": "55c5b8d3",
+      "nct_id": "NCT06128278",
+      "criterion_index": 3,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "55c5b8d3__NCT06128278",
+      "patient_id": "55c5b8d3",
+      "nct_id": "NCT06128278",
+      "criterion_index": 6,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5",
+      "nct_id": "NCT06475781",
+      "criterion_index": 33,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "9e84e569__NCT04602754",
+      "patient_id": "9e84e569",
+      "nct_id": "NCT04602754",
+      "criterion_index": 3,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "9ef4db86__NCT07082114",
+      "patient_id": "9ef4db86",
+      "nct_id": "NCT07082114",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "9ef4db86__NCT07374328",
+      "patient_id": "9ef4db86",
+      "nct_id": "NCT07374328",
+      "criterion_index": 6,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "a9a2c4dd__NCT05998863",
+      "patient_id": "a9a2c4dd",
+      "nct_id": "NCT05998863",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "a9a2c4dd__NCT05998863",
+      "patient_id": "a9a2c4dd",
+      "nct_id": "NCT05998863",
+      "criterion_index": 2,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "aa01ba4c__NCT07064473",
+      "patient_id": "aa01ba4c",
+      "nct_id": "NCT07064473",
+      "criterion_index": 3,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "aa01ba4c__NCT07064473",
+      "patient_id": "aa01ba4c",
+      "nct_id": "NCT07064473",
+      "criterion_index": 10,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "aa01ba4c__NCT07374328",
+      "patient_id": "aa01ba4c",
+      "nct_id": "NCT07374328",
+      "criterion_index": 0,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "d57e867e__NCT06143566",
+      "patient_id": "d57e867e",
+      "nct_id": "NCT06143566",
+      "criterion_index": 1,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "d57e867e__NCT06845202",
+      "patient_id": "d57e867e",
+      "nct_id": "NCT06845202",
+      "criterion_index": 2,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393",
+      "nct_id": "NCT06568471",
+      "criterion_index": 33,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393",
+      "nct_id": "NCT06568471",
+      "criterion_index": 34,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "ed803173__NCT06558708",
+      "patient_id": "ed803173",
+      "nct_id": "NCT06558708",
+      "criterion_index": 3,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    },
+    {
+      "pair_id": "ed803173__NCT07374328",
+      "patient_id": "ed803173",
+      "nct_id": "NCT07374328",
+      "criterion_index": 0,
+      "expected_matcher_verdict": null,
+      "cited_source_row_ids": []
+    }
+  ]
+}

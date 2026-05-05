@@ -83,7 +83,25 @@
   now fails if a surface preserved in a `status=resolved` watchlist
   reappears in a run's `top_unmapped_surfaces`; the first watchlist
   lives at `eval/baselines/2026-05-05/resolved_surface_watchlist.json`.
-- **Last completed:** PLAN task 2.18 regression gate + 2026-05-05
+- **Last completed:** Coming-week calibration/reporting slice 1 —
+  **patient-evidence report + local TrialGPT/TREC scaffold.** After merging
+  PR #2/#3/#4 into `main`, added a patient-evidence eval report that compares
+  one or more persisted runs against
+  `eval/calibration/patient_evidence_labels.json`, including verdict accuracy
+  against `expected_matcher_verdict`, abstention rate, citation agreement,
+  case-level rollup movement, and adjudicator cost/call/token totals. Added
+  `scripts/eval.py patient-evidence` with `--strict-labels` and
+  `--min-usable-labels` gates; current labels are still 0/60 usable, so the
+  40-label gate fails as intended. Added a local TrialGPT/TREC-style benchmark
+  scaffold (`clinical_demo.evals.trial_benchmark`) plus
+  `scripts/export_trial_benchmark.py`; the first export writes 27 patient
+  summary queries, 49 candidate trial rows, and 60 criterion cases to
+  `eval/benchmarks/local_trialgpt_trec_seed.json`. Verification: focused
+  patient-evidence / benchmark tests 12/12, targeted ruff clean,
+  `uv run mypy src scripts tests/evals/test_patient_evidence.py
+  tests/evals/test_trial_benchmark.py` clean, JSON validation for the benchmark
+  artifact clean, and `git diff --check` clean.
+  Previous: PLAN task 2.18 regression gate + 2026-05-05
   **open-resolver baseline snapshot.** Created
   `eval/baselines/2026-05-05/` with open-world deterministic
   (`17fc2bc0a9cd`), closed-world deterministic (`5a0e5717803c`), and
@@ -100,10 +118,8 @@
   `uv run python scripts/check_terminology_regressions.py --diagnostics
   eval/baselines/2026-05-05/open_resolver_none_diagnostics.json
   --resolved-work-queue eval/baselines/2026-05-05/resolved_surface_watchlist.json`
-  reports no resolved terminology regressions. PR stack:
-  `codex/open-resolver-baseline-snapshot` -> `main` is PR #2;
-  `codex/terminology-regression-gate` -> `codex/open-resolver-baseline-snapshot`
-  is PR #3.
+  reports no resolved terminology regressions. PR #2 and PR #3 were merged into
+  `main` on 2026-05-05, followed by PR #4 documenting this coming-week plan.
 
 ### Coming week plan (2026-05-05 to 2026-05-12)
 
@@ -116,21 +132,24 @@
   and regression gates first; spend model calls only for smoke-tested bounded
   adjudication reruns or narrowly scoped benchmark work.
 - **Task sequence:**
-  1. Merge PR #2, then PR #3, preserving the baseline/gate stack.
+  1. ~~Merge PR #2, then PR #3, preserving the baseline/gate stack.~~ Done;
+     PR #4 also merged the documentation update.
   2. Fill `eval/calibration/patient_evidence_labels.json`: target 60/60 rows;
      minimum useful gate is 40/60. Each filled row needs `label`,
      `expected_matcher_verdict`, cited source row IDs when evidence exists,
      reviewer, and rationale.
-  3. Add calibrated patient-evidence reporting across `none`,
+  3. ~~Add calibrated patient-evidence reporting across `none`,
      `retrieval_only`, and `bounded_adjudication`: verdict agreement against
      expected matcher verdicts, citation agreement, abstention rate, cost,
-     calls/tokens, and case-level rollup movement.
-  4. Add a TrialGPT/TREC-style local benchmark scaffold that mirrors
+     calls/tokens, and case-level rollup movement.~~ Done for report plumbing;
+     meaningful metrics still wait on filled labels.
+  4. ~~Add a TrialGPT/TREC-style local benchmark scaffold that mirrors
      retrieval -> criterion matching -> ranking. This week is a local exporter
      from the existing curated seed, not full official dataset ingestion. Use
      NLM TrialGPT and NIST/TREC Clinical Trials as framing references:
      <https://www.ncbi.nlm.nih.gov/research/trialgpt/about/> and
-     <https://trec.nist.gov/data/trials.html>.
+     <https://trec.nist.gov/data/trials.html>.~~ Done as a local schema,
+     exporter, and initial seed artifact.
   5. Add free-text/note evidence v0 only if the calibration/reporting path is
      green with at least 6 hours left. Scope is
      `DocumentReference.content.attachment.data` only; cite note snippets and
@@ -681,19 +700,17 @@
   baseline regression with indeterminacy diagnostic): layer-1
   agreement 81.0%, coverage 55.3%, 89% of all indeterminates are
   `unmapped_concept`. Snapshots in `eval/baselines/2026-04-21/`.
-- **Next:** Calibrated patient-trial matching week. Merge the baseline/gate
-  stack, fill the in-scope patient-evidence labels, add calibrated reporting
-  for `none` / `retrieval_only` / `bounded_adjudication`, then spend only the
-  model calls needed to measure whether bounded adjudication improves the core
-  product loop. Add a local TrialGPT/TREC-style benchmark scaffold in parallel
-  only as a light framing/export layer. Free-text/note evidence v0 is optional
-  and gated on finishing calibration/reporting with at least 6 hours left.
-- **Gates at HEAD:** documentation-only branch; product gates are deliberately
-  not refreshed here. Before the next code-bearing merge, rerun
-  `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, and
-  the terminology regression gate.
-- **Branch:** `codex/coming-week-plan-doc`, stacked on
-  `codex/terminology-regression-gate`.
+- **Next:** Fill the in-scope patient-evidence labels. Target 60/60; the
+  minimum useful gate is 40 labels with `expected_matcher_verdict`. Do not run
+  a full bounded-adjudication rerun or make cost/quality claims until that gate
+  passes. After labels are filled, run
+  `scripts/eval.py patient-evidence --min-usable-labels 40` across the current
+  `none`, `retrieval_only`, and bounded runs, then do a 10-row bounded smoke
+  before spending on a fresh full bounded rerun.
+- **Gates at HEAD:** focused tests 12/12; targeted ruff clean; targeted mypy
+  clean; generated benchmark JSON validates; `git diff --check` clean.
+  Full-suite gate still owed before merging this code-bearing branch.
+- **Branch:** `codex/patient-evidence-calibration-report`.
 
 ### Non-trivial open follow-ups
 
@@ -957,7 +974,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 3.1 | Model abstraction layer that lets the same node call any of 4–5 models with consistent JSON-schema enforcement. It must preserve the LLM-use levels from 2.13 (`none`, `retrieval_only`, `bounded_adjudication`, `critic`) so cost/quality experiments measure routing choices, not hidden behavior changes. | 3 |
 | 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Preconditions: complete the open terminology resolver baseline (2.17/2.18) so cost/quality is not dominated by avoidable `unmapped_concept`, then fill the 60-row patient-evidence labels. The immediate blocker is the calibrated label set: target 60/60, minimum useful gate 40/60, with no LLM-generated labels treated as gold. Adjudicator token/cost telemetry now persists on `ScorePairResult.llm_calls` and the v3 `eval/runs.sqlite` schema (`adjudicator_cost_usd` / `adjudicator_input_tokens` / `adjudicator_output_tokens` / `adjudicator_calls`), so routing economics are already auditable from local eval artifacts. | 4 |
 | 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). Start with efficient measured reruns over `none`, `retrieval_only`, and one bounded-adjudication model before broad model sweeps; the policy should say when the system has enough support to flag a possible match and when it must abstain. | 4 |
-| 3.3a | **TrialGPT/TREC-style benchmark scaffold.** Add a local benchmark schema/exporter that frames our seed around TrialGPT's retrieval -> criterion matching -> ranking shape and the TREC Clinical Trials patient-summary-to-suitable-trials task. This is a lightweight local scaffold for comparable reporting, not full official TREC ingestion. | 2 |
+| 3.3a | **TrialGPT/TREC-style benchmark scaffold.** Add a local benchmark schema/exporter that frames our seed around TrialGPT's retrieval -> criterion matching -> ranking shape and the TREC Clinical Trials patient-summary-to-suitable-trials task. This is a lightweight local scaffold for comparable reporting, not full official TREC ingestion. *First slice done — `clinical_demo.evals.trial_benchmark` defines patient-summary queries, trial-ranking candidates, criterion matching cases, prediction/metric schemas, and unknown-safe MRR / recall@10 helpers. `scripts/export_trial_benchmark.py` exports the 49-pair seed into `eval/benchmarks/local_trialgpt_trec_seed.json` (27 patient queries, 49 candidate trials, 60 criterion cases).* | 2 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
 | 3.6 | **Patient note evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. Coming-week v0 is deliberately narrower: parse `DocumentReference.content.attachment.data` only, cite snippets as patient source rows, and reuse the existing bounded adjudicator if calibration/reporting finishes with enough time left. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |

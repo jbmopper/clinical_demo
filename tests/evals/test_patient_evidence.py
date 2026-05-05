@@ -13,8 +13,11 @@ from clinical_demo.evals.layer_three import (
 )
 from clinical_demo.evals.patient_evidence import (
     PatientEvidenceHumanLabel,
+    build_patient_evidence_report,
     build_patient_evidence_rows,
     patient_evidence_bucket,
+    patient_evidence_label_completeness,
+    render_patient_evidence_report,
     select_patient_evidence_targets,
     summarize_patient_evidence_rows,
 )
@@ -23,9 +26,11 @@ from clinical_demo.matcher import (
     DEFAULT_MATCHER_ASSUMPTION_MODE,
     MATCHER_VERSION,
     MatchVerdict,
+    RetrievedPatientRowEvidence,
     Verdict,
     VerdictReason,
 )
+from clinical_demo.scoring.score_pair import ScoringSummary
 from tests.matcher._fixtures import crit_age, crit_condition, crit_measurement
 
 from ._fixtures import AS_OF, make_score_pair_result
@@ -61,6 +66,7 @@ def _verdict(
     *,
     verdict: Verdict = "indeterminate",
     reason: VerdictReason = "unmapped_concept",
+    evidence: list | None = None,
 ) -> MatchVerdict:
     if criterion_kind == "measurement_threshold":
         criterion = crit_measurement()
@@ -73,7 +79,7 @@ def _verdict(
         verdict=verdict,
         reason=reason,
         rationale="test rationale",
-        evidence=[],
+        evidence=evidence or [],
         matcher_version=MATCHER_VERSION,
     )
 
@@ -236,3 +242,112 @@ def test_build_patient_evidence_rows_attaches_source_row_ids_and_labels() -> Non
     assert rows[0].existing_label.label == "supports_present"
     assert rows[0].existing_label.matcher_assumption_mode == DEFAULT_MATCHER_ASSUMPTION_MODE
     assert summarize_patient_evidence_rows(rows) == {"condition_present": 1}
+
+
+def test_patient_evidence_label_completeness_flags_missing_expected_verdict() -> None:
+    labels = [
+        PatientEvidenceHumanLabel(pair_id="p1__T1", criterion_index=0),
+        PatientEvidenceHumanLabel(
+            pair_id="p1__T1",
+            criterion_index=1,
+            label="supports_present",
+            rationale="reviewed",
+        ),
+        PatientEvidenceHumanLabel(
+            pair_id="p1__T1",
+            criterion_index=2,
+            label="insufficient_evidence",
+            expected_matcher_verdict="indeterminate",
+        ),
+    ]
+
+    completeness = patient_evidence_label_completeness(labels)
+
+    assert completeness.total_labels == 3
+    assert completeness.filled_labels == 2
+    assert completeness.usable_labels == 1
+    assert completeness.missing_expected_verdict == ["p1__T1[1]"]
+
+
+def test_build_patient_evidence_report_scores_verdicts_citations_and_costs() -> None:
+    cited = RetrievedPatientRowEvidence(
+        row_id="patient:002",
+        row_kind="condition",
+        label="Smoking history",
+        value="Current smoker",
+        score=10,
+        reasons=["term:smoking"],
+        note="Smoking history: Current smoker",
+    )
+    run = _run(
+        [
+            _verdict("condition_present", verdict="pass", reason="ok", evidence=[cited]),
+            _verdict("measurement_threshold", verdict="indeterminate", reason="no_data"),
+        ]
+    )
+    assert run.cases[0].result is not None
+    run.cases[0].result.summary = ScoringSummary(
+        total_criteria=2,
+        by_verdict={"pass": 1, "indeterminate": 1},
+        by_reason={},
+        by_polarity={},
+        adjudicator_calls=1,
+        adjudicator_input_tokens=100,
+        adjudicator_output_tokens=20,
+        adjudicator_cost_usd=0.0012,
+    )
+    labels = [
+        PatientEvidenceHumanLabel(
+            pair_id="p1__T1",
+            criterion_index=0,
+            label="supports_present",
+            expected_matcher_verdict="pass",
+            cited_source_row_ids=["patient:002"],
+        ),
+        PatientEvidenceHumanLabel(
+            pair_id="p1__T1",
+            criterion_index=1,
+            label="insufficient_evidence",
+            expected_matcher_verdict="indeterminate",
+        ),
+    ]
+
+    report = build_patient_evidence_report([run], labels, label_path="labels.json")
+
+    metrics = report.runs[0]
+    assert metrics.comparable_targets == 2
+    assert metrics.correct_verdicts == 2
+    assert metrics.verdict_accuracy == 1.0
+    assert metrics.abstentions == 1
+    assert metrics.citation_targets == 1
+    assert metrics.citation_matches == 1
+    assert metrics.citation_agreement == 1.0
+    assert metrics.adjudicator_calls == 1
+    assert metrics.adjudicator_cost_usd == 0.0012
+    assert "Citation agreement" in render_patient_evidence_report(report)
+
+
+def test_patient_evidence_report_tracks_case_rollup_movement() -> None:
+    baseline = _run([_verdict("condition_present", verdict="indeterminate")])
+    comparison = _run([_verdict("condition_present", verdict="fail", reason="ok")])
+    baseline.run_id = "baseline"
+    comparison.run_id = "comparison"
+    assert baseline.cases[0].result is not None
+    assert comparison.cases[0].result is not None
+    baseline.cases[0].result.eligibility = "indeterminate"
+    comparison.cases[0].result.eligibility = "fail"
+
+    report = build_patient_evidence_report(
+        [baseline, comparison],
+        [
+            PatientEvidenceHumanLabel(
+                pair_id="p1__T1",
+                criterion_index=0,
+                expected_matcher_verdict="fail",
+            )
+        ],
+        label_path="labels.json",
+    )
+
+    assert report.mode_deltas[0].changed_cases == 1
+    assert report.mode_deltas[0].movements == {"indeterminate->fail": 1}

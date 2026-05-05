@@ -55,6 +55,11 @@ from clinical_demo.evals.layer_three import (
     select_judge_targets,
 )
 from clinical_demo.evals.layer_two import build_layer_two_report, score_chia_document
+from clinical_demo.evals.patient_evidence import (
+    build_patient_evidence_report,
+    load_patient_evidence_labels,
+    render_patient_evidence_report,
+)
 from clinical_demo.evals.report_layer_one import render_layer_one
 from clinical_demo.evals.report_layer_three import render_layer_three
 from clinical_demo.evals.report_layer_two import render_layer_two
@@ -532,6 +537,60 @@ def _cmd_judge(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_patient_evidence(args: argparse.Namespace) -> int:
+    db_path = Path(args.db)
+    if not db_path.exists():
+        print(f"error: no store at {db_path} (run an eval first?)", file=sys.stderr)
+        return 1
+    labels_path = Path(args.labels)
+    if not labels_path.exists():
+        print(f"error: labels file {labels_path} not found", file=sys.stderr)
+        return 1
+
+    with open_store(args.db) as conn:
+        runs = []
+        for run_id in args.run_id:
+            try:
+                runs.append(load_run(conn, run_id))
+            except KeyError:
+                print(f"error: no run with id {run_id!r}", file=sys.stderr)
+                return 1
+
+    labels = load_patient_evidence_labels(labels_path)
+    report = build_patient_evidence_report(runs, labels, label_path=labels_path)
+    if args.strict_labels and report.label_completeness.missing_expected_verdict:
+        missing = ", ".join(report.label_completeness.missing_expected_verdict[:10])
+        extra = "" if len(report.label_completeness.missing_expected_verdict) <= 10 else ", ..."
+        print(
+            f"error: filled labels missing expected matcher verdict: {missing}{extra}",
+            file=sys.stderr,
+        )
+        return 1
+    if args.min_usable_labels is not None:
+        usable = report.label_completeness.usable_labels
+        if usable < args.min_usable_labels:
+            print(
+                f"error: only {usable} usable label(s); need {args.min_usable_labels}",
+                file=sys.stderr,
+            )
+            return 1
+
+    if args.output_json is not None:
+        out = Path(args.output_json)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(report.model_dump_json(indent=2) + "\n")
+    rendered = render_patient_evidence_report(report)
+    if args.output_markdown is not None:
+        out = Path(args.output_markdown)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(rendered)
+    if args.format == "json":
+        print(report.model_dump_json(indent=2))
+    else:
+        print(rendered)
+    return 0
+
+
 def _cmd_report(args: argparse.Namespace) -> int:
     db_path = Path(args.db)
     if not db_path.exists():
@@ -736,6 +795,46 @@ def main(argv: list[str] | None = None) -> int:
         help="Optional path to write the layer-3 judge report JSON.",
     )
     p_judge.set_defaults(func=_cmd_judge)
+
+    p_patient_evidence = sub.add_parser(
+        "patient-evidence",
+        help="Compare one or more eval runs against patient-evidence labels.",
+    )
+    p_patient_evidence.add_argument("--db", default=str(DEFAULT_DB))
+    p_patient_evidence.add_argument(
+        "--run-id",
+        action="append",
+        required=True,
+        help="Eval run id to include. Repeat in baseline, comparison order.",
+    )
+    p_patient_evidence.add_argument(
+        "--labels",
+        default="eval/calibration/patient_evidence_labels.json",
+        help="PatientEvidenceHumanLabel JSON list.",
+    )
+    p_patient_evidence.add_argument(
+        "--strict-labels",
+        action="store_true",
+        help="Fail if any filled label is missing expected_matcher_verdict.",
+    )
+    p_patient_evidence.add_argument(
+        "--min-usable-labels",
+        type=int,
+        default=None,
+        help="Fail unless at least this many labels have expected_matcher_verdict.",
+    )
+    p_patient_evidence.add_argument("--format", choices=("markdown", "json"), default="markdown")
+    p_patient_evidence.add_argument(
+        "--output-json",
+        default=None,
+        help="Optional path to write the structured patient-evidence report JSON.",
+    )
+    p_patient_evidence.add_argument(
+        "--output-markdown",
+        default=None,
+        help="Optional path to write the rendered patient-evidence report Markdown.",
+    )
+    p_patient_evidence.set_defaults(func=_cmd_patient_evidence)
 
     p_report = sub.add_parser("report", help="Render a persisted run; or list runs.")
     p_report.add_argument("--db", default=str(DEFAULT_DB))
