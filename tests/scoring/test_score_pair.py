@@ -144,14 +144,32 @@ def test_rollup_fail_when_any_fail_overrides_passes_and_indeterminates() -> None
     assert result.eligibility == "fail"
 
 
-def test_rollup_indeterminate_when_no_fail_but_at_least_one_indeterminate() -> None:
-    """No fails + ≥1 indeterminate → indeterminate. Passes alone
-    aren't enough to claim a positive eligibility decision."""
+def test_rollup_pass_pending_review_when_only_free_text_indeterminate() -> None:
+    """No fails + ≥1 indeterminate but every indeterminate is
+    `human_review_required` → `pass_pending_review` (PLAN 2.19).
+    The structured matcher said yes for everything it could decide;
+    only free-text remains for a human eye."""
     patient = make_patient(birth=date(1990, 1, 1))
     extraction = _make_extraction(
         [
             crit_age(minimum_years=18.0),  # passes
-            crit_free_text(),  # indeterminate
+            crit_free_text(),  # indeterminate(human_review_required)
+        ]
+    )
+    result = score_pair(patient, make_trial(), AS_OF, extraction=extraction)
+    assert result.eligibility == "pass_pending_review"
+
+
+def test_rollup_indeterminate_when_no_fail_but_a_non_review_indeterminate() -> None:
+    """No fails + a non-`human_review_required` indeterminate (e.g.
+    `unmapped_concept`, `no_data`) still rolls up to plain
+    `indeterminate`: the system is genuinely undecided, not just
+    waiting on a clinician."""
+    patient = make_patient(birth=date(1990, 1, 1))
+    extraction = _make_extraction(
+        [
+            crit_age(minimum_years=18.0),  # passes
+            crit_condition(text="rare unknown disease"),  # indeterminate(unmapped_concept)
         ]
     )
     result = score_pair(patient, make_trial(), AS_OF, extraction=extraction)
@@ -262,24 +280,33 @@ def test_rollup_pass_on_empty_verdicts_documents_vacuous_truth() -> None:
 
 def test_rollup_helper_matches_truth_table() -> None:
     """Direct unit test of the helper, mirroring the integration
-    cases above so we know which layer broke when something fails."""
-    from clinical_demo.matcher.matcher import _build
-    from clinical_demo.matcher.verdict import MatchVerdict
+    cases above so we know which layer broke when something fails.
 
-    def vd(status: str) -> MatchVerdict:
+    Reason matters in v0.2: `pass_pending_review` only fires when
+    every non-pass criterion is indeterminate with reason
+    `human_review_required` (typical free-text path)."""
+    from clinical_demo.matcher.matcher import _build
+    from clinical_demo.matcher.verdict import MatchVerdict, VerdictReason
+
+    def vd(status: str, reason: VerdictReason = "ok") -> MatchVerdict:
         crit = crit_free_text()
         return _build(
             crit,
             verdict=status,  # type: ignore[arg-type]
-            reason="ok",
+            reason=reason,
             rationale="",
             evidence=[],
+            assumption="open_world",
+            evidence_under_assumption=False,
         )
 
     assert _rollup([vd("pass")]) == "pass"
-    assert _rollup([vd("pass"), vd("indeterminate")]) == "indeterminate"
-    assert _rollup([vd("pass"), vd("indeterminate"), vd("fail")]) == "fail"
-    assert _rollup([vd("indeterminate"), vd("fail")]) == "fail"
+    assert (
+        _rollup([vd("pass"), vd("indeterminate", "human_review_required")]) == "pass_pending_review"
+    )
+    assert _rollup([vd("pass"), vd("indeterminate", "no_data")]) == "indeterminate"
+    assert _rollup([vd("pass"), vd("indeterminate", "human_review_required"), vd("fail")]) == "fail"
+    assert _rollup([vd("indeterminate", "no_data"), vd("fail")]) == "fail"
     assert _rollup([]) == "pass"
 
 
@@ -315,13 +342,23 @@ def test_summarize_helper_emits_expected_shape() -> None:
     crit_inc = crit_age(minimum_years=18.0, polarity="inclusion")
     crit_exc = crit_age(minimum_years=18.0, polarity="exclusion")
     verdicts = [
-        _build(crit_inc, verdict="pass", reason="ok", rationale="", evidence=[]),
+        _build(
+            crit_inc,
+            verdict="pass",
+            reason="ok",
+            rationale="",
+            evidence=[],
+            assumption="open_world",
+            evidence_under_assumption=False,
+        ),
         _build(
             crit_exc,
             verdict="indeterminate",
             reason="no_data",
             rationale="",
             evidence=[],
+            assumption="open_world",
+            evidence_under_assumption=False,
         ),
     ]
     summary = _summarize(verdicts)

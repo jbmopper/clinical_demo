@@ -45,7 +45,7 @@ from ..domain.patient import Patient
 from ..domain.trial import Trial
 from ..extractor.extractor import ExtractionResult
 from ..extractor.schema import ExtractedCriterion
-from ..matcher import MatchVerdict
+from ..matcher import MatcherAssumptionMode, MatchVerdict
 from ..profile import PatientProfile
 from ..scoring.score_pair import EligibilityRollup, ScoringSummary
 
@@ -100,6 +100,11 @@ class ScoringStateInput(TypedDict):
     # key off, because TypedDict's optional-keys story is brittle and
     # downstream nodes do `state.get("extraction")` either way.
     extraction: ExtractionResult | None
+    # Matcher assumption mode (PLAN 2.19). Carried in state so the
+    # deterministic and revise nodes pass it into `match_criterion`
+    # without `score_pair_graph` needing to reach into every node's
+    # closure. Defaulted by the entry function when omitted.
+    matcher_assumption_mode: MatcherAssumptionMode
 
 
 class ScoringState(TypedDict, total=False):
@@ -112,6 +117,7 @@ class ScoringState(TypedDict, total=False):
     trial: Trial
     as_of: date
     extraction: ExtractionResult | None
+    matcher_assumption_mode: MatcherAssumptionMode
 
     # Computed once after the extract node completes; cached in
     # state so the matcher nodes don't each re-build it.

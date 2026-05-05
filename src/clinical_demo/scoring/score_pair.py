@@ -61,7 +61,15 @@ from ..observability import traced
 from ..profile import PatientProfile
 from ..retrieval import retrieve_structured_patient_evidence, structured_source_rows_for_pair
 
-EligibilityRollup = Literal["pass", "fail", "indeterminate"]
+EligibilityRollup = Literal["pass", "fail", "indeterminate", "pass_pending_review"]
+"""Top-level eligibility rollup. v0 uses three states; v0.2 (PLAN
+2.19) adds `pass_pending_review` for the "all structured criteria
+pass; only `human_review_required` indeterminates remain" case so
+reviewer dashboards can distinguish "the system can't decide" from
+"the system says yes for everything it could decide and only
+free-text remains for human review." Useful in any mode but
+especially under closed-world demo runs where the structured
+verdicts are the whole point."""
 
 
 class PatientDeceasedError(ValueError):
@@ -207,7 +215,12 @@ def score_pair(
         enriched_criteria = enrich_with_structured_fields(extraction.extracted, trial)
 
         profile = PatientProfile(patient, as_of)
-        verdicts = match_extracted(enriched_criteria.criteria, profile, trial)
+        verdicts = match_extracted(
+            enriched_criteria.criteria,
+            profile,
+            trial,
+            matcher_assumption_mode=matcher_assumption_mode,
+        )
         verdicts, llm_calls = _apply_retrieval_only(
             verdicts,
             patient=patient,
@@ -349,17 +362,38 @@ def _trial_context(trial: Trial) -> str:
 
 
 def _rollup(verdicts: list[MatchVerdict]) -> EligibilityRollup:
-    """Conservative top-level eligibility:
-    any fail wins; else any indeterminate wins; else pass.
+    """Conservative top-level eligibility (D-38, with PLAN 2.19
+    refinement):
+
+      - Any `fail` criterion → eligibility = `fail`.
+      - All criteria `pass` → `pass`.
+      - All non-`pass` criteria are indeterminate with reason
+        `human_review_required` → `pass_pending_review`. The
+        structured matcher said yes (or had nothing to say) for
+        every criterion it could decide; what's left is free-text
+        criteria a clinician needs to eyeball.
+      - Any other indeterminate (`unmapped_concept`, `no_data`,
+        `unit_mismatch`, ...) → `indeterminate`.
 
     Empty verdict lists collapse to `pass` — vacuously true, but
     callers should check for the empty case themselves before
     trusting that as a positive signal."""
-    statuses = {v.verdict for v in verdicts}
-    if "fail" in statuses:
+    has_fail = False
+    has_indeterminate = False
+    has_non_review_indeterminate = False
+    for v in verdicts:
+        if v.verdict == "fail":
+            has_fail = True
+        elif v.verdict == "indeterminate":
+            has_indeterminate = True
+            if v.reason != "human_review_required":
+                has_non_review_indeterminate = True
+    if has_fail:
         return "fail"
-    if "indeterminate" in statuses:
+    if has_non_review_indeterminate:
         return "indeterminate"
+    if has_indeterminate:
+        return "pass_pending_review"
     return "pass"
 
 

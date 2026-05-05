@@ -129,6 +129,7 @@ def score_pair_graph(
         "trial": trial,
         "as_of": as_of,
         "extraction": extraction,
+        "matcher_assumption_mode": matcher_assumption_mode,
     }
 
     config: dict[str, Any] = {}

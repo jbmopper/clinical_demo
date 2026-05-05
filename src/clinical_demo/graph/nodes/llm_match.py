@@ -38,7 +38,12 @@ from ...extractor.extractor import (
     _estimate_cost_usd,
 )
 from ...extractor.schema import ExtractedCriterion
-from ...matcher import MATCHER_VERSION, MatchVerdict
+from ...matcher import (
+    DEFAULT_MATCHER_ASSUMPTION_MODE,
+    MATCHER_VERSION,
+    MatcherAssumptionMode,
+    MatchVerdict,
+)
 from ...matcher.matcher import _apply_polarity
 from ...matcher.verdict import (
     Evidence,
@@ -151,6 +156,7 @@ def llm_match_node(
     criterion = state["_criterion"]
     index = state["_criterion_index"]
     profile = state["profile"]
+    mode = state.get("matcher_assumption_mode", DEFAULT_MATCHER_ASSUMPTION_MODE)
 
     # Hypothetical-mood short-circuit: same rule the deterministic
     # matcher applies. The LLM has nothing useful to add about
@@ -175,6 +181,7 @@ def llm_match_node(
                                 note="hypothetical mood not supported in v0",
                             )
                         ],
+                        assumption=mode,
                     ),
                 )
             ]
@@ -294,6 +301,7 @@ def llm_match_node(
                     reason=parsed.reason,
                     rationale=parsed.rationale,
                     evidence=evidence,
+                    assumption=mode,
                 ),
             )
         ]
@@ -342,13 +350,21 @@ def _build_verdict(
     reason: VerdictReason,
     rationale: str,
     evidence: list[Evidence],
+    assumption: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
 ) -> MatchVerdict:
     """Construct a MatchVerdict stamped with the LLM matcher version.
 
     Note we use `LLM_MATCHER_VERSION` (not `MATCHER_VERSION`) so
     eval consumers can pivot on which matcher produced the verdict.
     `MATCHER_VERSION` is referenced here only to cross-link in the
-    rationale where useful."""
+    rationale where useful.
+
+    `evidence_under_assumption` is always `False` for the LLM matcher
+    today: the model sees a snapshot of the patient record and
+    reasons over what's there, so its verdicts are not "produced by
+    treating absence as negative" in the deterministic sense the
+    flag tracks. If we later teach the LLM matcher to opine on
+    closed-world absences explicitly, we'll set the flag here."""
     _ = MATCHER_VERSION  # kept imported for future cross-linking; quiet unused-warning
     return MatchVerdict(
         criterion=criterion,
@@ -357,6 +373,8 @@ def _build_verdict(
         rationale=rationale,
         evidence=evidence,
         matcher_version=LLM_MATCHER_VERSION,
+        assumption=assumption,
+        evidence_under_assumption=False,
     )
 
 
