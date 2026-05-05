@@ -5,8 +5,15 @@ from __future__ import annotations
 from pathlib import Path
 
 from clinical_demo.evals.diagnostics import EvalDiagnostics, SurfaceCount
+from clinical_demo.profile.concept_sets import HEMOGLOBIN
 from clinical_demo.terminology import TerminologyCache, TerminologyResolver
-from clinical_demo.terminology.work_queue import build_surface_work_queue, render_surface_work_queue
+from clinical_demo.terminology.work_queue import (
+    SurfaceWorkItem,
+    build_surface_work_queue,
+    find_resolved_surface_regressions,
+    render_surface_regressions,
+    render_surface_work_queue,
+)
 
 
 def _diagnostics(*surfaces: SurfaceCount) -> EvalDiagnostics:
@@ -138,3 +145,58 @@ def test_render_work_queue_keeps_high_frequency_surface_visible(tmp_path: Path) 
 
     assert "platelet count" in out
     assert "resolved" in out
+
+
+def test_resolved_surface_regression_gate_flags_watched_unmapped_surface() -> None:
+    diagnostics = _diagnostics(
+        SurfaceCount(kind="measurement_threshold", surface="hemoglobin", count=3),
+        SurfaceCount(kind="measurement_threshold", surface="blood pressure", count=5),
+    )
+    watchlist = [
+        SurfaceWorkItem(
+            surface="hemoglobin",
+            criterion_kind="measurement_threshold",
+            resolver_kind="lab",
+            count=10,
+            status="resolved",
+            cache_status="hit",
+            concept_set=HEMOGLOBIN,
+            reason="known resolved lab",
+        ),
+        SurfaceWorkItem(
+            surface="blood pressure",
+            criterion_kind="measurement_threshold",
+            resolver_kind="lab",
+            count=5,
+            status="ambiguous",
+            cache_status="hit",
+            reason="not a resolved mapping",
+        ),
+    ]
+
+    regressions = find_resolved_surface_regressions(diagnostics, watchlist, min_count=2)
+
+    assert len(regressions) == 1
+    assert regressions[0].surface == "hemoglobin"
+    assert regressions[0].count == 3
+
+
+def test_resolved_surface_regression_gate_respects_min_count() -> None:
+    diagnostics = _diagnostics(
+        SurfaceCount(kind="measurement_threshold", surface="hemoglobin", count=1)
+    )
+    watchlist = [
+        SurfaceWorkItem(
+            surface="hemoglobin",
+            criterion_kind="measurement_threshold",
+            resolver_kind="lab",
+            count=10,
+            status="resolved",
+            cache_status="hit",
+            concept_set=HEMOGLOBIN,
+            reason="known resolved lab",
+        )
+    ]
+
+    assert find_resolved_surface_regressions(diagnostics, watchlist, min_count=2) == []
+    assert "No resolved" in render_surface_regressions([])

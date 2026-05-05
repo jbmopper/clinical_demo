@@ -56,6 +56,16 @@ class SurfaceWorkItem(BaseModel):
     reason: str
 
 
+class SurfaceRegression(BaseModel):
+    """A surface previously classified as resolved but now unmapped."""
+
+    surface: str
+    criterion_kind: str
+    count: int
+    threshold: int
+    reason: str
+
+
 def build_surface_work_queue(
     diagnostics: EvalDiagnostics,
     *,
@@ -93,6 +103,64 @@ def write_surface_work_queue(path: Path | str, items: list[SurfaceWorkItem]) -> 
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(surface_work_queue_to_json(items) + "\n")
+
+
+def load_surface_work_queue(path: Path | str) -> list[SurfaceWorkItem]:
+    raw = json.loads(Path(path).read_text())
+    if not isinstance(raw, list):
+        raise ValueError(f"surface work queue {path} must contain a JSON list")
+    return [SurfaceWorkItem.model_validate(item) for item in raw]
+
+
+def find_resolved_surface_regressions(
+    diagnostics: EvalDiagnostics,
+    resolved_items: list[SurfaceWorkItem],
+    *,
+    min_count: int = 1,
+) -> list[SurfaceRegression]:
+    """Find watched resolved surfaces that regressed to unmapped.
+
+    `resolved_items` is intentionally just the same JSON shape emitted by
+    `warm_terminology_surfaces.py`; a team can either preserve a prior
+    work-queue output or maintain a tiny resolved-surface watchlist by hand.
+    """
+
+    watched = {
+        (item.criterion_kind, item.surface): item
+        for item in resolved_items
+        if item.status == "resolved"
+    }
+    regressions: list[SurfaceRegression] = []
+    for surface in diagnostics.top_unmapped_surfaces:
+        if surface.count < min_count:
+            continue
+        item = watched.get((surface.kind, surface.surface))
+        if item is None:
+            continue
+        regressions.append(
+            SurfaceRegression(
+                surface=surface.surface,
+                criterion_kind=surface.kind,
+                count=surface.count,
+                threshold=min_count,
+                reason=item.reason,
+            )
+        )
+    return regressions
+
+
+def render_surface_regressions(regressions: list[SurfaceRegression]) -> str:
+    if not regressions:
+        return "No resolved terminology surface regressions.\n"
+    lines = ["Resolved terminology surfaces regressed to unmapped:"]
+    for item in regressions:
+        lines.append(
+            f"  {item.count:>3}  {item.criterion_kind:<24} {item.surface} "
+            f"(threshold={item.threshold})"
+        )
+        if item.reason:
+            lines.append(f"       prior resolution: {item.reason}")
+    return "\n".join(lines) + "\n"
 
 
 def _classify_surface(
@@ -293,8 +361,12 @@ def _nonresolved_resolution(
 
 
 __all__ = [
+    "SurfaceRegression",
     "SurfaceWorkItem",
     "build_surface_work_queue",
+    "find_resolved_surface_regressions",
+    "load_surface_work_queue",
+    "render_surface_regressions",
     "render_surface_work_queue",
     "surface_work_queue_to_json",
     "write_surface_work_queue",

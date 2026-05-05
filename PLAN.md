@@ -79,17 +79,28 @@
   no-LLM baseline; the paired
   `open_resolver_surface_work_queue.json` captures the remaining
   top surfaces as composites, out-of-scope data-model gaps,
-  ambiguity, extractor bug, or true misses. Remaining work on 2.18: regression
-  gate that fails loudly when a `resolved` high-frequency surface
-  regresses back to `unmapped_concept`.
-- **Last completed:** 2026-05-05 **open-resolver deterministic baseline
-  snapshot.** Created `eval/baselines/2026-05-05/` with
-  `open_resolver_none_diagnostics.json`,
-  `open_resolver_surface_work_queue.json`, and `SUMMARY.md`. The run
-  used `--no-llm --binding-strategy two_pass --matcher-assumption-mode
-  open_world --llm-use-level none`; it scored 47/49 cases, with the
-  same 2 deceased-patient refusals as prior baselines. Verification:
-  both JSON artifacts validate with `uv run python -m json.tool`.
+  ambiguity, extractor bug, or true misses. `scripts/check_terminology_regressions.py`
+  now fails if a surface preserved in a `status=resolved` watchlist
+  reappears in a run's `top_unmapped_surfaces`; the first watchlist
+  lives at `eval/baselines/2026-05-05/resolved_surface_watchlist.json`.
+- **Last completed:** PLAN task 2.18 regression gate + 2026-05-05
+  **open-resolver baseline snapshot.** Created
+  `eval/baselines/2026-05-05/` with open-world deterministic
+  (`17fc2bc0a9cd`), closed-world deterministic (`5a0e5717803c`), and
+  retrieval-only (`d659d6ff19bb`) diagnostics, plus
+  `open_resolver_surface_work_queue.json`, `resolved_surface_watchlist.json`,
+  and `SUMMARY.md`. Bounded adjudication was intentionally not rerun under the
+  current low weekly LLM budget. Added `scripts/check_terminology_regressions.py` plus
+  `find_resolved_surface_regressions` / renderer helpers in
+  `clinical_demo.terminology.work_queue`. Each baseline scored 47/49 cases,
+  with the same 2 deceased-patient refusals as prior baselines. Verification:
+  `uv run pytest tests/terminology/test_work_queue.py tests/terminology/test_cache.py
+  tests/terminology/test_resolver.py` 78/78, targeted ruff clean, all baseline
+  JSON artifacts validate with `uv run python -m json.tool`, and
+  `uv run python scripts/check_terminology_regressions.py --diagnostics
+  eval/baselines/2026-05-05/open_resolver_none_diagnostics.json
+  --resolved-work-queue eval/baselines/2026-05-05/resolved_surface_watchlist.json`
+  reports no resolved terminology regressions.
   Previous: PLAN task 2.19 — **closed-world matcher
   semantics + open-world honesty fix.** Bumped `MATCHER_VERSION` to
   `matcher-v0.2`. `match_criterion` /  `match_extracted` now take
