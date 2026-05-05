@@ -100,8 +100,47 @@
   `uv run python scripts/check_terminology_regressions.py --diagnostics
   eval/baselines/2026-05-05/open_resolver_none_diagnostics.json
   --resolved-work-queue eval/baselines/2026-05-05/resolved_surface_watchlist.json`
-  reports no resolved terminology regressions.
-  Previous: PLAN task 2.19 — **closed-world matcher
+  reports no resolved terminology regressions. PR stack:
+  `codex/open-resolver-baseline-snapshot` -> `main` is PR #2;
+  `codex/terminology-regression-gate` -> `codex/open-resolver-baseline-snapshot`
+  is PR #3.
+
+### Coming week plan (2026-05-05 to 2026-05-12)
+
+- **Target effort:** 20-30 hours.
+- **Primary outcome:** calibrated patient-trial evidence matching with credible
+  cost/quality reporting: trials + patients go in, relevant patient evidence is
+  retrieved, bounded adjudication is measured against human labels, and the
+  results can support the presentation's cost/quality story.
+- **Operating rule for LLM/API spend:** use deterministic checks, label review,
+  and regression gates first; spend model calls only for smoke-tested bounded
+  adjudication reruns or narrowly scoped benchmark work.
+- **Task sequence:**
+  1. Merge PR #2, then PR #3, preserving the baseline/gate stack.
+  2. Fill `eval/calibration/patient_evidence_labels.json`: target 60/60 rows;
+     minimum useful gate is 40/60. Each filled row needs `label`,
+     `expected_matcher_verdict`, cited source row IDs when evidence exists,
+     reviewer, and rationale.
+  3. Add calibrated patient-evidence reporting across `none`,
+     `retrieval_only`, and `bounded_adjudication`: verdict agreement against
+     expected matcher verdicts, citation agreement, abstention rate, cost,
+     calls/tokens, and case-level rollup movement.
+  4. Add a TrialGPT/TREC-style local benchmark scaffold that mirrors
+     retrieval -> criterion matching -> ranking. This week is a local exporter
+     from the existing curated seed, not full official dataset ingestion. Use
+     NLM TrialGPT and NIST/TREC Clinical Trials as framing references:
+     <https://www.ncbi.nlm.nih.gov/research/trialgpt/about/> and
+     <https://trec.nist.gov/data/trials.html>.
+  5. Add free-text/note evidence v0 only if the calibration/reporting path is
+     green with at least 6 hours left. Scope is
+     `DocumentReference.content.attachment.data` only; cite note snippets and
+     reuse the existing bounded adjudicator. Defer `url` attachments, broad
+     vector search, and official benchmark ingestion.
+- **Assumptions:** oncology remains out of the core scope this week; broad
+  multi-model sweeps wait until patient-evidence labels have enough signal;
+  LLM-generated labels must not be treated as gold.
+
+- **Previous completed context:** PLAN task 2.19 — **closed-world matcher
   semantics + open-world honesty fix.** Bumped `MATCHER_VERSION` to
   `matcher-v0.2`. `match_criterion` /  `match_extracted` now take
   `matcher_assumption_mode` as a kwarg, threaded down through
@@ -138,7 +177,7 @@
   (`open_world_diagnostics.json`, `closed_world_eval_diagnostics.json`,
   `SUMMARY.md`). Verification: `uv run pytest` 656/656,
   `uv run ruff check .` clean.
-  Previous: PLAN task 2.17 final slice + 2.18 partial —
+  Previous: PLAN task 2.17 final slice + 2.18 first slice —
   **open UMLS/LOINC search wired into the resolver front door.** Added
   `clinical_demo.terminology.umls_search_client.UMLSSearchClient` with
   `httpx.MockTransport`-driven offline tests (13 new tests in
@@ -642,21 +681,19 @@
   baseline regression with indeterminacy diagnostic): layer-1
   agreement 81.0%, coverage 55.3%, 89% of all indeterminates are
   `unmapped_concept`. Snapshots in `eval/baselines/2026-04-21/`.
-- **Next:** Re-center Phase 2 on the core product loop: feed trials + patients
-  into the system, retrieve relevant patient evidence, and decide whether there
-  is enough support to flag a possible match. The current 60-row
-  patient-evidence packet exposed design drift: too many rows are terminology
-  or scope gaps (`unmapped_concept`, especially oncology) being treated as
-  calibration work. Do **not** make "label every row in the current packet" the
-  next gate. The next build sequence is: (1) narrow the core eval/calibration
-  scope to cardiometabolic rows, (2) add explicit matcher assumption modes and
-  LLM-use levels, (3) implement a retrieval-only evidence path over structured
-  FHIR rows, (4) add bounded LLM adjudication over retrieved evidence, and
-  (5) add the unit reconciliation pass. Terminology APIs remain precision
-  anchors inside retrieval/adjudication, not the sole gateway to matching.
-- **Gates at HEAD:** `ruff check` + `ruff format --check` clean; `pytest`
-  579 / 579 passing; `npm run build` clean.
-- **Branch:** `main`, local changes pending.
+- **Next:** Calibrated patient-trial matching week. Merge the baseline/gate
+  stack, fill the in-scope patient-evidence labels, add calibrated reporting
+  for `none` / `retrieval_only` / `bounded_adjudication`, then spend only the
+  model calls needed to measure whether bounded adjudication improves the core
+  product loop. Add a local TrialGPT/TREC-style benchmark scaffold in parallel
+  only as a light framing/export layer. Free-text/note evidence v0 is optional
+  and gated on finishing calibration/reporting with at least 6 hours left.
+- **Gates at HEAD:** documentation-only branch; product gates are deliberately
+  not refreshed here. Before the next code-bearing merge, rerun
+  `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, and
+  the terminology regression gate.
+- **Branch:** `codex/coming-week-plan-doc`, stacked on
+  `codex/terminology-regression-gate`.
 
 ### Non-trivial open follow-ups
 
@@ -908,7 +945,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.15 | **Bounded LLM patient-evidence adjudicator.** Add the criterion-level adjudicator over retrieved evidence, not over the whole chart. Input is the extracted criterion, deterministic verdict/reason, retrieved patient rows, trial source text, and matcher assumption mode; output is strict `pass` / `fail` / `indeterminate` with cited source row IDs and a reason. Use terminology/code matches as precision anchors when available, but allow the adjudicator to classify supported, contradicted, or insufficiently supported evidence when concept mapping is incomplete. This is the architectural home for "does this patient appear to match enough to flag for CRC review?", not a post-hoc explanation layer. Evaluate against the reset 2.12 labels. *First pass implemented and rerun — `clinical_demo.adjudication.patient_evidence` defines the prompt, structured output, fail-closed citation validation, Langfuse generation span, and `PATIENT_EVIDENCE_ADJUDICATOR_VERSION`; `llm_use_level=\"bounded_adjudication\"` runs it after retrieval for indeterminate verdicts in imperative and graph scoring. The 2026-05-04 bounded run changed 39 criterion verdicts from indeterminate -> pass and 15 from indeterminate -> fail; top-level eligibility moved 9/49 cases from indeterminate -> fail and 0 -> pass. Remaining work is human calibration: `eval/calibration/patient_evidence_labels.json` still has 0/60 filled labels, so prompt tuning should wait for actual failures.* | 5 |
 | 2.16 | **Unit reconciliation / conventional-unit pass.** Add a hybrid unit layer for high-impact measurements before the cost-routing sweep. Deterministic code owns a small whitelisted registry and numeric conversions (initially BP mmHg, eGFR `mL/min/1.73 m2` variants, LDL-C `mmol/L` <-> `mg/dL`, and percent-like HbA1c); an LLM/source pass may infer the intended measurement/unit from trial text when the extractor omits or phrases it oddly, but it may not perform arbitrary conversions. Rerun eval and report reductions in `unit_mismatch` / `ambiguous_criterion`. *First pass implemented and rerun — profile unit normalization now covers eGFR variants and LDL-C `mmol/L` <-> `mg/dL`; matcher infers missing conventional units for eGFR, HbA1c, and BP thresholds when a matching patient observation exists. The refreshed deterministic eval has only 2 criterion-level `unit_mismatch` reasons left, but the current baseline is not enough to quantify pre/post reduction cleanly because extractor-v0.5 cache refresh also changed the criterion set. Remaining work is deciding whether any additional high-impact unit families deserve whitelisting.* | 3 |
 | 2.17 | **Open terminology resolver front door.** Replace the current registry-gated `two_pass` policy with an open resolver contract: input is `(kind, surface_text, optional criterion context)`, output is a cached `ConceptSet` resolution, cached ambiguity, cached true miss, or explicit composite/non-mappable classification. Resolution order: curated overrides first, resolved/negative cache second, terminology API search third. The existing bindings registry becomes curated overrides plus offline fixtures; it must not be the only path that can call NLM/RxNorm. High-confidence single hits may feed the deterministic matcher; ambiguous hits must return candidate metadata instead of pretending certainty; true misses remain `unmapped_concept`; composite phrases become `composite_unhandled` / `human_review_required` unless safely split into atomic concepts. Cache all outcomes, including misses and ambiguity, so repeated eval runs do not rediscover the same surfaces. Initial target surfaces come from the 2026-05-04 diagnostics: `hemoglobin`, `platelet count`, `bmi` / `body mass index`, generic `blood pressure`, pregnancy/breastfeeding, uncontrolled hypertension, common PAH/PH terms, and high-frequency medication/class surfaces. Exit criterion: the deterministic two-pass eval no longer has obviously mappable high-frequency concepts in `top_unmapped_surfaces`; remaining unmapped rows are true misses, composites, extractor errors, or out-of-scope concepts with explicit labels. *Done — `UMLSSearchClient` against `https://uts-ws.nlm.nih.gov/rest/search/current` is wired into `_resolve_open_condition` (SNOMED exact) and `_resolve_open_lab` (LOINC words + numeric-code filter) with `composite_unhandled` short-circuit before the API call and `true_miss` caching on clean zero-hit responses. RxNorm raw-surface search stays the med path. Smoke eval `43c765d1dbcc` moved `unmapped_concept` from 551/1077 (51.2%) to 445/1061 (41.9%), `indeterminate` from 92.5% to 86.6%, and added +52 pass / +9 fail / +61 `ok` verdicts. All 15 surfaces remaining in `top_unmapped_surfaces` are legitimately non-atomic (composites, out-of-scope for Synthea, extractor bugs, ambiguous). Snapshot lives at `eval/baselines/2026-05-04-umls/`.* | 8 |
-| 2.18 | **Mappable-unmapped regression gate and cache warmer.** Turn `evals.diagnostics.top_unmapped_surfaces` into an engineering work queue. Add a report that classifies each top surface as `resolved`, `ambiguous`, `true_miss`, `composite_unhandled`, `extractor_bug`, or `out_of_scope`, with resolver provenance and cache status. Add a cache-warming script that resolves the top-N surfaces for a run/dataset and writes reusable cache rows before scoring. CI/local regression should fail or warn loudly when a high-frequency surface marked `resolved` falls back to `unmapped_concept`. Snapshot a new baseline comparing alias, registry-only two-pass, and open-resolver two-pass. *Partial — work queue, warmer, and new baseline shipped with the D-73 slice. Remaining: the regression gate that fails loudly when a previously-`resolved` high-frequency surface regresses back to `unmapped_concept` on a later run.* | 4 |
+| 2.18 | **Mappable-unmapped regression gate and cache warmer.** Turn `evals.diagnostics.top_unmapped_surfaces` into an engineering work queue. Add a report that classifies each top surface as `resolved`, `ambiguous`, `true_miss`, `composite_unhandled`, `extractor_bug`, or `out_of_scope`, with resolver provenance and cache status. Add a cache-warming script that resolves the top-N surfaces for a run/dataset and writes reusable cache rows before scoring. CI/local regression should fail or warn loudly when a high-frequency surface marked `resolved` falls back to `unmapped_concept`. Snapshot a new baseline comparing alias, registry-only two-pass, and open-resolver two-pass. *Done — work queue + cache warmer shipped first, then the 2026-05-05 baseline snapshot added open-world deterministic, closed-world deterministic, and retrieval-only diagnostics. `scripts/check_terminology_regressions.py` now fails when any `status=resolved` watched surface reappears in `top_unmapped_surfaces`; the first watchlist lives at `eval/baselines/2026-05-05/resolved_surface_watchlist.json`. PR #2 snapshots the baseline and PR #3 adds the regression gate.* | 4 |
 | 2.19 | **Closed-world matcher semantics.** After open resolution is working, make assumption modes change behavior instead of only being metadata/prompt context. `open_world` remains default: no patient row means insufficient evidence / indeterminate. `closed_world_eval` may treat absence from the curated synthetic structured record as negative evidence for specific closed, structured kinds only (condition_absent, medication_absent, selected demographics/labs), and must record the assumption in evidence. `closed_world_demo` is allowed only for hand-picked demo pairs with a visible UI/API banner. Do not use closed-world behavior to mask terminology failures; mapping has to run first. *Done — matcher v0.2 threads `matcher_assumption_mode` into `_match_condition` / `_match_medication` / `_match_temporal_window` (labs deliberately excluded; user wants N/A visibility). `open_world` returns `indeterminate(no_data)` for resolved-but-absent (also fixes a pre-existing silent-flip bug where `condition_absent` criteria silently flipped `fail` to `pass`); closed-world modes return `fail` with `evidence_under_assumption=True` stamped on the verdict. `unmapped_concept` is unchanged across modes (D-73 guardrail). `MatchVerdict` carries `assumption` + `evidence_under_assumption`. `EligibilityRollup` gains `pass_pending_review` for "no fails, every remaining indeterminate is `human_review_required`" — useful in any mode. UI/API banner for `closed_world_demo` deferred to follow-up (we are nowhere near demo polish yet). Twin baselines in `eval/baselines/2026-05-04-2.19/`: closed-world v0.2 reproduces v0.1 numbers exactly (`pass`=110 / `fail`=32 / `indeterminate`=919 / `ok`=142), confirming faithful re-implementation; honest open-world is `pass`=77 / `fail`=21 / `indeterminate`=963 / `ok`=98 / `no_data` 62 vs 18.* | 3 |
 | **Phase 2 total** | | **~81 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
@@ -918,18 +955,19 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | # | Task | Est. (hr) |
 |---|---|---|
 | 3.1 | Model abstraction layer that lets the same node call any of 4–5 models with consistent JSON-schema enforcement. It must preserve the LLM-use levels from 2.13 (`none`, `retrieval_only`, `bounded_adjudication`, `critic`) so cost/quality experiments measure routing choices, not hidden behavior changes. | 3 |
-| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Preconditions: complete the open terminology resolver baseline (2.17/2.18) so cost/quality is not dominated by avoidable `unmapped_concept`, then fill the 60-row patient-evidence labels. Adjudicator token/cost telemetry now persists on `ScorePairResult.llm_calls` and the v3 `eval/runs.sqlite` schema (`adjudicator_cost_usd` / `adjudicator_input_tokens` / `adjudicator_output_tokens` / `adjudicator_calls`), so routing economics are already auditable from local eval artifacts. | 4 |
-| 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). | 4 |
+| 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Preconditions: complete the open terminology resolver baseline (2.17/2.18) so cost/quality is not dominated by avoidable `unmapped_concept`, then fill the 60-row patient-evidence labels. The immediate blocker is the calibrated label set: target 60/60, minimum useful gate 40/60, with no LLM-generated labels treated as gold. Adjudicator token/cost telemetry now persists on `ScorePairResult.llm_calls` and the v3 `eval/runs.sqlite` schema (`adjudicator_cost_usd` / `adjudicator_input_tokens` / `adjudicator_output_tokens` / `adjudicator_calls`), so routing economics are already auditable from local eval artifacts. | 4 |
+| 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). Start with efficient measured reruns over `none`, `retrieval_only`, and one bounded-adjudication model before broad model sweeps; the policy should say when the system has enough support to flag a possible match and when it must abstain. | 4 |
+| 3.3a | **TrialGPT/TREC-style benchmark scaffold.** Add a local benchmark schema/exporter that frames our seed around TrialGPT's retrieval -> criterion matching -> ranking shape and the TREC Clinical Trials patient-summary-to-suitable-trials task. This is a lightweight local scaffold for comparable reporting, not full official TREC ingestion. | 2 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
-| 3.6 | **Patient note evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
+| 3.6 | **Patient note evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. Coming-week v0 is deliberately narrower: parse `DocumentReference.content.attachment.data` only, cite snippets as patient source rows, and reuse the existing bounded adjudicator if calibration/reporting finishes with enough time left. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
 | 3.7 | Reviewer UI v1: accept/override/flag with feedback persistence; basic auth gate (single-user is fine); polish. | 4 |
 | 3.8 | Deploy to `juliusm.com`; smoke test; capture a screen-recording fallback in case live demo dies. | 3 |
 | 3.9 | **Deployment readiness doc** — see §7. Includes a real revision pass. | 11 |
 | 3.10 | 20-minute presentation deck — see §8. | 4 |
 | 3.11 | Project README and repo polish (architecture diagram, eval results table, "how to reproduce", honest limitations section). | 3 |
 | 3.12 | **Performance pass (far-future / after correctness).** Profile end-to-end latency before optimizing. Candidate work: precompute/cache patient profiles and note indexes, parallelize per-criterion deterministic matches, batch or cache terminology resolution, avoid duplicate extraction/cache reads, stream API progress for long graph runs, tune LLM matcher/critic concurrency with rate-limit guards, and add latency/cost budgets to eval reports so speedups are measured rather than guessed. | 4 |
-| **Phase 3 total** | | **~54 hr** |
+| **Phase 3 total** | | **~56 hr** |
 | **Exit criterion** | Deployed demo, dashboard, writeup, deck. The whole story can be told in 20 minutes. | |
 
 ### Phase 4 — Buffer / dogfood
@@ -941,7 +979,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 4.3 | Anything that overflowed earlier phases. | flex |
 | **Phase 4 total** | | **~10–15 hr** |
 
-**Grand total target: ~130 hours**, with hard scope cuts available (§9).
+**Grand total target: ~132 hours**, with hard scope cuts available (§9).
 
 ---
 
