@@ -160,6 +160,16 @@ def test_rollup_pass_pending_review_when_only_free_text_indeterminate() -> None:
     assert result.eligibility == "pass_pending_review"
 
 
+def test_rollup_indeterminate_when_human_review_required_without_any_pass() -> None:
+    """`pass_pending_review` still needs at least one positive
+    structured decision. A trial made only of free-text review items
+    has no structured support for a possible match yet."""
+    patient = make_patient(birth=date(1990, 1, 1))
+    extraction = _make_extraction([crit_free_text()])
+    result = score_pair(patient, make_trial(), AS_OF, extraction=extraction)
+    assert result.eligibility == "indeterminate"
+
+
 def test_rollup_indeterminate_when_no_fail_but_a_non_review_indeterminate() -> None:
     """No fails + a non-`human_review_required` indeterminate (e.g.
     `unmapped_concept`, `no_data`) still rolls up to plain
@@ -304,6 +314,7 @@ def test_rollup_helper_matches_truth_table() -> None:
     assert (
         _rollup([vd("pass"), vd("indeterminate", "human_review_required")]) == "pass_pending_review"
     )
+    assert _rollup([vd("indeterminate", "human_review_required")]) == "indeterminate"
     assert _rollup([vd("pass"), vd("indeterminate", "no_data")]) == "indeterminate"
     assert _rollup([vd("pass"), vd("indeterminate", "human_review_required"), vd("fail")]) == "fail"
     assert _rollup([vd("indeterminate", "no_data"), vd("fail")]) == "fail"

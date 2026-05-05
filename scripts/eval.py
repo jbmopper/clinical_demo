@@ -282,7 +282,7 @@ def _load_or_extract_chia_document(
 
 def _summarize(run: RunResult) -> str:
     """One-screen summary of a run; same shape `eval report` prints."""
-    elig: dict[str, int] = {"pass": 0, "fail": 0, "indeterminate": 0}
+    elig: dict[str, int] = {"pass": 0, "fail": 0, "indeterminate": 0, "pass_pending_review": 0}
     by_slice: dict[str, dict[str, int]] = {}
     total_cost = 0.0
     total_latency = 0.0

@@ -63,8 +63,8 @@ from ..retrieval import retrieve_structured_patient_evidence, structured_source_
 
 EligibilityRollup = Literal["pass", "fail", "indeterminate", "pass_pending_review"]
 """Top-level eligibility rollup. v0 uses three states; v0.2 (PLAN
-2.19) adds `pass_pending_review` for the "all structured criteria
-pass; only `human_review_required` indeterminates remain" case so
+2.19) adds `pass_pending_review` for the "at least one structured
+criterion passes; only `human_review_required` indeterminates remain" case so
 reviewer dashboards can distinguish "the system can't decide" from
 "the system says yes for everything it could decide and only
 free-text remains for human review." Useful in any mode but
@@ -367,11 +367,11 @@ def _rollup(verdicts: list[MatchVerdict]) -> EligibilityRollup:
 
       - Any `fail` criterion → eligibility = `fail`.
       - All criteria `pass` → `pass`.
-      - All non-`pass` criteria are indeterminate with reason
-        `human_review_required` → `pass_pending_review`. The
-        structured matcher said yes (or had nothing to say) for
-        every criterion it could decide; what's left is free-text
-        criteria a clinician needs to eyeball.
+      - At least one criterion `pass` and all remaining non-`pass`
+        criteria are indeterminate with reason `human_review_required`
+        → `pass_pending_review`. The structured matcher said yes for
+        at least one criterion and did not find a structured blocker;
+        what's left is free-text criteria a clinician needs to eyeball.
       - Any other indeterminate (`unmapped_concept`, `no_data`,
         `unit_mismatch`, ...) → `indeterminate`.
 
@@ -379,11 +379,14 @@ def _rollup(verdicts: list[MatchVerdict]) -> EligibilityRollup:
     callers should check for the empty case themselves before
     trusting that as a positive signal."""
     has_fail = False
+    has_pass = False
     has_indeterminate = False
     has_non_review_indeterminate = False
     for v in verdicts:
         if v.verdict == "fail":
             has_fail = True
+        elif v.verdict == "pass":
+            has_pass = True
         elif v.verdict == "indeterminate":
             has_indeterminate = True
             if v.reason != "human_review_required":
@@ -392,8 +395,10 @@ def _rollup(verdicts: list[MatchVerdict]) -> EligibilityRollup:
         return "fail"
     if has_non_review_indeterminate:
         return "indeterminate"
-    if has_indeterminate:
+    if has_indeterminate and has_pass:
         return "pass_pending_review"
+    if has_indeterminate:
+        return "indeterminate"
     return "pass"
 
 
