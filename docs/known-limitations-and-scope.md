@@ -14,7 +14,7 @@ What the demo **does not** claim, and where **Synthea + curated trials** stop be
 ## 2. Chart completeness assumptions
 
 - **Open world (default)** explicitly models incomplete charts: missing rows are **not** automatic negatives for conditions/meds/temporal events.
-- **Synthea** omits many real-world artifacts (imaging narratives, clinician free-text, social determinants beyond coarse condition coding) — criteria depending on those fields will skew **indeterminate**.
+- **Synthea** omits many real-world artifacts (imaging narratives, rich clinician free-text, social determinants beyond coarse condition coding) — criteria depending on those fields will skew **indeterminate** even though v0 `DocumentReference` note rows are now retrievable.
 
 ---
 
@@ -22,6 +22,7 @@ What the demo **does not** claim, and where **Synthea + curated trials** stop be
 
 - **Free-text criteria** defer to human review in deterministic mode; LLM matcher exists on **graph path only** for those kinds.
 - **Extractor mention F1 vs Chia** measures only a **subset** of Chia (entity mentions), not relations or OR-groups.
+- **Composite OR/AND criteria** now have calibration-time parent/subcheck scaffolding and a standalone truth-table helper, but the main scorer does not yet consume composite groups.
 - **Temporal windows** in the future direction are limited; future-window criteria return unsupported mood/path.
 - **Hypothetical mood** criteria (planned procedures) return indeterminate — no planned-event patient model.
 
@@ -46,7 +47,7 @@ What the demo **does not** claim, and where **Synthea + curated trials** stop be
 
 - “**TrialGPT leaderboard numbers**” — only a local export scaffold exists.
 - “**MIMIC-calibrated** production matcher” — governance documented, adapter not shipped.
-- “**Note-aware eligibility**” — design only; no `DocumentReference` ingestion in code.
+- “**Full note-aware eligibility**” — note ingestion/retrieval v0 exists, but there is no validated note-ranking policy, no MIMIC-calibrated note behavior, and deterministic free-text criteria still require review/adjudication.
 - “**Live ClinicalTrials.gov search agent**” — trials are **pre-curated** files.
 
 ---

@@ -1,6 +1,6 @@
 # Patient evidence retrieval architecture
 
-How **structured patient and trial facts** become **citeable rows**, how **retrieval ranks** them per criterion, and where **future** note or vector retrieval is expected to plug in.
+How **structured patient and trial facts** plus v0 note snippets become **citeable rows**, how **retrieval ranks** them per criterion, and where composite / vector retrieval plugs in next.
 
 ---
 
@@ -14,6 +14,7 @@ For a given patient + trial, the system materializes a **flat list** of **source
 - **Conditions** up to a cap — each row carries kind, label, value text, optional onset/abatement dates, code, system, clinical flag.
 - **Observations (labs/vitals)** up to a cap — each numeric observation becomes its own row with LOINC (or other) code, value, unit, date.
 - **Medications** up to a cap — drug concept, dates when present.
+- **Clinical note snippets** from `DocumentReference.content.attachment.data` — each row carries `kind="note"`, title, snippet text, document date when present, and `note_id=...` status.
 
 **Trial side:**
 
@@ -25,9 +26,9 @@ These rows are the **only** substrate for lexical retrieval today. They are also
 
 ## 2. What counts as a “source row”
 
-Each row is: **stable id**, **source** (`patient` vs `trial`), **kind** (demographics, condition, observation, medication, trial_field), **label**, **value** string, optional **date**, optional **code/system**, optional **status**.
+Each row is: **stable id**, **source** (`patient` vs `trial`), **kind** (demographics, condition, observation, medication, note, trial_field), **label**, **value** string, optional **date**, optional **code/system**, optional **status**.
 
-Rows are **not** full FHIR resources — they are **projections** chosen for eligibility screening. Anything not projected (procedures, encounters, notes, imaging reports) is **invisible** to structured retrieval until adapters add new projections.
+Rows are **not** full FHIR resources — they are **projections** chosen for eligibility screening. Anything not projected (procedures, encounters, imaging reports, non-inline note URLs) is **invisible** to retrieval until adapters add new projections.
 
 ---
 
@@ -54,15 +55,26 @@ Each kept row becomes a **retrieved evidence** object carrying: the row snapshot
 
 ---
 
-## 5. Future: vector and clinical note retrieval
+## 5. Composite subcheck retrieval
+
+Calibration rows can now expose representational composite groups:
+
+- `composite_groups[]` contains a parent `any_of` / `all_of` group with stable subcheck ids.
+- Each subcheck carries a matcher-shaped criterion payload where safely inferable, otherwise a `free_text` subcheck.
+- Retrieval runs per subcheck, so reviewers can see evidence for “HbA1c threshold” separately from “fasting glucose threshold.”
+
+This does **not** change the main scorer rollup yet. Parent/subcheck groups must be emitted reliably by the extractor/fixer before `match_extracted` consumes composite semantics.
+
+---
+
+## 6. Future: vector retrieval
 
 The structured layer is intentionally **lexical + code-anchored** so it is cheap, inspectable, and deterministic aside from resolver caches.
 
-**Planned extension surface (not yet in code):**
+**Planned extension surface:**
 
-- Add **note-derived rows** (e.g. from `DocumentReference` attachments) into the same `RetrievalSourceRow` shape so ranking and adjudication reuse the same citation machinery.
 - Add an **optional embedding ranker** behind an interface so lexical scores can be reordered or blended without changing downstream adjudicator contracts.
 
-Until those adapters exist, anything only stated in clinical narrative **outside** projected rows will continue to land in **no data** / **human_review_required** paths.
+Anything only stated outside projected rows will continue to land in **no data** / **human_review_required** paths.
 
 Related: `docs/fhir-patient-processing.md`, `docs/matcher-assumption-modes.md`, `docs/free-text-note-evidence-design.md`.

@@ -1,33 +1,34 @@
-# Free-text and clinical note evidence (design status)
+# Free-text and clinical note evidence
 
-**Implementation status:** There is **no** `DocumentReference` parser or note-snippet row projection in `src` today — structured retrieval uses **conditions, labs, medications, demographics** only. This document captures the **intended design** from the project plan and adjudicator contracts so future work slots in without reshaping the scoring envelope.
+**Implementation status:** v0 note ingestion and retrieval exist. `src/clinical_demo/data/synthea.py` decodes `DocumentReference.content.attachment.data` into `ClinicalNote` objects, and `clinical_demo.retrieval.patient_evidence` projects those notes into citeable `RetrievalSourceRow(kind="note")` snippets. Full note-aware eligibility is still bounded: note rows can be retrieved and cited, but deterministic free-text criteria still defer unless bounded adjudication is explicitly enabled.
 
 ---
 
-## 1. Target FHIR entry point (planned)
+## 1. Target FHIR entry point
 
-- Primary: **`DocumentReference.content.attachment.data`** (inline base64 payloads) decoded to text snippets with strict size caps.
+- Implemented primary path: **`DocumentReference.content.attachment.data`** (inline base64 payloads) decoded to normalized text snippets.
 - Later / lower trust: `url` attachments and generated `text.div` narrative — explicitly **not** the first-class clinical evidence surface.
 
 ---
 
-## 2. Note snippet provenance (planned)
+## 2. Note snippet provenance
 
 Each derived row should carry:
 
-- originating **resource id** and **category** / type if present,
-- **authored date** for as-of comparisons,
-- optional **section header** heuristic,
-- **character offsets** within the decoded note for citation stability,
+- originating **resource id** via `status="note_id=..."`,
+- **document date** when present,
+- note title / type text when present,
+- snippet text capped for reviewer/adjudicator context,
+- future: optional **section header** heuristic and **character offsets** within the decoded note for citation stability,
 - **redaction flags** if content must be stripped for demo export.
 
 Rows should reuse the same **`RetrievalSourceRow`** shape as structured labs so ranking + adjudicator citation ids stay uniform.
 
 ---
 
-## 3. Prompt-injection defenses (planned)
+## 3. Prompt-injection defenses
 
-Clinical notes may contain adversarial strings (“ignore prior criteria…”). Mitigations to combine when notes enter the adjudicator context:
+Clinical notes may contain adversarial strings (“ignore prior criteria…”). Mitigations used or required as notes enter adjudicator context:
 
 - **System prompt hard rules:** only cite provided rows; never treat note instructions as eligibility edits.
 - **Structural isolation:** pass notes as **labeled rows**, not as system messages pretending to be policy.
@@ -57,8 +58,8 @@ The bounded **patient-evidence adjudicator** prompt/schema should remain criteri
 
 ---
 
-## 7. Validation artifacts (planned)
+## 7. Validation artifacts
 
-Golden sets must include: explicit positive evidence, explicit absence, insufficient evidence, temporal boundary cases, structured-vs-note conflict, and injection strings — stored **locally** if they contain credentialed MIMIC-like text.
+Golden sets must include: explicit positive evidence, explicit absence, insufficient evidence, temporal boundary cases, structured-vs-note conflict, prompt-injection strings, and composite OR/AND criteria with per-subcheck citations. Store credentialed MIMIC-like text **locally** only.
 
 Related: `docs/patient-evidence-retrieval-architecture.md`, `docs/mimic-iv-calibration-and-governance.md`, `docs/llm-use-levels-and-cost-controls.md`.
