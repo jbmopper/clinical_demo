@@ -17,6 +17,7 @@ from typing import Any
 import pytest
 
 from clinical_demo.adjudication import PatientEvidenceAdjudicatorOutput
+from clinical_demo.domain import ClinicalNote
 from clinical_demo.extractor.extractor import ExtractionResult
 from clinical_demo.extractor.schema import (
     ExtractedCriteria,
@@ -277,6 +278,60 @@ def test_bounded_adjudication_can_replace_indeterminate_with_cited_verdict() -> 
     # documented "no usage data" sentinel is None).
     assert result.summary.adjudicator_input_tokens is None
     assert result.summary.adjudicator_cost_usd is None
+
+
+def test_bounded_adjudication_uses_note_evidence_for_unmapped_concept() -> None:
+    """Free-text note snippets enter through the same bounded citation gate."""
+
+    class _StubCompletions:
+        captured: dict[str, Any] | None = None
+
+        def parse(self, **kwargs: Any) -> Any:
+            self.captured = kwargs
+            parsed = PatientEvidenceAdjudicatorOutput(
+                verdict="pass",
+                reason="ok",
+                cited_source_row_ids=["patient:002"],
+                rationale="patient:002 notes uncontrolled hypertension.",
+            )
+            return SimpleNamespace(
+                choices=[
+                    SimpleNamespace(
+                        finish_reason="stop",
+                        message=SimpleNamespace(refusal=None, parsed=parsed),
+                    )
+                ],
+                usage=None,
+            )
+
+    completions = _StubCompletions()
+    client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
+    patient = make_patient(
+        notes=[
+            ClinicalNote(
+                note_id="doc-hypertension",
+                title="Cardiology note",
+                date=date(2024, 12, 1),
+                text="Patient has uncontrolled hypertension despite therapy.",
+            )
+        ]
+    )
+    extraction = _make_extraction([crit_condition(text="uncontrolled hypertension")])
+
+    result = score_pair(
+        patient,
+        make_trial(),
+        AS_OF,
+        extraction=extraction,
+        llm_use_level="bounded_adjudication",
+        patient_evidence_client=client,
+    )
+
+    assert result.eligibility == "pass"
+    retrieved = [e for e in result.verdicts[0].evidence if e.kind == "retrieved_patient_row"]
+    assert retrieved[0].row_kind == "note"
+    assert retrieved[0].label == "Cardiology note"
+    assert completions.captured is not None
 
 
 def test_rollup_pass_on_empty_verdicts_documents_vacuous_truth() -> None:

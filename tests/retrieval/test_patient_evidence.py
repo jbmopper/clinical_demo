@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 import pytest
 
-from clinical_demo.retrieval import RetrievalSourceRow, retrieve_structured_patient_evidence
-from tests.matcher._fixtures import crit_condition, crit_measurement
+from clinical_demo.domain import ClinicalNote
+from clinical_demo.retrieval import (
+    RetrievalSourceRow,
+    retrieve_structured_patient_evidence,
+    structured_source_rows_for_pair,
+)
+from tests.matcher._fixtures import crit_condition, crit_measurement, make_patient, make_trial
 
 
 def _row(
@@ -95,3 +102,79 @@ def test_retrieve_ignores_numeric_only_overlap() -> None:
 def test_retrieve_rejects_non_positive_limit() -> None:
     with pytest.raises(ValueError, match="limit must be positive"):
         retrieve_structured_patient_evidence(crit_condition(), [], limit=0)
+
+
+def test_note_snippets_are_citeable_patient_source_rows() -> None:
+    patient = make_patient(
+        notes=[
+            ClinicalNote(
+                note_id="doc-support",
+                title="Cardiology note",
+                date=date(2024, 12, 1),
+                text="Patient has uncontrolled hypertension despite therapy.",
+            )
+        ]
+    )
+
+    rows = structured_source_rows_for_pair(patient, make_trial())
+
+    note_rows = [row for row in rows if row.kind == "note"]
+    assert len(note_rows) == 1
+    assert note_rows[0].source == "patient"
+    assert note_rows[0].label == "Cardiology note"
+    assert note_rows[0].value == "Patient has uncontrolled hypertension despite therapy."
+    assert note_rows[0].date == "2024-12-01"
+    assert note_rows[0].status == "note_id=doc-support"
+
+
+@pytest.mark.parametrize(
+    ("text", "criterion_text", "expected_retrieved"),
+    [
+        (
+            "Assessment: patient has type 2 diabetes with elevated A1c.",
+            "type 2 diabetes",
+            True,
+        ),
+        (
+            "Assessment: no history of type 2 diabetes is documented.",
+            "type 2 diabetes",
+            True,
+        ),
+        (
+            "History: myocardial infarction occurred in 2010; no recent cardiac event.",
+            "myocardial infarction within 6 months",
+            True,
+        ),
+        (
+            "Discussed diet and exercise goals.",
+            "type 2 diabetes",
+            False,
+        ),
+    ],
+)
+def test_retrieve_note_snippets_for_support_contradiction_and_temporal_review(
+    text: str,
+    criterion_text: str,
+    expected_retrieved: bool,
+) -> None:
+    patient = make_patient(
+        notes=[
+            ClinicalNote(
+                note_id="doc1",
+                title="Progress note",
+                date=date(2024, 12, 1),
+                text=text,
+            )
+        ]
+    )
+    rows = structured_source_rows_for_pair(patient, make_trial())
+
+    retrieved = retrieve_structured_patient_evidence(
+        crit_condition(text=criterion_text),
+        rows,
+    )
+
+    note_hits = [item for item in retrieved if item.row.kind == "note"]
+    assert bool(note_hits) is expected_retrieved
+    if expected_retrieved:
+        assert "kind:note" in note_hits[0].reasons

@@ -13,6 +13,7 @@ Coverage gaps (intentional, for v0):
 
 from __future__ import annotations
 
+import base64
 from datetime import date
 from pathlib import Path
 
@@ -352,3 +353,76 @@ def test_observation_drops_components_missing_value() -> None:
     p = _patient_from_bundle(fabricated)
     assert len(p.observations) == 1
     assert p.observations[0].concept.code == "8480-6"
+
+
+def test_document_reference_attachment_data_loads_as_clinical_note() -> None:
+    encoded = base64.b64encode(b"Cardiology note: patient has uncontrolled hypertension.").decode(
+        "ascii"
+    )
+    fabricated = {
+        "entry": [
+            {
+                "resource": {
+                    "resourceType": "Patient",
+                    "id": "p1",
+                    "gender": "female",
+                    "birthDate": "1970-01-01",
+                }
+            },
+            {
+                "resource": {
+                    "resourceType": "DocumentReference",
+                    "id": "doc1",
+                    "date": "2024-06-01T09:30:00Z",
+                    "type": {"text": "Progress note"},
+                    "content": [
+                        {
+                            "attachment": {
+                                "contentType": "text/plain; charset=utf-8",
+                                "data": encoded,
+                            }
+                        }
+                    ],
+                }
+            },
+        ]
+    }
+
+    patient = _patient_from_bundle(fabricated)
+
+    assert len(patient.notes) == 1
+    assert patient.notes[0].note_id == "doc1:0"
+    assert patient.notes[0].date == date(2024, 6, 1)
+    assert patient.notes[0].title == "Progress note"
+    assert patient.notes[0].text == "Cardiology note: patient has uncontrolled hypertension."
+
+
+def test_document_reference_ignores_generated_text_div() -> None:
+    fabricated = {
+        "entry": [
+            {
+                "resource": {
+                    "resourceType": "Patient",
+                    "id": "p1",
+                    "gender": "female",
+                    "birthDate": "1970-01-01",
+                }
+            },
+            {
+                "resource": {
+                    "resourceType": "DocumentReference",
+                    "id": "doc1",
+                    "date": "2024-06-01T09:30:00Z",
+                    "text": {
+                        "status": "generated",
+                        "div": "<div>Patient has cancer in generated narrative.</div>",
+                    },
+                    "content": [{"attachment": {"contentType": "text/plain"}}],
+                }
+            },
+        ]
+    }
+
+    patient = _patient_from_bundle(fabricated)
+
+    assert patient.notes == []

@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import date
 
 from clinical_demo.domain.patient import (
+    ClinicalNote,
     CodedConcept,
     Condition,
     LabObservation,
@@ -42,6 +43,7 @@ def make_patient(
     conditions: list[Condition] | None = None,
     observations: list[LabObservation] | None = None,
     medications: list[Medication] | None = None,
+    notes: list[ClinicalNote] | None = None,
 ) -> Patient:
     return Patient(
         patient_id="P-test",
@@ -51,6 +53,7 @@ def make_patient(
         conditions=conditions or [],
         observations=observations or [],
         medications=medications or [],
+        notes=notes or [],
     )
 
 

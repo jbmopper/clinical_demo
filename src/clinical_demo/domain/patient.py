@@ -12,6 +12,7 @@ against historical states (e.g., for evals on retrospective trial cohorts).
 
 from __future__ import annotations
 
+import datetime as _dt
 from datetime import date
 from typing import Literal
 
@@ -88,6 +89,21 @@ class Medication(BaseModel):
         return True
 
 
+class ClinicalNote(BaseModel):
+    """A citeable clinical note extracted from a source document.
+
+    Notes are unstructured patient data. Matchers may retrieve snippets
+    from them for bounded adjudication, but the note text itself is
+    never trusted as instructions.
+    """
+
+    note_id: str
+    text: str
+    date: _dt.date | None = None
+    content_type: str | None = None
+    title: str | None = None
+
+
 class Patient(BaseModel):
     """A single patient and their longitudinal record."""
 
@@ -104,6 +120,7 @@ class Patient(BaseModel):
     conditions: list[Condition] = Field(default_factory=list)
     observations: list[LabObservation] = Field(default_factory=list)
     medications: list[Medication] = Field(default_factory=list)
+    notes: list[ClinicalNote] = Field(default_factory=list)
 
     def age_years(self, as_of: date) -> int:
         """Age in completed years on `as_of`."""

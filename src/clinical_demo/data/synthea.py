@@ -29,18 +29,26 @@ generator-side updates since):
 - `abatementDateTime` is rarely populated in the sample data, meaning most
   conditions are reported as still active. Eligibility logic handles this
   by treating `abatement_date is None` as "still active."
+- `DocumentReference.content.attachment.data` is surfaced as unstructured
+  `ClinicalNote` text. Generated `resource.text.div` narrative is ignored
+  because it is display markup, not a high-trust clinical evidence field.
 """
 
 from __future__ import annotations
 
+import base64
+import binascii
 import json
 import logging
+import re
 from collections.abc import Iterator
 from datetime import date, datetime
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
 from clinical_demo.domain import (
+    ClinicalNote,
     CodedConcept,
     Condition,
     LabObservation,
@@ -131,6 +139,12 @@ def _patient_from_bundle(bundle: dict[str, Any]) -> Patient:
             if e["resource"]["resourceType"] == "MedicationRequest"
             for med in [_parse_medication_request(e["resource"], by_id)]
             if med is not None
+        ],
+        notes=[
+            note
+            for e in entries
+            if e["resource"]["resourceType"] == "DocumentReference"
+            for note in _parse_document_reference(e["resource"])
         ],
     )
 
@@ -292,3 +306,81 @@ def _parse_medication_request(
         start_date=start,
         end_date=None,  # Synthea MedicationRequest does not record a stop in v0 scope
     )
+
+
+class _TextExtractor(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.parts: list[str] = []
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+    def text(self) -> str:
+        return " ".join(self.parts)
+
+
+def _parse_document_reference(resource: dict[str, Any]) -> list[ClinicalNote]:
+    """Translate base64 DocumentReference attachments into clinical notes.
+
+    v0 intentionally reads only `content[].attachment.data`. FHIR narrative
+    markup in `resource.text.div` can be generated/display-only and should
+    not become high-trust patient evidence.
+    """
+
+    notes: list[ClinicalNote] = []
+    doc_id = resource.get("id") or "document-reference"
+    note_date = _parse_date(resource.get("date"))
+    title = _document_reference_title(resource)
+
+    for index, content in enumerate(resource.get("content", [])):
+        attachment = content.get("attachment") or {}
+        encoded = attachment.get("data")
+        if not encoded:
+            continue
+        try:
+            raw = base64.b64decode(encoded, validate=True)
+        except (binascii.Error, TypeError):
+            logger.warning("skipping invalid DocumentReference attachment data: %s", doc_id)
+            continue
+
+        content_type = attachment.get("contentType")
+        text = raw.decode("utf-8", errors="replace")
+        if content_type and "html" in content_type.lower():
+            text = _strip_html(text)
+        text = _normalize_note_text(text)
+        if not text:
+            continue
+
+        notes.append(
+            ClinicalNote(
+                note_id=f"{doc_id}:{index}",
+                text=text,
+                date=note_date,
+                content_type=content_type,
+                title=title,
+            )
+        )
+    return notes
+
+
+def _document_reference_title(resource: dict[str, Any]) -> str | None:
+    if resource.get("description"):
+        return str(resource["description"])
+    doc_type = resource.get("type") or {}
+    if doc_type.get("text"):
+        return str(doc_type["text"])
+    codings = doc_type.get("coding") or []
+    if codings and codings[0].get("display"):
+        return str(codings[0]["display"])
+    return None
+
+
+def _strip_html(text: str) -> str:
+    parser = _TextExtractor()
+    parser.feed(text)
+    return parser.text()
+
+
+def _normalize_note_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text.replace("\x00", " ")).strip()

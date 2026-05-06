@@ -6,6 +6,7 @@ specific source format. Translation happens in `clinical_demo.data.*`.
 """
 
 from clinical_demo.domain.patient import (
+    ClinicalNote,
     CodedConcept,
     Condition,
     LabObservation,
@@ -16,6 +17,7 @@ from clinical_demo.domain.patient import (
 from clinical_demo.domain.trial import Trial
 
 __all__ = [
+    "ClinicalNote",
     "CodedConcept",
     "Condition",
     "LabObservation",
