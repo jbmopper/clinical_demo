@@ -273,6 +273,7 @@ def _build_user_message(
     matcher_assumption_mode: MatcherAssumptionMode,
 ) -> str:
     rows = "\n".join(_format_retrieved_row(item) for item in retrieved)
+    composite_context = _format_composite_context(retrieved)
     return (
         f"ASSUMPTION MODE: {matcher_assumption_mode}\n"
         f"CRITERION KIND: {criterion.kind}\n"
@@ -290,6 +291,9 @@ def _build_user_message(
         "\n"
         "RETRIEVED PATIENT ROWS:\n"
         f"{rows}\n"
+        "\n"
+        "COMPOSITE SUBCHECK CONTEXT:\n"
+        f"{composite_context}\n"
         "\n"
         "Decide the raw predicate verdict from the retrieved rows only. "
         "Return strict JSON."
@@ -313,6 +317,34 @@ def _format_retrieved_row(item: RetrievedPatientEvidence) -> str:
     pieces.append(f"retrieval_score={item.score}")
     pieces.append(f"retrieval_reasons={item.reasons}")
     return "- " + "; ".join(pieces)
+
+
+def _format_composite_context(retrieved: list[RetrievedPatientEvidence]) -> str:
+    rows_by_subcheck: dict[str, list[str]] = {}
+    operators_by_subcheck: dict[str, str] = {}
+    for item in retrieved:
+        subcheck_id = _reason_value(item.reasons, "subcheck:")
+        if subcheck_id is None:
+            continue
+        operators_by_subcheck[subcheck_id] = _reason_value(item.reasons, "composite:") or "unknown"
+        rows_by_subcheck.setdefault(subcheck_id, []).append(item.row.row_id)
+
+    if not rows_by_subcheck:
+        return "(none)"
+
+    lines = []
+    for subcheck_id in sorted(rows_by_subcheck):
+        operator = operators_by_subcheck[subcheck_id]
+        row_ids = ", ".join(sorted(rows_by_subcheck[subcheck_id]))
+        lines.append(f"- subcheck={subcheck_id}; operator={operator}; retrieved_rows={row_ids}")
+    return "\n".join(lines)
+
+
+def _reason_value(reasons: list[str], prefix: str) -> str | None:
+    for reason in reasons:
+        if reason.startswith(prefix):
+            return reason.removeprefix(prefix)
+    return None
 
 
 def _fail_closed_without_citations(

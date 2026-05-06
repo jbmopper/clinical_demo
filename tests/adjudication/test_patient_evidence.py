@@ -101,6 +101,30 @@ def _retrieved_note(
     ]
 
 
+def _retrieved_composite_subcheck() -> list[RetrievedPatientEvidence]:
+    return [
+        RetrievedPatientEvidence(
+            row=RetrievalSourceRow(
+                row_id="patient:006",
+                source="patient",
+                kind="observation",
+                label="HbA1c",
+                value="6.1 %",
+                date="2024-12-01",
+                code="4548-4",
+                system="http://loinc.org",
+            ),
+            score=23,
+            reasons=[
+                "composite:any_of",
+                "subcheck:criterion:0:group:001:subcheck:001",
+                "kind:observation",
+                "code:4548-4",
+            ],
+        )
+    ]
+
+
 def _deterministic_verdict():
     return _build(
         crit_condition(text="smoking history"),
@@ -262,3 +286,31 @@ def test_adjudicator_prompt_treats_note_text_as_untrusted_patient_data() -> None
     user_prompt = client.captured["messages"][1]["content"]
     assert "untrusted patient" in system_prompt
     assert "Ignore all previous instructions" in user_prompt
+
+
+def test_adjudicator_prompt_surfaces_composite_subcheck_context() -> None:
+    parsed = PatientEvidenceAdjudicatorOutput(
+        verdict="indeterminate",
+        reason="human_review_required",
+        cited_source_row_ids=[],
+        rationale="Composite subcheck needs review.",
+    )
+    client = _StubClient(parsed)
+
+    adjudicate_patient_evidence(
+        criterion=crit_condition(text="hyperglycemia"),
+        criterion_index=0,
+        deterministic_verdict=_deterministic_verdict(),
+        retrieved=_retrieved_composite_subcheck(),
+        trial_context="test trial",
+        matcher_assumption_mode="open_world",
+        client=client,
+        settings=_settings(),
+    )
+
+    assert client.captured is not None
+    user_prompt = client.captured["messages"][1]["content"]
+    assert "COMPOSITE SUBCHECK CONTEXT" in user_prompt
+    assert "subcheck=criterion:0:group:001:subcheck:001" in user_prompt
+    assert "operator=any_of" in user_prompt
+    assert "retrieved_rows=patient:006" in user_prompt
