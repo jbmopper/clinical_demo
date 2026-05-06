@@ -10,6 +10,7 @@ from clinical_demo.terminology import TerminologyCache, TerminologyResolver
 from clinical_demo.terminology.work_queue import (
     SurfaceWorkItem,
     build_surface_work_queue,
+    find_mapped_surface_regressions,
     find_resolved_surface_regressions,
     render_surface_regressions,
     render_surface_work_queue,
@@ -42,7 +43,7 @@ def test_work_queue_resolves_open_alias_and_writes_cache(tmp_path: Path) -> None
 
     items = build_surface_work_queue(diagnostics, cache=cache, resolver=resolver)
 
-    assert items[0].status == "resolved"
+    assert items[0].status == "mapped"
     assert items[0].cache_status == "written"
     assert items[0].concept_set is not None
     assert items[0].concept_set.codes == frozenset({"718-7"})
@@ -144,10 +145,10 @@ def test_render_work_queue_keeps_high_frequency_surface_visible(tmp_path: Path) 
     )
 
     assert "platelet count" in out
-    assert "resolved" in out
+    assert "mapped" in out
 
 
-def test_resolved_surface_regression_gate_flags_watched_unmapped_surface() -> None:
+def test_mapped_surface_regression_gate_flags_watched_unmapped_surface() -> None:
     diagnostics = _diagnostics(
         SurfaceCount(kind="measurement_threshold", surface="hemoglobin", count=3),
         SurfaceCount(kind="measurement_threshold", surface="blood pressure", count=5),
@@ -158,10 +159,10 @@ def test_resolved_surface_regression_gate_flags_watched_unmapped_surface() -> No
             criterion_kind="measurement_threshold",
             resolver_kind="lab",
             count=10,
-            status="resolved",
+            status="mapped",
             cache_status="hit",
             concept_set=HEMOGLOBIN,
-            reason="known resolved lab",
+            reason="known mapped lab",
         ),
         SurfaceWorkItem(
             surface="blood pressure",
@@ -170,20 +171,41 @@ def test_resolved_surface_regression_gate_flags_watched_unmapped_surface() -> No
             count=5,
             status="ambiguous",
             cache_status="hit",
-            reason="not a resolved mapping",
+            reason="not a mapped surface",
         ),
     ]
 
-    regressions = find_resolved_surface_regressions(diagnostics, watchlist, min_count=2)
+    regressions = find_mapped_surface_regressions(diagnostics, watchlist, min_count=2)
 
     assert len(regressions) == 1
     assert regressions[0].surface == "hemoglobin"
     assert regressions[0].count == 3
 
 
-def test_resolved_surface_regression_gate_respects_min_count() -> None:
+def test_mapped_surface_regression_gate_respects_min_count() -> None:
     diagnostics = _diagnostics(
         SurfaceCount(kind="measurement_threshold", surface="hemoglobin", count=1)
+    )
+    watchlist = [
+        SurfaceWorkItem(
+            surface="hemoglobin",
+            criterion_kind="measurement_threshold",
+            resolver_kind="lab",
+            count=10,
+            status="mapped",
+            cache_status="hit",
+            concept_set=HEMOGLOBIN,
+            reason="known mapped lab",
+        )
+    ]
+
+    assert find_mapped_surface_regressions(diagnostics, watchlist, min_count=2) == []
+    assert "No mapped" in render_surface_regressions([])
+
+
+def test_resolved_surface_regression_gate_accepts_legacy_watchlist_status() -> None:
+    diagnostics = _diagnostics(
+        SurfaceCount(kind="measurement_threshold", surface="hemoglobin", count=3)
     )
     watchlist = [
         SurfaceWorkItem(
@@ -194,9 +216,8 @@ def test_resolved_surface_regression_gate_respects_min_count() -> None:
             status="resolved",
             cache_status="hit",
             concept_set=HEMOGLOBIN,
-            reason="known resolved lab",
+            reason="legacy resolved lab",
         )
     ]
 
-    assert find_resolved_surface_regressions(diagnostics, watchlist, min_count=2) == []
-    assert "No resolved" in render_surface_regressions([])
+    assert find_resolved_surface_regressions(diagnostics, watchlist, min_count=2)

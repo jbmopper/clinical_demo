@@ -106,6 +106,7 @@ class StoredRxNormConcepts(BaseModel):
 
 SurfaceResolutionKind = Literal["condition", "lab", "medication"]
 SurfaceResolutionStatus = Literal[
+    "mapped",
     "resolved",
     "ambiguous",
     "true_miss",
@@ -121,7 +122,7 @@ class SurfaceResolutionCandidate(BaseModel):
     This is intentionally source-agnostic: a candidate can come from a
     local high-confidence table, RxNorm search, eventual UMLS/LOINC
     search, or an LLM-assisted adjudicator. Recording candidates even
-    when the final status is not `resolved` gives us something useful
+    when the final status is not `mapped` gives us something useful
     to audit instead of another opaque `unmapped_concept`.
     """
 
@@ -138,7 +139,7 @@ class SurfaceResolution(BaseModel):
 
     Unlike VSAC/RxNorm source caches, this is a *front-door* cache:
     key by the user's extracted surface text and remember whether we
-    resolved it, found a true miss, found ambiguity, or recognized a
+    mapped it, found a true miss, found ambiguity, or recognized a
     composite we cannot safely collapse yet.
     """
 
@@ -336,6 +337,10 @@ def cache_path_for_surface_resolution(
     return root / f"surface.{kind}.{_surface_query_tag(surface)}.{fp}.json"
 
 
+LEGACY_SURFACE_RESOLUTION_SCHEMA_FINGERPRINTS = ("e141fea2",)
+"""Schema fingerprints that may contain legacy `status="resolved"` rows."""
+
+
 # ---------- main entry point ----------
 
 
@@ -504,11 +509,19 @@ class TerminologyCache:
         surface: str,
     ) -> SurfaceResolution | None:
         """Return the cached open surface-form decision, or None on miss."""
-        path = cache_path_for_surface_resolution(kind, surface, self._root)
-        if not path.exists():
-            return None
-        stored = StoredSurfaceResolution.model_validate_json(path.read_text())
-        return stored.resolution
+        paths = [
+            cache_path_for_surface_resolution(kind, surface, self._root),
+            *(
+                cache_path_for_surface_resolution(kind, surface, self._root, schema_fp=fp)
+                for fp in LEGACY_SURFACE_RESOLUTION_SCHEMA_FINGERPRINTS
+            ),
+        ]
+        for path in paths:
+            if not path.exists():
+                continue
+            stored = StoredSurfaceResolution.model_validate_json(path.read_text())
+            return stored.resolution
+        return None
 
     def put_surface_resolution(self, resolution: SurfaceResolution) -> Path:
         """Persist an open surface-form decision and return the path."""
@@ -529,6 +542,7 @@ class TerminologyCache:
 
 
 __all__ = [
+    "LEGACY_SURFACE_RESOLUTION_SCHEMA_FINGERPRINTS",
     "StoredRxNormConcepts",
     "StoredSurfaceResolution",
     "StoredVSACExpansion",

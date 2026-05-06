@@ -57,11 +57,13 @@ import httpx
 from clinical_demo.profile import ConceptSet
 from clinical_demo.profile.concept_sets import (
     BMI,
+    C_PEPTIDE,
     DIASTOLIC_BP,
     HEMOGLOBIN,
     HYPERTENSION,
     PLATELET_COUNT,
     SYSTOLIC_BP,
+    T1DM,
 )
 from clinical_demo.settings import Settings, get_settings
 from clinical_demo.terminology.bindings import (
@@ -106,7 +108,7 @@ LOINC_SYSTEM_URI = "http://loinc.org"
 # prefixes) that index concepts like "Hemoglobin" but are NOT the
 # codes patient observations carry. Synthea's lab Observations are
 # coded against numeric LOINC test codes only, so Parts would
-# produce resolved-but-unmatchable ConceptSets. Filter them out.
+# produce mapped-but-unmatchable ConceptSets. Filter them out.
 _LOINC_NUMERIC_CODE = re.compile(r"^\d+-\d+$")
 
 # Composite delimiters. A surface that contains any of these cannot
@@ -128,6 +130,22 @@ def _looks_composite(surface: str) -> bool:
 
 
 _OPEN_CONDITION_ALIASES: dict[str, tuple[ConceptSet, str]] = {
+    "type 1 diabetes": (
+        T1DM,
+        "High-confidence SNOMED mapping for type 1 diabetes mellitus.",
+    ),
+    "type 1 diabetes mellitus": (
+        T1DM,
+        "High-confidence SNOMED mapping for type 1 diabetes mellitus.",
+    ),
+    "t1d": (
+        T1DM,
+        "High-confidence SNOMED mapping for type 1 diabetes mellitus.",
+    ),
+    "t1d diagnosis": (
+        T1DM,
+        "Diagnosis-qualified T1D surface collapsed to the type 1 diabetes concept.",
+    ),
     "uncontrolled hypertension": (
         HYPERTENSION,
         "Qualifier-bearing hypertension surface collapsed to the hypertension concept.",
@@ -135,6 +153,10 @@ _OPEN_CONDITION_ALIASES: dict[str, tuple[ConceptSet, str]] = {
     "poorly controlled hypertension": (
         HYPERTENSION,
         "Qualifier-bearing hypertension surface collapsed to the hypertension concept.",
+    ),
+    "mild to moderate hypertension": (
+        HYPERTENSION,
+        "Severity-qualified hypertension surface collapsed to the hypertension concept.",
     ),
 }
 
@@ -155,6 +177,16 @@ _OPEN_LAB_ALIASES: dict[str, tuple[ConceptSet, str]] = {
     "platelets": (
         PLATELET_COUNT,
         "High-confidence LOINC mapping for platelet count in blood.",
+    ),
+    "c-peptide": (C_PEPTIDE, "High-confidence LOINC mapping for C-peptide in serum/plasma."),
+    "c peptide": (C_PEPTIDE, "High-confidence LOINC mapping for C-peptide in serum/plasma."),
+    "c-peptide concentrations": (
+        C_PEPTIDE,
+        "Concentration-qualified C-peptide surface collapsed to the C-peptide lab concept.",
+    ),
+    "c peptide concentrations": (
+        C_PEPTIDE,
+        "Concentration-qualified C-peptide surface collapsed to the C-peptide lab concept.",
     ),
 }
 
@@ -347,6 +379,9 @@ class TerminologyResolver:
     # one-line delegation.
 
     def resolve_condition(self, surface: str) -> ConceptSet | None:
+        if _normalize_surface(surface) in _OPEN_CONDITION_ALIASES:
+            return self._resolve_open_condition(surface)
+
         cache_hit, cached = self._cached_surface_resolution("condition", surface)
         if cache_hit:
             return cached
@@ -367,6 +402,10 @@ class TerminologyResolver:
         return self._resolve_open_condition(surface)
 
     def resolve_lab(self, surface: str) -> ConceptSet | None:
+        normalized = _normalize_surface(surface)
+        if normalized in _OPEN_LAB_ALIASES or normalized in _OPEN_AMBIGUOUS_LABS:
+            return self._resolve_open_lab(surface)
+
         cache_hit, cached = self._cached_surface_resolution("lab", surface)
         if cache_hit:
             return cached
@@ -413,9 +452,9 @@ class TerminologyResolver:
         kind: SurfaceResolutionKind,
         surface: str,
     ) -> tuple[bool, ConceptSet | None]:
-        """Return cached open-surface result when current and resolved.
+        """Return cached open-surface result when current and mapped.
 
-        Non-resolved current entries are also useful: returning None
+        Non-mapped current entries are also useful: returning None
         here skips repeated network calls for known ambiguous or
         composite inputs, while still letting the matcher emit its
         existing honest `unmapped_concept` verdict downstream.
@@ -434,7 +473,7 @@ class TerminologyResolver:
             return False, None
         if cached.resolver_version != OPEN_SURFACE_RESOLVER_VERSION:
             return False, None
-        if cached.status == "resolved":
+        if cached.status in {"mapped", "resolved"}:
             return True, cached.concept_set
         return True, None
 
@@ -454,7 +493,7 @@ class TerminologyResolver:
             kind=kind,
             surface=surface,
             normalized_surface=_normalize_surface(surface),
-            status="resolved",
+            status="mapped",
             concept_set=concept_set,
             candidates=candidates,
             reason=reason,
@@ -558,7 +597,7 @@ class TerminologyResolver:
             # component Parts (`LP*`/`MTHU*`), not on the numeric
             # test codes (`718-7`) that patient observations carry.
             # `exact` over LNC therefore returns Parts only --
-            # resolved-but-unmatchable. `words` returns numeric test
+            # mapped-but-unmatchable. `words` returns numeric test
             # codes mixed with Parts, and the downstream Parts
             # filter keeps only the codes the matcher can actually
             # compare against the patient.
@@ -590,7 +629,7 @@ class TerminologyResolver:
            existing `unmapped_concept` branch absorbs this the same
            way it absorbs an alias miss today.
         3. Otherwise call UMLS with `searchType=exact` against the
-           requested source vocabulary. Hits -> `resolved` with the
+           requested source vocabulary. Hits -> `mapped` with the
            unioned code set cached. Zero hits -> `true_miss` cached
            so repeat runs skip the network.
         4. On transport or parse error, soft-fail to `None` and do

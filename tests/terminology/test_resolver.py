@@ -26,6 +26,7 @@ from clinical_demo.terminology import (
     RxNormBinding,
     RxNormClient,
     RxNormConcepts,
+    SurfaceResolution,
     TerminologyCache,
     TerminologyResolver,
     VSACBinding,
@@ -334,8 +335,50 @@ def test_resolve_condition_open_alias_maps_and_caches_qualified_hypertension(
     assert "38341003" in out.codes
     cached = cache.get_surface_resolution("condition", "Uncontrolled Hypertension")
     assert cached is not None
-    assert cached.status == "resolved"
+    assert cached.status == "mapped"
     assert cached.concept_set == out
+
+
+def test_resolve_condition_open_alias_maps_t1d_and_hypertension_qualifiers(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, vsac_client=None)
+
+    t1d = resolver.resolve_condition("T1D diagnosis")
+    mild_hypertension = resolver.resolve_condition("mild to moderate hypertension")
+
+    assert t1d is not None
+    assert t1d.codes == frozenset({"46635009"})
+    assert mild_hypertension is not None
+    assert "38341003" in mild_hypertension.codes
+
+
+def test_resolve_condition_open_alias_overrides_stale_true_miss_cache(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    cache.put_surface_resolution(
+        SurfaceResolution(
+            kind="condition",
+            surface="type 1 diabetes",
+            normalized_surface="type 1 diabetes",
+            status="true_miss",
+            concept_set=None,
+            candidates=[],
+            reason="stale pre-alias miss",
+            resolver_version="open-surface-v0.2",
+        )
+    )
+    resolver = TerminologyResolver(cache, vsac_client=None)
+
+    out = resolver.resolve_condition("type 1 diabetes")
+
+    assert out is not None
+    assert out.codes == frozenset({"46635009"})
+    cached = cache.get_surface_resolution("condition", "type 1 diabetes")
+    assert cached is not None
+    assert cached.status == "mapped"
 
 
 def test_resolve_lab_soft_fails_when_cache_empty_and_no_client(
@@ -360,14 +403,42 @@ def test_resolve_lab_open_alias_maps_high_frequency_synthea_observations(
     bmi = resolver.resolve_lab("body mass index")
     hemoglobin = resolver.resolve_lab("hemoglobin")
     platelet_count = resolver.resolve_lab("platelet count")
+    c_peptide = resolver.resolve_lab("C-peptide concentrations")
 
     assert bmi is not None
     assert hemoglobin is not None
     assert platelet_count is not None
+    assert c_peptide is not None
     assert bmi.codes == frozenset({"39156-5"})
     assert hemoglobin.codes == frozenset({"718-7"})
     assert platelet_count.codes == frozenset({"777-3"})
+    assert c_peptide.codes == frozenset({"1986-9"})
     assert cache_path_for_surface_resolution("lab", "hemoglobin", tmp_path).exists()
+
+
+def test_resolve_lab_open_alias_overrides_stale_true_miss_cache(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    cache.put_surface_resolution(
+        SurfaceResolution(
+            kind="lab",
+            surface="C-peptide concentrations",
+            normalized_surface="c-peptide concentrations",
+            status="true_miss",
+            concept_set=None,
+            candidates=[],
+            reason="stale pre-alias miss",
+            resolver_version="open-surface-v0.2",
+        )
+    )
+    resolver = TerminologyResolver(cache, vsac_client=None)
+
+    out = resolver.resolve_lab("C-peptide concentrations")
+
+    assert out is not None
+    assert out.codes == frozenset({"1986-9"})
+    cached = cache.get_surface_resolution("lab", "C-peptide concentrations")
+    assert cached is not None
+    assert cached.status == "mapped"
 
 
 def test_resolve_lab_open_alias_returns_cached_without_reconsulting_tables(
@@ -430,7 +501,7 @@ def test_resolve_medication_open_rxnorm_searches_any_surface_and_caches(
     assert cache_path_for_rxnorm("Glucophage", tmp_path).exists()
     cached = cache.get_surface_resolution("medication", "glucophage")
     assert cached is not None
-    assert cached.status == "resolved"
+    assert cached.status == "mapped"
 
 
 def test_resolve_medication_open_rxnorm_caches_true_miss(tmp_path: Path) -> None:
@@ -494,9 +565,9 @@ def _umls_empty_body() -> bytes:
     return json.dumps({"result": {"results": [{"ui": "NONE", "name": "NO RESULTS"}]}}).encode()
 
 
-def test_resolve_open_condition_uses_umls_search_and_caches_resolved(tmp_path: Path) -> None:
+def test_resolve_open_condition_uses_umls_search_and_caches_mapped(tmp_path: Path) -> None:
     """Surface not in the alias table + UMLS exact-match returns hits
-    -> resolved ConceptSet cached under the open-surface fingerprint.
+    -> mapped ConceptSet cached under the open-surface fingerprint.
     This is the whole point of D-73: the system must actually look
     things up, not declare them unmapped because they're not in a
     hand-coded dict."""
@@ -518,7 +589,7 @@ def test_resolve_open_condition_uses_umls_search_and_caches_resolved(tmp_path: P
     assert len(captured) == 1
     cached = cache.get_surface_resolution("condition", "asthma")
     assert cached is not None
-    assert cached.status == "resolved"
+    assert cached.status == "mapped"
     assert cached.resolver_version.startswith("open-surface-v")
     # Candidate metadata carries UMLS atom names for auditability.
     assert {c.name for c in cached.candidates} >= {"Asthma"}
@@ -615,7 +686,7 @@ def test_resolve_open_lab_filters_out_loinc_component_parts(tmp_path: Path) -> N
     """UMLS `words` search over LNC returns both numeric LOINC test
     codes (`777-3`, `718-7`, ...) and LOINC Parts (`LP*`, `LA*`,
     `MTHU*`). Parts are component atoms, not observations a patient
-    can carry. Drop them so a resolved ConceptSet is actually
+    can carry. Drop them so a mapped ConceptSet is actually
     matchable against `PatientProfile.observations`."""
     cache = TerminologyCache(tmp_path)
     body = _loinc_body(
@@ -668,7 +739,7 @@ def test_resolve_open_lab_ambiguous_alias_still_wins_over_umls(tmp_path: Path) -
 
 
 def test_resolve_open_condition_skips_umls_on_repeat_resolved_hit(tmp_path: Path) -> None:
-    """After the first resolved cache write, repeat calls must not
+    """After the first mapped cache write, repeat calls must not
     re-query UMLS. This is the cost-control property: eval re-runs
     converge on cache-only traffic."""
     cache = TerminologyCache(tmp_path)

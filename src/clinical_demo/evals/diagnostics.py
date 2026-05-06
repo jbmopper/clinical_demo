@@ -5,7 +5,7 @@ summary and the layer-1 structured-field report. It answers:
 
 - Did `unmapped_concept` move relative to the D-68 baseline?
 - Which failure modes dominate now?
-- Did registered terminology bindings actually resolve, or did they
+- Did registered terminology bindings actually map, or did they
   still fall through to `unmapped_concept`?
 - Did the structured-field layer-1 numbers move?
 
@@ -107,7 +107,7 @@ def build_diagnostics(run: RunResult, *, top_n: int = 20) -> EvalDiagnostics:
                     binding_by_kind[binding_kind]["unmapped"] += 1
                 else:
                     binding_registered_resolved += 1
-                    binding_by_kind[binding_kind]["resolved"] += 1
+                    binding_by_kind[binding_kind]["mapped"] += 1
 
     unmapped_count = reason_counts.get("unmapped_concept", 0)
     indeterminate_count = verdict_counts.get("indeterminate", 0)
@@ -214,14 +214,14 @@ def render_diagnostics(
         lines.append("  registered terminology surfaces:")
         lines.append(f"    total criteria: {current.binding_registered_total}")
         lines.append(
-            f"    resolved:       {current.binding_registered_resolved} "
+            f"    mapped:         {current.binding_registered_resolved} "
             f"({_pct(_rate(current.binding_registered_resolved, current.binding_registered_total))})"
         )
         lines.append(f"    still unmapped: {current.binding_registered_unmapped}")
         for kind, counts in sorted(current.binding_registered_by_kind.items()):
-            resolved = counts.get("resolved", 0)
+            mapped = counts.get("mapped", 0) + counts.get("resolved", 0)
             unmapped = counts.get("unmapped", 0)
-            lines.append(f"    {kind:<12} resolved={resolved:<4} unmapped={unmapped:<4}")
+            lines.append(f"    {kind:<12} mapped={mapped:<4} unmapped={unmapped:<4}")
     else:
         lines.append("")
         lines.append("  registered terminology surfaces: none observed in this run")

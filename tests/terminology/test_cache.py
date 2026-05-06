@@ -89,7 +89,7 @@ def _make_surface_resolution(*, surface: str = "body mass index") -> SurfaceReso
         kind="lab",
         surface=surface,
         normalized_surface=surface,
-        status="resolved",
+        status="mapped",
         concept_set=concept_set,
         candidates=[
             SurfaceResolutionCandidate(
@@ -423,6 +423,31 @@ def test_surface_resolution_round_trips(tmp_path: Path) -> None:
     assert loaded is not None
     assert loaded.concept_set is not None
     assert loaded.concept_set.codes == frozenset({"39156-5"})
+
+
+def test_surface_resolution_reads_legacy_resolved_fingerprint(tmp_path: Path) -> None:
+    """Compatibility for cache rows written before `resolved` was renamed to `mapped`."""
+    cache = TerminologyCache(tmp_path)
+    legacy = _make_surface_resolution()
+    legacy.status = "resolved"
+    legacy_path = cache_path_for_surface_resolution(
+        "lab",
+        "body mass index",
+        tmp_path,
+        schema_fp="e141fea2",
+    )
+    legacy_path.parent.mkdir(parents=True, exist_ok=True)
+    envelope = StoredSurfaceResolution(
+        resolution=legacy,
+        cached_at="2026-05-05T00:00:00+00:00",
+    )
+    legacy_path.write_text(envelope.model_dump_json())
+
+    loaded = cache.get_surface_resolution("lab", "body mass index")
+
+    assert loaded is not None
+    assert loaded.status == "resolved"
+    assert loaded.concept_set == legacy.concept_set
 
 
 def test_surface_resolution_envelope_fingerprint_is_stable_and_short() -> None:

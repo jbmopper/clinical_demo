@@ -83,7 +83,21 @@
   now fails if a surface preserved in a legacy `status=resolved` watchlist
   reappears in a run's `top_unmapped_surfaces`; the first watchlist
   lives at `eval/baselines/2026-05-05/resolved_surface_watchlist.json`.
-- **Last completed:** Coming-week calibration/reporting slice 1 —
+- **Last completed:** PLAN task 2.20 first slice —
+  **mapping expansion + `mapped` terminology language.** Renamed work-queue,
+  regression-gate, and diagnostic report language from `resolved` to `mapped`
+  while keeping legacy `status=resolved` watchlists and old surface-cache
+  fingerprints readable. Added high-confidence mappings for type 1 diabetes
+  / T1D diagnosis, C-peptide concentrations, and qualified hypertension
+  surfaces such as "mild to moderate hypertension." Curated local mappings now
+  override stale `true_miss` cache rows so adding a mapping case actually
+  repairs old misses. `scripts/check_terminology_regressions.py` now accepts
+  `--mapped-work-queue` and keeps `--resolved-work-queue` as a deprecated
+  alias. Verification: `uv run pytest` 671/671, targeted terminology /
+  diagnostics tests 86/86, targeted ruff clean, targeted format check clean,
+  targeted mypy clean, both mapped and legacy regression-gate CLI invocations
+  clean, and `git diff --check` clean.
+  Previous: Coming-week calibration/reporting slice 1 —
   **patient-evidence report + local TrialGPT/TREC scaffold.** After merging
   PR #2/#3/#4 into `main`, added a patient-evidence eval report that compares
   one or more persisted runs against
@@ -728,23 +742,20 @@
   baseline regression with indeterminacy diagnostic): layer-1
   agreement 81.0%, coverage 55.3%, 89% of all indeterminates are
   `unmapped_concept`. Snapshots in `eval/baselines/2026-04-21/`.
-- **Next:** Do not treat labeling as sacred if the rows are just proving known
-  plumbing failures. The next implementation stack is: (1) add more mapping
-  cases and rename the terminology success state from `resolved` to `mapped`;
-  (2) add the criterion fixing layer for splittable composites, surface
-  normalization, unit/polarity repair, and candidate mapping review; (3) bring
-  note/free-text patient-evidence LLM v0 into the normal path with cited
+- **Next:** PLAN task 2.21 — add the criterion fixing layer for splittable
+  composites, surface normalization, unit/polarity repair, and candidate
+  mapping review. It should preserve original criterion text, attach mapping
+  provenance, and route unsafe fixes to `human_review_required` instead of
+  generic `unmapped_concept`. After that, bring note/free-text patient-evidence
+  LLM v0 into the normal path with cited
   `DocumentReference.content.attachment.data` snippets and hand-crafted note
-  fixtures; (4) then fill/refresh the patient-evidence labels against the
-  improved system. Target 60/60 labels; the minimum useful gate is 40 labels
-  with `expected_matcher_verdict`. Do not make cost/quality claims from a full
-  bounded rerun until that gate passes, but do run small bounded/note smokes as
-  soon as citations and telemetry are present.
-- **Gates at HEAD:** `uv run pytest` 666/666; `uv run ruff check .` clean;
-  `uv run ruff format --check .` clean; targeted mypy clean; generated
-  benchmark JSON validates; terminology regression gate clean; `git diff --check`
-  clean.
-- **Branch:** `main`.
+  fixtures, then fill/refresh the patient-evidence labels against the improved
+  system.
+- **Gates at HEAD:** `uv run pytest` 671/671; targeted terminology /
+  diagnostics tests 86/86; targeted ruff clean; targeted format check clean;
+  targeted mypy clean; mapped + legacy terminology regression gate clean;
+  `git diff --check` clean.
+- **Branch:** `codex/mapped-terminology-expansion`.
 
 ### Non-trivial open follow-ups
 

@@ -37,6 +37,12 @@ T2DM = ConceptSet(
     ),
 )
 
+T1DM = ConceptSet(
+    name="Type 1 diabetes mellitus",
+    system=SNOMED,
+    codes=frozenset({"46635009"}),  # Diabetes mellitus type 1
+)
+
 PREDIABETES = ConceptSet(
     name="Prediabetes",
     system=SNOMED,
@@ -120,6 +126,12 @@ PLATELET_COUNT = ConceptSet(
     codes=frozenset({"777-3"}),
 )
 
+C_PEPTIDE = ConceptSet(
+    name="C-peptide",
+    system=LOINC,
+    codes=frozenset({"1986-9"}),
+)
+
 SYSTOLIC_BP = ConceptSet(
     name="Systolic blood pressure",
     system=LOINC,
@@ -135,6 +147,7 @@ DIASTOLIC_BP = ConceptSet(
 __all__ = [
     "BMI",
     "CHRONIC_KIDNEY_DISEASE",
+    "C_PEPTIDE",
     "DIASTOLIC_BP",
     "EGFR",
     "HBA1C",
@@ -145,5 +158,6 @@ __all__ = [
     "PLATELET_COUNT",
     "PREDIABETES",
     "SYSTOLIC_BP",
+    "T1DM",
     "T2DM",
 ]

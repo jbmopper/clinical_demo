@@ -32,6 +32,7 @@ from clinical_demo.terminology.resolver import (
 )
 
 WorkQueueStatus = Literal[
+    "mapped",
     "resolved",
     "ambiguous",
     "true_miss",
@@ -57,7 +58,7 @@ class SurfaceWorkItem(BaseModel):
 
 
 class SurfaceRegression(BaseModel):
-    """A surface previously classified as resolved but now unmapped."""
+    """A surface previously classified as mapped but now unmapped."""
 
     surface: str
     criterion_kind: str
@@ -112,23 +113,24 @@ def load_surface_work_queue(path: Path | str) -> list[SurfaceWorkItem]:
     return [SurfaceWorkItem.model_validate(item) for item in raw]
 
 
-def find_resolved_surface_regressions(
+def find_mapped_surface_regressions(
     diagnostics: EvalDiagnostics,
-    resolved_items: list[SurfaceWorkItem],
+    mapped_items: list[SurfaceWorkItem],
     *,
     min_count: int = 1,
 ) -> list[SurfaceRegression]:
-    """Find watched resolved surfaces that regressed to unmapped.
+    """Find watched mapped surfaces that regressed to unmapped.
 
-    `resolved_items` is intentionally just the same JSON shape emitted by
+    `mapped_items` is intentionally just the same JSON shape emitted by
     `warm_terminology_surfaces.py`; a team can either preserve a prior
-    work-queue output or maintain a tiny resolved-surface watchlist by hand.
+    work-queue output or maintain a tiny mapped-surface watchlist by hand.
+    Legacy `status="resolved"` rows are still watched.
     """
 
     watched = {
         (item.criterion_kind, item.surface): item
-        for item in resolved_items
-        if item.status == "resolved"
+        for item in mapped_items
+        if item.status in {"mapped", "resolved"}
     }
     regressions: list[SurfaceRegression] = []
     for surface in diagnostics.top_unmapped_surfaces:
@@ -149,17 +151,28 @@ def find_resolved_surface_regressions(
     return regressions
 
 
+def find_resolved_surface_regressions(
+    diagnostics: EvalDiagnostics,
+    resolved_items: list[SurfaceWorkItem],
+    *,
+    min_count: int = 1,
+) -> list[SurfaceRegression]:
+    """Backward-compatible alias for legacy callers."""
+
+    return find_mapped_surface_regressions(diagnostics, resolved_items, min_count=min_count)
+
+
 def render_surface_regressions(regressions: list[SurfaceRegression]) -> str:
     if not regressions:
-        return "No resolved terminology surface regressions.\n"
-    lines = ["Resolved terminology surfaces regressed to unmapped:"]
+        return "No mapped terminology surface regressions.\n"
+    lines = ["Mapped terminology surfaces regressed to unmapped:"]
     for item in regressions:
         lines.append(
             f"  {item.count:>3}  {item.criterion_kind:<24} {item.surface} "
             f"(threshold={item.threshold})"
         )
         if item.reason:
-            lines.append(f"       prior resolution: {item.reason}")
+            lines.append(f"       prior mapping: {item.reason}")
     return "\n".join(lines) + "\n"
 
 
@@ -185,7 +198,7 @@ def _classify_surface(
     # surfaces (life expectancy, ECOG performance status) do have
     # UMLS/LOINC hits, but those hits are not usefully matchable
     # against Synthea patients -- the correct triage label is
-    # `extractor_bug` / `out_of_scope`, not a resolved ConceptSet
+    # `extractor_bug` / `out_of_scope`, not a mapped ConceptSet
     # that the matcher will silently fail against. Apply the manual
     # classification first; let the resolver run only if no manual
     # override exists for this surface.
@@ -214,7 +227,7 @@ def _classify_surface(
             criterion_kind=item.kind,
             resolver_kind=resolver_kind,
             count=item.count,
-            status="resolved",
+            status="mapped",
             cache_status="hit" if before is not None else "written",
             concept_set=concept_set,
             candidates=after.candidates if after else [],
@@ -228,7 +241,7 @@ def _classify_surface(
             criterion_kind=item.kind,
             resolver_kind=resolver_kind,
             count=item.count,
-            status=current.status,
+            status=_work_queue_status(current.status),
             cache_status="hit" if before is not None else "written",
             candidates=current.candidates,
             reason=current.reason,
@@ -291,6 +304,12 @@ def _resolver_kind(criterion_kind: str) -> SurfaceResolutionKind | None:
     return None
 
 
+def _work_queue_status(status: SurfaceResolutionStatus) -> WorkQueueStatus:
+    if status == "resolved":
+        return "mapped"
+    return status
+
+
 def _resolve(
     resolver: TerminologyResolver,
     kind: SurfaceResolutionKind,
@@ -337,6 +356,11 @@ def _manual_nonresolved(item: SurfaceCount) -> tuple[SurfaceResolutionStatus, st
             "out_of_scope",
             "Functional-status observations such as ECOG are not present in the current Synthea profile.",
         )
+    if item.kind == "temporal_window":
+        return (
+            "composite_unhandled",
+            "Temporal-window event needs event extraction/review before terminology mapping.",
+        )
     return None
 
 
@@ -364,6 +388,7 @@ __all__ = [
     "SurfaceRegression",
     "SurfaceWorkItem",
     "build_surface_work_queue",
+    "find_mapped_surface_regressions",
     "find_resolved_surface_regressions",
     "load_surface_work_queue",
     "render_surface_regressions",

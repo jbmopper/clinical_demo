@@ -85,7 +85,7 @@ def test_build_diagnostics_tracks_registered_binding_resolution() -> None:
     assert report.binding_registered_resolved == 1
     assert report.binding_registered_unmapped == 1
     assert report.binding_registered_by_kind == {
-        "condition": {"resolved": 1},
+        "condition": {"mapped": 1},
         "medication": {"unmapped": 1},
     }
 
