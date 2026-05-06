@@ -17,8 +17,9 @@ What "deterministic" means here
 
 What v0 does NOT cover (deliberate)
 -----------------------------------
-- Compound criteria (AND/OR within one criterion) — the extractor
-  splits these where it can; what remains lands as `free_text`.
+- Nested compound criteria. Flat native `any_of` / `all_of` groups
+  are handled when the extractor/fixer emits `composite_groups`;
+  anything more complex still lands as `free_text`.
 - Hypothetical mood (planned events) — no patient-side data exists
   on planned events, so we return `indeterminate (unsupported_mood)`.
 - Medications — the v0 concept lookup table is empty for meds (see
@@ -40,6 +41,7 @@ from ..domain.trial import Trial
 from ..evals.seed import parse_age_years
 from ..extractor.schema import (
     AgeCriterion,
+    CompositeCriterionGroup,
     ConditionCriterion,
     CriterionKind,
     ExtractedCriterion,
@@ -51,6 +53,7 @@ from ..extractor.schema import (
 )
 from ..profile import PatientProfile, ThresholdResult
 from ..profile.profile import ConceptSet, ThresholdOp
+from .composite import roll_up_composite_verdict
 from .concept_lookup import lookup_condition, lookup_lab, lookup_medication
 from .modes import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode
 from .verdict import (
@@ -66,9 +69,15 @@ from .verdict import (
     VerdictReason,
 )
 
-MATCHER_VERSION = "matcher-v0.2"
+MATCHER_VERSION = "matcher-v0.3"
 """Bumped on any change that could shift verdicts on the eval set.
 Recorded on every `MatchVerdict` for run attribution.
+
+v0.3: flat native composite groups (`any_of` / `all_of`) are matched
+as raw subcheck predicates, rolled up under the group operator, and
+then polarized once at the parent criterion. This prevents OR bundles
+from being treated as independent top-level AND criteria and preserves
+correct exclusion semantics.
 
 v0.2 (PLAN 2.19): the matcher now consumes
 `matcher_assumption_mode`. Default `open_world` correctly returns
@@ -128,39 +137,12 @@ def match_criterion(
     trial's score; the bad criterion stays visible in the verdict
     list so reviewers can see exactly which one the extractor fumbled.
     """
-    if criterion.mood == "hypothetical":
-        return _build(
-            criterion,
-            verdict="indeterminate",
-            reason="unsupported_mood",
-            rationale=(
-                "Criterion is hypothetical (planned/expected); v0 has no "
-                "patient-side data on planned events."
-            ),
-            evidence=[],
-            assumption=matcher_assumption_mode,
-            evidence_under_assumption=False,
-        )
-
-    try:
-        raw, reason, rationale, evidence, under_assumption = _dispatch(
-            criterion, profile, trial, matcher_assumption_mode
-        )
-    except _ExtractorInvariantViolation as exc:
-        return _build(
-            criterion,
-            verdict="indeterminate",
-            reason="extractor_invariant_violation",
-            rationale=str(exc),
-            evidence=[
-                MissingEvidence(
-                    looked_for=f"non-null {exc.slot_name!r} payload (kind={criterion.kind!r})",
-                    note="extractor returned a discriminator/payload mismatch",
-                )
-            ],
-            assumption=matcher_assumption_mode,
-            evidence_under_assumption=False,
-        )
+    raw, reason, rationale, evidence, under_assumption = _match_raw(
+        criterion,
+        profile,
+        trial,
+        matcher_assumption_mode=matcher_assumption_mode,
+    )
     final = _apply_polarity(raw, criterion.polarity, criterion.negated)
     return _build(
         criterion,
@@ -178,13 +160,138 @@ def match_extracted(
     profile: PatientProfile,
     trial: Trial,
     *,
+    composite_groups: list[CompositeCriterionGroup] | None = None,
     matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
 ) -> list[MatchVerdict]:
     """Convenience: run `match_criterion` over a whole extraction."""
-    return [
-        match_criterion(c, profile, trial, matcher_assumption_mode=matcher_assumption_mode)
-        for c in criteria
+    groups_by_parent = _groups_by_parent_index(composite_groups or [], criteria)
+    verdicts: list[MatchVerdict] = []
+    for index, criterion in enumerate(criteria):
+        group = groups_by_parent.get(index)
+        if group is not None:
+            verdicts.append(
+                match_composite_group(
+                    group,
+                    parent=criterion,
+                    profile=profile,
+                    trial=trial,
+                    matcher_assumption_mode=matcher_assumption_mode,
+                )
+            )
+            continue
+        verdicts.append(
+            match_criterion(
+                criterion,
+                profile,
+                trial,
+                matcher_assumption_mode=matcher_assumption_mode,
+            )
+        )
+    return verdicts
+
+
+def match_composite_group(
+    group: CompositeCriterionGroup,
+    *,
+    parent: ExtractedCriterion,
+    profile: PatientProfile,
+    trial: Trial,
+    matcher_assumption_mode: MatcherAssumptionMode = DEFAULT_MATCHER_ASSUMPTION_MODE,
+) -> MatchVerdict:
+    """Match subchecks under a native composite group, then polarize once.
+
+    Subchecks are evaluated as raw predicates and rolled up under the
+    group's boolean operator. Only after that do we apply the parent
+    criterion's polarity/negation. This is essential for exclusion OR
+    bundles: rolling up already-polarized subcheck verdicts would turn
+    one absent exclusion branch into a misleading composite pass.
+    """
+
+    raw_results = [
+        _match_raw(
+            subcheck.criterion,
+            profile,
+            trial,
+            matcher_assumption_mode=matcher_assumption_mode,
+        )
+        for subcheck in group.subchecks
     ]
+    rollup = roll_up_composite_verdict(group.operator, [result[0] for result in raw_results])
+    final = _apply_polarity(rollup.verdict, parent.polarity, parent.negated)
+    evidence = [evidence for result in raw_results for evidence in result[3]]
+    return _build(
+        parent,
+        verdict=final,
+        reason=rollup.reason,
+        rationale=_composite_rationale(group, rollup.rationale, raw_results),
+        evidence=evidence,
+        assumption=matcher_assumption_mode,
+        evidence_under_assumption=any(result[4] for result in raw_results),
+    )
+
+
+def _match_raw(
+    criterion: ExtractedCriterion,
+    profile: PatientProfile,
+    trial: Trial,
+    *,
+    matcher_assumption_mode: MatcherAssumptionMode,
+) -> _HandlerResult:
+    if criterion.mood == "hypothetical":
+        return (
+            "indeterminate",
+            "unsupported_mood",
+            (
+                "Criterion is hypothetical (planned/expected); v0 has no "
+                "patient-side data on planned events."
+            ),
+            [],
+            False,
+        )
+
+    try:
+        return _dispatch(criterion, profile, trial, matcher_assumption_mode)
+    except _ExtractorInvariantViolation as exc:
+        return (
+            "indeterminate",
+            "extractor_invariant_violation",
+            str(exc),
+            [
+                MissingEvidence(
+                    looked_for=f"non-null {exc.slot_name!r} payload (kind={criterion.kind!r})",
+                    note="extractor returned a discriminator/payload mismatch",
+                )
+            ],
+            False,
+        )
+
+
+def _groups_by_parent_index(
+    groups: list[CompositeCriterionGroup],
+    criteria: list[ExtractedCriterion],
+) -> dict[int, CompositeCriterionGroup]:
+    by_index: dict[int, CompositeCriterionGroup] = {}
+    for group in groups:
+        index = group.parent_criterion_index
+        if index < 0 or index >= len(criteria):
+            continue
+        by_index.setdefault(index, group)
+    return by_index
+
+
+def _composite_rationale(
+    group: CompositeCriterionGroup,
+    rollup_rationale: str,
+    raw_results: list[_HandlerResult],
+) -> str:
+    subcheck_summaries = [
+        f"{subcheck.subcheck_id} raw={result[0]} reason={result[1]}"
+        for subcheck, result in zip(group.subchecks, raw_results, strict=False)
+    ]
+    return (
+        f"Composite {group.operator} group {group.group_id}: {rollup_rationale} "
+        f"Subchecks: {'; '.join(subcheck_summaries) or '(none)'}."
+    )
 
 
 # ---------- dispatch ----------
@@ -1062,6 +1169,7 @@ def _build(
 
 __all__ = [
     "MATCHER_VERSION",
+    "match_composite_group",
     "match_criterion",
     "match_extracted",
 ]

@@ -84,9 +84,15 @@ def fan_out_criteria(state: ScoringState) -> list[Send] | str:
         return ROLLUP_NODE
 
     criteria = extraction.extracted.criteria
+    composite_groups = {
+        group.parent_criterion_index: group
+        for group in extraction.extracted.composite_groups
+        if 0 <= group.parent_criterion_index < len(criteria)
+    }
     sends: list[Send] = []
     for index, criterion in enumerate(criteria):
-        node = route_by_kind(criterion)
+        composite_group = composite_groups.get(index)
+        node = DETERMINISTIC_NODE if composite_group is not None else route_by_kind(criterion)
         sends.append(
             Send(
                 node,
@@ -103,6 +109,7 @@ def fan_out_criteria(state: ScoringState) -> list[Send] | str:
                     "extraction": extraction,
                     "_criterion": criterion,
                     "_criterion_index": index,
+                    "_composite_group": composite_group,
                 },
             )
         )

@@ -66,9 +66,11 @@ legacy paths can still backfill the same shape from explicit punctuation:
 - Retrieval runs per subcheck, so reviewers can see evidence for “HbA1c threshold” separately from “fasting glucose threshold.”
 - Scoring retrieval now unions parent-criterion hits and composite-subcheck hits for `retrieval_only` and `bounded_adjudication`, tagging subcheck-derived rows with `composite:...` and `subcheck:...` reasons.
 
-This does **not** change deterministic matcher verdicts or the main scorer
-rollup yet. `match_extracted` still needs explicit composite-group wiring
-before `any_of` / `all_of` branches decide eligibility.
+The deterministic matcher now consumes flat native groups in both the imperative
+and LangGraph paths: subchecks are matched as raw predicates, the group is
+rolled up under `any_of` / `all_of`, then the parent criterion's polarity and
+negation are applied once. Nested groups and richer clinical event extraction
+remain future work.
 
 ---
 

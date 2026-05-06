@@ -1,8 +1,8 @@
 """Boolean rollup helpers for composite criteria.
 
-This module is deliberately not wired into `match_extracted` yet. It
-captures the truth table for future parent/subcheck matcher semantics
-without changing the existing top-level AND rollup.
+`match_extracted` uses these truth tables for flat native composite
+groups. The scorer still keeps the top-level criterion list as an AND:
+one parent composite row contributes one rolled-up verdict.
 """
 
 from __future__ import annotations

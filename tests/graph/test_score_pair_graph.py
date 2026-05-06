@@ -11,6 +11,8 @@ import pytest
 from pydantic import SecretStr
 
 from clinical_demo.extractor.schema import (
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
     ExtractedCriteria,
     ExtractionMetadata,
 )
@@ -38,8 +40,10 @@ from tests.matcher._fixtures import (
     crit_age,
     crit_condition,
     crit_free_text,
+    crit_measurement,
     crit_temporal_window,
     make_condition,
+    make_lab,
     make_patient,
     make_trial,
 )
@@ -54,9 +58,14 @@ def _settings() -> Settings:
     )
 
 
-def _extractor_stub(criteria: list) -> ExtractorStubClient:
+def _extractor_stub(
+    criteria: list,
+    *,
+    composite_groups: list[CompositeCriterionGroup] | None = None,
+) -> ExtractorStubClient:
     parsed = ExtractedCriteria(
         criteria=criteria,
+        composite_groups=composite_groups or [],
         metadata=ExtractionMetadata(notes="test"),
     )
     return ExtractorStubClient(_make_extractor_completion(parsed=parsed))
@@ -184,6 +193,38 @@ def test_score_pair_graph_applies_criterion_fixing_before_fanout() -> None:
 
     assert result.extraction.criteria[0].kind == "condition_present"
     assert result.verdicts[0].verdict == "pass"
+
+
+def test_score_pair_graph_matches_native_composite_parent_deterministically() -> None:
+    parent = crit_free_text()
+    subcheck = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")
+    group = CompositeCriterionGroup(
+        group_id="criterion:0:group:001",
+        operator="any_of",
+        parent_criterion_index=0,
+        parent_source_text=parent.source_text,
+        subchecks=[
+            CompositeCriterionSubcheck(
+                subcheck_id="criterion:0:group:001:subcheck:001",
+                operator="any_of",
+                source_text=subcheck.source_text,
+                criterion=subcheck,
+            )
+        ],
+    )
+
+    result = score_pair_graph(
+        make_patient(observations=[make_lab(value=7.2, unit="%")]),
+        make_trial(eligibility_text="HbA1c >= 6.5%"),
+        AS_OF,
+        extractor_client=_extractor_stub([parent], composite_groups=[group]),
+        llm_matcher_client=_llm_matcher_stub(verdict="fail", reason="ok"),
+        settings=_settings(),
+    )
+
+    assert result.verdicts[0].matcher_version == MATCHER_VERSION
+    assert result.verdicts[0].verdict == "pass"
+    assert "Composite any_of group" in result.verdicts[0].rationale
 
 
 # ---------- pre-supplied extraction ----------

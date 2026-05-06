@@ -20,6 +20,8 @@ from clinical_demo.adjudication import PatientEvidenceAdjudicatorOutput
 from clinical_demo.domain import ClinicalNote
 from clinical_demo.extractor.extractor import ExtractionResult
 from clinical_demo.extractor.schema import (
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
     ExtractedCriteria,
     ExtractedCriterion,
     ExtractionMetadata,
@@ -41,13 +43,18 @@ from tests.matcher._fixtures import (
 )
 
 
-def _make_extraction(criteria: list[ExtractedCriterion]) -> ExtractionResult:
+def _make_extraction(
+    criteria: list[ExtractedCriterion],
+    *,
+    composite_groups: list[CompositeCriterionGroup] | None = None,
+) -> ExtractionResult:
     """Bundle a list of criteria into the same envelope the extractor
     would have produced. Uses zero costs so summary numbers don't
     drift across test runs."""
     return ExtractionResult(
         extracted=ExtractedCriteria(
             criteria=criteria,
+            composite_groups=composite_groups or [],
             metadata=ExtractionMetadata(notes="test fixture"),
         ),
         meta=ExtractorRunMeta(
@@ -144,6 +151,45 @@ def test_rollup_fail_when_any_fail_overrides_passes_and_indeterminates() -> None
     )
     result = score_pair(patient, make_trial(), AS_OF, extraction=extraction)
     assert result.eligibility == "fail"
+
+
+def test_score_pair_uses_native_composite_groups_for_parent_verdict() -> None:
+    parent = crit_free_text()
+    first = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")
+    second = crit_measurement(text="hba1c", operator="<=", value=6.0, unit="%")
+    group = CompositeCriterionGroup(
+        group_id="criterion:0:group:001",
+        operator="any_of",
+        parent_criterion_index=0,
+        parent_source_text=parent.source_text,
+        subchecks=[
+            CompositeCriterionSubcheck(
+                subcheck_id="criterion:0:group:001:subcheck:001",
+                operator="any_of",
+                source_text=first.source_text,
+                criterion=first,
+            ),
+            CompositeCriterionSubcheck(
+                subcheck_id="criterion:0:group:001:subcheck:002",
+                operator="any_of",
+                source_text=second.source_text,
+                criterion=second,
+            ),
+        ],
+    )
+    patient = make_patient(observations=[make_lab(value=7.2, unit="%")])
+
+    result = score_pair(
+        patient,
+        make_trial(),
+        AS_OF,
+        extraction=_make_extraction([parent], composite_groups=[group]),
+    )
+
+    assert result.eligibility == "pass"
+    assert result.verdicts[0].criterion == parent
+    assert result.verdicts[0].verdict == "pass"
+    assert "Composite any_of group" in result.verdicts[0].rationale
 
 
 def test_rollup_pass_pending_review_when_only_free_text_indeterminate() -> None:

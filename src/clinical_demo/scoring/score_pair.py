@@ -225,6 +225,7 @@ def score_pair(
             enriched_criteria.criteria,
             profile,
             trial,
+            composite_groups=enriched_criteria.composite_groups,
             matcher_assumption_mode=matcher_assumption_mode,
         )
         verdicts, llm_calls = _apply_retrieval_only(
