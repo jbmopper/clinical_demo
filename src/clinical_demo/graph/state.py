@@ -44,7 +44,7 @@ from typing import Annotated, TypedDict
 from ..domain.patient import Patient
 from ..domain.trial import Trial
 from ..extractor.extractor import ExtractionResult
-from ..extractor.schema import ExtractedCriterion
+from ..extractor.schema import CompositeCriterionGroup, ExtractedCriterion
 from ..matcher import MatcherAssumptionMode, MatchVerdict
 from ..profile import PatientProfile
 from ..scoring.score_pair import EligibilityRollup, ScoringSummary
@@ -143,6 +143,7 @@ class ScoringState(TypedDict, total=False):
     # plumbing, distinct from the durable channel keys above.
     _criterion: ExtractedCriterion
     _criterion_index: int
+    _composite_group: CompositeCriterionGroup | None
 
     # Final outputs written by the rollup node and read by the
     # public entry function (`score_pair_graph`). `final_verdicts`

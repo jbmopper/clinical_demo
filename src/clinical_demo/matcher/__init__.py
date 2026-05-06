@@ -7,7 +7,7 @@ aggregator and reviewer UI consume.
 
 from .composite import CompositeOperator, CompositeRollup, roll_up_composite_verdict
 from .concept_lookup import lookup_condition, lookup_lab, lookup_medication
-from .matcher import MATCHER_VERSION, match_criterion, match_extracted
+from .matcher import MATCHER_VERSION, match_composite_group, match_criterion, match_extracted
 from .modes import (
     DEFAULT_LLM_USE_LEVEL,
     DEFAULT_MATCHER_ASSUMPTION_MODE,
@@ -52,6 +52,7 @@ __all__ = [
     "lookup_condition",
     "lookup_lab",
     "lookup_medication",
+    "match_composite_group",
     "match_criterion",
     "match_extracted",
     "roll_up_composite_verdict",

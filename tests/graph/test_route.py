@@ -6,6 +6,8 @@ from langgraph.types import Send
 
 from clinical_demo.extractor.extractor import ExtractionResult
 from clinical_demo.extractor.schema import (
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
     ExtractedCriteria,
     ExtractedCriterion,
     ExtractionMetadata,
@@ -59,11 +61,16 @@ def test_every_other_kind_routes_to_deterministic() -> None:
 # ---------- fan_out_criteria ----------
 
 
-def _state_with_extraction(criteria: list[ExtractedCriterion]) -> ScoringState:
+def _state_with_extraction(
+    criteria: list[ExtractedCriterion],
+    *,
+    composite_groups: list[CompositeCriterionGroup] | None = None,
+) -> ScoringState:
     """Helper: build the minimal state the fan-out reads from."""
     extraction = ExtractionResult(
         extracted=ExtractedCriteria(
             criteria=criteria,
+            composite_groups=composite_groups or [],
             metadata=ExtractionMetadata(notes="test"),
         ),
         meta=ExtractorRunMeta(
@@ -99,6 +106,32 @@ def test_fan_out_routes_per_criterion() -> None:
     assert isinstance(sends, list)
     targets = [s.node for s in sends]
     assert targets == [DETERMINISTIC_NODE, LLM_NODE]
+
+
+def test_fan_out_routes_composite_parent_to_deterministic() -> None:
+    parent = crit_free_text()
+    subcheck = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")
+    group = CompositeCriterionGroup(
+        group_id="criterion:0:group:001",
+        operator="any_of",
+        parent_criterion_index=0,
+        parent_source_text=parent.source_text,
+        subchecks=[
+            CompositeCriterionSubcheck(
+                subcheck_id="criterion:0:group:001:subcheck:001",
+                operator="any_of",
+                source_text=subcheck.source_text,
+                criterion=subcheck,
+            )
+        ],
+    )
+    state = _state_with_extraction([parent], composite_groups=[group])
+
+    sends = fan_out_criteria(state)
+
+    assert isinstance(sends, list)
+    assert sends[0].node == DETERMINISTIC_NODE
+    assert sends[0].arg["_composite_group"] == group
 
 
 def test_fan_out_carries_index_and_branch_payload() -> None:

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, match_criterion
+from ...matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, match_composite_group, match_criterion
 from ..state import ScoringState
 
 
@@ -25,7 +25,17 @@ def deterministic_match_node(state: ScoringState) -> dict[str, Any]:
     index = state["_criterion_index"]
     profile = state["profile"]
     trial = state["trial"]
+    composite_group = state.get("_composite_group")
     mode = state.get("matcher_assumption_mode", DEFAULT_MATCHER_ASSUMPTION_MODE)
 
-    verdict = match_criterion(criterion, profile, trial, matcher_assumption_mode=mode)
+    if composite_group is not None:
+        verdict = match_composite_group(
+            composite_group,
+            parent=criterion,
+            profile=profile,
+            trial=trial,
+            matcher_assumption_mode=mode,
+        )
+    else:
+        verdict = match_criterion(criterion, profile, trial, matcher_assumption_mode=mode)
     return {"indexed_verdicts": [(index, verdict)]}
