@@ -36,7 +36,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
 from ..domain.patient import CodedConcept
-from ..extractor.schema import ExtractedCriterion
+from ..extractor.schema import CriterionGroupOperator, ExtractedCriterion
 from .modes import MatcherAssumptionMode
 
 Verdict = Literal["pass", "fail", "indeterminate"]
@@ -208,6 +208,8 @@ class MatchVerdict(BaseModel):
     matcher_version: str
     assumption: MatcherAssumptionMode | None = None
     evidence_under_assumption: bool = False
+    group_id: str | None = None
+    group_operator: CriterionGroupOperator | None = None
 
 
 __all__ = [

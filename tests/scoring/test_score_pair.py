@@ -334,6 +334,59 @@ def test_bounded_adjudication_uses_note_evidence_for_unmapped_concept() -> None:
     assert completions.captured is not None
 
 
+def test_compound_measurement_any_of_passes_when_one_branch_passes() -> None:
+    compound = crit_free_text()
+    compound = compound.model_copy(
+        update={
+            "source_text": (
+                "Hyperglycemia (glycosylated hemoglobin (HbA1c) ≥ 6.5%; OR fasting "
+                "plasma glucose ≥ 126 mg/dl (7.0 mmol/L); OR 2-hour plasma glucose "
+                "≥ 200 mg/dL (11.1 mmol/L) during an oral glucose tolerance test; OR "
+                "In a patient with classic symptoms of hyperglycemia or hyperglycemic "
+                "crisis, a random plasma glucose ≥ 200 mg/dl (11.1 mmol/L)"
+            )
+        }
+    )
+    patient = make_patient(observations=[make_lab(loinc="4548-4", value=7.2, unit="%")])
+    result = score_pair(patient, make_trial(), AS_OF, extraction=_make_extraction([compound]))
+
+    assert result.eligibility == "pass"
+    assert len(result.verdicts) == 4
+    assert {verdict.group_operator for verdict in result.verdicts} == {"any_of"}
+    assert len({verdict.group_id for verdict in result.verdicts}) == 1
+    assert result.verdicts[0].verdict == "pass"
+    assert [verdict.verdict for verdict in result.verdicts[1:]] == [
+        "indeterminate",
+        "indeterminate",
+        "indeterminate",
+    ]
+
+
+def test_compound_measurement_any_of_remains_indeterminate_without_passing_branch() -> None:
+    compound = crit_free_text()
+    compound = compound.model_copy(
+        update={
+            "source_text": (
+                "Hyperglycemia (glycosylated hemoglobin (HbA1c) ≥ 6.5%; OR fasting "
+                "plasma glucose ≥ 126 mg/dl (7.0 mmol/L); OR 2-hour plasma glucose "
+                "≥ 200 mg/dL (11.1 mmol/L) during an oral glucose tolerance test; OR "
+                "In a patient with classic symptoms of hyperglycemia or hyperglycemic "
+                "crisis, a random plasma glucose ≥ 200 mg/dl (11.1 mmol/L)"
+            )
+        }
+    )
+    patient = make_patient(observations=[make_lab(loinc="4548-4", value=6.1, unit="%")])
+    result = score_pair(patient, make_trial(), AS_OF, extraction=_make_extraction([compound]))
+
+    assert result.eligibility == "indeterminate"
+    assert result.verdicts[0].verdict == "fail"
+    assert [verdict.verdict for verdict in result.verdicts[1:]] == [
+        "indeterminate",
+        "indeterminate",
+        "indeterminate",
+    ]
+
+
 def test_rollup_pass_on_empty_verdicts_documents_vacuous_truth() -> None:
     """Empty extraction → vacuously `pass`. This is intentional and
     documented; callers should check `summary.total_criteria == 0`

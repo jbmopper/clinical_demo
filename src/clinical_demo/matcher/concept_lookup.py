@@ -36,6 +36,7 @@ from clinical_demo.profile.concept_sets import (
     CHRONIC_KIDNEY_DISEASE,
     DIASTOLIC_BP,
     EGFR,
+    GLUCOSE,
     HBA1C,
     HEMOGLOBIN,
     HYPERLIPIDEMIA,
@@ -106,6 +107,15 @@ _LAB_ALIASES: dict[str, ConceptSet] = {
     "a1c": HBA1C,
     "glycated hemoglobin": HBA1C,
     "glycosylated hemoglobin": HBA1C,
+    # Glucose
+    "glucose": GLUCOSE,
+    "plasma glucose": GLUCOSE,
+    "fasting plasma glucose": GLUCOSE,
+    "fasting glucose": GLUCOSE,
+    "random plasma glucose": GLUCOSE,
+    "random glucose": GLUCOSE,
+    "2-hour plasma glucose": GLUCOSE,
+    "2 hour plasma glucose": GLUCOSE,
     # LDL
     "ldl": LDL_CHOLESTEROL,
     "ldl cholesterol": LDL_CHOLESTEROL,

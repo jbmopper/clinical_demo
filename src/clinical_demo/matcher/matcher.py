@@ -1057,6 +1057,8 @@ def _build(
         matcher_version=MATCHER_VERSION,
         assumption=assumption,
         evidence_under_assumption=evidence_under_assumption,
+        group_id=criterion._group_id,
+        group_operator=criterion._group_operator,
     )
 
 

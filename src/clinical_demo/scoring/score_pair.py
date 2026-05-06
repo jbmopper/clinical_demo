@@ -34,6 +34,8 @@ contract.
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterable
+from dataclasses import dataclass
 from datetime import date
 from typing import Literal
 
@@ -385,14 +387,14 @@ def _rollup(verdicts: list[MatchVerdict]) -> EligibilityRollup:
     has_pass = False
     has_indeterminate = False
     has_non_review_indeterminate = False
-    for v in verdicts:
-        if v.verdict == "fail":
+    for item in _rollup_items(verdicts):
+        if item.verdict == "fail":
             has_fail = True
-        elif v.verdict == "pass":
+        elif item.verdict == "pass":
             has_pass = True
-        elif v.verdict == "indeterminate":
+        elif item.verdict == "indeterminate":
             has_indeterminate = True
-            if v.reason != "human_review_required":
+            if item.reason != "human_review_required":
                 has_non_review_indeterminate = True
     if has_fail:
         return "fail"
@@ -403,6 +405,71 @@ def _rollup(verdicts: list[MatchVerdict]) -> EligibilityRollup:
     if has_indeterminate:
         return "indeterminate"
     return "pass"
+
+
+@dataclass(frozen=True)
+class _RollupItem:
+    verdict: str
+    reason: str
+
+
+def _rollup_items(verdicts: list[MatchVerdict]) -> list[_RollupItem]:
+    items: list[_RollupItem] = []
+    grouped: dict[str, list[MatchVerdict]] = {}
+    seen_groups: set[str] = set()
+    for verdict in verdicts:
+        if verdict.group_id is None:
+            items.append(_RollupItem(verdict=verdict.verdict, reason=verdict.reason))
+            continue
+        grouped.setdefault(verdict.group_id, []).append(verdict)
+        if verdict.group_id in seen_groups:
+            continue
+        seen_groups.add(verdict.group_id)
+        items.append(_group_rollup_item(grouped[verdict.group_id]))
+
+    # The first pass appends groups as soon as their first child is seen;
+    # refresh those placeholders after all group members have been collected.
+    if not grouped:
+        return items
+    refreshed: list[_RollupItem] = []
+    emitted_groups: set[str] = set()
+    for verdict in verdicts:
+        if verdict.group_id is None:
+            refreshed.append(_RollupItem(verdict=verdict.verdict, reason=verdict.reason))
+            continue
+        if verdict.group_id in emitted_groups:
+            continue
+        emitted_groups.add(verdict.group_id)
+        refreshed.append(_group_rollup_item(grouped[verdict.group_id]))
+    return refreshed
+
+
+def _group_rollup_item(verdicts: list[MatchVerdict]) -> _RollupItem:
+    operator = verdicts[0].group_operator or "all_of"
+    statuses = [verdict.verdict for verdict in verdicts]
+    if operator == "any_of":
+        if "pass" in statuses:
+            return _RollupItem(verdict="pass", reason="ok")
+        if all(status == "fail" for status in statuses):
+            return _RollupItem(verdict="fail", reason="ok")
+        return _RollupItem(verdict="indeterminate", reason=_group_indeterminate_reason(verdicts))
+
+    if "fail" in statuses:
+        return _RollupItem(verdict="fail", reason="ok")
+    if all(status == "pass" for status in statuses):
+        return _RollupItem(verdict="pass", reason="ok")
+    return _RollupItem(verdict="indeterminate", reason=_group_indeterminate_reason(verdicts))
+
+
+def _group_indeterminate_reason(verdicts: Iterable[MatchVerdict]) -> str:
+    indeterminate_reasons = [
+        verdict.reason for verdict in verdicts if verdict.verdict == "indeterminate"
+    ]
+    if indeterminate_reasons and all(
+        reason == "human_review_required" for reason in indeterminate_reasons
+    ):
+        return "human_review_required"
+    return indeterminate_reasons[0] if indeterminate_reasons else "no_data"
 
 
 def _summarize(

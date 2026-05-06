@@ -6,6 +6,7 @@ from clinical_demo.extractor.fix import CRITERION_FIX_NOTE_PREFIX, fix_extracted
 from clinical_demo.extractor.schema import ExtractedCriteria, ExtractionMetadata
 from tests.matcher._fixtures import (
     crit_condition,
+    crit_free_text,
     crit_measurement,
     crit_temporal_window,
 )
@@ -70,3 +71,44 @@ def test_fix_routes_unsafe_composite_to_free_text_review() -> None:
     assert fixed.free_text is not None
     assert "unsafe composite" in fixed.free_text.note
     assert "condition_absent" in fixed.free_text.note
+
+
+def test_fix_decomposes_common_or_measurement_diagnostic_criterion() -> None:
+    original = crit_free_text()
+    original = original.model_copy(
+        update={
+            "source_text": (
+                "Hyperglycemia (glycosylated hemoglobin (HbA1c) ≥ 6.5%; OR fasting "
+                "plasma glucose ≥ 126 mg/dl (7.0 mmol/L); OR 2-hour plasma glucose "
+                "≥ 200 mg/dL (11.1 mmol/L) during an oral glucose tolerance test; OR "
+                "In a patient with classic symptoms of hyperglycemia or hyperglycemic "
+                "crisis, a random plasma glucose ≥ 200 mg/dl (11.1 mmol/L)"
+            )
+        }
+    )
+
+    out = fix_extracted_criteria(_extracted(original))
+
+    assert [criterion.kind for criterion in out.criteria] == [
+        "measurement_threshold",
+        "measurement_threshold",
+        "measurement_threshold",
+        "free_text",
+    ]
+    group_ids = {criterion._group_id for criterion in out.criteria}
+    assert len(group_ids) == 1
+    assert None not in group_ids
+    assert {criterion._group_operator for criterion in out.criteria} == {"any_of"}
+    measurements = [criterion.measurement for criterion in out.criteria if criterion.measurement]
+    assert [measurement.measurement_text for measurement in measurements] == [
+        "hba1c",
+        "fasting plasma glucose",
+        "2-hour plasma glucose",
+    ]
+    assert measurements[0].value == 6.5
+    assert measurements[0].unit == "%"
+    assert measurements[1].value == 126.0
+    assert measurements[1].unit == "mg/dL"
+    assert out.criteria[-1].free_text is not None
+    assert "random plasma glucose" in out.criteria[-1].source_text.lower()
+    assert "compound any_of residual" in out.criteria[-1].free_text.note

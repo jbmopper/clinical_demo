@@ -250,6 +250,8 @@ def adjudicate_patient_evidence(
             retrieved=retrieved,
         ),
         matcher_version=PATIENT_EVIDENCE_ADJUDICATOR_VERSION,
+        group_id=deterministic_verdict.group_id,
+        group_operator=deterministic_verdict.group_operator,
     )
     cost = LLMCallCost(
         stage="patient_evidence_adjudicator",

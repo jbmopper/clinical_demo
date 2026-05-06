@@ -102,6 +102,12 @@ LDL_CHOLESTEROL = ConceptSet(
     codes=frozenset({"18262-6"}),
 )
 
+GLUCOSE = ConceptSet(
+    name="Glucose",
+    system=LOINC,
+    codes=frozenset({"2339-0"}),
+)
+
 EGFR = ConceptSet(
     name="Estimated glomerular filtration rate (eGFR)",
     system=LOINC,
@@ -150,6 +156,7 @@ __all__ = [
     "C_PEPTIDE",
     "DIASTOLIC_BP",
     "EGFR",
+    "GLUCOSE",
     "HBA1C",
     "HEMOGLOBIN",
     "HYPERLIPIDEMIA",

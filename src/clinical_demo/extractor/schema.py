@@ -35,7 +35,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 # ---------- enums ----------
 
@@ -100,6 +100,15 @@ CRITERION_KINDS: tuple[str, ...] = (
 )
 """Tuple form of the `CriterionKind` literal, exposed for use in
 asserts and parameterized tests."""
+
+CriterionGroupOperator = Literal["any_of", "all_of"]
+"""Logical operator for deterministic post-extraction criterion groups.
+
+This stays out of the public extractor JSON schema. The extractor
+still emits atomic rows or conservative `free_text`; the deterministic
+fixer can attach private grouping metadata when it safely decomposes a
+compound criterion.
+"""
 
 
 # ---------- entity mentions (audit-only) ----------
@@ -317,6 +326,9 @@ class ExtractedCriterion(BaseModel):
         "matchers do not consume this. Empty list is allowed for trivially structured "
         "criteria where every span has already been promoted into the typed payload."
     )
+
+    _group_id: str | None = PrivateAttr(default=None)
+    _group_operator: CriterionGroupOperator | None = PrivateAttr(default=None)
 
 
 # ---------- top-level extraction envelope ----------

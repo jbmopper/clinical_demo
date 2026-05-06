@@ -14,10 +14,13 @@ atomic concepts.
 
 from __future__ import annotations
 
+import hashlib
+import re
 from dataclasses import dataclass
 
 from .schema import (
     ConditionCriterion,
+    CriterionGroupOperator,
     ExtractedCriteria,
     ExtractedCriterion,
     ExtractionMetadata,
@@ -55,6 +58,10 @@ def fix_extracted_criteria(extracted: ExtractedCriteria) -> ExtractedCriteria:
 
 
 def _fix_one(criterion: ExtractedCriterion) -> _FixResult:
+    decomposed = _decompose_compound_measurement_any_of(criterion)
+    if decomposed is not None:
+        return decomposed
+
     if _is_unsafe_composite(criterion):
         surface = _surface_text(criterion) or criterion.source_text
         return _FixResult(
@@ -104,6 +111,175 @@ def _fix_one(criterion: ExtractedCriterion) -> _FixResult:
             return fixed_condition
 
     return _FixResult(criteria=[criterion])
+
+
+def _decompose_compound_measurement_any_of(
+    criterion: ExtractedCriterion,
+) -> _FixResult | None:
+    """Split common diagnostic OR measurement lists into an `any_of` group.
+
+    This targets rows like ADA hyperglycemia criteria where the extractor
+    often conservatively emits one `free_text` criterion even though most
+    branches are structured thresholds. We only decompose inclusion,
+    non-negated rows so grouped verdicts can be combined over final
+    eligibility verdicts without needing raw predicate state.
+    """
+
+    if criterion.polarity != "inclusion" or criterion.negated:
+        return None
+    text = criterion.source_text
+    normalized = _normalize_surface(text)
+    if " or " not in f" {normalized} ":
+        return None
+    if not any(term in normalized for term in ("hba1c", "glucose", "glycosylated hemoglobin")):
+        return None
+
+    children: list[ExtractedCriterion] = []
+    children.extend(
+        _measurement_children(
+            criterion,
+            specs=[
+                _MeasurementSpec(
+                    name="hba1c",
+                    unit="%",
+                    pattern=(
+                        r"(?:glycosylated\s+hemoglobin\s*\(\s*hba1c\s*\)|"
+                        r"hba1c|glycosylated\s+hemoglobin)"
+                        r"[^.;]*?(?:≥|>=)\s*(?P<value>\d+(?:\.\d+)?)\s*%"
+                    ),
+                ),
+                _MeasurementSpec(
+                    name="fasting plasma glucose",
+                    unit="mg/dL",
+                    pattern=(
+                        r"fasting\s+plasma\s+glucose\s*(?:≥|>=)\s*"
+                        r"(?P<value>\d+(?:\.\d+)?)\s*mg/dl"
+                    ),
+                ),
+                _MeasurementSpec(
+                    name="2-hour plasma glucose",
+                    unit="mg/dL",
+                    pattern=(
+                        r"2[-\s]?hour\s+plasma\s+glucose\s*(?:≥|>=)\s*"
+                        r"(?P<value>\d+(?:\.\d+)?)\s*mg/dl"
+                    ),
+                ),
+            ],
+        )
+    )
+    random_symptom_child = _random_glucose_symptom_child(criterion)
+    if random_symptom_child is not None:
+        children.append(random_symptom_child)
+
+    if len(children) < 2:
+        return None
+
+    group_id = f"criterion_fix:any_of:{hashlib.sha1(text.encode('utf-8')).hexdigest()[:10]}"
+    grouped = [_with_group(child, group_id=group_id, operator="any_of") for child in children]
+    return _FixResult(
+        criteria=grouped,
+        note=f"decomposed compound measurement criterion into any_of group {group_id}",
+    )
+
+
+@dataclass(frozen=True)
+class _MeasurementSpec:
+    name: str
+    unit: str
+    pattern: str
+
+
+def _measurement_children(
+    criterion: ExtractedCriterion,
+    *,
+    specs: list[_MeasurementSpec],
+) -> list[ExtractedCriterion]:
+    children: list[ExtractedCriterion] = []
+    for spec in specs:
+        match = re.search(spec.pattern, criterion.source_text, flags=re.IGNORECASE)
+        if match is None:
+            continue
+        source = _matched_clause(criterion.source_text, match.start(), match.end())
+        children.append(
+            _measurement_child(
+                criterion,
+                source_text=source,
+                measurement_text=spec.name,
+                value=float(match.group("value")),
+                unit=spec.unit,
+            )
+        )
+    return children
+
+
+def _measurement_child(
+    criterion: ExtractedCriterion,
+    *,
+    source_text: str,
+    measurement_text: str,
+    value: float,
+    unit: str,
+) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind="measurement_threshold",
+        polarity=criterion.polarity,
+        source_text=source_text,
+        negated=False,
+        mood=criterion.mood,
+        age=None,
+        sex=None,
+        condition=None,
+        medication=None,
+        measurement=MeasurementCriterion(
+            measurement_text=measurement_text,
+            operator=">=",
+            value=value,
+            value_low=None,
+            value_high=None,
+            unit=unit,
+        ),
+        temporal_window=None,
+        free_text=None,
+        mentions=criterion.mentions,
+    )
+
+
+def _random_glucose_symptom_child(criterion: ExtractedCriterion) -> ExtractedCriterion | None:
+    match = re.search(
+        r"(?:classic\s+symptoms|hyperglycemic\s+crisis)[^.]*?"
+        r"random\s+plasma\s+glucose\s*(?:≥|>=)\s*(?P<value>\d+(?:\.\d+)?)\s*mg/dl",
+        criterion.source_text,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    source = _matched_clause(criterion.source_text, match.start(), match.end())
+    return _to_free_text(
+        criterion.model_copy(update={"source_text": source}),
+        (
+            "compound any_of residual requires combined note/free-text review: "
+            "random plasma glucose threshold plus classic symptoms or hyperglycemic crisis"
+        ),
+    )
+
+
+def _matched_clause(text: str, start: int, end: int) -> str:
+    clause_start = max(text.rfind(";", 0, start), text.rfind(".", 0, start))
+    clause_end_candidates = [pos for pos in (text.find(";", end), text.find(".", end)) if pos != -1]
+    clause_end = min(clause_end_candidates) if clause_end_candidates else len(text)
+    clause = text[clause_start + 1 : clause_end].strip()
+    return re.sub(r"^(or|and)\s+", "", clause, flags=re.IGNORECASE).strip()
+
+
+def _with_group(
+    criterion: ExtractedCriterion,
+    *,
+    group_id: str,
+    operator: CriterionGroupOperator,
+) -> ExtractedCriterion:
+    criterion._group_id = group_id
+    criterion._group_operator = operator
+    return criterion
 
 
 def _fix_temporal_window_to_condition(criterion: ExtractedCriterion) -> _FixResult | None:
