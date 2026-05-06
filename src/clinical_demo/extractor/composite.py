@@ -1,9 +1,9 @@
 """Composite criterion extraction helpers.
 
-The public extractor schema still emits a flat list of criteria for the
-LLM contract. These helpers build an internal parent/subcheck view over
-explicit boolean bundles so downstream retrieval and adjudication can
-reason about OR/AND semantics without changing the top-level scorer yet.
+The extractor schema now has a native `composite_groups` field while
+the flat `criteria` list remains the compatibility view. These helpers
+build the same parent/subcheck shape for fixer backfills and legacy
+extractions that predate the native field.
 """
 
 from __future__ import annotations
@@ -11,35 +11,15 @@ from __future__ import annotations
 import re
 from typing import Literal
 
-from pydantic import BaseModel, Field
-
 from clinical_demo.extractor.schema import (
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
+    CompositeOperator,
     ExtractedCriterion,
     FreeTextCriterion,
     MeasurementCriterion,
 )
 from clinical_demo.matcher.concept_lookup import lookup_lab
-
-CompositeOperator = Literal["any_of", "all_of"]
-
-
-class CompositeCriterionSubcheck(BaseModel):
-    """One stable subcheck inside a composite criterion group."""
-
-    subcheck_id: str
-    operator: CompositeOperator
-    source_text: str
-    criterion: ExtractedCriterion
-
-
-class CompositeCriterionGroup(BaseModel):
-    """Boolean group of subchecks under one parent criterion."""
-
-    group_id: str
-    operator: CompositeOperator
-    parent_source_text: str
-    subchecks: list[CompositeCriterionSubcheck] = Field(default_factory=list)
-
 
 _COMPOSITE_SPLITTERS: tuple[tuple[CompositeOperator, re.Pattern[str]], ...] = (
     ("any_of", re.compile(r"\s*;\s+OR\s+", re.IGNORECASE)),
@@ -69,6 +49,7 @@ def build_composite_criterion_groups(
             CompositeCriterionGroup(
                 group_id=group_id,
                 operator=operator,
+                parent_criterion_index=criterion_index,
                 parent_source_text=criterion.source_text,
                 subchecks=[
                     _composite_subcheck(

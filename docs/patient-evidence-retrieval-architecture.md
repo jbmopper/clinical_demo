@@ -57,14 +57,18 @@ Each kept row becomes a **retrieved evidence** object carrying: the row snapshot
 
 ## 5. Composite subcheck retrieval
 
-Calibration rows can now expose representational composite groups:
+The extractor/fixer now emits native representational composite groups, and
+legacy paths can still backfill the same shape from explicit punctuation:
 
 - `composite_groups[]` contains a parent `any_of` / `all_of` group with stable subcheck ids.
+- The flat `criteria[]` list remains the parent view for matcher compatibility.
 - Each subcheck carries a matcher-shaped criterion payload where safely inferable, otherwise a `free_text` subcheck.
 - Retrieval runs per subcheck, so reviewers can see evidence for “HbA1c threshold” separately from “fasting glucose threshold.”
 - Scoring retrieval now unions parent-criterion hits and composite-subcheck hits for `retrieval_only` and `bounded_adjudication`, tagging subcheck-derived rows with `composite:...` and `subcheck:...` reasons.
 
-This does **not** change deterministic matcher verdicts or the main scorer rollup yet. Parent/subcheck groups must be emitted reliably by the extractor/fixer before `match_extracted` consumes composite semantics.
+This does **not** change deterministic matcher verdicts or the main scorer
+rollup yet. `match_extracted` still needs explicit composite-group wiring
+before `any_of` / `all_of` branches decide eligibility.
 
 ---
 

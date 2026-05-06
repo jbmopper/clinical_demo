@@ -21,6 +21,8 @@ from pydantic import ValidationError
 from clinical_demo.extractor.schema import (
     CRITERION_KINDS,
     AgeCriterion,
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
     ConditionCriterion,
     EntityMention,
     ExtractedCriteria,
@@ -194,6 +196,7 @@ def test_empty_extraction_envelope_is_valid():
     representable; the matcher relies on this for empty inputs."""
     env = ExtractedCriteria(criteria=[], metadata=ExtractionMetadata(notes="no eligibility text"))
     assert env.criteria == []
+    assert env.composite_groups == []
     assert env.metadata.notes == "no eligibility text"
 
 
@@ -204,6 +207,48 @@ def test_extraction_envelope_with_one_criterion():
         metadata=ExtractionMetadata(notes=""),
     )
     restored = ExtractedCriteria.model_validate_json(env.model_dump_json())
+    assert restored == env
+
+
+def test_extraction_envelope_with_native_composite_group_round_trips():
+    """Composite groups preserve subcheck payloads without changing flat criteria."""
+    parent = _row(source_text="HbA1c >= 7%; OR fasting plasma glucose >= 126 mg/dL")
+    subcheck = _row(
+        kind="measurement_threshold",
+        source_text="HbA1c >= 7%",
+        free_text=None,
+        measurement=MeasurementCriterion(
+            measurement_text="hba1c",
+            operator=">=",
+            value=7.0,
+            value_low=None,
+            value_high=None,
+            unit="%",
+        ),
+    )
+    env = ExtractedCriteria(
+        criteria=[parent],
+        composite_groups=[
+            CompositeCriterionGroup(
+                group_id="criterion:0:group:001",
+                operator="any_of",
+                parent_criterion_index=0,
+                parent_source_text=parent.source_text,
+                subchecks=[
+                    CompositeCriterionSubcheck(
+                        subcheck_id="criterion:0:group:001:subcheck:001",
+                        operator="any_of",
+                        source_text=subcheck.source_text,
+                        criterion=subcheck,
+                    )
+                ],
+            )
+        ],
+        metadata=ExtractionMetadata(notes=""),
+    )
+
+    restored = ExtractedCriteria.model_validate_json(env.model_dump_json())
+
     assert restored == env
 
 
@@ -235,7 +280,9 @@ def test_schema_compiles_to_openai_strict_response_format():
     schema = js["schema"]
     # Spot-check structural invariants the strict validator enforces.
     assert schema["additionalProperties"] is False
+    assert set(schema["required"]) == set(schema["properties"].keys())
     assert "ExtractedCriterion" in schema["$defs"]
+    assert "CompositeCriterionGroup" in schema["$defs"]
     crit = schema["$defs"]["ExtractedCriterion"]
     # Every property must be required under strict mode.
     assert set(crit["required"]) == set(crit["properties"].keys())

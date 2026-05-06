@@ -22,6 +22,7 @@ def test_build_composite_groups_for_explicit_or_bundle() -> None:
     group = groups[0]
     assert group.group_id == "criterion:2:group:001"
     assert group.operator == "any_of"
+    assert group.parent_criterion_index == 2
     assert [subcheck.subcheck_id for subcheck in group.subchecks] == [
         "criterion:2:group:001:subcheck:001",
         "criterion:2:group:001:subcheck:002",
