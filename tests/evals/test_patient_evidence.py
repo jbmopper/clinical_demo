@@ -294,16 +294,52 @@ def test_build_patient_evidence_rows_exposes_explicit_or_bundle_line_items() -> 
         criterion_index=0,
         verdict=verdict,
     )
-    context = LayerThreeSourceContext(patient=[], trial=[])
+    context = LayerThreeSourceContext(
+        patient=[
+            LayerThreeSourceRecord(
+                source="patient",
+                kind="observation",
+                label="HbA1c",
+                value="6.1 %",
+                code="4548-4",
+                system="http://loinc.org",
+            ),
+            LayerThreeSourceRecord(
+                source="patient",
+                kind="observation",
+                label="Fasting plasma glucose",
+                value="95 mg/dL",
+                code="2339-0",
+                system="http://loinc.org",
+            ),
+        ],
+        trial=[],
+    )
 
     rows = build_patient_evidence_rows([target], source_contexts={"p1__T1": context})
 
+    assert len(rows[0].composite_groups) == 1
+    group = rows[0].composite_groups[0]
+    assert group.group_id == "criterion:0:group:001"
+    assert group.operator == "any_of"
+    assert [subcheck.subcheck_id for subcheck in group.subchecks] == [
+        "criterion:0:group:001:subcheck:001",
+        "criterion:0:group:001:subcheck:002",
+        "criterion:0:group:001:subcheck:003",
+    ]
+    assert group.subchecks[0].criterion_kind == "measurement_threshold"
+    assert group.subchecks[0].criterion["measurement"]["measurement_text"] == "HbA1c"
+    assert group.subchecks[0].criterion["measurement"]["operator"] == ">="
+    assert group.subchecks[0].criterion["measurement"]["value"] == 6.5
+    assert group.subchecks[0].retrieved_source_row_ids == ["patient:000"]
+    assert group.subchecks[1].criterion_kind == "free_text"
+    assert group.subchecks[1].retrieved_source_row_ids == ["patient:001"]
     assert [item.operator for item in rows[0].composite_line_items] == [
         "any_of",
         "any_of",
         "any_of",
     ]
-    assert rows[0].composite_line_items[0].item_id == "any_of:1"
+    assert rows[0].composite_line_items[0].item_id == "criterion:0:group:001:subcheck:001"
     assert rows[0].composite_line_items[1].source_text == "fasting plasma glucose >= 126 mg/dL"
     assert rows[0].composite_line_items[2].source_text == "random plasma glucose >= 200 mg/dL"
 

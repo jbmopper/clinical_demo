@@ -7,7 +7,8 @@
 		type PatientEvidenceHumanLabel,
 		type PatientEvidenceLabel,
 		type MatcherAssumptionMode,
-		type PatientEvidenceSourceRow
+		type PatientEvidenceSourceRow,
+		type PatientEvidenceCompositeSubcheck
 	} from '$lib/api';
 
 	let candidatePath = $state('');
@@ -181,6 +182,22 @@
 		return row.retrieval_reasons[sourceRow.row_id] ?? [];
 	}
 
+	function sourceRowById(
+		row: PatientEvidenceCalibrationRow,
+		rowId: string
+	): PatientEvidenceSourceRow | undefined {
+		return row.source_rows.find((sourceRow) => sourceRow.row_id === rowId);
+	}
+
+	function subcheckRows(
+		row: PatientEvidenceCalibrationRow,
+		subcheck: PatientEvidenceCompositeSubcheck
+	): PatientEvidenceSourceRow[] {
+		return subcheck.retrieved_source_row_ids
+			.map((rowId) => sourceRowById(row, rowId))
+			.filter((sourceRow): sourceRow is PatientEvidenceSourceRow => sourceRow !== undefined);
+	}
+
 	function assumptionGuidance(
 		row: PatientEvidenceCalibrationRow,
 		current: PatientEvidenceHumanLabel | undefined
@@ -283,17 +300,33 @@
 						<section class="candidate">
 							<h3>Candidate</h3>
 							<p class="criterion">{row.criterion_source_text}</p>
-							{#if row.composite_line_items.length}
+							{#if row.composite_groups.length}
 								<div class="composite-items">
-									<div class="composite-heading">
-										Composite line items
-										<span>{row.composite_line_items[0].operator === 'any_of' ? 'any of' : 'all of'}</span>
-									</div>
-									<ol>
-										{#each row.composite_line_items as item (item.item_id)}
-											<li>{item.source_text}</li>
+									{#each row.composite_groups as group (group.group_id)}
+										<div class="composite-heading">
+											Composite group
+											<span>{group.operator === 'any_of' ? 'any of' : 'all of'}</span>
+										</div>
+										<ol>
+											{#each group.subchecks as subcheck (subcheck.subcheck_id)}
+												<li>
+													<strong>{subcheck.source_text}</strong>
+													{#if subcheckRows(row, subcheck).length}
+														<ul class="subcheck-evidence">
+															{#each subcheckRows(row, subcheck) as sourceRow (sourceRow.row_id)}
+																<li>
+																	<span class="row-id">{sourceRow.row_id}</span>
+																	{sourceRow.label}: {sourceRow.value}
+																</li>
+															{/each}
+														</ul>
+													{:else}
+														<small>No subcheck-specific evidence retrieved yet.</small>
+													{/if}
+												</li>
+											{/each}
+										</ol>
 										{/each}
-									</ol>
 									<p>
 										Review these as subchecks, but label the parent criterion until matcher rollup
 										supports composite groups.
@@ -704,6 +737,15 @@
 	.composite-items li {
 		margin-bottom: 4px;
 		color: #1e293b;
+	}
+	.subcheck-evidence {
+		margin: 4px 0 8px 0;
+		padding-left: 0;
+		list-style: none;
+	}
+	.subcheck-evidence li {
+		font-size: 0.78rem;
+		color: #475569;
 	}
 	.composite-items p {
 		margin: 0;

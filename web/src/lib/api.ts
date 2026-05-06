@@ -269,6 +269,24 @@ export interface PatientEvidenceCompositeLineItem {
 	source_text: string;
 }
 
+export interface PatientEvidenceCompositeSubcheck {
+	subcheck_id: string;
+	operator: 'any_of' | 'all_of';
+	criterion_kind: string;
+	source_text: string;
+	criterion: ExtractedCriterion;
+	retrieved_source_row_ids: string[];
+	retrieved_source_row_counts: Record<string, number>;
+	retrieval_reasons: Record<string, string[]>;
+}
+
+export interface PatientEvidenceCompositeGroup {
+	group_id: string;
+	operator: 'any_of' | 'all_of';
+	parent_source_text: string;
+	subchecks: PatientEvidenceCompositeSubcheck[];
+}
+
 export interface PatientEvidenceCalibrationRow {
 	pair_id: string;
 	patient_id: string;
@@ -298,6 +316,7 @@ export interface PatientEvidenceCalibrationRow {
 	retrieval_reasons: Record<string, string[]>;
 	concept_mappings: unknown[];
 	composite_line_items: PatientEvidenceCompositeLineItem[];
+	composite_groups: PatientEvidenceCompositeGroup[];
 	mapping_state: string;
 	unmapped_surfaces: string[];
 	evidence_retrieval_state: string;
