@@ -16,7 +16,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .composite import build_composite_criterion_groups
 from .schema import (
+    CompositeCriterionGroup,
     ConditionCriterion,
     ExtractedCriteria,
     ExtractedCriterion,
@@ -45,11 +47,19 @@ def fix_extracted_criteria(extracted: ExtractedCriteria) -> ExtractedCriteria:
         if result.note:
             notes.append(f"criterion[{index}]: {result.note}")
 
+    composite_groups = _merge_composite_groups(
+        existing=extracted.composite_groups,
+        criteria=fixed,
+    )
+    if composite_groups != extracted.composite_groups:
+        notes.append(f"emitted {len(composite_groups)} native composite group(s)")
+
     if not notes:
         return extracted
 
     return ExtractedCriteria(
         criteria=fixed,
+        composite_groups=composite_groups,
         metadata=ExtractionMetadata(notes=_append_notes(extracted.metadata.notes, notes)),
     )
 
@@ -211,6 +221,23 @@ def _append_notes(existing: str, notes: list[str]) -> str:
     if not existing:
         return suffix
     return f"{existing}; {suffix}"
+
+
+def _merge_composite_groups(
+    *,
+    existing: list[CompositeCriterionGroup],
+    criteria: list[ExtractedCriterion],
+) -> list[CompositeCriterionGroup]:
+    groups = [*existing]
+    seen = {(group.parent_criterion_index, group.parent_source_text) for group in groups}
+    for index, criterion in enumerate(criteria):
+        for group in build_composite_criterion_groups(criterion, criterion_index=index):
+            key = (group.parent_criterion_index, group.parent_source_text)
+            if key in seen:
+                continue
+            groups.append(group)
+            seen.add(key)
+    return groups
 
 
 _CONDITION_SURFACE_FIXES: dict[str, str] = {

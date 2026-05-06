@@ -22,7 +22,7 @@ What the demo **does not** claim, and where **Synthea + curated trials** stop be
 
 - **Free-text criteria** defer to human review in deterministic mode; LLM matcher exists on **graph path only** for those kinds.
 - **Extractor mention F1 vs Chia** measures only a **subset** of Chia (entity mentions), not relations or OR-groups.
-- **Composite OR/AND criteria** now have calibration-time parent/subcheck scaffolding and a standalone truth-table helper, but the main scorer does not yet consume composite groups.
+- **Composite OR/AND criteria** now have a native extractor/fixer parent/subcheck contract, calibration-time scaffolding, and a standalone truth-table helper, but the main scorer does not yet consume composite groups.
 - **Temporal windows** in the future direction are limited; future-window criteria return unsupported mood/path.
 - **Hypothetical mood** criteria (planned procedures) return indeterminate — no planned-event patient model.
 

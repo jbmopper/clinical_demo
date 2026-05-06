@@ -83,7 +83,18 @@
   now fails if a surface preserved in a legacy `status=resolved` watchlist
   reappears in a run's `top_unmapped_surfaces`; the first watchlist
   lives at `eval/baselines/2026-05-05/resolved_surface_watchlist.json`.
-- **Last completed:** PLAN task 2.21 first slice —
+- **Last completed:** PLAN task 2.21 second slice —
+  **native composite extraction contract.** Added
+  `composite_groups[]` to the extractor schema so explicit OR/AND bundles can
+  carry stable parent/subcheck metadata without duplicating subchecks as
+  top-level flat criteria. The extractor prompt is bumped to `extractor-v0.6`
+  with native composite guidance and a few-shot example; the fixer now backfills
+  native groups for explicit semicolon-delimited `OR` / `AND` bundles while
+  preserving the flat parent criterion for matcher compatibility. This moves
+  composites out of reviewer-only inference and into the persisted extraction
+  contract, but `match_extracted` still needs the next slice to consume group
+  semantics for eligibility rollup.
+  Previous: PLAN task 2.21 first slice —
   **deterministic criterion fixing layer.** Added
   `clinical_demo.extractor.fix.fix_extracted_criteria` between extraction
   enrichment and matching in both imperative `score_pair` and LangGraph

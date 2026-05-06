@@ -101,6 +101,9 @@ CRITERION_KINDS: tuple[str, ...] = (
 """Tuple form of the `CriterionKind` literal, exposed for use in
 asserts and parameterized tests."""
 
+CompositeOperator = Literal["any_of", "all_of"]
+"""Boolean operator joining subchecks under one compound criterion."""
+
 
 # ---------- entity mentions (audit-only) ----------
 
@@ -319,6 +322,41 @@ class ExtractedCriterion(BaseModel):
     )
 
 
+class CompositeCriterionSubcheck(BaseModel):
+    """One matcher-shaped branch inside a composite parent criterion."""
+
+    subcheck_id: str = Field(
+        description="Stable id unique within the extraction, e.g. "
+        "'criterion:2:group:001:subcheck:001'."
+    )
+    operator: CompositeOperator = Field(
+        description="The parent boolean operator this subcheck participates in."
+    )
+    source_text: str = Field(
+        description="Verbatim source fragment for this subcheck, not the whole parent bullet."
+    )
+    criterion: ExtractedCriterion = Field(
+        description="Matcher-shaped representation of the subcheck. Use free_text when "
+        "the branch cannot be safely reduced to an atomic criterion."
+    )
+
+
+class CompositeCriterionGroup(BaseModel):
+    """Boolean group connecting one flat parent criterion to subchecks."""
+
+    group_id: str = Field(description="Stable group id, e.g. 'criterion:2:group:001'.")
+    operator: CompositeOperator = Field(
+        description="'any_of' for OR bundles, 'all_of' for AND bundles."
+    )
+    parent_criterion_index: int = Field(
+        description="Zero-based index of the parent criterion in the flat criteria list."
+    )
+    parent_source_text: str = Field(description="Verbatim source text of the parent criterion.")
+    subchecks: list[CompositeCriterionSubcheck] = Field(
+        description="Subcheck branches under this parent criterion."
+    )
+
+
 # ---------- top-level extraction envelope ----------
 
 
@@ -344,6 +382,12 @@ class ExtractedCriteria(BaseModel):
         "separate entries when each part is independently checkable; keep them "
         "together as a single `free_text` criterion when the conjunction is "
         "load-bearing and can't be evaluated piecewise."
+    )
+    composite_groups: list[CompositeCriterionGroup] = Field(
+        default_factory=list,
+        description="Optional native parent/subcheck representation for explicit OR/AND "
+        "bundles. The flat `criteria` list remains the matcher-compatible parent view "
+        "until scorer wiring consumes these groups.",
     )
     metadata: ExtractionMetadata = Field(
         description="Self-reported metadata about the extraction run."

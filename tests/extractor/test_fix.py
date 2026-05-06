@@ -6,6 +6,7 @@ from clinical_demo.extractor.fix import CRITERION_FIX_NOTE_PREFIX, fix_extracted
 from clinical_demo.extractor.schema import ExtractedCriteria, ExtractionMetadata
 from tests.matcher._fixtures import (
     crit_condition,
+    crit_free_text,
     crit_measurement,
     crit_temporal_window,
 )
@@ -70,3 +71,31 @@ def test_fix_routes_unsafe_composite_to_free_text_review() -> None:
     assert fixed.free_text is not None
     assert "unsafe composite" in fixed.free_text.note
     assert "condition_absent" in fixed.free_text.note
+
+
+def test_fix_emits_native_composite_groups_for_explicit_or_bundle() -> None:
+    original = crit_free_text().model_copy(
+        update={
+            "source_text": (
+                "Hyperglycemia (HbA1c >= 6.5%; OR fasting plasma glucose >= "
+                "126 mg/dL; OR random plasma glucose >= 200 mg/dL)"
+            )
+        }
+    )
+
+    out = fix_extracted_criteria(_extracted(original))
+
+    assert out.criteria == [original]
+    assert len(out.composite_groups) == 1
+    group = out.composite_groups[0]
+    assert group.group_id == "criterion:0:group:001"
+    assert group.operator == "any_of"
+    assert group.parent_criterion_index == 0
+    assert [subcheck.subcheck_id for subcheck in group.subchecks] == [
+        "criterion:0:group:001:subcheck:001",
+        "criterion:0:group:001:subcheck:002",
+        "criterion:0:group:001:subcheck:003",
+    ]
+    assert group.subchecks[0].criterion.kind == "measurement_threshold"
+    assert group.subchecks[1].criterion.kind == "free_text"
+    assert "native composite" in out.metadata.notes

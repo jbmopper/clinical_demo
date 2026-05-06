@@ -104,6 +104,7 @@ def enrich_with_structured_fields(
 
     return ExtractedCriteria(
         criteria=[*extracted.criteria, *new_rows],
+        composite_groups=extracted.composite_groups,
         metadata=extracted.metadata,
     )
 

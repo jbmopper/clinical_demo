@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from .schema import (
     AgeCriterion,
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
     ConditionCriterion,
     EntityMention,
     ExtractedCriteria,
@@ -31,9 +33,14 @@ from .schema import (
     TemporalWindowCriterion,
 )
 
-PROMPT_VERSION = "extractor-v0.5"
+PROMPT_VERSION = "extractor-v0.6"
 """Bump on any meaningful change to SYSTEM_PROMPT or few-shot
 examples. Persisted alongside every extraction for eval attribution.
+
+v0.6: adds native `composite_groups` guidance for explicit OR/AND
+bundles. The flat `criteria` list still carries the parent criterion
+for compatibility; subchecks live under `composite_groups` until the
+main scorer consumes boolean group semantics.
 
 v0.5: precision-first follow-up after v0.4 regressed the retained
 layer-2 sample. Keeps the Scope recall intent, but makes Observation
@@ -128,6 +135,16 @@ visible entity spans. Do not leave `mentions` empty merely because a \
 typed payload already captured the main condition, drug, lab, age, or \
 sex. Mentions are audit/eval spans, not matcher payloads. They must \
 use exact source words, not paraphrases.
+15. Native composite groups. When a source bullet is an explicit \
+boolean bundle with semicolon-delimited OR or AND branches, keep one \
+parent row in `criteria` (usually `free_text`) and also emit one \
+`composite_groups` entry. Use `operator='any_of'` for OR bundles and \
+`operator='all_of'` for AND bundles. Use stable ids based on the \
+parent row's zero-based criterion index: `criterion:<index>:group:001` \
+and `criterion:<index>:group:001:subcheck:<001-based-number>`. Each \
+subcheck gets its own matcher-shaped criterion when safe, otherwise \
+`free_text`. Do not duplicate subchecks as ordinary top-level \
+criteria until scorer wiring explicitly consumes composite groups.
 
 Mentions (audit field)
 ----------------------
@@ -678,6 +695,109 @@ FEW_SHOT_EXAMPLES: list[tuple[str, ExtractedCriteria]] = [
                     "labels; mentions are evaluated separately from matcher payloads."
                 )
             ),
+        ),
+    ),
+    (
+        # Native composite example. The parent remains one flat
+        # free_text criterion for compatibility, while subchecks carry
+        # the branch-level matcher payloads under composite_groups.
+        "Inclusion Criteria:\n"
+        "* Hyperglycemia (HbA1c >= 6.5%; OR fasting plasma glucose >= 126 mg/dL)\n",
+        ExtractedCriteria(
+            criteria=[
+                ExtractedCriterion(
+                    kind="free_text",
+                    polarity="inclusion",
+                    source_text=(
+                        "Hyperglycemia (HbA1c >= 6.5%; OR fasting plasma glucose >= 126 mg/dL)"
+                    ),
+                    negated=False,
+                    mood="actual",
+                    age=None,
+                    sex=None,
+                    condition=None,
+                    medication=None,
+                    measurement=None,
+                    temporal_window=None,
+                    free_text=FreeTextCriterion(
+                        note="explicit any_of composite; see composite_groups"
+                    ),
+                    mentions=[
+                        EntityMention(text="Hyperglycemia", type="Condition"),
+                        EntityMention(text="HbA1c", type="Measurement"),
+                        EntityMention(text="6.5%", type="Value"),
+                        EntityMention(text="fasting plasma glucose", type="Measurement"),
+                        EntityMention(text="126 mg/dL", type="Value"),
+                    ],
+                )
+            ],
+            composite_groups=[
+                CompositeCriterionGroup(
+                    group_id="criterion:0:group:001",
+                    operator="any_of",
+                    parent_criterion_index=0,
+                    parent_source_text=(
+                        "Hyperglycemia (HbA1c >= 6.5%; OR fasting plasma glucose >= 126 mg/dL)"
+                    ),
+                    subchecks=[
+                        CompositeCriterionSubcheck(
+                            subcheck_id="criterion:0:group:001:subcheck:001",
+                            operator="any_of",
+                            source_text="Hyperglycemia (HbA1c >= 6.5%",
+                            criterion=ExtractedCriterion(
+                                kind="measurement_threshold",
+                                polarity="inclusion",
+                                source_text="Hyperglycemia (HbA1c >= 6.5%",
+                                negated=False,
+                                mood="actual",
+                                age=None,
+                                sex=None,
+                                condition=None,
+                                medication=None,
+                                measurement=MeasurementCriterion(
+                                    measurement_text="hba1c",
+                                    operator=">=",
+                                    value=6.5,
+                                    value_low=None,
+                                    value_high=None,
+                                    unit="%",
+                                ),
+                                temporal_window=None,
+                                free_text=None,
+                                mentions=[],
+                            ),
+                        ),
+                        CompositeCriterionSubcheck(
+                            subcheck_id="criterion:0:group:001:subcheck:002",
+                            operator="any_of",
+                            source_text="fasting plasma glucose >= 126 mg/dL",
+                            criterion=ExtractedCriterion(
+                                kind="measurement_threshold",
+                                polarity="inclusion",
+                                source_text="fasting plasma glucose >= 126 mg/dL",
+                                negated=False,
+                                mood="actual",
+                                age=None,
+                                sex=None,
+                                condition=None,
+                                medication=None,
+                                measurement=MeasurementCriterion(
+                                    measurement_text="fasting plasma glucose",
+                                    operator=">=",
+                                    value=126.0,
+                                    value_low=None,
+                                    value_high=None,
+                                    unit="mg/dL",
+                                ),
+                                temporal_window=None,
+                                free_text=None,
+                                mentions=[],
+                            ),
+                        ),
+                    ],
+                )
+            ],
+            metadata=ExtractionMetadata(notes=""),
         ),
     ),
 ]
