@@ -100,7 +100,11 @@
   patient-evidence / benchmark tests 12/12, targeted ruff clean,
   `uv run mypy src scripts tests/evals/test_patient_evidence.py
   tests/evals/test_trial_benchmark.py` clean, JSON validation for the benchmark
-  artifact clean, and `git diff --check` clean.
+  artifact clean, `uv run pytest` 666/666, full ruff/format checks clean,
+  terminology regression gate clean, and `git diff --check` clean. Follow-up
+  planning now explicitly tracks MIMIC-IV access/use and official
+  TREC/TrialGPT benchmark ingestion instead of treating the local benchmark
+  scaffold as the end state.
   Previous: PLAN task 2.18 regression gate + 2026-05-05
   **open-resolver baseline snapshot.** Created
   `eval/baselines/2026-05-05/` with open-world deterministic
@@ -155,6 +159,17 @@
      `DocumentReference.content.attachment.data` only; cite note snippets and
      reuse the existing bounded adjudicator. Defer `url` attachments, broad
      vector search, and official benchmark ingestion.
+  6. Start the MIMIC-IV data track while access is pending: document the local
+     data-root contract, `.gitignore`/artifact rules, table-to-evidence mapping,
+     and minimum cohort plan. After credentialed access lands, use MIMIC-IV
+     as the realistic patient-evidence source for structured rows and, through
+     MIMIC-IV-Note when available, note snippets. Do not commit raw MIMIC data,
+     derived row-level excerpts, or any credentialed artifact to the repo.
+  7. Promote the TrialGPT/TREC work from local scaffold to external benchmark
+     plan: obtain the official TREC Clinical Trials topics/corpus/qrels and
+     TrialGPT code/data references, add an adapter into the local benchmark
+     schema, and report retrieval/ranking metrics separately from the local
+     patient-evidence calibration metrics.
 - **Assumptions:** oncology remains out of the core scope this week; broad
   multi-model sweeps wait until patient-evidence labels have enough signal;
   LLM-generated labels must not be treated as gold.
@@ -706,11 +721,14 @@
   passes. After labels are filled, run
   `scripts/eval.py patient-evidence --min-usable-labels 40` across the current
   `none`, `retrieval_only`, and bounded runs, then do a 10-row bounded smoke
-  before spending on a fresh full bounded rerun.
-- **Gates at HEAD:** focused tests 12/12; targeted ruff clean; targeted mypy
-  clean; generated benchmark JSON validates; `git diff --check` clean.
-  Full-suite gate still owed before merging this code-bearing branch.
-- **Branch:** `codex/patient-evidence-calibration-report`.
+  before spending on a fresh full bounded rerun. In parallel, prepare the
+  MIMIC-IV data/governance adapter and official TREC/TrialGPT ingestion plan;
+  do not block the current label/reporting work on MIMIC access.
+- **Gates at HEAD:** `uv run pytest` 666/666; `uv run ruff check .` clean;
+  `uv run ruff format --check .` clean; targeted mypy clean; generated
+  benchmark JSON validates; terminology regression gate clean; `git diff --check`
+  clean.
+- **Branch:** `main`.
 
 ### Non-trivial open follow-ups
 
@@ -755,6 +773,19 @@ so they don't get lost between sessions.
   explicit absence, insufficient evidence, temporal/as-of cases,
   note-vs-structured contradiction, and prompt injection in patient
   narrative text.
+- **MIMIC-IV access, governance, and evidence adapter.** MIMIC-IV should be the
+  realistic patient-evidence track, not a replacement for the current
+  Synthea-based unit/calibration fixtures. While access is pending, define the
+  local data-root contract and adapter interfaces. Once credentialed access is
+  granted through PhysioNet, map MIMIC-IV `hosp`/`icu` tables into the same
+  citeable patient-row interface used by Synthea and map MIMIC-IV-Note into the
+  note-snippet interface. Raw MIMIC data, row-level exports, and derived
+  credentialed snippets stay outside git and outside public artifacts.
+- **Official TREC/TrialGPT benchmark ingestion.** The local benchmark scaffold
+  is useful but insufficient for "score our system against others." Add the
+  official TREC Clinical Trials topics/corpus/qrels and TrialGPT code/data
+  references as an external benchmark adapter, then report standard retrieval
+  and ranking metrics separately from internal patient-evidence calibration.
 - **Robust Synthea generation + realism gaps.** The current Nov 2021
   sample is useful for loader/matcher bring-up but too small and too
   clean to support strong demo/eval claims. Follow
@@ -868,8 +899,10 @@ prove correctness over breadth I couldn't validate."
 | Source | Role | Risks |
 |---|---|---|
 | **Synthea v4.0.0** (sample data, FHIR R4) | Synthetic patient records. Provides deterministic ground truth for numeric cardiometabolic criteria. | Structured FHIR rows are not a full chart. Absence of a row should be treated as insufficient evidence unless a closed-world eval mode is explicitly enabled. Oncology depth is shallow; do not use it for core validation without supplementation. |
+| **MIMIC-IV / MIMIC-IV-Note** (credentialed PhysioNet access; Phase 3) | Realistic deidentified EHR evidence for patient-side matching once access is approved. Use `hosp`/`icu` tables for structured evidence and MIMIC-IV-Note for note snippets that stress free-text retrieval/adjudication. | Credentialed data must stay outside git and public artifacts. Dates are deidentified and patient-relative; notes require strict citation, prompt-injection handling, and no raw excerpt leakage beyond the local credentialed environment. This validates realism, not public demo distribution. |
 | **ClinicalTrials.gov v2 API** | Real trial protocols (eligibility text, conditions, phase, sponsor). | Eligibility criteria are free text — extraction is the hard part. |
 | **Chia corpus** (Phase IV, 1,000 trials, hand-annotated) | Golden ground truth for the criterion-extraction step (entities + relationships per the Chia schema). | Doesn't overlap perfectly with our chosen domains; use the schema everywhere, use the labels where they fit. |
+| **TREC Clinical Trials / TrialGPT** (Phase 3 external benchmark) | External patient-summary-to-trial retrieval/ranking benchmark and architecture comparison. The local scaffold already mirrors retrieval -> criterion matching -> ranking; official ingestion is needed for comparable scores. | TREC/TrialGPT benchmark results answer a different question from patient-evidence calibration: ranking against external relevance judgments, not whether a specific local FHIR row supports a criterion. Keep metrics/reporting separate. |
 
 **Curated working set targets:**
 
@@ -975,16 +1008,18 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 3.2 | Cost/quality sweep: same 50–100 in-scope cardiometabolic pairs, every model at every LLM-enabled node, log cost + composite quality score. Include deterministic-only and retrieval-only baselines so the dashboard can show how much value each additional LLM level adds. Preconditions: complete the open terminology resolver baseline (2.17/2.18) so cost/quality is not dominated by avoidable `unmapped_concept`, then fill the 60-row patient-evidence labels. The immediate blocker is the calibrated label set: target 60/60, minimum useful gate 40/60, with no LLM-generated labels treated as gold. Adjudicator token/cost telemetry now persists on `ScorePairResult.llm_calls` and the v3 `eval/runs.sqlite` schema (`adjudicator_cost_usd` / `adjudicator_input_tokens` / `adjudicator_output_tokens` / `adjudicator_calls`), so routing economics are already auditable from local eval artifacts. | 4 |
 | 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). Start with efficient measured reruns over `none`, `retrieval_only`, and one bounded-adjudication model before broad model sweeps; the policy should say when the system has enough support to flag a possible match and when it must abstain. | 4 |
 | 3.3a | **TrialGPT/TREC-style benchmark scaffold.** Add a local benchmark schema/exporter that frames our seed around TrialGPT's retrieval -> criterion matching -> ranking shape and the TREC Clinical Trials patient-summary-to-suitable-trials task. This is a lightweight local scaffold for comparable reporting, not full official TREC ingestion. *First slice done — `clinical_demo.evals.trial_benchmark` defines patient-summary queries, trial-ranking candidates, criterion matching cases, prediction/metric schemas, and unknown-safe MRR / recall@10 helpers. `scripts/export_trial_benchmark.py` exports the 49-pair seed into `eval/benchmarks/local_trialgpt_trec_seed.json` (27 patient queries, 49 candidate trials, 60 criterion cases).* | 2 |
+| 3.3b | **Official TREC/TrialGPT benchmark ingestion.** Download/register the official TREC Clinical Trials topics, trial corpus, and relevance judgments; pull the TrialGPT code/data references; write an adapter from external patient-summary/trial records into `clinical_demo.evals.trial_benchmark`; and report standard retrieval/ranking metrics such as recall@k, precision@k, nDCG@k, and MRR. Keep this as an external benchmark scoreboard, separate from the internal FHIR-row citation calibration. | 4 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
 | 3.6 | **Patient note evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. Coming-week v0 is deliberately narrower: parse `DocumentReference.content.attachment.data` only, cite snippets as patient source rows, and reuse the existing bounded adjudicator if calibration/reporting finishes with enough time left. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
+| 3.6a | **MIMIC-IV evidence adapter and data governance.** While access is pending, define `MIMIC_DATA_ROOT`/BigQuery config, ignored local artifact paths, and table-to-evidence mappings. After access is approved, adapt MIMIC-IV `hosp`/`icu` rows into citeable structured patient evidence and MIMIC-IV-Note into citeable note snippets using the same retrieval/adjudication interfaces. No raw MIMIC data, derived row-level exports, or note excerpts are committed or included in public reports. | 5 |
 | 3.7 | Reviewer UI v1: accept/override/flag with feedback persistence; basic auth gate (single-user is fine); polish. | 4 |
 | 3.8 | Deploy to `juliusm.com`; smoke test; capture a screen-recording fallback in case live demo dies. | 3 |
 | 3.9 | **Deployment readiness doc** — see §7. Includes a real revision pass. | 11 |
 | 3.10 | 20-minute presentation deck — see §8. | 4 |
 | 3.11 | Project README and repo polish (architecture diagram, eval results table, "how to reproduce", honest limitations section). | 3 |
 | 3.12 | **Performance pass (far-future / after correctness).** Profile end-to-end latency before optimizing. Candidate work: precompute/cache patient profiles and note indexes, parallelize per-criterion deterministic matches, batch or cache terminology resolution, avoid duplicate extraction/cache reads, stream API progress for long graph runs, tune LLM matcher/critic concurrency with rate-limit guards, and add latency/cost budgets to eval reports so speedups are measured rather than guessed. | 4 |
-| **Phase 3 total** | | **~56 hr** |
+| **Phase 3 total** | | **~65 hr** |
 | **Exit criterion** | Deployed demo, dashboard, writeup, deck. The whole story can be told in 20 minutes. | |
 
 ### Phase 4 — Buffer / dogfood
@@ -996,7 +1031,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 4.3 | Anything that overflowed earlier phases. | flex |
 | **Phase 4 total** | | **~10–15 hr** |
 
-**Grand total target: ~132 hours**, with hard scope cuts available (§9).
+**Grand total target: ~141 hours**, with hard scope cuts available (§9).
 
 ---
 
