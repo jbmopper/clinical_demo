@@ -153,6 +153,28 @@ def test_traced_forwards_to_client_when_configured(
     assert rec.updates == [{"output": {"ok": True}, "usage_details": {"input": 10, "output": 20}}]
 
 
+def test_traced_sanitizes_exported_payloads(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _install_fake_client(monkeypatch)
+
+    with obs.traced(
+        "patient_note",
+        as_type="generation",
+        input="patient_id=abc123 called 303-555-1212",
+        metadata={"patient_id": "P-test", "nct_id": "NCT00000000"},
+    ) as span:
+        span.update(output={"note": "MRN: A12345 on 2024-12-01"})
+
+    rec = fake.spans[0]
+    assert "abc123" not in rec.start_kwargs["input"]
+    assert "303-555-1212" not in rec.start_kwargs["input"]
+    assert rec.start_kwargs["metadata"]["patient_id"] != "P-test"
+    assert rec.start_kwargs["metadata"]["nct_id"] == "NCT00000000"
+    assert "A12345" not in rec.updates[-1]["output"]["note"]
+    assert "2024-12-01" not in rec.updates[-1]["output"]["note"]
+
+
 def test_flush_forwards_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
     fake = _install_fake_client(monkeypatch)
     obs.flush()

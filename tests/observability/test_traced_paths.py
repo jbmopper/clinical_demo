@@ -175,7 +175,8 @@ def test_score_pair_emits_parent_span_with_extractor_nested(
     parent = recording_client.spans[0]
     assert parent.name == "score_pair"
     assert parent.start_kwargs["as_type"] == "span"
-    assert parent.start_kwargs["metadata"]["patient_id"] == patient.patient_id
+    assert parent.start_kwargs["metadata"]["patient_id"] != patient.patient_id
+    assert parent.start_kwargs["metadata"]["patient_id"].startswith("<")
     assert parent.start_kwargs["metadata"]["nct_id"] == trial.nct_id
     update = parent.updates[-1]
     assert update["output"]["eligibility"] == result.eligibility

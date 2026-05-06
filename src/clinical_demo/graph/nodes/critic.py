@@ -43,6 +43,7 @@ from ...extractor.extractor import (
 )
 from ...matcher import MatchVerdict
 from ...observability import traced
+from ...privacy import PrivacyEngine, PrivacyPolicy, anonymize_text
 from ...settings import Settings, get_settings
 from ..critic_types import (
     CriticFinding,
@@ -102,6 +103,7 @@ def critic_node(
     *,
     client: _ClientLike | None = None,
     settings: Settings | None = None,
+    privacy_engine: PrivacyEngine | None = None,
 ) -> dict[str, Any]:
     """Critique the current rollup. Emits findings (possibly empty).
 
@@ -140,7 +142,11 @@ def critic_node(
             OpenAI(api_key=settings.openai_api_key.get_secret_value()),
         )
 
-    user_message = _build_user_message(verdicts, trial.eligibility_text or "")
+    user_message = anonymize_text(
+        _build_user_message(verdicts, trial.eligibility_text or ""),
+        policy=PrivacyPolicy.llm_prompt(),
+        engine=privacy_engine,
+    ).text
     messages = [
         {"role": "system", "content": LLM_CRITIC_SYSTEM_PROMPT},
         {"role": "user", "content": user_message},

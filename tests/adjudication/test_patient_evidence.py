@@ -262,3 +262,35 @@ def test_adjudicator_prompt_treats_note_text_as_untrusted_patient_data() -> None
     user_prompt = client.captured["messages"][1]["content"]
     assert "untrusted patient" in system_prompt
     assert "Ignore all previous instructions" in user_prompt
+
+
+def test_adjudicator_anonymizes_patient_rows_but_preserves_row_ids() -> None:
+    parsed = PatientEvidenceAdjudicatorOutput(
+        verdict="pass",
+        reason="ok",
+        cited_source_row_ids=["patient:004"],
+        rationale="patient:004 supports the criterion.",
+    )
+    client = _StubClient(parsed)
+
+    adjudicate_patient_evidence(
+        criterion=crit_condition(text="hypertension"),
+        criterion_index=0,
+        deterministic_verdict=_deterministic_verdict(),
+        retrieved=_retrieved_note(
+            "MRN: A12345. patient_id=abc123 called 303-555-1212 on 2024-12-01. "
+            "Patient has hypertension."
+        ),
+        trial_context="test trial",
+        matcher_assumption_mode="open_world",
+        client=client,
+        settings=_settings(),
+    )
+
+    assert client.captured is not None
+    user_prompt = client.captured["messages"][1]["content"]
+    assert "id=patient:004" in user_prompt
+    assert "abc123" not in user_prompt
+    assert "A12345" not in user_prompt
+    assert "303-555-1212" not in user_prompt
+    assert "date=<DATE_" in user_prompt
