@@ -206,7 +206,15 @@ def test_build_patient_evidence_rows_attaches_source_row_ids_and_labels() -> Non
                 value="Type 2 diabetes mellitus",
                 code="44054006",
                 system="http://snomed.info/sct",
-            )
+            ),
+            LayerThreeSourceRecord(
+                source="patient",
+                kind="note",
+                label="Progress note",
+                value="Assessment: type 2 diabetes remains active.",
+                date="2024-12-01",
+                status="note_id=doc1",
+            ),
         ],
         trial=[
             LayerThreeSourceRecord(
@@ -233,15 +241,57 @@ def test_build_patient_evidence_rows_attaches_source_row_ids_and_labels() -> Non
     )
 
     assert rows[0].source_rows[0].row_id == "patient:000"
-    assert rows[0].source_rows[1].row_id == "trial:000"
+    assert rows[0].source_rows[1].row_id == "patient:001"
+    assert rows[0].source_rows[2].row_id == "trial:000"
     assert rows[0].eval_slice == ""
     assert rows[0].matcher_assumption_mode == DEFAULT_MATCHER_ASSUMPTION_MODE
-    assert rows[0].retrieved_source_row_ids == ["patient:000"]
+    assert rows[0].retrieved_structured_source_row_ids == ["patient:000"]
+    assert rows[0].retrieved_note_source_row_ids == ["patient:001"]
+    assert rows[0].retrieved_source_row_counts == {"condition": 1, "note": 1}
+    assert rows[0].source_row_counts == {
+        "patient:condition": 1,
+        "patient:note": 1,
+        "trial:trial_field": 1,
+    }
+    assert rows[0].evidence_retrieval_state == "structured_and_note_retrieved"
+    assert rows[0].free_text_review_hint == "note_evidence_retrieved"
+    assert rows[0].mapping_state == "all_mapped"
+    assert rows[0].concept_mappings[0].surface == "type 2 diabetes"
+    assert rows[0].concept_mappings[0].mapped is True
+    assert rows[0].unmapped_surfaces == []
+    assert "Open-world" in rows[0].open_world_label_guidance
+    assert "Closed-world" in rows[0].closed_world_label_guidance
     assert rows[0].retrieval_reasons["patient:000"]
     assert rows[0].existing_label is not None
     assert rows[0].existing_label.label == "supports_present"
     assert rows[0].existing_label.matcher_assumption_mode == DEFAULT_MATCHER_ASSUMPTION_MODE
     assert summarize_patient_evidence_rows(rows) == {"condition_present": 1}
+
+
+def test_build_patient_evidence_rows_marks_mapping_gap_and_absence_guidance() -> None:
+    target = JudgeTarget(
+        pair_id="p1__T1",
+        patient_id="p1",
+        nct_id="T1",
+        criterion_index=0,
+        verdict=MatchVerdict(
+            criterion=crit_condition(text="mystery syndrome"),
+            verdict="indeterminate",
+            reason="unmapped_concept",
+            rationale="No ConceptSet mapping.",
+            evidence=[],
+            matcher_version=MATCHER_VERSION,
+        ),
+    )
+    context = LayerThreeSourceContext(patient=[], trial=[])
+
+    rows = build_patient_evidence_rows([target], source_contexts={"p1__T1": context})
+
+    assert rows[0].mapping_state == "all_unmapped"
+    assert rows[0].unmapped_surfaces == ["mystery syndrome"]
+    assert rows[0].evidence_retrieval_state == "no_patient_evidence_retrieved"
+    assert rows[0].free_text_review_hint == "unmapped_or_no_structured_evidence"
+    assert "not proof of absence" in rows[0].open_world_label_guidance
 
 
 def test_patient_evidence_label_completeness_flags_missing_expected_verdict() -> None:
@@ -279,9 +329,23 @@ def test_build_patient_evidence_report_scores_verdicts_citations_and_costs() -> 
         reasons=["term:smoking"],
         note="Smoking history: Current smoker",
     )
+    cited_note = RetrievedPatientRowEvidence(
+        row_id="patient:003",
+        row_kind="note",
+        label="Progress note",
+        value="Current smoker documented in note.",
+        score=8,
+        reasons=["kind:note", "term:smoking"],
+        note="Progress note: Current smoker documented in note.",
+    )
     run = _run(
         [
-            _verdict("condition_present", verdict="pass", reason="ok", evidence=[cited]),
+            _verdict(
+                "condition_present",
+                verdict="pass",
+                reason="ok",
+                evidence=[cited, cited_note],
+            ),
             _verdict("measurement_threshold", verdict="indeterminate", reason="no_data"),
         ]
     )
@@ -322,9 +386,13 @@ def test_build_patient_evidence_report_scores_verdicts_citations_and_costs() -> 
     assert metrics.citation_targets == 1
     assert metrics.citation_matches == 1
     assert metrics.citation_agreement == 1.0
+    assert metrics.retrieved_patient_row_counts == {"condition": 1, "note": 1}
+    assert metrics.cited_patient_row_counts == {"condition": 1, "note": 1}
     assert metrics.adjudicator_calls == 1
     assert metrics.adjudicator_cost_usd == 0.0012
-    assert "Citation agreement" in render_patient_evidence_report(report)
+    rendered = render_patient_evidence_report(report)
+    assert "Citation agreement" in rendered
+    assert "Retrieved rows" in rendered
 
 
 def test_patient_evidence_report_tracks_case_rollup_movement() -> None:

@@ -25,8 +25,13 @@ from clinical_demo.evals.layer_three import (
 )
 from clinical_demo.evals.run import RunResult
 from clinical_demo.matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode, Verdict
+from clinical_demo.matcher.concept_lookup import lookup_condition, lookup_lab, lookup_medication
 from clinical_demo.matcher.verdict import MatchVerdict
-from clinical_demo.retrieval import RetrievalSourceRow, retrieve_structured_patient_evidence
+from clinical_demo.retrieval import (
+    RetrievalSourceRow,
+    RetrievedPatientEvidence,
+    retrieve_structured_patient_evidence,
+)
 
 PatientEvidenceLabel = Literal[
     "supports_present",
@@ -35,6 +40,24 @@ PatientEvidenceLabel = Literal[
     "insufficient_evidence",
 ]
 PatientEvidenceScope = Literal["cardiometabolic_core", "all"]
+EvidenceRetrievalState = Literal[
+    "structured_and_note_retrieved",
+    "structured_retrieved",
+    "note_retrieved",
+    "no_patient_evidence_retrieved",
+]
+FreeTextReviewHint = Literal[
+    "not_needed",
+    "criterion_is_free_text",
+    "note_evidence_retrieved",
+    "unmapped_or_no_structured_evidence",
+]
+MappingState = Literal[
+    "all_mapped",
+    "some_unmapped",
+    "all_unmapped",
+    "no_mappable_slots",
+]
 
 CARDIOMETABOLIC_SLICES = frozenset(
     {
@@ -67,6 +90,17 @@ class PatientEvidenceSourceRow(LayerThreeSourceRecord):
     row_id: str
 
 
+class PatientEvidenceConceptMapping(BaseModel):
+    """Mapping status for one criterion surface the matcher can code."""
+
+    slot: Literal["condition", "medication", "measurement", "temporal_event"]
+    surface: str
+    mapped: bool
+    concept_set_name: str | None = None
+    system: str | None = None
+    codes: list[str] = Field(default_factory=list)
+
+
 class PatientEvidenceCalibrationRow(BaseModel):
     """Reviewer-facing candidate row for patient-side evidence labeling."""
 
@@ -90,8 +124,19 @@ class PatientEvidenceCalibrationRow(BaseModel):
     judge_error_categories: list[str] = Field(default_factory=list)
     judge_rationale: str | None = None
     source_rows: list[PatientEvidenceSourceRow] = Field(default_factory=list)
+    source_row_counts: dict[str, int] = Field(default_factory=dict)
     retrieved_source_row_ids: list[str] = Field(default_factory=list)
+    retrieved_source_row_counts: dict[str, int] = Field(default_factory=dict)
+    retrieved_structured_source_row_ids: list[str] = Field(default_factory=list)
+    retrieved_note_source_row_ids: list[str] = Field(default_factory=list)
     retrieval_reasons: dict[str, list[str]] = Field(default_factory=dict)
+    concept_mappings: list[PatientEvidenceConceptMapping] = Field(default_factory=list)
+    mapping_state: MappingState = "no_mappable_slots"
+    unmapped_surfaces: list[str] = Field(default_factory=list)
+    evidence_retrieval_state: EvidenceRetrievalState = "no_patient_evidence_retrieved"
+    free_text_review_hint: FreeTextReviewHint = "not_needed"
+    open_world_label_guidance: str = ""
+    closed_world_label_guidance: str = ""
     existing_label: PatientEvidenceHumanLabel | None = None
 
 
@@ -121,6 +166,8 @@ class PatientEvidenceRunMetrics(BaseModel):
     citation_targets: int = 0
     citation_matches: int = 0
     citation_agreement: float | None = None
+    retrieved_patient_row_counts: dict[str, int] = Field(default_factory=dict)
+    cited_patient_row_counts: dict[str, int] = Field(default_factory=dict)
     eligibility_counts: dict[str, int] = Field(default_factory=dict)
     adjudicator_calls: int = 0
     adjudicator_cost_usd: float = 0.0
@@ -281,19 +328,22 @@ def render_patient_evidence_report(report: PatientEvidenceReport) -> str:
     lines.extend(["", "## Runs", ""])
     lines.append(
         "| Run | LLM use | Comparable | Accuracy | Abstention | Citation agreement | "
-        "Eligibility | Adjudicator |"
+        "Retrieved rows | Decisive citations | Eligibility | Adjudicator |"
     )
-    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
+    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     for item in report.runs:
         eligibility = " / ".join(
             f"{key}={value}" for key, value in sorted(item.eligibility_counts.items())
         )
+        retrieved_counts = _counts_cell(item.retrieved_patient_row_counts)
+        cited_counts = _counts_cell(item.cited_patient_row_counts)
         adjudicator = f"{item.adjudicator_calls} calls / ${item.adjudicator_cost_usd:.4f}"
         lines.append(
             f"| `{item.run_id}` | `{item.llm_use_level or 'unknown'}` | "
             f"{item.comparable_targets}/{item.total_label_targets} | "
             f"{_pct(item.verdict_accuracy)} | {_pct(item.abstention_rate)} | "
-            f"{_citation_cell(item)} | {eligibility or '(none)'} | {adjudicator} |"
+            f"{_citation_cell(item)} | {retrieved_counts} | {cited_counts} | "
+            f"{eligibility or '(none)'} | {adjudicator} |"
         )
     if report.mode_deltas:
         lines.extend(["", "## Case Rollup Movement", ""])
@@ -416,6 +466,12 @@ def build_patient_evidence_rows(
             [RetrievalSourceRow.model_validate(row.model_dump()) for row in source_rows],
             limit=12,
         )
+        concept_mappings = _criterion_concept_mappings(target.verdict)
+        retrieved_ids = [item.row.row_id for item in retrieved]
+        retrieved_structured_ids = [
+            item.row.row_id for item in retrieved if item.row.kind != "note"
+        ]
+        retrieved_note_ids = [item.row.row_id for item in retrieved if item.row.kind == "note"]
         rows.append(
             PatientEvidenceCalibrationRow(
                 pair_id=target.pair_id,
@@ -438,8 +494,34 @@ def build_patient_evidence_rows(
                 judge_error_categories=list(judgment.error_categories) if judgment else [],
                 judge_rationale=judgment.rationale if judgment else None,
                 source_rows=source_rows,
-                retrieved_source_row_ids=[item.row.row_id for item in retrieved],
+                source_row_counts=_source_row_counts(source_rows),
+                retrieved_source_row_ids=retrieved_ids,
+                retrieved_source_row_counts=_retrieved_row_counts(retrieved),
+                retrieved_structured_source_row_ids=retrieved_structured_ids,
+                retrieved_note_source_row_ids=retrieved_note_ids,
                 retrieval_reasons={item.row.row_id: item.reasons for item in retrieved},
+                concept_mappings=concept_mappings,
+                mapping_state=_mapping_state(concept_mappings),
+                unmapped_surfaces=[
+                    mapping.surface for mapping in concept_mappings if not mapping.mapped
+                ],
+                evidence_retrieval_state=_evidence_retrieval_state(
+                    retrieved_structured_ids=retrieved_structured_ids,
+                    retrieved_note_ids=retrieved_note_ids,
+                ),
+                free_text_review_hint=_free_text_review_hint(
+                    target.verdict,
+                    retrieved_structured_ids=retrieved_structured_ids,
+                    retrieved_note_ids=retrieved_note_ids,
+                    concept_mappings=concept_mappings,
+                ),
+                open_world_label_guidance=_open_world_label_guidance(
+                    target.verdict,
+                    retrieved_structured_ids=retrieved_structured_ids,
+                    retrieved_note_ids=retrieved_note_ids,
+                    concept_mappings=concept_mappings,
+                ),
+                closed_world_label_guidance=_closed_world_label_guidance(target.verdict),
                 existing_label=labels.get(key),
             )
         )
@@ -518,6 +600,169 @@ def summarize_patient_evidence_rows(
     return dict(sorted(Counter(row.candidate_bucket for row in rows).items()))
 
 
+def _criterion_concept_mappings(
+    verdict: MatchVerdict,
+) -> list[PatientEvidenceConceptMapping]:
+    criterion = verdict.criterion
+    mappings: list[PatientEvidenceConceptMapping] = []
+    if criterion.condition is not None:
+        mappings.append(
+            _concept_mapping(
+                slot="condition",
+                surface=criterion.condition.condition_text,
+                concept_set=lookup_condition(criterion.condition.condition_text),
+            )
+        )
+    if criterion.medication is not None:
+        mappings.append(
+            _concept_mapping(
+                slot="medication",
+                surface=criterion.medication.medication_text,
+                concept_set=lookup_medication(criterion.medication.medication_text),
+            )
+        )
+    if criterion.measurement is not None:
+        mappings.append(
+            _concept_mapping(
+                slot="measurement",
+                surface=criterion.measurement.measurement_text,
+                concept_set=lookup_lab(criterion.measurement.measurement_text),
+            )
+        )
+    if criterion.temporal_window is not None:
+        mappings.append(
+            _concept_mapping(
+                slot="temporal_event",
+                surface=criterion.temporal_window.event_text,
+                concept_set=lookup_condition(criterion.temporal_window.event_text),
+            )
+        )
+    return mappings
+
+
+def _concept_mapping(
+    *,
+    slot: Literal["condition", "medication", "measurement", "temporal_event"],
+    surface: str,
+    concept_set: object | None,
+) -> PatientEvidenceConceptMapping:
+    if concept_set is None:
+        return PatientEvidenceConceptMapping(
+            slot=slot,
+            surface=surface,
+            mapped=False,
+        )
+    return PatientEvidenceConceptMapping(
+        slot=slot,
+        surface=surface,
+        mapped=True,
+        concept_set_name=getattr(concept_set, "name", None),
+        system=getattr(concept_set, "system", None),
+        codes=sorted(getattr(concept_set, "codes", [])),
+    )
+
+
+def _mapping_state(mappings: list[PatientEvidenceConceptMapping]) -> MappingState:
+    if not mappings:
+        return "no_mappable_slots"
+    mapped = sum(1 for mapping in mappings if mapping.mapped)
+    if mapped == len(mappings):
+        return "all_mapped"
+    if mapped == 0:
+        return "all_unmapped"
+    return "some_unmapped"
+
+
+def _source_row_counts(rows: list[PatientEvidenceSourceRow]) -> dict[str, int]:
+    counts: Counter[str] = Counter(f"{row.source}:{row.kind}" for row in rows)
+    return dict(sorted(counts.items()))
+
+
+def _retrieved_row_counts(retrieved: list[RetrievedPatientEvidence]) -> dict[str, int]:
+    counts: Counter[str] = Counter(item.row.kind for item in retrieved)
+    return dict(sorted(counts.items()))
+
+
+def _evidence_retrieval_state(
+    *,
+    retrieved_structured_ids: list[str],
+    retrieved_note_ids: list[str],
+) -> EvidenceRetrievalState:
+    if retrieved_structured_ids and retrieved_note_ids:
+        return "structured_and_note_retrieved"
+    if retrieved_structured_ids:
+        return "structured_retrieved"
+    if retrieved_note_ids:
+        return "note_retrieved"
+    return "no_patient_evidence_retrieved"
+
+
+def _free_text_review_hint(
+    verdict: MatchVerdict,
+    *,
+    retrieved_structured_ids: list[str],
+    retrieved_note_ids: list[str],
+    concept_mappings: list[PatientEvidenceConceptMapping],
+) -> FreeTextReviewHint:
+    if verdict.criterion.kind == "free_text":
+        return "criterion_is_free_text"
+    if retrieved_note_ids:
+        return "note_evidence_retrieved"
+    if (
+        verdict.reason in {"human_review_required", "unmapped_concept", "no_data"}
+        and not retrieved_structured_ids
+    ) or any(not mapping.mapped for mapping in concept_mappings):
+        return "unmapped_or_no_structured_evidence"
+    return "not_needed"
+
+
+def _open_world_label_guidance(
+    verdict: MatchVerdict,
+    *,
+    retrieved_structured_ids: list[str],
+    retrieved_note_ids: list[str],
+    concept_mappings: list[PatientEvidenceConceptMapping],
+) -> str:
+    if retrieved_note_ids:
+        return (
+            "Open-world: review note rows as patient evidence; decisive labels need cited "
+            "note or structured row ids."
+        )
+    if retrieved_structured_ids:
+        return (
+            "Open-world: cite retrieved structured patient rows when they support or "
+            "contradict the criterion."
+        )
+    if any(not mapping.mapped for mapping in concept_mappings):
+        return (
+            "Open-world: unmapped surfaces may indicate a matcher mapping gap; absence of "
+            "retrieved rows is not proof of absence."
+        )
+    if verdict.reason == "no_data":
+        return "Open-world: no patient row is insufficient evidence, not proof of absence."
+    return "Open-world: label only what the cited patient rows actually support."
+
+
+def _closed_world_label_guidance(verdict: MatchVerdict) -> str:
+    if verdict.criterion.kind in {
+        "condition_present",
+        "condition_absent",
+        "medication_present",
+        "medication_absent",
+        "temporal_window",
+    }:
+        return (
+            "Closed-world: if the patient file is treated as complete for this data type, "
+            "absence of matching rows can support absence; otherwise keep open-world."
+        )
+    if verdict.criterion.kind == "measurement_threshold":
+        return (
+            "Closed-world: missing measurements still need care; a complete file can prove "
+            "no recorded value, not that an unmeasured threshold is clinically false."
+        )
+    return "Closed-world: no special absence inference for this criterion type."
+
+
 def _run_metrics(
     run: RunResult,
     labels: list[PatientEvidenceHumanLabel],
@@ -550,12 +795,21 @@ def _run_metrics(
     llm_use_level = ""
     assumption = ""
     eligibility: Counter[str] = Counter()
+    retrieved_counts: Counter[str] = Counter()
+    cited_counts: Counter[str] = Counter()
     for record in run.cases:
         if record.result is None:
             continue
         llm_use_level = llm_use_level or record.result.llm_use_level
         assumption = assumption or record.result.matcher_assumption_mode
         eligibility[record.result.eligibility] += 1
+        for verdict in record.result.verdicts:
+            for evidence in verdict.evidence:
+                if evidence.kind != "retrieved_patient_row":
+                    continue
+                retrieved_counts[evidence.row_kind] += 1
+                if verdict.verdict in {"pass", "fail"}:
+                    cited_counts[evidence.row_kind] += 1
         calls += record.result.summary.adjudicator_calls
         total_cost += record.result.summary.adjudicator_cost_usd or 0.0
         input_tokens += record.result.summary.adjudicator_input_tokens or 0
@@ -577,6 +831,8 @@ def _run_metrics(
         citation_targets=citation_targets,
         citation_matches=citation_matches,
         citation_agreement=_ratio(citation_matches, citation_targets),
+        retrieved_patient_row_counts=dict(sorted(retrieved_counts.items())),
+        cited_patient_row_counts=dict(sorted(cited_counts.items())),
         eligibility_counts=dict(sorted(eligibility.items())),
         adjudicator_calls=calls,
         adjudicator_cost_usd=total_cost,
@@ -657,6 +913,12 @@ def _citation_cell(item: PatientEvidenceRunMetrics) -> str:
     return f"{_pct(item.citation_agreement)} ({item.citation_matches}/{item.citation_targets})"
 
 
+def _counts_cell(counts: dict[str, int]) -> str:
+    if not counts:
+        return "(none)"
+    return " / ".join(f"{key}={value}" for key, value in sorted(counts.items()))
+
+
 def _looks_patient_evidence_relevant(text: str) -> bool:
     needles = (
         "diagnos",
@@ -722,7 +984,11 @@ def _source_row_with_id(
 
 __all__ = [
     "CARDIOMETABOLIC_SLICES",
+    "EvidenceRetrievalState",
+    "FreeTextReviewHint",
+    "MappingState",
     "PatientEvidenceCalibrationRow",
+    "PatientEvidenceConceptMapping",
     "PatientEvidenceHumanLabel",
     "PatientEvidenceLabel",
     "PatientEvidenceLabelCompleteness",
