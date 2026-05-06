@@ -14,7 +14,7 @@ from collections.abc import Iterable, Sequence
 
 from pydantic import BaseModel, Field
 
-from clinical_demo.domain.patient import LabObservation, Medication, Patient
+from clinical_demo.domain.patient import ClinicalNote, LabObservation, Medication, Patient
 from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.matcher.concept_lookup import lookup_condition, lookup_lab, lookup_medication
@@ -49,6 +49,7 @@ def structured_source_rows_for_pair(
     max_conditions: int = 40,
     max_observations: int = 40,
     max_medications: int = 30,
+    max_note_snippets: int = 30,
 ) -> list[RetrievalSourceRow]:
     """Build compact patient/trial source rows with stable local IDs."""
 
@@ -76,6 +77,10 @@ def structured_source_rows_for_pair(
     medication_start = len(patient_rows)
     patient_rows.extend(
         _patient_medication_rows(patient, start_index=medication_start, limit=max_medications)
+    )
+    note_start = len(patient_rows)
+    patient_rows.extend(
+        _patient_note_rows(patient, start_index=note_start, limit=max_note_snippets)
     )
 
     trial_rows = [
@@ -236,14 +241,14 @@ def _criterion_terms(criterion: ExtractedCriterion) -> set[str]:
 
 def _preferred_patient_kinds(criterion: ExtractedCriterion) -> set[str]:
     if criterion.kind in {"condition_present", "condition_absent", "temporal_window"}:
-        return {"condition"}
+        return {"condition", "note"}
     if criterion.kind in {"medication_present", "medication_absent"}:
-        return {"medication"}
+        return {"medication", "note"}
     if criterion.kind == "measurement_threshold":
-        return {"observation"}
+        return {"observation", "note"}
     if criterion.kind in {"age", "sex"}:
         return {"demographics"}
-    return {"condition", "medication", "observation"}
+    return {"condition", "medication", "observation", "note"}
 
 
 def _anchored_codes(criterion: ExtractedCriterion) -> set[str]:
@@ -360,6 +365,31 @@ def _patient_medication_rows(
     ]
 
 
+def _patient_note_rows(
+    patient: Patient,
+    *,
+    start_index: int,
+    limit: int,
+) -> list[RetrievalSourceRow]:
+    rows: list[RetrievalSourceRow] = []
+    for note in sorted(patient.notes, key=_note_sort_key, reverse=True):
+        for snippet in _note_snippets(note):
+            rows.append(
+                RetrievalSourceRow(
+                    row_id=f"patient:{start_index + len(rows):03d}",
+                    source="patient",
+                    kind="note",
+                    label=note.title or "Clinical note",
+                    value=snippet,
+                    date=note.date.isoformat() if note.date else None,
+                    status=f"note_id={note.note_id}",
+                )
+            )
+            if len(rows) >= limit:
+                return rows
+    return rows
+
+
 def _condition_status(condition: object) -> str:
     if not getattr(condition, "is_clinical", False):
         return "non-clinical"
@@ -375,6 +405,42 @@ def _medication_sort_key(medication: Medication) -> tuple:
         medication.start_date,
         medication.concept.display or medication.concept.code or "",
     )
+
+
+def _note_sort_key(note: ClinicalNote) -> tuple:
+    return (
+        note.date is not None,
+        note.date,
+        note.note_id,
+    )
+
+
+def _note_snippets(note: ClinicalNote, *, max_chars: int = 420) -> list[str]:
+    snippets: list[str] = []
+    chunks = [chunk.strip() for chunk in re.split(r"(?<=[.!?])\s+|\n+", note.text) if chunk.strip()]
+    current = ""
+    for chunk in chunks:
+        if len(chunk) > max_chars:
+            if current:
+                snippets.append(current)
+                current = ""
+            snippets.extend(_chunk_text(chunk, max_chars=max_chars))
+            continue
+        if not current:
+            current = chunk
+            continue
+        if len(current) + 1 + len(chunk) <= max_chars:
+            current = f"{current} {chunk}"
+            continue
+        snippets.append(current)
+        current = chunk
+    if current:
+        snippets.append(current)
+    return snippets
+
+
+def _chunk_text(text: str, *, max_chars: int) -> list[str]:
+    return [text[index : index + max_chars].strip() for index in range(0, len(text), max_chars)]
 
 
 __all__ = [

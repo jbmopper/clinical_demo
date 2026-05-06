@@ -11,6 +11,7 @@ against a small human-labeled set.
 from __future__ import annotations
 
 import json
+import re
 import time
 from collections import Counter
 from collections.abc import Mapping
@@ -21,7 +22,7 @@ from openai import OpenAI
 from openai.types.chat import ParsedChatCompletion
 from pydantic import BaseModel, Field
 
-from clinical_demo.domain.patient import LabObservation, Medication, Patient
+from clinical_demo.domain.patient import ClinicalNote, LabObservation, Medication, Patient
 from clinical_demo.domain.trial import Trial
 from clinical_demo.evals.run import RunResult
 from clinical_demo.extractor.extractor import (
@@ -324,6 +325,7 @@ def build_source_context(
     max_conditions: int = 40,
     max_observations: int = 40,
     max_medications: int = 30,
+    max_note_snippets: int = 30,
 ) -> LayerThreeSourceContext:
     """Build compact patient/trial source rows for calibration review.
 
@@ -350,6 +352,7 @@ def build_source_context(
             *_patient_condition_rows(patient, limit=max_conditions),
             *_patient_observation_rows(patient, limit=max_observations),
             *_patient_medication_rows(patient, limit=max_medications),
+            *_patient_note_rows(patient, limit=max_note_snippets),
         ],
         trial=[
             LayerThreeSourceRecord(
@@ -454,6 +457,25 @@ def _patient_medication_rows(patient: Patient, *, limit: int) -> list[LayerThree
     ]
 
 
+def _patient_note_rows(patient: Patient, *, limit: int) -> list[LayerThreeSourceRecord]:
+    rows: list[LayerThreeSourceRecord] = []
+    for note in sorted(patient.notes, key=_note_sort_key, reverse=True):
+        for snippet in _note_snippets(note):
+            rows.append(
+                LayerThreeSourceRecord(
+                    source="patient",
+                    kind="note",
+                    label=note.title or "Clinical note",
+                    value=snippet,
+                    date=note.date.isoformat() if note.date else None,
+                    status=f"note_id={note.note_id}",
+                )
+            )
+            if len(rows) >= limit:
+                return rows
+    return rows
+
+
 def _condition_status(condition: Any) -> str:
     if not condition.is_clinical:
         return "non-clinical"
@@ -468,6 +490,41 @@ def _medication_sort_key(medication: Medication) -> tuple:
         medication.start_date,
         medication.concept.display or medication.concept.code or "",
     )
+
+
+def _note_sort_key(note: ClinicalNote) -> tuple:
+    return (
+        note.date is not None,
+        note.date,
+        note.note_id,
+    )
+
+
+def _note_snippets(note: ClinicalNote, *, max_chars: int = 420) -> list[str]:
+    snippets: list[str] = []
+    chunks = [chunk.strip() for chunk in re.split(r"(?<=[.!?])\s+|\n+", note.text) if chunk.strip()]
+    current = ""
+    for chunk in chunks:
+        if len(chunk) > max_chars:
+            if current:
+                snippets.append(current)
+                current = ""
+            snippets.extend(
+                chunk[index : index + max_chars].strip()
+                for index in range(0, len(chunk), max_chars)
+            )
+            continue
+        if not current:
+            current = chunk
+            continue
+        if len(current) + 1 + len(chunk) <= max_chars:
+            current = f"{current} {chunk}"
+            continue
+        snippets.append(current)
+        current = chunk
+    if current:
+        snippets.append(current)
+    return snippets
 
 
 def judge_target(
