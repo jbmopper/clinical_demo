@@ -5,6 +5,7 @@ Consumes `ExtractedCriterion` rows from the LLM extractor (see
 aggregator and reviewer UI consume.
 """
 
+from .composite import CompositeOperator, CompositeRollup, roll_up_composite_verdict
 from .concept_lookup import lookup_condition, lookup_lab, lookup_medication
 from .matcher import MATCHER_VERSION, match_criterion, match_extracted
 from .modes import (
@@ -33,6 +34,8 @@ __all__ = [
     "DEFAULT_MATCHER_ASSUMPTION_MODE",
     "MATCHER_VERSION",
     "ConditionEvidence",
+    "CompositeOperator",
+    "CompositeRollup",
     "DemographicsEvidence",
     "Evidence",
     "EvidenceKind",
@@ -51,4 +54,5 @@ __all__ = [
     "lookup_medication",
     "match_criterion",
     "match_extracted",
+    "roll_up_composite_verdict",
 ]
