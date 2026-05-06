@@ -32,6 +32,7 @@ from tests.matcher._fixtures import (
     crit_condition,
     crit_free_text,
     crit_measurement,
+    crit_temporal_window,
     make_condition,
     make_lab,
     make_patient,
@@ -482,3 +483,23 @@ def test_score_pair_does_not_override_extracted_age_sex() -> None:
     assert len(sex_rows) == 1
     assert sex_rows[0].sex is not None
     assert sex_rows[0].sex.sex == "FEMALE"
+
+
+def test_score_pair_applies_criterion_fixing_before_matching() -> None:
+    patient = make_patient(
+        conditions=[
+            make_condition(
+                code="46635009",
+                display="Type 1 diabetes mellitus",
+            )
+        ]
+    )
+    trial = make_trial(eligibility_text="Documented T1D diagnosis.")
+    extraction = _make_extraction([crit_temporal_window(event_text="T1D diagnosis", window_days=0)])
+
+    result = score_pair(patient, trial, AS_OF, extraction=extraction)
+
+    assert result.extraction.criteria[0].kind == "condition_present"
+    assert result.extraction.criteria[0].condition is not None
+    assert result.extraction.criteria[0].condition.condition_text == "type 1 diabetes"
+    assert result.verdicts[0].verdict == "pass"

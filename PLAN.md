@@ -83,7 +83,21 @@
   now fails if a surface preserved in a legacy `status=resolved` watchlist
   reappears in a run's `top_unmapped_surfaces`; the first watchlist
   lives at `eval/baselines/2026-05-05/resolved_surface_watchlist.json`.
-- **Last completed:** PLAN task 2.20 first slice —
+- **Last completed:** PLAN task 2.21 first slice —
+  **deterministic criterion fixing layer.** Added
+  `clinical_demo.extractor.fix.fix_extracted_criteria` between extraction
+  enrichment and matching in both imperative `score_pair` and LangGraph
+  `extract_node`. The first fixer pass normalizes known condition and
+  measurement surfaces, infers systolic/diastolic blood pressure when source
+  text says which one, converts zero-window diagnosis-shaped temporal rows
+  such as "T1D diagnosis" into condition criteria, and routes unsafe composites
+  to cited `free_text` review rows instead of letting them fall through as
+  generic atomic terminology misses. The original `source_text` is preserved
+  and fixer provenance is appended to extraction metadata / free-text notes.
+  Verification: `uv run pytest` 677/677, targeted criterion-fixer /
+  scoring / graph / terminology tests 110/110, targeted ruff clean, targeted
+  format check clean, targeted mypy clean.
+  Previous: PLAN task 2.20 first slice —
   **mapping expansion + `mapped` terminology language.** Renamed work-queue,
   regression-gate, and diagnostic report language from `resolved` to `mapped`
   while keeping legacy `status=resolved` watchlists and old surface-cache
@@ -742,20 +756,19 @@
   baseline regression with indeterminacy diagnostic): layer-1
   agreement 81.0%, coverage 55.3%, 89% of all indeterminates are
   `unmapped_concept`. Snapshots in `eval/baselines/2026-04-21/`.
-- **Next:** PLAN task 2.21 — add the criterion fixing layer for splittable
-  composites, surface normalization, unit/polarity repair, and candidate
-  mapping review. It should preserve original criterion text, attach mapping
-  provenance, and route unsafe fixes to `human_review_required` instead of
-  generic `unmapped_concept`. After that, bring note/free-text patient-evidence
-  LLM v0 into the normal path with cited
+- **Next:** Bring note/free-text patient-evidence LLM v0 into the normal path
+  with cited
   `DocumentReference.content.attachment.data` snippets and hand-crafted note
   fixtures, then fill/refresh the patient-evidence labels against the improved
-  system.
-- **Gates at HEAD:** `uv run pytest` 671/671; targeted terminology /
-  diagnostics tests 86/86; targeted ruff clean; targeted format check clean;
-  targeted mypy clean; mapped + legacy terminology regression gate clean;
-  `git diff --check` clean.
-- **Branch:** `codex/mapped-terminology-expansion`.
+  system. Follow-up criterion-fixer work remains: safe composite splitting,
+  richer mapping-candidate provenance, and LLM-assisted repair under
+  deterministic validators.
+- **Gates at HEAD:** `uv run pytest` 677/677; targeted criterion-fixer /
+  scoring / graph / terminology tests 110/110; targeted ruff clean; targeted
+  format check clean; targeted mypy clean; mapped + legacy terminology
+  regression gate clean; `git diff --check` clean.
+- **Branch:** `codex/criterion-fixing-layer` stacked on
+  `codex/mapped-terminology-expansion`.
 
 ### Non-trivial open follow-ups
 

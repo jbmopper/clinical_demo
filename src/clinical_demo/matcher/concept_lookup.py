@@ -32,6 +32,7 @@ from __future__ import annotations
 from clinical_demo.profile import ConceptSet
 from clinical_demo.profile.concept_sets import (
     BMI,
+    C_PEPTIDE,
     CHRONIC_KIDNEY_DISEASE,
     DIASTOLIC_BP,
     EGFR,
@@ -43,6 +44,7 @@ from clinical_demo.profile.concept_sets import (
     PLATELET_COUNT,
     PREDIABETES,
     SYSTOLIC_BP,
+    T1DM,
     T2DM,
 )
 from clinical_demo.settings import get_settings
@@ -68,6 +70,10 @@ _CONDITION_ALIASES: dict[str, ConceptSet] = {
     "t2dm": T2DM,
     "type ii diabetes": T2DM,
     "diabetes mellitus type 2": T2DM,
+    # T1DM
+    "type 1 diabetes": T1DM,
+    "type 1 diabetes mellitus": T1DM,
+    "t1d": T1DM,
     # Prediabetes
     "prediabetes": PREDIABETES,
     "pre-diabetes": PREDIABETES,
@@ -128,6 +134,11 @@ _LAB_ALIASES: dict[str, ConceptSet] = {
     "hemoglobin concentration": HEMOGLOBIN,
     "platelet count": PLATELET_COUNT,
     "platelets": PLATELET_COUNT,
+    # C-peptide
+    "c-peptide": C_PEPTIDE,
+    "c peptide": C_PEPTIDE,
+    "c-peptide concentrations": C_PEPTIDE,
+    "c peptide concentrations": C_PEPTIDE,
 }
 
 # Medications are intentionally NOT mapped in v0. The Synthea cohort

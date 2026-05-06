@@ -20,6 +20,7 @@ from typing import Any
 
 from ...extractor.enrich import enrich_with_structured_fields
 from ...extractor.extractor import extract_criteria
+from ...extractor.fix import fix_extracted_criteria
 from ...profile import PatientProfile
 from ...settings import Settings
 from ..state import ScoringState
@@ -54,7 +55,9 @@ def extract_node(
             settings=settings,
         )
 
-    enriched = enrich_with_structured_fields(extraction.extracted, state["trial"])
+    enriched = fix_extracted_criteria(
+        enrich_with_structured_fields(extraction.extracted, state["trial"])
+    )
     if enriched is not extraction.extracted:
         extraction = replace(extraction, extracted=enriched)
 

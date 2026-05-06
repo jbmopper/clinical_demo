@@ -38,6 +38,8 @@ from tests.matcher._fixtures import (
     crit_age,
     crit_condition,
     crit_free_text,
+    crit_temporal_window,
+    make_condition,
     make_patient,
     make_trial,
 )
@@ -159,6 +161,29 @@ def test_extraction_order_preserved_across_parallel_fan_in() -> None:
         "free_text",
         "age",
     ]
+
+
+def test_score_pair_graph_applies_criterion_fixing_before_fanout() -> None:
+    result = score_pair_graph(
+        make_patient(
+            conditions=[
+                make_condition(
+                    code="46635009",
+                    display="Type 1 diabetes mellitus",
+                )
+            ]
+        ),
+        make_trial(eligibility_text="Documented T1D diagnosis."),
+        AS_OF,
+        extractor_client=_extractor_stub(
+            [crit_temporal_window(event_text="T1D diagnosis", window_days=0)]
+        ),
+        llm_matcher_client=_llm_matcher_stub(),
+        settings=_settings(),
+    )
+
+    assert result.extraction.criteria[0].kind == "condition_present"
+    assert result.verdicts[0].verdict == "pass"
 
 
 # ---------- pre-supplied extraction ----------

@@ -8,6 +8,7 @@ from .extractor import (
     ExtractorRefusalError,
     extract_criteria,
 )
+from .fix import CRITERION_FIX_NOTE_PREFIX, fix_extracted_criteria
 from .prompt import PROMPT_VERSION, SYSTEM_PROMPT, build_messages
 from .schema import (
     CRITERION_KINDS,
@@ -30,6 +31,7 @@ from .schema import (
 )
 
 __all__ = [
+    "CRITERION_FIX_NOTE_PREFIX",
     "CRITERION_KINDS",
     "INJECTED_SOURCE_PREFIX",
     "PROMPT_VERSION",
@@ -57,4 +59,5 @@ __all__ = [
     "build_messages",
     "enrich_with_structured_fields",
     "extract_criteria",
+    "fix_extracted_criteria",
 ]

@@ -46,6 +46,7 @@ from ..domain.patient import Patient
 from ..domain.trial import Trial
 from ..extractor.enrich import enrich_with_structured_fields
 from ..extractor.extractor import ExtractionResult, extract_criteria
+from ..extractor.fix import fix_extracted_criteria
 from ..extractor.schema import ExtractedCriteria, ExtractorRunMeta
 from ..matcher import (
     DEFAULT_LLM_USE_LEVEL,
@@ -212,7 +213,9 @@ def score_pair(
         # `extraction` envelope untouched -- we only enrich the
         # in-memory copy used for matching, so the D-66 extractor
         # cache stays valid across CT.gov metadata updates.
-        enriched_criteria = enrich_with_structured_fields(extraction.extracted, trial)
+        enriched_criteria = fix_extracted_criteria(
+            enrich_with_structured_fields(extraction.extracted, trial)
+        )
 
         profile = PatientProfile(patient, as_of)
         verdicts = match_extracted(
