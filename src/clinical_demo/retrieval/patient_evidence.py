@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from clinical_demo.domain.patient import ClinicalNote, LabObservation, Medication, Patient
 from clinical_demo.domain.trial import Trial
+from clinical_demo.extractor.composite import build_composite_criterion_groups
 from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.matcher.concept_lookup import lookup_condition, lookup_lab, lookup_medication
 
@@ -191,6 +192,68 @@ def retrieve_structured_patient_evidence(
 
     retrieved.sort(key=lambda item: (-item.score, item.row.row_id))
     return retrieved[:limit]
+
+
+def retrieve_patient_evidence_with_composite_subchecks(
+    criterion: ExtractedCriterion,
+    source_rows: Sequence[RetrievalSourceRow],
+    *,
+    criterion_index: int,
+    limit: int = 12,
+    subcheck_limit: int = 5,
+) -> list[RetrievedPatientEvidence]:
+    """Rank parent criterion evidence plus evidence from composite subchecks.
+
+    This widens retrieval context for review/adjudication without deciding the
+    parent composite or changing deterministic matcher rollup.
+    """
+
+    merged: dict[str, RetrievedPatientEvidence] = {}
+    for item in retrieve_structured_patient_evidence(criterion, source_rows, limit=limit):
+        _merge_retrieved_item(merged, item)
+
+    for group in build_composite_criterion_groups(criterion, criterion_index=criterion_index):
+        for subcheck in group.subchecks:
+            for item in retrieve_structured_patient_evidence(
+                subcheck.criterion,
+                source_rows,
+                limit=subcheck_limit,
+            ):
+                _merge_retrieved_item(
+                    merged,
+                    item.model_copy(
+                        update={
+                            "reasons": [
+                                f"composite:{group.operator}",
+                                f"subcheck:{subcheck.subcheck_id}",
+                                *item.reasons,
+                            ]
+                        }
+                    ),
+                )
+
+    retrieved = list(merged.values())
+    retrieved.sort(key=lambda item: (-item.score, item.row.row_id))
+    return retrieved[:limit]
+
+
+def _merge_retrieved_item(
+    merged: dict[str, RetrievedPatientEvidence],
+    item: RetrievedPatientEvidence,
+) -> None:
+    current = merged.get(item.row.row_id)
+    if current is None:
+        merged[item.row.row_id] = item
+        return
+
+    reasons = [*current.reasons]
+    reasons.extend(reason for reason in item.reasons if reason not in reasons)
+    merged[item.row.row_id] = current.model_copy(
+        update={
+            "score": max(current.score, item.score),
+            "reasons": reasons,
+        }
+    )
 
 
 def _score_row(

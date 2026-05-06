@@ -9,10 +9,17 @@ import pytest
 from clinical_demo.domain import ClinicalNote
 from clinical_demo.retrieval import (
     RetrievalSourceRow,
+    retrieve_patient_evidence_with_composite_subchecks,
     retrieve_structured_patient_evidence,
     structured_source_rows_for_pair,
 )
-from tests.matcher._fixtures import crit_condition, crit_measurement, make_patient, make_trial
+from tests.matcher._fixtures import (
+    crit_condition,
+    crit_free_text,
+    crit_measurement,
+    make_patient,
+    make_trial,
+)
 
 
 def _row(
@@ -78,6 +85,32 @@ def test_retrieve_prefers_observations_for_measurements() -> None:
 
     assert retrieved[0].row.row_id == "patient:001"
     assert "kind:observation" in retrieved[0].reasons
+
+
+def test_retrieve_uses_composite_subcheck_criteria() -> None:
+    criterion = crit_free_text().model_copy(
+        update={
+            "source_text": ("Hyperglycemia (HbA1c >= 6.5%; OR fasting plasma glucose >= 126 mg/dL)")
+        }
+    )
+    rows = [
+        _row(
+            "patient:000",
+            kind="observation",
+            label="HbA1c",
+            value="6.1 %",
+            code="4548-4",
+        )
+    ]
+
+    retrieved = retrieve_patient_evidence_with_composite_subchecks(
+        criterion,
+        rows,
+        criterion_index=2,
+    )
+
+    assert [item.row.row_id for item in retrieved] == ["patient:000"]
+    assert "subcheck:criterion:2:group:001:subcheck:001" in retrieved[0].reasons
 
 
 def test_retrieve_ignores_numeric_only_overlap() -> None:

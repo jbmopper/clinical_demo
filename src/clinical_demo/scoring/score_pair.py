@@ -60,7 +60,10 @@ from ..matcher import (
 )
 from ..observability import traced
 from ..profile import PatientProfile
-from ..retrieval import retrieve_structured_patient_evidence, structured_source_rows_for_pair
+from ..retrieval import (
+    retrieve_patient_evidence_with_composite_subchecks,
+    structured_source_rows_for_pair,
+)
 
 EligibilityRollup = Literal["pass", "fail", "indeterminate", "pass_pending_review"]
 """Top-level eligibility rollup. v0 uses three states; v0.2 (PLAN
@@ -307,9 +310,10 @@ def _apply_retrieval_only(
             enriched.append(verdict)
             continue
 
-        retrieved = retrieve_structured_patient_evidence(
+        retrieved = retrieve_patient_evidence_with_composite_subchecks(
             verdict.criterion,
             source_rows,
+            criterion_index=criterion_index,
             limit=5,
         )
         if not retrieved:

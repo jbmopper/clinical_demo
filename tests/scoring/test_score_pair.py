@@ -217,6 +217,34 @@ def test_retrieval_only_attaches_patient_rows_without_changing_verdict() -> None
     assert "term:smoking" in retrieved[0].reasons
 
 
+def test_retrieval_only_uses_composite_subcheck_evidence_without_changing_verdict() -> None:
+    """Composite subchecks widen evidence, but the parent verdict stays untouched."""
+    patient = make_patient(observations=[make_lab(value=6.1)])
+    criterion = crit_free_text().model_copy(
+        update={
+            "source_text": ("Hyperglycemia (HbA1c >= 6.5%; OR fasting plasma glucose >= 126 mg/dL)")
+        }
+    )
+    extraction = _make_extraction([criterion])
+
+    result = score_pair(
+        patient,
+        make_trial(),
+        AS_OF,
+        extraction=extraction,
+        llm_use_level="retrieval_only",
+    )
+
+    assert result.eligibility == "indeterminate"
+    assert result.verdicts[0].verdict == "indeterminate"
+    assert result.verdicts[0].reason == "human_review_required"
+    retrieved = [e for e in result.verdicts[0].evidence if e.kind == "retrieved_patient_row"]
+    assert len(retrieved) == 1
+    assert retrieved[0].row_kind == "observation"
+    assert retrieved[0].code == "4548-4"
+    assert "subcheck:criterion:0:group:001:subcheck:001" in retrieved[0].reasons
+
+
 def test_bounded_adjudication_can_replace_indeterminate_with_cited_verdict() -> None:
     """Bounded adjudication may decide, but only through retrieved evidence."""
 
