@@ -29,6 +29,7 @@ from ..matcher import (
     MatcherAssumptionMode,
 )
 from ..observability import traced
+from ..privacy import anonymization_context
 from ..scoring.score_pair import (
     PatientDeceasedError,
     ScorePairResult,
@@ -162,18 +163,21 @@ def score_pair_graph(
         parent_metadata["llm_critic_version"] = LLM_CRITIC_VERSION
         parent_metadata["max_critic_iterations"] = str(max_critic_iterations)
 
-    with traced(
-        "score_pair_graph",
-        as_type="span",
-        input={
-            "patient_id": patient.patient_id,
-            "nct_id": trial.nct_id,
-            "as_of": as_of.isoformat(),
-            "eligibility_text_chars": len(trial.eligibility_text or ""),
-            "critic_enabled": critic_enabled,
-        },
-        metadata=parent_metadata,
-    ) as span:
+    with (
+        anonymization_context(),
+        traced(
+            "score_pair_graph",
+            as_type="span",
+            input={
+                "patient_id": patient.patient_id,
+                "nct_id": trial.nct_id,
+                "as_of": as_of.isoformat(),
+                "eligibility_text_chars": len(trial.eligibility_text or ""),
+                "critic_enabled": critic_enabled,
+            },
+            metadata=parent_metadata,
+        ) as span,
+    ):
         final_state = graph.invoke(initial_state, config=config or None)
 
         verdicts, llm_calls = _apply_retrieval_only(

@@ -34,6 +34,12 @@ from clinical_demo.matcher import (
 from clinical_demo.matcher.matcher import _apply_polarity
 from clinical_demo.matcher.verdict import Evidence, VerdictReason
 from clinical_demo.observability import traced
+from clinical_demo.privacy import (
+    PrivacyEngine,
+    PrivacyPolicy,
+    anonymize_text,
+    current_anonymization_context,
+)
 from clinical_demo.retrieval import RetrievedPatientEvidence
 from clinical_demo.settings import Settings, get_settings
 
@@ -122,6 +128,7 @@ def adjudicate_patient_evidence(
     matcher_assumption_mode: MatcherAssumptionMode,
     client: _ClientLike | None = None,
     settings: Settings | None = None,
+    privacy_engine: PrivacyEngine | None = None,
 ) -> tuple[MatchVerdict, LLMCallCost | None]:
     """Return a source-grounded verdict plus this call's LLM cost record.
 
@@ -150,7 +157,7 @@ def adjudicate_patient_evidence(
     user_message = _build_user_message(
         criterion=criterion,
         deterministic_verdict=deterministic_verdict,
-        retrieved=retrieved,
+        retrieved=_anonymized_retrieved(retrieved, privacy_engine=privacy_engine),
         trial_context=trial_context,
         matcher_assumption_mode=matcher_assumption_mode,
     )
@@ -345,6 +352,57 @@ def _reason_value(reasons: list[str], prefix: str) -> str | None:
         if reason.startswith(prefix):
             return reason.removeprefix(prefix)
     return None
+
+
+def _anonymized_retrieved(
+    retrieved: list[RetrievedPatientEvidence],
+    *,
+    privacy_engine: PrivacyEngine | None = None,
+) -> list[RetrievedPatientEvidence]:
+    policy = PrivacyPolicy.llm_prompt()
+    context = current_anonymization_context()
+    sanitized: list[RetrievedPatientEvidence] = []
+    for item in retrieved:
+        row = item.row
+        sanitized.append(
+            item.model_copy(
+                update={
+                    "row": row.model_copy(
+                        update={
+                            "label": anonymize_text(
+                                row.label,
+                                context=context,
+                                policy=policy,
+                                engine=privacy_engine,
+                            ).text,
+                            "value": anonymize_text(
+                                row.value,
+                                context=context,
+                                policy=policy,
+                                engine=privacy_engine,
+                            ).text,
+                            "date": anonymize_text(
+                                row.date,
+                                context=context,
+                                policy=policy,
+                                engine=privacy_engine,
+                            ).text
+                            if row.date
+                            else None,
+                            "status": anonymize_text(
+                                row.status,
+                                context=context,
+                                policy=policy,
+                                engine=privacy_engine,
+                            ).text
+                            if row.status
+                            else None,
+                        }
+                    )
+                }
+            )
+        )
+    return sanitized
 
 
 def _fail_closed_without_citations(

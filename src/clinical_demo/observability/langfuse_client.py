@@ -47,6 +47,7 @@ from contextlib import contextmanager
 from functools import lru_cache
 from typing import Any, Literal
 
+from ..privacy import current_anonymization_context, sanitize_for_metadata, sanitize_for_trace
 from ..settings import Settings, get_settings
 
 logger = logging.getLogger(__name__)
@@ -71,6 +72,31 @@ class _NoopSpan:
     def set_status(self, _status: str, **_kwargs: Any) -> None: ...
 
     def __enter__(self) -> _NoopSpan:
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        return None
+
+
+class _SanitizedSpan:
+    """Observation wrapper that sanitizes updates before export."""
+
+    def __init__(self, span: Any) -> None:
+        self._span = span
+
+    def update(self, **kwargs: Any) -> None:
+        self._span.update(**_sanitize_observation_kwargs(kwargs))
+
+    def update_trace(self, **kwargs: Any) -> None:
+        self._span.update_trace(**_sanitize_observation_kwargs(kwargs))
+
+    def end(self, **kwargs: Any) -> None:
+        self._span.end(**_sanitize_observation_kwargs(kwargs))
+
+    def set_status(self, status: str, **kwargs: Any) -> None:
+        self._span.set_status(status, **_sanitize_observation_kwargs(kwargs))
+
+    def __enter__(self) -> _SanitizedSpan:
         return self
 
     def __exit__(self, *_args: object) -> None:
@@ -168,7 +194,7 @@ def traced(
         cm = client.start_as_current_observation(
             name=name,
             as_type=as_type,
-            **observation_kwargs,
+            **_sanitize_observation_kwargs(observation_kwargs),
         )
     except Exception:
         logger.warning(
@@ -181,10 +207,23 @@ def traced(
 
     try:
         with cm as span:
-            yield span
+            yield _SanitizedSpan(span)
     except Exception:
         # Re-raise: observability must not swallow application errors.
         raise
+
+
+def _sanitize_observation_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
+    context = current_anonymization_context()
+    sanitized: dict[str, Any] = {}
+    for key, value in kwargs.items():
+        if key == "metadata":
+            sanitized[key] = sanitize_for_metadata(value, context=context)
+        elif key in {"input", "output", "status_message"}:
+            sanitized[key] = sanitize_for_trace(value, context=context)
+        else:
+            sanitized[key] = value
+    return sanitized
 
 
 def flush() -> None:

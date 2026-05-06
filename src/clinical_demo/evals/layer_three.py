@@ -33,6 +33,7 @@ from clinical_demo.extractor.extractor import (
 )
 from clinical_demo.matcher import MatchVerdict, Verdict
 from clinical_demo.observability import traced
+from clinical_demo.privacy import PrivacyEngine, PrivacyPolicy, anonymize_text
 from clinical_demo.settings import Settings, get_settings
 
 LLM_JUDGE_VERSION = "llm-judge-v0.1"
@@ -532,6 +533,7 @@ def judge_target(
     *,
     client: _ClientLike | None = None,
     settings: Settings | None = None,
+    privacy_engine: PrivacyEngine | None = None,
 ) -> LayerThreeJudgment:
     """Run the Layer-3 LLM judge for one target."""
 
@@ -544,7 +546,11 @@ def judge_target(
             )
         client = cast(_ClientLike, OpenAI(api_key=settings.openai_api_key.get_secret_value()))
 
-    user_message = build_judge_user_message(target)
+    user_message = anonymize_text(
+        build_judge_user_message(target),
+        policy=PrivacyPolicy.llm_prompt(),
+        engine=privacy_engine,
+    ).text
     messages = [
         {"role": "system", "content": LLM_JUDGE_SYSTEM_PROMPT},
         {"role": "user", "content": user_message},
