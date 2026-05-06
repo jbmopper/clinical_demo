@@ -263,6 +263,12 @@ export interface PatientEvidenceHumanLabel {
 	rationale: string;
 }
 
+export interface PatientEvidenceCompositeLineItem {
+	item_id: string;
+	operator: 'any_of' | 'all_of';
+	source_text: string;
+}
+
 export interface PatientEvidenceCalibrationRow {
 	pair_id: string;
 	patient_id: string;
@@ -284,8 +290,20 @@ export interface PatientEvidenceCalibrationRow {
 	judge_error_categories: string[];
 	judge_rationale?: string | null;
 	source_rows: PatientEvidenceSourceRow[];
+	source_row_counts: Record<string, number>;
 	retrieved_source_row_ids: string[];
+	retrieved_source_row_counts: Record<string, number>;
+	retrieved_structured_source_row_ids: string[];
+	retrieved_note_source_row_ids: string[];
 	retrieval_reasons: Record<string, string[]>;
+	concept_mappings: unknown[];
+	composite_line_items: PatientEvidenceCompositeLineItem[];
+	mapping_state: string;
+	unmapped_surfaces: string[];
+	evidence_retrieval_state: string;
+	free_text_review_hint: string;
+	open_world_label_guidance: string;
+	closed_world_label_guidance: string;
 	existing_label: PatientEvidenceHumanLabel | null;
 }
 

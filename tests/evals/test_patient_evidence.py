@@ -31,7 +31,7 @@ from clinical_demo.matcher import (
     VerdictReason,
 )
 from clinical_demo.scoring.score_pair import ScoringSummary
-from tests.matcher._fixtures import crit_age, crit_condition, crit_measurement
+from tests.matcher._fixtures import crit_age, crit_condition, crit_free_text, crit_measurement
 
 from ._fixtures import AS_OF, make_score_pair_result
 
@@ -72,6 +72,8 @@ def _verdict(
         criterion = crit_measurement()
     elif criterion_kind == "age":
         criterion = crit_age()
+    elif criterion_kind == "free_text":
+        criterion = crit_free_text()
     else:
         criterion = crit_condition()
     return MatchVerdict(
@@ -266,6 +268,44 @@ def test_build_patient_evidence_rows_attaches_source_row_ids_and_labels() -> Non
     assert rows[0].existing_label.label == "supports_present"
     assert rows[0].existing_label.matcher_assumption_mode == DEFAULT_MATCHER_ASSUMPTION_MODE
     assert summarize_patient_evidence_rows(rows) == {"condition_present": 1}
+
+
+def test_build_patient_evidence_rows_exposes_explicit_or_bundle_line_items() -> None:
+    verdict = _verdict(
+        "free_text",
+        reason="human_review_required",
+    )
+    verdict = verdict.model_copy(
+        update={
+            "criterion": verdict.criterion.model_copy(
+                update={
+                    "source_text": (
+                        "Hyperglycemia (HbA1c >= 6.5%; OR fasting plasma glucose >= "
+                        "126 mg/dL; OR random plasma glucose >= 200 mg/dL)"
+                    )
+                }
+            )
+        }
+    )
+    target = JudgeTarget(
+        pair_id="p1__T1",
+        patient_id="p1",
+        nct_id="T1",
+        criterion_index=0,
+        verdict=verdict,
+    )
+    context = LayerThreeSourceContext(patient=[], trial=[])
+
+    rows = build_patient_evidence_rows([target], source_contexts={"p1__T1": context})
+
+    assert [item.operator for item in rows[0].composite_line_items] == [
+        "any_of",
+        "any_of",
+        "any_of",
+    ]
+    assert rows[0].composite_line_items[0].item_id == "any_of:1"
+    assert rows[0].composite_line_items[1].source_text == "fasting plasma glucose >= 126 mg/dL"
+    assert rows[0].composite_line_items[2].source_text == "random plasma glucose >= 200 mg/dL"
 
 
 def test_build_patient_evidence_rows_marks_mapping_gap_and_absence_guidance() -> None:

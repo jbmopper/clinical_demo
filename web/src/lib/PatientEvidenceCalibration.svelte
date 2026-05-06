@@ -180,6 +180,31 @@
 	function retrievalReasons(row: PatientEvidenceCalibrationRow, sourceRow: PatientEvidenceSourceRow) {
 		return row.retrieval_reasons[sourceRow.row_id] ?? [];
 	}
+
+	function assumptionGuidance(
+		row: PatientEvidenceCalibrationRow,
+		current: PatientEvidenceHumanLabel | undefined
+	): string | null {
+		const mode = current?.matcher_assumption_mode ?? row.matcher_assumption_mode;
+		if (mode === 'open_world') {
+			return row.matcher_reason === 'no_data'
+				? 'Open world: a missing patient row is insufficient evidence, not proof of absence.'
+				: null;
+		}
+		if (row.matcher_reason === 'unmapped_concept') {
+			return 'Closed world cannot repair an unmapped trial concept; keep terminology gaps separate from absence assumptions.';
+		}
+		if (row.criterion_kind === 'measurement_threshold') {
+			return 'Closed-world modes do not turn missing or low-confidence lab measurements into clinical pass/fail decisions.';
+		}
+		if (row.criterion_kind === 'free_text' || row.matcher_reason === 'human_review_required') {
+			return 'Closed world is not a substitute for reviewing free-text criteria against cited patient evidence.';
+		}
+		return (
+			row.closed_world_label_guidance ||
+			'Closed world is a synthetic-eval assumption. Use only when this packet is complete for the relevant data type.'
+		);
+	}
 </script>
 
 <section class="patient-evidence">
@@ -258,6 +283,23 @@
 						<section class="candidate">
 							<h3>Candidate</h3>
 							<p class="criterion">{row.criterion_source_text}</p>
+							{#if row.composite_line_items.length}
+								<div class="composite-items">
+									<div class="composite-heading">
+										Composite line items
+										<span>{row.composite_line_items[0].operator === 'any_of' ? 'any of' : 'all of'}</span>
+									</div>
+									<ol>
+										{#each row.composite_line_items as item (item.item_id)}
+											<li>{item.source_text}</li>
+										{/each}
+									</ol>
+									<p>
+										Review these as subchecks, but label the parent criterion until matcher rollup
+										supports composite groups.
+									</p>
+								</div>
+							{/if}
 							<dl>
 								<div>
 									<dt>Matcher</dt>
@@ -345,6 +387,11 @@
 									<option value="closed_world_eval">closed world eval</option>
 									<option value="closed_world_demo">closed world demo</option>
 								</select>
+								{#if assumptionGuidance(row, current)}
+									<small class:warning={(current?.matcher_assumption_mode ?? row.matcher_assumption_mode) !== 'open_world'}>
+										{assumptionGuidance(row, current)}
+									</small>
+								{/if}
 							</label>
 
 							<label>
@@ -515,6 +562,16 @@
 		color: #475569;
 		margin-bottom: 4px;
 	}
+	label small {
+		display: block;
+		margin-top: 4px;
+		font-size: 0.73rem;
+		line-height: 1.35;
+		color: #64748b;
+	}
+	label small.warning {
+		color: #92400e;
+	}
 	input,
 	select,
 	textarea {
@@ -621,6 +678,37 @@
 		margin: 0 0 10px 0;
 		white-space: pre-wrap;
 		font-weight: 600;
+	}
+	.composite-items {
+		margin: 0 0 12px 0;
+		padding: 10px 12px;
+		border: 1px solid #bfdbfe;
+		border-radius: 10px;
+		background: #eff6ff;
+		color: #1e3a8a;
+	}
+	.composite-heading {
+		font-size: 0.78rem;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+	.composite-heading span {
+		margin-left: 6px;
+		color: #2563eb;
+	}
+	.composite-items ol {
+		margin: 8px 0;
+		padding-left: 20px;
+	}
+	.composite-items li {
+		margin-bottom: 4px;
+		color: #1e293b;
+	}
+	.composite-items p {
+		margin: 0;
+		font-size: 0.8rem;
+		color: #475569;
 	}
 	dl {
 		margin: 0;

@@ -189,16 +189,28 @@
      `mapped` where the system means "this surface has a usable concept/code
      mapping." Keep compatibility for existing `resolved_*` artifacts until a
      small migration lands, but new docs/reports should say `mapped`.
-  6. Add the criterion fixing layer: split safely splittable composites,
-     normalize criterion surfaces/units/polarity, and route ambiguous or
-     non-atomic phrases into `human_review_required` with candidate mappings
-     instead of defaulting straight to `unmapped_concept`.
-  7. Bring free-text/note patient-evidence LLM v0 forward. Scope is still
-     `DocumentReference.content.attachment.data` first; cite note snippets and
-     reuse the existing bounded adjudicator. Synthea free text is unrealistic,
-     so use it only as plumbing/fixture coverage and label that limitation; add
-     hand-crafted note fixtures for clinically meaningful behavior until
-     MIMIC-IV-Note can calibrate realism.
+  6. Add the criterion fixing layer: normalize criterion surfaces/units/polarity,
+     route unsafe non-atomic phrases into `human_review_required`, and add an
+     explicit composite representation before splitting OR/AND bundles into
+     ordinary matcher rows. Key invariant: an OR bundle such as ADA
+     hyperglycemia criteria must not become several top-level inclusion rows,
+     because the current scorer treats the criteria list as an AND contract.
+  7. Bring free-text/note patient-evidence LLM v0 forward. Done for note
+     ingestion/retrieval v0 (`DocumentReference.content.attachment.data` ->
+     citeable note rows), but docs and plan language need cleanup and the next
+     behavior slice is composite-aware evidence review/adjudication over
+     retrieved structured/note rows.
+  7a. Add reviewer-facing composite line items before deeper matcher changes:
+     detect/represent `any_of` / `all_of` subchecks with stable ids, retrieve
+     evidence per subcheck, and show the subcheck evidence in the calibration
+     UI. Do not let line items alter eligibility rollup until matcher semantics
+     explicitly understand composite groups.
+  7b. Tighten the calibration UI around matcher assumption mode. `open_world`
+     remains the clinical default; `closed_world_eval` is a synthetic-eval
+     override for selected closed data types only. Rows whose matcher result is
+     clearly open-world `no_data`, free-text review, labs, or unmapped concepts
+     should either disable closed-world choices or display an inline warning
+     before the reviewer can persist that assumption.
   8. Start the MIMIC-IV data track while access is pending: document the local
      data-root contract, `.gitignore`/artifact rules, table-to-evidence mapping,
      and minimum cohort plan. After credentialed access lands, use MIMIC-IV
@@ -756,13 +768,12 @@
   baseline regression with indeterminacy diagnostic): layer-1
   agreement 81.0%, coverage 55.3%, 89% of all indeterminates are
   `unmapped_concept`. Snapshots in `eval/baselines/2026-04-21/`.
-- **Next:** Bring note/free-text patient-evidence LLM v0 into the normal path
-  with cited
-  `DocumentReference.content.attachment.data` snippets and hand-crafted note
-  fixtures, then fill/refresh the patient-evidence labels against the improved
-  system. Follow-up criterion-fixer work remains: safe composite splitting,
-  richer mapping-candidate provenance, and LLM-assisted repair under
-  deterministic validators.
+- **Next:** Add explicit composite/OR criterion representation before treating
+  compound free-text criteria as independently matchable rows. First slice:
+  reviewer-facing line items for `any_of` / `all_of` subchecks with per-subcheck
+  retrieved evidence, plus UI guidance that closed-world labels are synthetic
+  eval assumptions, not the default clinical stance. Do not let composite line
+  items change eligibility rollup until matcher semantics own composite groups.
 - **Gates at HEAD:** `uv run pytest` 677/677; targeted criterion-fixer /
   scoring / graph / terminology tests 110/110; targeted ruff clean; targeted
   format check clean; targeted mypy clean; mapped + legacy terminology
@@ -1053,6 +1064,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.19 | **Closed-world matcher semantics.** After open mapping is working, make assumption modes change behavior instead of only being metadata/prompt context. `open_world` remains default: no patient row means insufficient evidence / indeterminate. `closed_world_eval` may treat absence from the curated synthetic structured record as negative evidence for specific closed, structured kinds only (condition_absent, medication_absent, selected demographics/labs), and must record the assumption in evidence. `closed_world_demo` is allowed only for hand-picked demo pairs with a visible UI/API banner. Do not use closed-world behavior to mask terminology failures; mapping has to run first. *Done — matcher v0.2 threads `matcher_assumption_mode` into `_match_condition` / `_match_medication` / `_match_temporal_window` (labs deliberately excluded; user wants N/A visibility). `open_world` returns `indeterminate(no_data)` for mapped-but-absent (also fixes a pre-existing silent-flip bug where `condition_absent` criteria silently flipped `fail` to `pass`); closed-world modes return `fail` with `evidence_under_assumption=True` stamped on the verdict. `unmapped_concept` is unchanged across modes (D-73 guardrail). `MatchVerdict` carries `assumption` + `evidence_under_assumption`. `EligibilityRollup` gains `pass_pending_review` for "no fails, every remaining indeterminate is `human_review_required`" — useful in any mode. UI/API banner for `closed_world_demo` deferred to follow-up (we are nowhere near demo polish yet). Twin baselines in `eval/baselines/2026-05-04-2.19/`: closed-world v0.2 reproduces v0.1 numbers exactly (`pass`=110 / `fail`=32 / `indeterminate`=919 / `ok`=142), confirming faithful re-implementation; honest open-world is `pass`=77 / `fail`=21 / `indeterminate`=963 / `ok`=98 / `no_data` 62 vs 18.* | 3 |
 | 2.20 | **Mapping expansion + `mapped` terminology rename.** Continue adding high-impact mapping cases from diagnostics, including obvious condition/lab/medication surfaces that should not survive as `unmapped_concept`. Rename report/cache/work-queue success language from `resolved` to `mapped`, with backward-compatible reads for existing `status=resolved` artifacts and legacy filenames. The exit criterion is that newly mapped high-frequency surfaces stay out of `top_unmapped_surfaces`, the regression gate speaks in `mapped` terms, and old baselines still load. | 3 |
 | 2.21 | **Criterion fixing layer.** Add a bounded layer after extraction and before deterministic matching that repairs criterion shape without hiding uncertainty: normalize surfaces and abbreviations, split safely splittable composites into atomic checks, repair obvious polarity/unit/context issues, attach mapping candidates/provenance, and mark unsafe fixes as `human_review_required`. LLM use is allowed here for interpretation, but deterministic validators and terminology cache results decide what is safe to feed into the matcher. | 5 |
+| 2.22 | **Composite criterion representation.** Add an explicit representation for compound criteria with boolean semantics (`any_of`, `all_of`, later nested groups) before splitting OR/AND bundles into matcher-visible rows. The immediate target is reviewer-facing line items: an ADA hyperglycemia bullet should become subchecks such as HbA1c threshold, fasting glucose threshold, OGTT threshold, and random glucose + symptoms threshold, each with its own retrieved evidence and citation state, while the parent criterion remains one top-level eligibility row. Do not model OR bundles as independent inclusion criteria under the current AND rollup. Exit criterion for the first slice: calibration rows expose stable composite subcheck ids and evidence; the UI renders them separately from raw source rows; bounded adjudication can receive the parent criterion plus subcheck evidence without silently changing deterministic rollup. Follow-up: matcher/adjudicator semantics for parent `any_of` / `all_of` groups, extractor prompt/schema support, and regression metrics for composite handling. | 5 |
 | **Phase 2 total** | | **~89 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 

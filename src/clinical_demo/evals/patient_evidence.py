@@ -9,6 +9,7 @@ measurement comparison, or insufficient evidence for one trial criterion.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Literal
@@ -58,6 +59,7 @@ MappingState = Literal[
     "all_unmapped",
     "no_mappable_slots",
 ]
+CompositeOperator = Literal["any_of", "all_of"]
 
 CARDIOMETABOLIC_SLICES = frozenset(
     {
@@ -101,6 +103,14 @@ class PatientEvidenceConceptMapping(BaseModel):
     codes: list[str] = Field(default_factory=list)
 
 
+class PatientEvidenceCompositeLineItem(BaseModel):
+    """Reviewer-facing subcheck inside a compound criterion."""
+
+    item_id: str
+    operator: CompositeOperator
+    source_text: str
+
+
 class PatientEvidenceCalibrationRow(BaseModel):
     """Reviewer-facing candidate row for patient-side evidence labeling."""
 
@@ -131,6 +141,7 @@ class PatientEvidenceCalibrationRow(BaseModel):
     retrieved_note_source_row_ids: list[str] = Field(default_factory=list)
     retrieval_reasons: dict[str, list[str]] = Field(default_factory=dict)
     concept_mappings: list[PatientEvidenceConceptMapping] = Field(default_factory=list)
+    composite_line_items: list[PatientEvidenceCompositeLineItem] = Field(default_factory=list)
     mapping_state: MappingState = "no_mappable_slots"
     unmapped_surfaces: list[str] = Field(default_factory=list)
     evidence_retrieval_state: EvidenceRetrievalState = "no_patient_evidence_retrieved"
@@ -501,6 +512,7 @@ def build_patient_evidence_rows(
                 retrieved_note_source_row_ids=retrieved_note_ids,
                 retrieval_reasons={item.row.row_id: item.reasons for item in retrieved},
                 concept_mappings=concept_mappings,
+                composite_line_items=_composite_line_items(criterion.source_text),
                 mapping_state=_mapping_state(concept_mappings),
                 unmapped_surfaces=[
                     mapping.surface for mapping in concept_mappings if not mapping.mapped
@@ -660,6 +672,40 @@ def _concept_mapping(
         system=getattr(concept_set, "system", None),
         codes=sorted(getattr(concept_set, "codes", [])),
     )
+
+
+_COMPOSITE_SPLITTERS: tuple[tuple[CompositeOperator, re.Pattern[str]], ...] = (
+    ("any_of", re.compile(r"\s*;\s+OR\s+", re.IGNORECASE)),
+    ("all_of", re.compile(r"\s*;\s+AND\s+", re.IGNORECASE)),
+)
+
+
+def _composite_line_items(source_text: str) -> list[PatientEvidenceCompositeLineItem]:
+    """Split explicit semicolon-delimited boolean bundles for reviewer display.
+
+    This is deliberately representational only. The parent criterion remains
+    the top-level matcher row until scorer semantics understand composite
+    groups.
+    """
+
+    for operator, splitter in _COMPOSITE_SPLITTERS:
+        parts = [_clean_composite_part(part) for part in splitter.split(source_text)]
+        parts = [part for part in parts if part]
+        if len(parts) < 2:
+            continue
+        return [
+            PatientEvidenceCompositeLineItem(
+                item_id=f"{operator}:{index + 1}",
+                operator=operator,
+                source_text=part,
+            )
+            for index, part in enumerate(parts)
+        ]
+    return []
+
+
+def _clean_composite_part(part: str) -> str:
+    return part.strip().strip("-; )")
 
 
 def _mapping_state(mappings: list[PatientEvidenceConceptMapping]) -> MappingState:
