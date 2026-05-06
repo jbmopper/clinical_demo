@@ -1,5 +1,11 @@
 """LLM-driven extraction of structured eligibility criteria from trial text."""
 
+from .composite import (
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
+    CompositeOperator,
+    build_composite_criterion_groups,
+)
 from .enrich import INJECTED_SOURCE_PREFIX, enrich_with_structured_fields
 from .extractor import (
     ExtractionResult,
@@ -37,6 +43,9 @@ __all__ = [
     "PROMPT_VERSION",
     "SYSTEM_PROMPT",
     "AgeCriterion",
+    "CompositeCriterionGroup",
+    "CompositeCriterionSubcheck",
+    "CompositeOperator",
     "ConditionCriterion",
     "CriterionKind",
     "EntityMention",
@@ -56,6 +65,7 @@ __all__ = [
     "SexCriterion",
     "TemporalWindowCriterion",
     "ThresholdOperator",
+    "build_composite_criterion_groups",
     "build_messages",
     "enrich_with_structured_fields",
     "extract_criteria",

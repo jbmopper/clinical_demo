@@ -9,7 +9,6 @@ measurement comparison, or insufficient evidence for one trial criterion.
 from __future__ import annotations
 
 import json
-import re
 from collections import Counter
 from pathlib import Path
 from typing import Literal
@@ -25,11 +24,11 @@ from clinical_demo.evals.layer_three import (
     select_judge_targets,
 )
 from clinical_demo.evals.run import RunResult
-from clinical_demo.extractor.schema import (
-    ExtractedCriterion,
-    FreeTextCriterion,
-    MeasurementCriterion,
+from clinical_demo.extractor.composite import (
+    CompositeCriterionSubcheck,
+    build_composite_criterion_groups,
 )
+from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode, Verdict
 from clinical_demo.matcher.concept_lookup import lookup_condition, lookup_lab, lookup_medication
 from clinical_demo.matcher.verdict import MatchVerdict
@@ -711,169 +710,48 @@ def _concept_mapping(
     )
 
 
-_COMPOSITE_SPLITTERS: tuple[tuple[CompositeOperator, re.Pattern[str]], ...] = (
-    ("any_of", re.compile(r"\s*;\s+OR\s+", re.IGNORECASE)),
-    ("all_of", re.compile(r"\s*;\s+AND\s+", re.IGNORECASE)),
-)
-_MEASUREMENT_SUBCHECK_RE = re.compile(
-    r"(?P<surface>.+?)\s*(?P<operator>>=|<=|>|<|=|≥|≤)\s*"
-    r"(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>%|[A-Za-z][A-Za-z0-9/%.*^{}_-]*)?",
-    re.IGNORECASE,
-)
-
-
 def _composite_groups(
     criterion: ExtractedCriterion,
     *,
     criterion_index: int,
     source_rows: list[RetrievalSourceRow],
 ) -> list[PatientEvidenceCompositeGroup]:
-    """Build representational composite groups with per-subcheck retrieval.
+    """Add patient-evidence retrieval metadata to shared composite groups."""
 
-    This is deliberately representational only. The parent criterion remains
-    the top-level matcher row until scorer semantics understand composite
-    groups.
-    """
-
-    for operator, splitter in _COMPOSITE_SPLITTERS:
-        parts = [_clean_composite_part(part) for part in splitter.split(criterion.source_text)]
-        parts = [part for part in parts if part]
-        if len(parts) < 2:
-            continue
-        group_id = f"criterion:{criterion_index}:group:001"
-        subchecks = [
-            _composite_subcheck(
-                parent=criterion,
-                operator=operator,
-                group_id=group_id,
-                index=index,
-                source_text=part,
-                source_rows=source_rows,
-            )
-            for index, part in enumerate(parts, start=1)
-        ]
-        return [
-            PatientEvidenceCompositeGroup(
-                group_id=group_id,
-                operator=operator,
-                parent_source_text=criterion.source_text,
-                subchecks=subchecks,
-            )
-        ]
-    return []
+    groups = build_composite_criterion_groups(criterion, criterion_index=criterion_index)
+    return [
+        PatientEvidenceCompositeGroup(
+            group_id=group.group_id,
+            operator=group.operator,
+            parent_source_text=group.parent_source_text,
+            subchecks=[
+                _composite_subcheck(
+                    subcheck=subcheck,
+                    source_rows=source_rows,
+                )
+                for subcheck in group.subchecks
+            ],
+        )
+        for group in groups
+    ]
 
 
 def _composite_subcheck(
     *,
-    parent: ExtractedCriterion,
-    operator: CompositeOperator,
-    group_id: str,
-    index: int,
-    source_text: str,
+    subcheck: CompositeCriterionSubcheck,
     source_rows: list[RetrievalSourceRow],
 ) -> PatientEvidenceCompositeSubcheck:
-    subcheck_id = f"{group_id}:subcheck:{index:03d}"
-    criterion = _subcheck_criterion(parent, source_text=source_text, operator=operator)
-    retrieved = retrieve_structured_patient_evidence(criterion, source_rows, limit=5)
+    retrieved = retrieve_structured_patient_evidence(subcheck.criterion, source_rows, limit=5)
     return PatientEvidenceCompositeSubcheck(
-        subcheck_id=subcheck_id,
-        operator=operator,
-        criterion_kind=criterion.kind,
-        source_text=source_text,
-        criterion=criterion.model_dump(mode="json"),
+        subcheck_id=subcheck.subcheck_id,
+        operator=subcheck.operator,
+        criterion_kind=subcheck.criterion.kind,
+        source_text=subcheck.source_text,
+        criterion=subcheck.criterion.model_dump(mode="json"),
         retrieved_source_row_ids=[item.row.row_id for item in retrieved],
         retrieved_source_row_counts=_retrieved_row_counts(retrieved),
         retrieval_reasons={item.row.row_id: item.reasons for item in retrieved},
     )
-
-
-def _subcheck_criterion(
-    parent: ExtractedCriterion,
-    *,
-    source_text: str,
-    operator: CompositeOperator,
-) -> ExtractedCriterion:
-    """Keep subchecks inspectable without pretending they are matcher-ready."""
-
-    measurement = _measurement_subcheck(source_text)
-    if measurement is not None:
-        return ExtractedCriterion(
-            kind="measurement_threshold",
-            polarity=parent.polarity,
-            source_text=source_text,
-            negated=parent.negated,
-            mood=parent.mood,
-            age=None,
-            sex=None,
-            condition=None,
-            medication=None,
-            measurement=measurement,
-            temporal_window=None,
-            free_text=None,
-            mentions=[],
-        )
-
-    return ExtractedCriterion(
-        kind="free_text",
-        polarity=parent.polarity,
-        source_text=source_text,
-        negated=parent.negated,
-        mood=parent.mood,
-        age=None,
-        sex=None,
-        condition=None,
-        medication=None,
-        measurement=None,
-        temporal_window=None,
-        free_text=FreeTextCriterion(
-            note=f"composite_subcheck operator={operator}; parent_kind={parent.kind}"
-        ),
-        mentions=[],
-    )
-
-
-def _measurement_subcheck(source_text: str) -> MeasurementCriterion | None:
-    match = _MEASUREMENT_SUBCHECK_RE.search(source_text)
-    if match is None:
-        return None
-
-    surface = _mapped_lab_surface(match.group("surface"))
-    if surface is None:
-        return None
-
-    return MeasurementCriterion(
-        measurement_text=surface,
-        operator=_normalize_threshold_operator(match.group("operator")),
-        value=float(match.group("value")),
-        value_low=None,
-        value_high=None,
-        unit=match.group("unit"),
-    )
-
-
-def _mapped_lab_surface(text_before_operator: str) -> str | None:
-    tokens = re.findall(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)?", text_before_operator)
-    for start in range(len(tokens)):
-        candidate = " ".join(tokens[start:])
-        if lookup_lab(candidate) is not None:
-            return candidate
-    return None
-
-
-def _normalize_threshold_operator(operator: str) -> Literal["<", "<=", "=", ">=", ">"]:
-    if operator == ">":
-        return ">"
-    if operator == ">=":
-        return ">="
-    if operator == "<":
-        return "<"
-    if operator == "<=":
-        return "<="
-    if operator == "=":
-        return "="
-    if operator == "≥":
-        return ">="
-    return "<="
 
 
 def _composite_line_items_from_groups(
