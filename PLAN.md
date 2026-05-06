@@ -162,8 +162,9 @@
   6. Start the MIMIC-IV data track while access is pending: document the local
      data-root contract, `.gitignore`/artifact rules, table-to-evidence mapping,
      and minimum cohort plan. After credentialed access lands, use MIMIC-IV
-     as the realistic patient-evidence source for structured rows and, through
-     MIMIC-IV-Note when available, note snippets. Do not commit raw MIMIC data,
+     as private calibration/enhancement input for patient data files: improve
+     schema coverage, note/evidence retrieval, and realism checks without
+     reproducing MIMIC records in system outputs. Do not commit raw MIMIC data,
      derived row-level excerpts, or any credentialed artifact to the repo.
   7. Promote the TrialGPT/TREC work from local scaffold to external benchmark
      plan: obtain the official TREC Clinical Trials topics/corpus/qrels and
@@ -779,8 +780,10 @@ so they don't get lost between sessions.
   local data-root contract and adapter interfaces. Once credentialed access is
   granted through PhysioNet, map MIMIC-IV `hosp`/`icu` tables into the same
   citeable patient-row interface used by Synthea and map MIMIC-IV-Note into the
-  note-snippet interface. Raw MIMIC data, row-level exports, and derived
-  credentialed snippets stay outside git and outside public artifacts.
+  note-snippet interface for local calibration/enhancement of patient files.
+  The product should not reproduce MIMIC records or expose row-level MIMIC
+  excerpts; raw MIMIC data, row-level exports, and derived credentialed snippets
+  stay outside git and outside public artifacts.
 - **Official TREC/TrialGPT benchmark ingestion.** The local benchmark scaffold
   is useful but insufficient for "score our system against others." Add the
   official TREC Clinical Trials topics/corpus/qrels and TrialGPT code/data
@@ -899,7 +902,7 @@ prove correctness over breadth I couldn't validate."
 | Source | Role | Risks |
 |---|---|---|
 | **Synthea v4.0.0** (sample data, FHIR R4) | Synthetic patient records. Provides deterministic ground truth for numeric cardiometabolic criteria. | Structured FHIR rows are not a full chart. Absence of a row should be treated as insufficient evidence unless a closed-world eval mode is explicitly enabled. Oncology depth is shallow; do not use it for core validation without supplementation. |
-| **MIMIC-IV / MIMIC-IV-Note** (credentialed PhysioNet access; Phase 3) | Realistic deidentified EHR evidence for patient-side matching once access is approved. Use `hosp`/`icu` tables for structured evidence and MIMIC-IV-Note for note snippets that stress free-text retrieval/adjudication. | Credentialed data must stay outside git and public artifacts. Dates are deidentified and patient-relative; notes require strict citation, prompt-injection handling, and no raw excerpt leakage beyond the local credentialed environment. This validates realism, not public demo distribution. |
+| **MIMIC-IV / MIMIC-IV-Note** (credentialed PhysioNet access; Phase 3) | Private calibration/enhancement input for patient data files once access is approved. Use `hosp`/`icu` tables and MIMIC-IV-Note locally to improve evidence schema coverage, retrieval behavior, synthetic/fixture realism, and note adjudication tests. | The system must not reproduce MIMIC records or expose MIMIC-derived row-level excerpts. Credentialed data must stay outside git and public artifacts. Dates are deidentified and patient-relative; notes require strict citation, prompt-injection handling, and no raw excerpt leakage beyond the local credentialed environment. This validates realism, not public demo distribution. |
 | **ClinicalTrials.gov v2 API** | Real trial protocols (eligibility text, conditions, phase, sponsor). | Eligibility criteria are free text — extraction is the hard part. |
 | **Chia corpus** (Phase IV, 1,000 trials, hand-annotated) | Golden ground truth for the criterion-extraction step (entities + relationships per the Chia schema). | Doesn't overlap perfectly with our chosen domains; use the schema everywhere, use the labels where they fit. |
 | **TREC Clinical Trials / TrialGPT** (Phase 3 external benchmark) | External patient-summary-to-trial retrieval/ranking benchmark and architecture comparison. The local scaffold already mirrors retrieval -> criterion matching -> ranking; official ingestion is needed for comparable scores. | TREC/TrialGPT benchmark results answer a different question from patient-evidence calibration: ranking against external relevance judgments, not whether a specific local FHIR row supports a criterion. Keep metrics/reporting separate. |
@@ -1012,7 +1015,7 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
 | 3.6 | **Patient note evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. Coming-week v0 is deliberately narrower: parse `DocumentReference.content.attachment.data` only, cite snippets as patient source rows, and reuse the existing bounded adjudicator if calibration/reporting finishes with enough time left. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
-| 3.6a | **MIMIC-IV evidence adapter and data governance.** While access is pending, define `MIMIC_DATA_ROOT`/BigQuery config, ignored local artifact paths, and table-to-evidence mappings. After access is approved, adapt MIMIC-IV `hosp`/`icu` rows into citeable structured patient evidence and MIMIC-IV-Note into citeable note snippets using the same retrieval/adjudication interfaces. No raw MIMIC data, derived row-level exports, or note excerpts are committed or included in public reports. | 5 |
+| 3.6a | **MIMIC-IV evidence adapter and data governance.** While access is pending, define `MIMIC_DATA_ROOT`/BigQuery config, ignored local artifact paths, and table-to-evidence mappings. After access is approved, use MIMIC-IV `hosp`/`icu` rows and MIMIC-IV-Note locally to calibrate and enhance patient data files, evidence schemas, retrieval behavior, and note adjudication tests. The system should consume these lessons/interfaces, not reproduce MIMIC records. No raw MIMIC data, derived row-level exports, or note excerpts are committed or included in public reports. | 5 |
 | 3.7 | Reviewer UI v1: accept/override/flag with feedback persistence; basic auth gate (single-user is fine); polish. | 4 |
 | 3.8 | Deploy to `juliusm.com`; smoke test; capture a screen-recording fallback in case live demo dies. | 3 |
 | 3.9 | **Deployment readiness doc** — see §7. Includes a real revision pass. | 11 |
