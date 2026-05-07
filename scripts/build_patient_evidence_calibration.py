@@ -31,6 +31,7 @@ DEFAULT_DB = Path("eval/runs.sqlite")
 DEFAULT_JUDGE_REPORT = Path("eval/baselines/2026-04-30/layer3_judge_calibrated.json")
 DEFAULT_LABELS = Path("eval/calibration/patient_evidence_labels.json")
 DEFAULT_OUTPUT = Path("eval/calibration/patient_evidence_candidates.json")
+DEFAULT_PUBLIC_SUMMARY_OUTPUT = Path("eval/baselines/YYYY-MM-DD/composite_v06_public_summary.json")
 
 
 def main() -> None:
@@ -94,6 +95,17 @@ def main() -> None:
         f"wrote {len(rows)} patient-evidence calibration rows to {args.output} (scope={args.scope})"
     )
     print(f"label template: {args.labels}")
+    print("private calibration packets are local-only unless exported as a public summary.")
+    print("safe public summary command:")
+    print(
+        "  "
+        + public_summary_export_command(
+            candidates=args.output,
+            labels=args.labels,
+            diagnostics=None,
+            output=DEFAULT_PUBLIC_SUMMARY_OUTPUT,
+        )
+    )
     print(json.dumps(summarize_patient_evidence_rows(rows), indent=2, sort_keys=True))
 
 
@@ -114,6 +126,31 @@ def _labels_for_targets(
             )
         )
     return labels
+
+
+def public_summary_export_command(
+    *,
+    candidates: Path,
+    labels: Path,
+    diagnostics: Path | None,
+    output: Path,
+) -> str:
+    """Return the reproducible public-summary export command for a private packet."""
+
+    parts = [
+        "uv",
+        "run",
+        "python",
+        "scripts/export_patient_evidence_public_summary.py",
+        "--candidates",
+        str(candidates),
+        "--labels",
+        str(labels),
+    ]
+    if diagnostics is not None:
+        parts.extend(["--diagnostics", str(diagnostics)])
+    parts.extend(["--output", str(output)])
+    return " ".join(parts)
 
 
 if __name__ == "__main__":
