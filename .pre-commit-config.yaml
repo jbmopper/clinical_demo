@@ -29,6 +29,11 @@ repos:
 
   - repo: local
     hooks:
+      - id: public-artifact-privacy-gate
+        name: public artifact privacy gate
+        entry: uv run python scripts/check_public_artifact_privacy.py
+        language: system
+        files: ^eval/
       - id: mypy
         name: mypy
         entry: uv run mypy
