@@ -34,6 +34,7 @@ That is exactly the surface we want for v0: a baseline that's
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from ..domain.patient import LabObservation
@@ -329,13 +330,14 @@ def _dispatch(
             mode=mode,
         )
     if kind == "free_text":
-        return (
-            "indeterminate",
-            "human_review_required",
-            "Free-text criterion; deferred to human review.",
-            [],
-            False,
+        promoted = _match_correlatable_free_text(
+            criterion,
+            profile,
+            mode=mode,
         )
+        if promoted is not None:
+            return promoted
+        return _free_text_human_review()
     # Defensive: every CriterionKind member must be handled above.
     return (
         "indeterminate",
@@ -385,6 +387,116 @@ def _required(payload: Any, slot_name: str, kind: str) -> Any:
     if payload is None:
         raise _ExtractorInvariantViolation(slot_name=slot_name, kind=kind)
     return payload
+
+
+def _free_text_human_review() -> _HandlerResult:
+    return (
+        "indeterminate",
+        "human_review_required",
+        "Free-text criterion; deferred to human review.",
+        [],
+        False,
+    )
+
+
+_PROMOTABLE_MENTION_TYPES = frozenset({"Condition", "Drug", "Measurement", "Observation"})
+_NEGATION_CUE_RE = re.compile(
+    r"\b(?:no|not|without|absence of|free of|negative for|denies|denied)\b",
+    re.IGNORECASE,
+)
+_SYMBOLIC_THRESHOLD_RE = re.compile(
+    r"(?P<op>>=|<=|>|<|=)\s*(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>[A-Za-z%][A-Za-z0-9%/*.^{}_-]*)?",
+    re.IGNORECASE,
+)
+
+
+def _match_correlatable_free_text(
+    criterion: ExtractedCriterion,
+    profile: PatientProfile,
+    *,
+    mode: MatcherAssumptionMode,
+) -> _HandlerResult | None:
+    """Deterministically match simple free-text criteria with one typed mention.
+
+    This is intentionally narrow. It covers extractor-punted text that still
+    exposes exactly one clinical surface the matcher already understands, while
+    leaving multi-surface, negation-ambiguous, and note-only semantics in human
+    review / bounded adjudication.
+    """
+
+    typed_mentions = [
+        mention
+        for mention in criterion.mentions
+        if mention.type in _PROMOTABLE_MENTION_TYPES and mention.text.strip()
+    ]
+    if len(typed_mentions) != 1:
+        return None
+    if not criterion.negated and _NEGATION_CUE_RE.search(criterion.source_text):
+        return None
+
+    mention = typed_mentions[0]
+    surface = mention.text.strip()
+    if mention.type == "Condition":
+        result = _match_condition(ConditionCriterion(condition_text=surface), profile, mode=mode)
+        return _with_free_text_promotion_rationale(
+            result, mention_type="condition", surface=surface
+        )
+    if mention.type == "Drug":
+        result = _match_medication(MedicationCriterion(medication_text=surface), profile, mode=mode)
+        return _with_free_text_promotion_rationale(
+            result, mention_type="medication", surface=surface
+        )
+    if mention.type in {"Measurement", "Observation"}:
+        measurement = _free_text_measurement_threshold(criterion.source_text, surface)
+        if measurement is None:
+            return None
+        result = _match_measurement(measurement, profile)
+        return _with_free_text_promotion_rationale(
+            result,
+            mention_type="measurement",
+            surface=surface,
+        )
+    return None
+
+
+def _free_text_measurement_threshold(
+    source_text: str,
+    surface: str,
+) -> MeasurementCriterion | None:
+    surface_index = source_text.lower().find(surface.lower())
+    if surface_index < 0:
+        return None
+    window = source_text[surface_index : surface_index + max(len(surface) + 48, 64)]
+    match = _SYMBOLIC_THRESHOLD_RE.search(window)
+    if match is None:
+        return None
+    return MeasurementCriterion(
+        measurement_text=surface,
+        operator=match.group("op"),  # type: ignore[arg-type]
+        value=float(match.group("value")),
+        value_low=None,
+        value_high=None,
+        unit=match.group("unit"),
+    )
+
+
+def _with_free_text_promotion_rationale(
+    result: _HandlerResult,
+    *,
+    mention_type: str,
+    surface: str,
+) -> _HandlerResult:
+    verdict, reason, rationale, evidence, under_assumption = result
+    return (
+        verdict,
+        reason,
+        (
+            f"Promoted correlatable free-text {mention_type} mention {surface!r} "
+            f"to deterministic matching. {rationale}"
+        ),
+        evidence,
+        under_assumption,
+    )
 
 
 # ---------- per-kind matchers ----------

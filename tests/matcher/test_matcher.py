@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from clinical_demo.extractor.schema import EntityMention
 from clinical_demo.matcher import MATCHER_VERSION, match_criterion
 from clinical_demo.profile.profile import ConceptSet
 from tests.matcher._fixtures import (
@@ -559,11 +560,90 @@ def test_temporal_window_unmapped_event() -> None:
 # ---------- free_text ----------
 
 
-def test_free_text_always_human_review() -> None:
-    """Free-text criteria honestly defer to human review; the
-    aggregator decides what to do with that signal."""
+def test_free_text_without_correlatable_mentions_stays_human_review() -> None:
+    """Open-ended free-text criteria honestly defer to human review."""
     profile = make_profile()
     v = match_criterion(crit_free_text(), profile, make_trial())
+    assert v.verdict == "indeterminate"
+    assert v.reason == "human_review_required"
+
+
+def test_free_text_single_condition_mention_promotes_to_condition_match() -> None:
+    profile = make_profile(conditions=[make_condition(code="44054006", display="T2DM")])
+    v = match_criterion(
+        crit_free_text(
+            source_text="History of type 2 diabetes",
+            mentions=[EntityMention(text="type 2 diabetes", type="Condition")],
+        ),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "pass"
+    assert v.reason == "ok"
+    assert "Promoted correlatable free-text condition mention" in v.rationale
+    assert any(e.kind == "condition" for e in v.evidence)
+
+
+def test_free_text_condition_promotion_respects_exclusion_polarity() -> None:
+    profile = make_profile(conditions=[make_condition(code="44054006", display="T2DM")])
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text="History of type 2 diabetes",
+            mentions=[EntityMention(text="type 2 diabetes", type="Condition")],
+        ),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "fail"
+    assert v.reason == "ok"
+    assert "Promoted correlatable free-text condition mention" in v.rationale
+
+
+def test_free_text_single_measurement_threshold_promotes_to_measurement_match() -> None:
+    profile = make_profile(observations=[make_lab(loinc="39156-5", value=31.0, unit="kg/m2")])
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text="BMI > 32 kg/m2",
+            mentions=[EntityMention(text="BMI", type="Measurement")],
+        ),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "pass"
+    assert v.reason == "ok"
+    assert "Promoted correlatable free-text measurement mention" in v.rationale
+    assert any(e.kind == "lab" for e in v.evidence)
+
+
+def test_free_text_multiple_typed_mentions_stays_human_review() -> None:
+    profile = make_profile(conditions=[make_condition(code="44054006", display="T2DM")])
+    v = match_criterion(
+        crit_free_text(
+            source_text="Type 2 diabetes treated with metformin",
+            mentions=[
+                EntityMention(text="type 2 diabetes", type="Condition"),
+                EntityMention(text="metformin", type="Drug"),
+            ],
+        ),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "indeterminate"
+    assert v.reason == "human_review_required"
+
+
+def test_free_text_unmodeled_negation_cue_stays_human_review() -> None:
+    profile = make_profile(conditions=[make_condition(code="44054006", display="T2DM")])
+    v = match_criterion(
+        crit_free_text(
+            source_text="No history of type 2 diabetes",
+            mentions=[EntityMention(text="type 2 diabetes", type="Condition")],
+        ),
+        profile,
+        make_trial(),
+    )
     assert v.verdict == "indeterminate"
     assert v.reason == "human_review_required"
 
