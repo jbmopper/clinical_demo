@@ -21,10 +21,12 @@ What belongs in git, what stays **local only**, and how eval artifacts are organ
 | Path | Rationale |
 |------|-----------|
 | `eval/baselines/**` except ignored globs | Small **diagnostics JSON**, **SUMMARY** markdown, **watchlists** for terminology regression — the regression story depends on pinned numbers in git. |
-| `eval/calibration/*.json` (where present) | Reviewer label templates and candidate packets — typically synthetic or aggregated; must not contain restricted clinical text. |
+| `eval/calibration/*.json` (where present) | Reviewer label templates and candidate packets — typically synthetic or aggregated; must not contain restricted clinical text. Row-level patient-evidence packets generated for review are local-only unless transformed into a public summary artifact. |
 | `tests/fixtures/**` | Tiny synthetic bundles and Chia snippets safe to distribute. |
 
 **Large per-case dumps:** `eval/baselines/**/*_report.json` is **gitignored** by explicit pattern — those files exceed repo hygiene limits; reproduce from sqlite + scripts if needed.
+
+**Public patient-evidence summaries:** Use `scripts/export_patient_evidence_public_summary.py` and `scripts/check_public_artifact_privacy.py`; see `docs/patient-evidence-eval-runbook.md` for the command sequence.
 
 ---
 
@@ -54,4 +56,4 @@ What belongs in git, what stays **local only**, and how eval artifacts are organ
 
 Avoid pasting **full eligibility** or **full patient charts** into GitHub issues — link to internal docs or summarize counts instead.
 
-Related: `docs/mimic-note-privacy-policy.md`, `docs/mimic-iv-calibration-and-governance.md`, `docs/evaluation-layers-and-gates.md`.
+Related: `docs/patient-evidence-eval-runbook.md`, `docs/mimic-note-privacy-policy.md`, `docs/mimic-iv-calibration-and-governance.md`, `docs/evaluation-layers-and-gates.md`.
