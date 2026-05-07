@@ -7,6 +7,7 @@ from datetime import date
 import pytest
 
 from clinical_demo.domain import ClinicalNote
+from clinical_demo.extractor.schema import EntityMention
 from clinical_demo.retrieval import (
     RetrievalSourceRow,
     retrieve_patient_evidence_with_composite_subchecks,
@@ -111,6 +112,44 @@ def test_retrieve_uses_composite_subcheck_criteria() -> None:
 
     assert [item.row.row_id for item in retrieved] == ["patient:000"]
     assert "subcheck:criterion:2:group:001:subcheck:001" in retrieved[0].reasons
+
+
+def test_free_text_condition_mentions_use_structured_code_anchors() -> None:
+    criterion = crit_free_text().model_copy(
+        update={
+            "source_text": "History of hypertension requiring medication.",
+            "mentions": [EntityMention(text="hypertension", type="Condition")],
+        }
+    )
+    rows = [
+        _row("patient:000", kind="condition", label="Essential hypertension", code="59621000"),
+        _row("patient:001", kind="condition", label="Full-time employment", code="160903007"),
+    ]
+
+    retrieved = retrieve_structured_patient_evidence(criterion, rows)
+
+    assert [item.row.row_id for item in retrieved] == ["patient:000"]
+    assert "correlatable_free_text:condition_present" in retrieved[0].reasons
+    assert "code:59621000" in retrieved[0].reasons
+
+
+def test_free_text_measurement_mentions_prefer_observation_rows() -> None:
+    criterion = crit_free_text().model_copy(
+        update={
+            "source_text": "Body mass index must be reviewed before enrollment.",
+            "mentions": [EntityMention(text="BMI", type="Measurement")],
+        }
+    )
+    rows = [
+        _row("patient:000", kind="condition", label="Obesity"),
+        _row("patient:001", kind="observation", label="Body mass index", value="31 kg/m2"),
+    ]
+
+    retrieved = retrieve_structured_patient_evidence(criterion, rows)
+
+    assert retrieved[0].row.row_id == "patient:001"
+    assert "correlatable_free_text:measurement_threshold" in retrieved[0].reasons
+    assert "kind:observation" in retrieved[0].reasons
 
 
 def test_retrieve_ignores_numeric_only_overlap() -> None:

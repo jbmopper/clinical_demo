@@ -17,7 +17,12 @@ from pydantic import BaseModel, Field
 from clinical_demo.domain.patient import ClinicalNote, LabObservation, Medication, Patient
 from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.composite import build_composite_criterion_groups
-from clinical_demo.extractor.schema import ExtractedCriterion
+from clinical_demo.extractor.schema import (
+    ConditionCriterion,
+    ExtractedCriterion,
+    MeasurementCriterion,
+    MedicationCriterion,
+)
 from clinical_demo.matcher.concept_lookup import lookup_condition, lookup_lab, lookup_medication
 
 
@@ -173,6 +178,43 @@ def retrieve_structured_patient_evidence(
     if limit < 1:
         raise ValueError("limit must be positive")
 
+    merged: dict[str, RetrievedPatientEvidence] = {}
+    for item in _retrieve_structured_patient_evidence_direct(
+        criterion,
+        source_rows,
+        limit=limit,
+    ):
+        _merge_retrieved_item(merged, item)
+
+    for surrogate in _correlatable_free_text_surrogates(criterion):
+        for item in _retrieve_structured_patient_evidence_direct(
+            surrogate,
+            source_rows,
+            limit=limit,
+        ):
+            _merge_retrieved_item(
+                merged,
+                item.model_copy(
+                    update={
+                        "reasons": [
+                            f"correlatable_free_text:{surrogate.kind}",
+                            *item.reasons,
+                        ]
+                    }
+                ),
+            )
+
+    retrieved = list(merged.values())
+    retrieved.sort(key=lambda item: (-item.score, item.row.row_id))
+    return retrieved[:limit]
+
+
+def _retrieve_structured_patient_evidence_direct(
+    criterion: ExtractedCriterion,
+    source_rows: Sequence[RetrievalSourceRow],
+    *,
+    limit: int,
+) -> list[RetrievedPatientEvidence]:
     query_terms = _criterion_terms(criterion)
     preferred_kinds = _preferred_patient_kinds(criterion)
     anchored_codes = _anchored_codes(criterion)
@@ -192,6 +234,101 @@ def retrieve_structured_patient_evidence(
 
     retrieved.sort(key=lambda item: (-item.score, item.row.row_id))
     return retrieved[:limit]
+
+
+def _correlatable_free_text_surrogates(
+    criterion: ExtractedCriterion,
+) -> list[ExtractedCriterion]:
+    """Build retrieval-only typed queries from free-text audit mentions.
+
+    The returned criteria are never matched directly. They only let retrieval
+    reuse the existing terminology/code anchors for free-text rows that contain
+    typed clinical surfaces such as a condition, medication, or measurement.
+    """
+
+    if criterion.kind != "free_text":
+        return []
+
+    surrogates: list[ExtractedCriterion] = []
+    seen: set[tuple[str, str]] = set()
+    for mention in criterion.mentions:
+        mention_text = mention.text.strip()
+        if not mention_text:
+            continue
+        mention_type = mention.type
+        if mention_type == "Condition":
+            key = ("condition_present", _normalized_surface(mention_text))
+            if key in seen:
+                continue
+            seen.add(key)
+            surrogates.append(
+                _criterion_like(
+                    criterion,
+                    kind="condition_present",
+                    condition=ConditionCriterion(condition_text=mention_text),
+                )
+            )
+        elif mention_type == "Drug":
+            key = ("medication_present", _normalized_surface(mention_text))
+            if key in seen:
+                continue
+            seen.add(key)
+            surrogates.append(
+                _criterion_like(
+                    criterion,
+                    kind="medication_present",
+                    medication=MedicationCriterion(medication_text=mention_text),
+                )
+            )
+        elif mention_type in {"Measurement", "Observation"}:
+            key = ("measurement_threshold", _normalized_surface(mention_text))
+            if key in seen:
+                continue
+            seen.add(key)
+            surrogates.append(
+                _criterion_like(
+                    criterion,
+                    kind="measurement_threshold",
+                    measurement=MeasurementCriterion(
+                        measurement_text=mention_text,
+                        operator="=",
+                        value=None,
+                        value_low=None,
+                        value_high=None,
+                        unit=None,
+                    ),
+                )
+            )
+    return surrogates
+
+
+def _criterion_like(
+    criterion: ExtractedCriterion,
+    *,
+    kind: str,
+    condition: ConditionCriterion | None = None,
+    medication: MedicationCriterion | None = None,
+    measurement: MeasurementCriterion | None = None,
+) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind=kind,  # type: ignore[arg-type]
+        polarity=criterion.polarity,
+        source_text=criterion.source_text,
+        negated=criterion.negated,
+        mood=criterion.mood,
+        age=None,
+        sex=None,
+        condition=condition,
+        medication=medication,
+        measurement=measurement,
+        temporal_window=None,
+        free_text=None,
+        mentions=criterion.mentions,
+    )
+
+
+def _normalized_surface(text: str) -> str:
+    return " ".join(text.lower().split())
 
 
 def retrieve_patient_evidence_with_composite_subchecks(
