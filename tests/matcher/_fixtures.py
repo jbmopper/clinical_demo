@@ -21,6 +21,7 @@ from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.schema import (
     AgeCriterion,
     ConditionCriterion,
+    EntityMention,
     ExtractedCriterion,
     FreeTextCriterion,
     MeasurementCriterion,
@@ -289,12 +290,18 @@ def crit_temporal_window(
     )
 
 
-def crit_free_text(*, polarity: str = "inclusion") -> ExtractedCriterion:
+def crit_free_text(
+    *,
+    polarity: str = "inclusion",
+    source_text: str = "willing to follow protocol",
+    negated: bool = False,
+    mentions: list[EntityMention] | None = None,
+) -> ExtractedCriterion:
     return ExtractedCriterion(
         kind="free_text",
         polarity=polarity,  # type: ignore[arg-type]
-        source_text="willing to follow protocol",
-        negated=False,
+        source_text=source_text,
+        negated=negated,
         mood="actual",
         age=None,
         sex=None,
@@ -303,5 +310,5 @@ def crit_free_text(*, polarity: str = "inclusion") -> ExtractedCriterion:
         measurement=None,
         temporal_window=None,
         free_text=FreeTextCriterion(note="behavioural"),
-        mentions=[],
+        mentions=mentions or [],
     )
