@@ -50,4 +50,4 @@ Until an adapter lands, **terminology regression gates**, **patient-evidence JSO
 
 When implemented, add a **separate** local-only makefile / script target so CI never accidentally depends on PhysioNet credentials.
 
-Related: `docs/data-provenance-and-artifact-policy.md`, `docs/free-text-note-evidence-design.md`.
+Related: `docs/mimic-note-privacy-policy.md`, `docs/data-provenance-and-artifact-policy.md`, `docs/free-text-note-evidence-design.md`.

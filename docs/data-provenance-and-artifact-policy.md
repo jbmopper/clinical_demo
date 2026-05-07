@@ -54,4 +54,4 @@ What belongs in git, what stays **local only**, and how eval artifacts are organ
 
 Avoid pasting **full eligibility** or **full patient charts** into GitHub issues — link to internal docs or summarize counts instead.
 
-Related: `docs/mimic-iv-calibration-and-governance.md`, `docs/evaluation-layers-and-gates.md`.
+Related: `docs/mimic-note-privacy-policy.md`, `docs/mimic-iv-calibration-and-governance.md`, `docs/evaluation-layers-and-gates.md`.
