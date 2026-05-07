@@ -86,7 +86,7 @@ Anything only stated outside projected rows will continue to land in **no data**
 
 ---
 
-## 7. Next target: correlatable free text
+## 7. Correlatable free text status
 
 The first patient-evidence pilot labels showed that `retrieval_only` can attach rows without improving verdicts when the parent criterion remains `free_text`, `human_review_required`, or `unmapped_concept`. Some of those rows are genuinely note-only or underspecified, but others are **correlatable**:
 
@@ -96,14 +96,24 @@ The first patient-evidence pilot labels showed that `retrieval_only` can attach 
 - lab or vital constraints embedded in free-text wording;
 - composite subchecks where one subcheck is typed and another remains free text.
 
-For those cases, the next implementation should add a narrow normalization pass before bounded adjudication:
+The current deterministic matcher now includes a narrow normalization pass before bounded adjudication:
 
-1. detect free-text criteria with typed clinical surfaces;
-2. map/search those surfaces through the same terminology front door used by typed criteria;
-3. run structured retrieval against the recovered typed predicate;
+1. detect free-text criteria with exactly one promotable typed clinical surface;
+2. map/search that surface through the same terminology front door used by typed criteria;
+3. parse simple symbolic measurement thresholds such as `BMI > 32 kg/m2`;
 4. preserve subcheck ids, row ids, codes, units, numeric values, and citation reasons;
-5. leave true note-only semantics as bounded adjudication or human review.
+5. handle investigational-agent / clinical-trial exposure as a trial-exposure predicate rather than an RxNorm medication;
+6. leave multi-surface, note-only, negation-ambiguous, and unsupported semantics as bounded adjudication or human review.
 
-This pass should not turn `retrieval_only` into an adjudicator. Its purpose is to make the deterministic and retrieval substrate less blind before any LLM decides.
+This pass does not turn `retrieval_only` into an adjudicator. Its purpose is to make the deterministic and retrieval substrate less blind before any LLM decides. Closed-world trial-exposure absence is allowed only under the explicit matcher assumption contract; open-world remains `indeterminate(no_data)`.
+
+## 8. Next target: normal-range criteria
+
+The remaining labeled misses include criteria such as "serum calcium within normal limits." These should not be guessed from prose alone. The conservative implementation target is:
+
+1. detect normal-range/reference-interval wording for measurement criteria;
+2. compare only when the patient observation carries a trustworthy reference range or the trial text provides an explicit numeric threshold;
+3. preserve units and source row ids;
+4. otherwise keep the verdict indeterminate and send the row to human review or bounded adjudication.
 
 Related: `docs/fhir-patient-processing.md`, `docs/matcher-assumption-modes.md`, `docs/free-text-note-evidence-design.md`.

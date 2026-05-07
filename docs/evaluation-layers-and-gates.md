@@ -53,7 +53,7 @@ How automated **layers**, **CLI workflows**, and **regression scripts** fit toge
 
 **Operator path:** Use `docs/patient-evidence-eval-runbook.md` for the current sequence: deterministic eval, private calibration packet, public summary export, privacy gate, then labeling/reporting.
 
-**Current interpretation rule:** Treat small human-label pilots as directional, not scorecard-final. A 22-label local pilot showed `retrieval_only` had no labeled verdict movement while bounded adjudication reduced abstention but produced at least one wrong decisive verdict. That points to a mapping/retrieval engineering target before wider LLM adjudication spend.
+**Current interpretation rule:** Treat small human-label pilots as directional, not scorecard-final. A 22-label local pilot showed `retrieval_only` had no labeled verdict movement while bounded adjudication reduced abstention but produced at least one wrong decisive verdict. Follow-up work added correlatable free-text promotion and assumption-aware patient-evidence reporting; a fresh closed-world local pilot run moved the matching-mode subset to `80.0%` accuracy and `40.0%` abstention. The next gate is more human labels, not broader LLM adjudication: push the local packet toward at least `40/60` usable labels, then compare open-world and closed-world subsets separately.
 
 ---
 

@@ -4,7 +4,7 @@ This document explains how **evidence assumptions** (open vs closed world) inter
 
 ---
 
-## 1. Matcher assumption modes (condition, medication, temporal window)
+## 1. Matcher assumption modes (condition, medication, temporal window, trial exposure)
 
 These modes apply when a criterion’s **trial-side concept has already resolved** to a matcher vocabulary (`ConceptSet`) and the code looks for matching rows on the patient profile.
 
@@ -14,14 +14,14 @@ These modes apply when a criterion’s **trial-side concept has already resolved
 | **Closed world (eval)** | Synthetic eval slices where the cohort record is treated as the full world for testing. | Raw predicate before polarity flip is **fail**, with a flag on the verdict that the conclusion **depended on the closed-world assumption** (so audits can separate honest “no row” from “negative under completeness assumption”). |
 | **Closed world (demo)** | Same semantics as eval variant; separate literal so callers can tag demo runs distinctly if needed. | Same as eval closed world for the whitelisted kinds. |
 
-**Kinds affected by open vs closed:** condition present/absent, medication present/absent, temporal-window lookbacks that reuse condition resolution for the event text.
+**Kinds affected by open vs closed:** condition present/absent, medication present/absent, temporal-window lookbacks that reuse condition resolution for the event text, and the narrow free-text trial-exposure predicate for investigational-agent / clinical-trial participation criteria.
 
 **Kinds *not* flipped by closed world:**
 
 - **Unmapped concept:** If trial text never mapped to a `ConceptSet`, the verdict is **indeterminate (unmapped_concept)** in **every** mode. Closed world must not hide terminology failure behind a synthetic “absent.”
 - **Labs (measurement thresholds):** Missing lab, stale lab, or unit mismatch stays **indeterminate** with the appropriate reason in **all** modes — a missing numeric measurement is never upgraded to a confident fail the way a missing condition row can be under closed world.
 - **Age and sex:** Deterministic comparisons; absence semantics above do not apply the same way.
-- **Free-text criteria:** Deterministic path defers to human review; assumption mode does not turn them into structured passes.
+- **Most free-text criteria:** Deterministic path defers to human review unless the criterion is narrow enough for the correlatable free-text promotion path. Assumption mode only changes the promoted trial-exposure absence case; it does not make arbitrary prose decisive.
 
 **Polarity and negation:** Per-kind handlers return a **raw** pass/fail/indeterminate for the predicate; the matcher then applies trial **inclusion/exclusion** and linguistic **negation** in one consistent step so “exclusion + absent disease” does not get silently inverted.
 
@@ -66,5 +66,6 @@ The type system includes a **`critic`** value alongside other LLM-use levels for
 1. Pick **assumption mode** first — it answers “may I treat missing structured rows as negative?”
 2. Pick **LLM use level** second — it answers “do I only see ranked rows, or may an LLM override indeterminates using those rows?”
 3. Use **`evidence_under_assumption`** on verdicts to audit which rows only make sense if closed-world completeness holds.
+4. Patient-evidence reports compare a label row only to runs with the same `matcher_assumption_mode`; mismatches are counted in the `Mode skipped` column instead of being treated as wrong verdicts.
 
 Related: `docs/fhir-patient-processing.md` (where patient rows come from), `docs/patient-evidence-retrieval-architecture.md`, `docs/patient-evidence-labeling-guide.md`.
