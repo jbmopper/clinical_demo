@@ -32,6 +32,13 @@ from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.matcher import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode, Verdict
 from clinical_demo.matcher.concept_lookup import lookup_condition, lookup_lab, lookup_medication
 from clinical_demo.matcher.verdict import MatchVerdict
+from clinical_demo.privacy import (
+    AnonymizationContext,
+    PrivacyPolicy,
+    anonymization_context,
+    anonymize_text,
+    sanitize_for_public_export,
+)
 from clinical_demo.retrieval import (
     RetrievalSourceRow,
     RetrievedPatientEvidence,
@@ -272,8 +279,10 @@ def save_patient_evidence_rows(
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     ordered = sorted(rows, key=lambda row: (row.pair_id, row.criterion_index))
+    with anonymization_context() as context:
+        export_rows = [_public_export_row(row, context=context) for row in ordered]
     output_path.write_text(
-        json.dumps([row.model_dump(mode="json") for row in ordered], indent=2) + "\n"
+        json.dumps([row.model_dump(mode="json") for row in export_rows], indent=2) + "\n"
     )
 
 
@@ -282,6 +291,80 @@ def load_patient_evidence_rows(path: Path | str) -> list[PatientEvidenceCalibrat
 
     raw = json.loads(Path(path).read_text())
     return [PatientEvidenceCalibrationRow.model_validate(item) for item in raw]
+
+
+def _public_export_row(
+    row: PatientEvidenceCalibrationRow,
+    *,
+    context: AnonymizationContext,
+) -> PatientEvidenceCalibrationRow:
+    policy = PrivacyPolicy.public_export()
+    return row.model_copy(
+        update={
+            "patient_id": context.placeholder_for("PATIENT_ID", row.patient_id),
+            "matcher_rationale": anonymize_text(
+                row.matcher_rationale,
+                context=context,
+                policy=policy,
+            ).text,
+            "matcher_evidence": sanitize_for_public_export(
+                row.matcher_evidence,
+                context=context,
+            ),
+            "judge_rationale": anonymize_text(
+                row.judge_rationale,
+                context=context,
+                policy=policy,
+            ).text
+            if row.judge_rationale
+            else None,
+            "source_rows": [
+                _public_export_source_row(source_row, context=context)
+                for source_row in row.source_rows
+            ],
+            "existing_label": _public_export_label(row.existing_label, context=context),
+        }
+    )
+
+
+def _public_export_source_row(
+    row: PatientEvidenceSourceRow,
+    *,
+    context: AnonymizationContext,
+) -> PatientEvidenceSourceRow:
+    if row.source != "patient":
+        return row
+    policy = PrivacyPolicy.public_export()
+    return row.model_copy(
+        update={
+            "label": anonymize_text(row.label, context=context, policy=policy).text,
+            "value": anonymize_text(row.value, context=context, policy=policy).text,
+            "date": anonymize_text(row.date, context=context, policy=policy).text
+            if row.date
+            else None,
+            "status": anonymize_text(row.status, context=context, policy=policy).text
+            if row.status
+            else None,
+        }
+    )
+
+
+def _public_export_label(
+    label: PatientEvidenceHumanLabel | None,
+    *,
+    context: AnonymizationContext,
+) -> PatientEvidenceHumanLabel | None:
+    if label is None:
+        return None
+    policy = PrivacyPolicy.public_export()
+    return label.model_copy(
+        update={
+            "reviewer": anonymize_text(label.reviewer, context=context, policy=policy).text
+            if label.reviewer
+            else None,
+            "rationale": anonymize_text(label.rationale, context=context, policy=policy).text,
+        }
+    )
 
 
 def merge_patient_evidence_labels(

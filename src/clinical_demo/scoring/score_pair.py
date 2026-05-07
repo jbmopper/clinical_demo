@@ -59,6 +59,7 @@ from ..matcher import (
     match_extracted,
 )
 from ..observability import traced
+from ..privacy import anonymization_context
 from ..profile import PatientProfile
 from ..retrieval import (
     retrieve_patient_evidence_with_composite_subchecks,
@@ -188,23 +189,26 @@ def score_pair(
     # eligibility tool. We pass `input` ahead of the LLM call and
     # `update(...)` with the resolved output at the end so the span
     # is well-formed even if the extractor raises.
-    with traced(
-        "score_pair",
-        as_type="span",
-        input={
-            "patient_id": patient.patient_id,
-            "nct_id": trial.nct_id,
-            "as_of": as_of.isoformat(),
-            "eligibility_text_chars": len(trial.eligibility_text or ""),
-        },
-        metadata={
-            "patient_id": patient.patient_id,
-            "nct_id": trial.nct_id,
-            "matcher_version": MATCHER_VERSION,
-            "matcher_assumption_mode": matcher_assumption_mode,
-            "llm_use_level": llm_use_level,
-        },
-    ) as span:
+    with (
+        anonymization_context(),
+        traced(
+            "score_pair",
+            as_type="span",
+            input={
+                "patient_id": patient.patient_id,
+                "nct_id": trial.nct_id,
+                "as_of": as_of.isoformat(),
+                "eligibility_text_chars": len(trial.eligibility_text or ""),
+            },
+            metadata={
+                "patient_id": patient.patient_id,
+                "nct_id": trial.nct_id,
+                "matcher_version": MATCHER_VERSION,
+                "matcher_assumption_mode": matcher_assumption_mode,
+                "llm_use_level": llm_use_level,
+            },
+        ) as span,
+    ):
         if extraction is None:
             extraction = extract_criteria(trial.eligibility_text)
 

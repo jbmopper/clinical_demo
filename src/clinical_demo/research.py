@@ -16,6 +16,12 @@ from urllib.parse import parse_qs, unquote, urlparse
 import httpx
 from pydantic import BaseModel, Field
 
+from clinical_demo.privacy import (
+    PrivacyPolicy,
+    anonymize_text,
+    current_anonymization_context,
+    sanitize_for_trace,
+)
 from clinical_demo.settings import Settings, get_settings
 
 ReviewerLabel = Literal["correct", "incorrect", "unjudgeable"]
@@ -221,6 +227,11 @@ def build_research_query(request: CriterionResearchRequest) -> str:
     rationale = " ".join((request.matcher_rationale or "").split())
     if len(rationale) > 180:
         rationale = rationale[:180].rsplit(" ", 1)[0]
+    rationale = anonymize_text(
+        rationale,
+        context=current_anonymization_context(),
+        policy=PrivacyPolicy.llm_prompt(),
+    ).text
     reason = request.matcher_reason or request.criterion_kind or ""
     matcher_context = " ".join(part for part in [reason, rationale] if part)
     return f"{text} {matcher_context} clinical convention guideline".strip()
@@ -235,11 +246,21 @@ def build_gemini_research_prompt(
     source_lines = "\n".join(
         f"- {source.title}\n  URL: {source.url}\n  Snippet: {source.snippet}" for source in sources
     )
+    context = current_anonymization_context()
     evidence_json = (
-        json.dumps(request.matcher_evidence, indent=2, sort_keys=True)
+        json.dumps(
+            sanitize_for_trace(request.matcher_evidence, context=context),
+            indent=2,
+            sort_keys=True,
+        )
         if request.matcher_evidence
         else "No cited matcher evidence."
     )
+    matcher_rationale = anonymize_text(
+        request.matcher_rationale or "none provided",
+        context=context,
+        policy=PrivacyPolicy.llm_prompt(),
+    ).text
     return f"""\
 The reviewer is deciding whether this matcher verdict should be labeled
 `correct`, `incorrect`, or `unjudgeable`.
@@ -257,7 +278,7 @@ Matcher reason:
 {request.matcher_reason or "unknown"}
 
 Matcher rationale:
-{request.matcher_rationale or "none provided"}
+{matcher_rationale}
 
 Matcher evidence:
 {evidence_json}

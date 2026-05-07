@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 
 from clinical_demo.evals.layer_three import (
@@ -12,12 +13,15 @@ from clinical_demo.evals.layer_three import (
     LayerThreeSourceRecord,
 )
 from clinical_demo.evals.patient_evidence import (
+    PatientEvidenceCalibrationRow,
     PatientEvidenceHumanLabel,
+    PatientEvidenceSourceRow,
     build_patient_evidence_report,
     build_patient_evidence_rows,
     patient_evidence_bucket,
     patient_evidence_label_completeness,
     render_patient_evidence_report,
+    save_patient_evidence_rows,
     select_patient_evidence_targets,
     summarize_patient_evidence_rows,
 )
@@ -342,6 +346,96 @@ def test_build_patient_evidence_rows_exposes_explicit_or_bundle_line_items() -> 
     assert rows[0].composite_line_items[0].item_id == "criterion:0:group:001:subcheck:001"
     assert rows[0].composite_line_items[1].source_text == "fasting plasma glucose >= 126 mg/dL"
     assert rows[0].composite_line_items[2].source_text == "random plasma glucose >= 200 mg/dL"
+
+
+def test_save_patient_evidence_rows_public_export_anonymizes_patient_text(
+    tmp_path,
+) -> None:
+    output = tmp_path / "candidate_rows.json"
+    row = PatientEvidenceCalibrationRow(
+        pair_id="p1__T1",
+        patient_id="patient_id=abc123",
+        nct_id="NCT00000000",
+        criterion_index=0,
+        candidate_bucket="measurement_or_unit",
+        criterion_kind="measurement_threshold",
+        criterion_source_text="HbA1c >= 6.5%",
+        polarity="inclusion",
+        negated=False,
+        mood="actual",
+        matcher_verdict="indeterminate",
+        matcher_reason="human_review_required",
+        matcher_rationale="MRN: A12345 called 303-555-1212",
+        matcher_evidence=[
+            {
+                "kind": "retrieved_patient_row",
+                "row_id": "patient:006",
+                "row_kind": "observation",
+                "label": "HbA1c",
+                "value": "6.1 %",
+                "date": "2024-12-01",
+                "code": "4548-4",
+                "system": "http://loinc.org",
+                "score": 23,
+                "reasons": [
+                    "composite:any_of",
+                    "subcheck:criterion:0:group:001:subcheck:001",
+                    "code:4548-4",
+                ],
+                "note": "MRN: A12345 HbA1c 6.1 %",
+            }
+        ],
+        source_rows=[
+            PatientEvidenceSourceRow(
+                row_id="patient:006",
+                source="patient",
+                kind="observation",
+                label="HbA1c",
+                value="6.1 %",
+                date="2024-12-01",
+                code="4548-4",
+                system="http://loinc.org",
+                status="note_id=doc1",
+            ),
+            PatientEvidenceSourceRow(
+                row_id="trial:000",
+                source="trial",
+                kind="trial_field",
+                label="Title",
+                value="Public trial title",
+            ),
+        ],
+        retrieved_source_row_ids=["patient:006"],
+        retrieval_reasons={
+            "patient:006": [
+                "composite:any_of",
+                "subcheck:criterion:0:group:001:subcheck:001",
+                "code:4548-4",
+            ]
+        },
+    )
+
+    save_patient_evidence_rows(output, [row])
+
+    payload = json.loads(output.read_text())[0]
+    rendered = json.dumps(payload)
+    assert "abc123" not in rendered
+    assert "A12345" not in rendered
+    assert "303-555-1212" not in rendered
+    assert "doc1" not in rendered
+    assert payload["patient_id"].startswith("<PATIENT_ID_")
+    assert payload["source_rows"][0]["row_id"] == "patient:006"
+    assert payload["source_rows"][0]["code"] == "4548-4"
+    assert payload["source_rows"][0]["value"] == "6.1 %"
+    assert payload["source_rows"][1]["value"] == "Public trial title"
+    assert payload["retrieval_reasons"]["patient:006"] == [
+        "composite:any_of",
+        "subcheck:criterion:0:group:001:subcheck:001",
+        "code:4548-4",
+    ]
+    assert payload["matcher_evidence"][0]["row_id"] == "patient:006"
+    assert payload["matcher_evidence"][0]["code"] == "4548-4"
+    assert payload["matcher_evidence"][0]["value"] == "6.1 %"
 
 
 def test_build_patient_evidence_rows_marks_mapping_gap_and_absence_guidance() -> None:

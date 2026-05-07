@@ -53,6 +53,12 @@ from ...matcher.verdict import (
     VerdictReason,
 )
 from ...observability import traced
+from ...privacy import (
+    PrivacyEngine,
+    PrivacyPolicy,
+    anonymize_text,
+    current_anonymization_context,
+)
 from ...profile import PatientProfile
 from ...settings import Settings, get_settings
 from ..prompts.llm_matcher import (
@@ -143,6 +149,7 @@ def llm_match_node(
     *,
     client: _ClientLike | None = None,
     settings: Settings | None = None,
+    privacy_engine: PrivacyEngine | None = None,
 ) -> dict[str, Any]:
     """Run one free-text criterion through the LLM matcher.
 
@@ -187,7 +194,7 @@ def llm_match_node(
             ]
         }
 
-    snapshot = _build_snapshot(profile)
+    snapshot = _anonymized_snapshot(_build_snapshot(profile), privacy_engine=privacy_engine)
 
     if client is None:
         if settings.openai_api_key is None:
@@ -340,6 +347,45 @@ def _build_user_message(criterion: ExtractedCriterion, snapshot: _PatientSnapsho
         "Decide pass / fail / indeterminate for the predicate of the "
         "criterion against this snapshot, per the rules in the system "
         "prompt. Return strict JSON."
+    )
+
+
+def _anonymized_snapshot(
+    snapshot: _PatientSnapshot,
+    *,
+    privacy_engine: PrivacyEngine | None = None,
+) -> _PatientSnapshot:
+    policy = PrivacyPolicy.llm_prompt()
+    context = current_anonymization_context()
+    return snapshot.model_copy(
+        update={
+            "sex": anonymize_text(
+                snapshot.sex,
+                context=context,
+                policy=policy,
+                engine=privacy_engine,
+            ).text
+            if snapshot.sex
+            else None,
+            "active_conditions": [
+                anonymize_text(
+                    value,
+                    context=context,
+                    policy=policy,
+                    engine=privacy_engine,
+                ).text
+                for value in snapshot.active_conditions
+            ],
+            "current_medications": [
+                anonymize_text(
+                    value,
+                    context=context,
+                    policy=policy,
+                    engine=privacy_engine,
+                ).text
+                for value in snapshot.current_medications
+            ],
+        }
     )
 
 
