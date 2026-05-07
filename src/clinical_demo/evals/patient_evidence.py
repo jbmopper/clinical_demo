@@ -203,6 +203,7 @@ class PatientEvidenceRunMetrics(BaseModel):
     matcher_assumption_mode: str = ""
     total_label_targets: int
     comparable_targets: int
+    skipped_assumption_mismatch_targets: int = 0
     missing_result_targets: int = 0
     correct_verdicts: int = 0
     verdict_accuracy: float | None = None
@@ -449,9 +450,9 @@ def render_patient_evidence_report(report: PatientEvidenceReport) -> str:
     lines.extend(["", "## Runs", ""])
     lines.append(
         "| Run | LLM use | Comparable | Accuracy | Abstention | Citation agreement | "
-        "Retrieved rows | Decisive citations | Eligibility | Adjudicator |"
+        "Mode skipped | Retrieved rows | Decisive citations | Eligibility | Adjudicator |"
     )
-    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     for item in report.runs:
         eligibility = " / ".join(
             f"{key}={value}" for key, value in sorted(item.eligibility_counts.items())
@@ -463,7 +464,8 @@ def render_patient_evidence_report(report: PatientEvidenceReport) -> str:
             f"| `{item.run_id}` | `{item.llm_use_level or 'unknown'}` | "
             f"{item.comparable_targets}/{item.total_label_targets} | "
             f"{_pct(item.verdict_accuracy)} | {_pct(item.abstention_rate)} | "
-            f"{_citation_cell(item)} | {retrieved_counts} | {cited_counts} | "
+            f"{_citation_cell(item)} | {item.skipped_assumption_mismatch_targets} | "
+            f"{retrieved_counts} | {cited_counts} | "
             f"{eligibility or '(none)'} | {adjudicator} |"
         )
     if report.mode_deltas:
@@ -961,7 +963,12 @@ def _run_metrics(
     labels: list[PatientEvidenceHumanLabel],
 ) -> PatientEvidenceRunMetrics:
     verdicts = _verdicts_by_key(run)
-    comparable = [label for label in labels if label.expected_matcher_verdict is not None]
+    run_assumption = _run_assumption(run)
+    comparable_all = [label for label in labels if label.expected_matcher_verdict is not None]
+    comparable = [
+        label for label in comparable_all if str(label.matcher_assumption_mode) == run_assumption
+    ]
+    skipped_assumption_mismatch = len(comparable_all) - len(comparable)
     correct = 0
     abstentions = 0
     missing = 0
@@ -1013,9 +1020,10 @@ def _run_metrics(
         run_id=run.run_id,
         notes=run.notes,
         llm_use_level=llm_use_level,
-        matcher_assumption_mode=assumption,
+        matcher_assumption_mode=assumption or run_assumption,
         total_label_targets=len(labels),
         comparable_targets=comparable_count,
+        skipped_assumption_mismatch_targets=skipped_assumption_mismatch,
         missing_result_targets=missing,
         correct_verdicts=correct,
         verdict_accuracy=_ratio(correct, comparable_count - missing),
@@ -1068,6 +1076,13 @@ def _verdicts_by_key(run: RunResult) -> dict[tuple[str, int], MatchVerdict]:
         for index, verdict in enumerate(record.result.verdicts):
             out[(record.case.pair_id, index)] = verdict
     return out
+
+
+def _run_assumption(run: RunResult) -> str:
+    for record in run.cases:
+        if record.result is not None:
+            return str(record.result.matcher_assumption_mode)
+    return ""
 
 
 def _rollups_by_pair(run: RunResult) -> dict[str, str]:

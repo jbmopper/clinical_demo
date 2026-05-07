@@ -565,6 +565,42 @@ def test_build_patient_evidence_report_scores_verdicts_citations_and_costs() -> 
     assert "Retrieved rows" in rendered
 
 
+def test_patient_evidence_report_skips_labels_with_mismatched_assumption_mode() -> None:
+    run = _run(
+        [
+            _verdict("condition_present", verdict="pass", reason="ok"),
+            _verdict("condition_present", verdict="fail", reason="ok"),
+        ]
+    )
+    assert run.cases[0].result is not None
+    run.cases[0].result.matcher_assumption_mode = "closed_world_eval"
+    labels = [
+        PatientEvidenceHumanLabel(
+            pair_id="p1__T1",
+            criterion_index=0,
+            expected_matcher_verdict="indeterminate",
+            matcher_assumption_mode="open_world",
+        ),
+        PatientEvidenceHumanLabel(
+            pair_id="p1__T1",
+            criterion_index=1,
+            expected_matcher_verdict="fail",
+            matcher_assumption_mode="closed_world_eval",
+        ),
+    ]
+
+    report = build_patient_evidence_report([run], labels, label_path="labels.json")
+
+    metrics = report.runs[0]
+    assert metrics.matcher_assumption_mode == "closed_world_eval"
+    assert metrics.comparable_targets == 1
+    assert metrics.skipped_assumption_mismatch_targets == 1
+    assert metrics.correct_verdicts == 1
+    assert metrics.verdict_accuracy == 1.0
+    rendered = render_patient_evidence_report(report)
+    assert "Mode skipped" in rendered
+
+
 def test_patient_evidence_report_tracks_case_rollup_movement() -> None:
     baseline = _run([_verdict("condition_present", verdict="indeterminate")])
     comparison = _run([_verdict("condition_present", verdict="fail", reason="ok")])
