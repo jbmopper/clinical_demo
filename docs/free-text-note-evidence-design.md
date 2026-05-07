@@ -62,4 +62,4 @@ The bounded **patient-evidence adjudicator** prompt/schema should remain criteri
 
 Golden sets must include: explicit positive evidence, explicit absence, insufficient evidence, temporal boundary cases, structured-vs-note conflict, prompt-injection strings, and composite OR/AND criteria with per-subcheck citations. Store credentialed MIMIC-like text **locally** only.
 
-Related: `docs/patient-evidence-retrieval-architecture.md`, `docs/mimic-iv-calibration-and-governance.md`, `docs/llm-use-levels-and-cost-controls.md`.
+Related: `docs/patient-evidence-retrieval-architecture.md`, `docs/mimic-note-privacy-policy.md`, `docs/mimic-iv-calibration-and-governance.md`, `docs/llm-use-levels-and-cost-controls.md`.
