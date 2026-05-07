@@ -72,5 +72,6 @@ Each human label may record which **assumption mode** the expectation applies to
 
 - **Labels file:** JSON list of label objects (sorted on save by pair id then criterion index).
 - **Candidates file:** Larger JSON built from eval runs + source contexts + retrieval reasons; reviewers read from it and merge updates back into the labels file via tooling provided in the repo.
+- **Runbook:** Use `docs/patient-evidence-eval-runbook.md` for the command sequence that builds private packets, exports public summaries, and runs the artifact privacy gate.
 
-Related: `docs/matcher-assumption-modes.md`, `docs/patient-evidence-retrieval-architecture.md`, `docs/evaluation-layers-and-gates.md`.
+Related: `docs/patient-evidence-eval-runbook.md`, `docs/matcher-assumption-modes.md`, `docs/patient-evidence-retrieval-architecture.md`, `docs/evaluation-layers-and-gates.md`.

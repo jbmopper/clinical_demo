@@ -51,6 +51,8 @@ How automated **layers**, **CLI workflows**, and **regression scripts** fit toge
 
 **Gate flags:** Scripts can require **minimum usable label count** before exiting zero — intentionally fails when labels are still empty so nobody publishes bogus accuracy.
 
+**Operator path:** Use `docs/patient-evidence-eval-runbook.md` for the current sequence: deterministic eval, private calibration packet, public summary export, privacy gate, then labeling/reporting.
+
 ---
 
 ## 6. Terminology regression gate
@@ -90,4 +92,4 @@ Adversarial cases (negation, temporal traps, prompt injection strings) belong in
 3. Optional: layer-1 render on cached sqlite from a committed baseline run
 4. LLM-heavy jobs **nightly** or manual — not on every push
 
-Related: `docs/patient-evidence-labeling-guide.md`, `docs/trec-trialgpt-benchmark-plan.md`, `docs/terminology-mapping-architecture.md`.
+Related: `docs/patient-evidence-eval-runbook.md`, `docs/patient-evidence-labeling-guide.md`, `docs/trec-trialgpt-benchmark-plan.md`, `docs/terminology-mapping-architecture.md`.
