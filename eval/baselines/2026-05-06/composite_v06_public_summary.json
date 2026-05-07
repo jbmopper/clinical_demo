@@ -1,0 +1,207 @@
+{
+  "artifact_safety": {
+    "contains_real_patient_data": false,
+    "omits": [
+      "row-level patient evidence",
+      "clinical note text",
+      "clinical note source identifiers",
+      "exact patient identifiers",
+      "reviewer free-text rationale"
+    ],
+    "public_export": "sanitized",
+    "summary_only": true
+  },
+  "artifact_type": "patient-evidence-calibration-summary",
+  "calibration": {
+    "candidate_bucket_counts": {
+      "condition_absent": 7,
+      "condition_present": 7,
+      "free_text_patient_evidence": 7,
+      "judge_incorrect:missing_evidence,unsupported_evidence": 1,
+      "judge_incorrect:unsupported_evidence": 3,
+      "judge_incorrect:wrong_verdict": 2,
+      "judge_incorrect:wrong_verdict,unsupported_evidence": 7,
+      "measurement_or_unit": 7,
+      "medication_absent": 7,
+      "medication_present": 6,
+      "unmapped_concept": 6
+    },
+    "candidate_rows": 60,
+    "composite_counts": {
+      "operator_counts": {
+        "all_of": 3,
+        "any_of": 5
+      },
+      "rows_with_groups": 2,
+      "subchecks": 6
+    },
+    "concept_mapping_counts": {
+      "condition:mapped": 10,
+      "condition:unmapped": 12,
+      "measurement:mapped": 7,
+      "measurement:unmapped": 3,
+      "medication:unmapped": 15,
+      "temporal_event:unmapped": 8
+    },
+    "criterion_kind_counts": {
+      "condition_absent": 8,
+      "condition_present": 14,
+      "free_text": 7,
+      "measurement_threshold": 12,
+      "medication_absent": 7,
+      "medication_present": 6,
+      "temporal_window": 6
+    },
+    "evidence_retrieval_state_counts": {
+      "no_patient_evidence_retrieved": 16,
+      "note_retrieved": 14,
+      "structured_and_note_retrieved": 22,
+      "structured_retrieved": 8
+    },
+    "free_text_review_hint_counts": {
+      "criterion_is_free_text": 7,
+      "not_needed": 7,
+      "note_evidence_retrieved": 30,
+      "unmapped_or_no_structured_evidence": 16
+    },
+    "judge_error_category_counts": {
+      "missing_evidence": 1,
+      "unsupported_evidence": 11,
+      "wrong_verdict": 9
+    },
+    "judge_label_counts": {
+      "correct": 42,
+      "incorrect": 13
+    },
+    "mapping_state_counts": {
+      "all_mapped": 15,
+      "all_unmapped": 34,
+      "no_mappable_slots": 9,
+      "some_unmapped": 2
+    },
+    "matcher_assumption_mode_counts": {
+      "open_world": 60
+    },
+    "matcher_reason_counts": {
+      "extractor_invariant_violation": 2,
+      "human_review_required": 8,
+      "no_data": 11,
+      "ok": 9,
+      "unmapped_concept": 30
+    },
+    "matcher_verdict_counts": {
+      "fail": 3,
+      "indeterminate": 51,
+      "pass": 6
+    },
+    "polarity_counts": {
+      "exclusion": 31,
+      "inclusion": 29
+    },
+    "retrieval_reason_category_counts": {
+      "code": 2,
+      "kind": 298,
+      "term": 466
+    },
+    "retrieved_row_counts": {
+      "by_kind": {
+        "condition": 30,
+        "demographics": 1,
+        "medication": 22,
+        "note": 241,
+        "observation": 40
+      },
+      "total": 334
+    },
+    "source_row_counts": {
+      "by_kind": {
+        "condition": 720,
+        "demographics": 120,
+        "medication": 480,
+        "note": 1800,
+        "observation": 900,
+        "trial_field": 300
+      },
+      "total": 4320
+    }
+  },
+  "diagnostics": {
+    "avg_scoring_latency_ms": 298.22041232457235,
+    "binding_registered_by_kind": {
+      "condition": {
+        "mapped": 14
+      },
+      "lab": {
+        "mapped": 12
+      },
+      "medication": {
+        "mapped": 1
+      }
+    },
+    "binding_registered_resolved": 27,
+    "binding_registered_total": 27,
+    "binding_registered_unmapped": 0,
+    "indeterminate_count": 974,
+    "indeterminate_rate": 0.9052044609665427,
+    "kind_counts": {
+      "age": 45,
+      "condition_absent": 130,
+      "condition_present": 80,
+      "free_text": 635,
+      "measurement_threshold": 144,
+      "medication_absent": 8,
+      "medication_present": 13,
+      "sex": 6,
+      "temporal_window": 15
+    },
+    "n_cases": 49,
+    "n_errors": 2,
+    "reason_counts": {
+      "ambiguous_criterion": 17,
+      "extractor_invariant_violation": 22,
+      "human_review_required": 622,
+      "no_data": 66,
+      "ok": 102,
+      "unmapped_concept": 228,
+      "unsupported_mood": 19
+    },
+    "run_id": "530e543f24c4",
+    "scored_cases": 47,
+    "total_criteria": 1076,
+    "total_scoring_latency_ms": 14612.800203904044,
+    "unmapped_count": 228,
+    "unmapped_rate": 0.21189591078066913,
+    "verdict_counts": {
+      "fail": 19,
+      "indeterminate": 974,
+      "pass": 83
+    }
+  },
+  "inputs": {
+    "candidate_rows": {
+      "name": "patient_evidence_candidates.json",
+      "records": 60
+    },
+    "diagnostics": {
+      "name": "composite_v06_none_diagnostics.json",
+      "shape": "object"
+    },
+    "label_templates": {
+      "name": "patient_evidence_labels.json",
+      "records": 60
+    }
+  },
+  "labels": {
+    "citation_count_distribution": {
+      "0": 60
+    },
+    "expected_matcher_verdict_counts": {},
+    "filled_labels": 0,
+    "label_counts": {},
+    "label_templates": 60,
+    "matcher_assumption_mode_counts": {
+      "open_world": 60
+    },
+    "usable_expected_verdicts": 0
+  }
+}
