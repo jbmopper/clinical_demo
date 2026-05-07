@@ -84,4 +84,26 @@ The structured layer is intentionally **lexical + code-anchored** so it is cheap
 
 Anything only stated outside projected rows will continue to land in **no data** / **human_review_required** paths.
 
+---
+
+## 7. Next target: correlatable free text
+
+The first patient-evidence pilot labels showed that `retrieval_only` can attach rows without improving verdicts when the parent criterion remains `free_text`, `human_review_required`, or `unmapped_concept`. Some of those rows are genuinely note-only or underspecified, but others are **correlatable**:
+
+- investigational drug or trial exposure within a time window;
+- prior/concurrent medication use expressed without a clean medication slot;
+- condition history phrased as prose rather than a structured condition criterion;
+- lab or vital constraints embedded in free-text wording;
+- composite subchecks where one subcheck is typed and another remains free text.
+
+For those cases, the next implementation should add a narrow normalization pass before bounded adjudication:
+
+1. detect free-text criteria with typed clinical surfaces;
+2. map/search those surfaces through the same terminology front door used by typed criteria;
+3. run structured retrieval against the recovered typed predicate;
+4. preserve subcheck ids, row ids, codes, units, numeric values, and citation reasons;
+5. leave true note-only semantics as bounded adjudication or human review.
+
+This pass should not turn `retrieval_only` into an adjudicator. Its purpose is to make the deterministic and retrieval substrate less blind before any LLM decides.
+
 Related: `docs/fhir-patient-processing.md`, `docs/matcher-assumption-modes.md`, `docs/free-text-note-evidence-design.md`.

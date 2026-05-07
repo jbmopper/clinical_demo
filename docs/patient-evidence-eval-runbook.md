@@ -140,14 +140,32 @@ Use the patient-evidence report command:
 ```bash
 uv run python scripts/eval.py patient-evidence \
   --labels eval/calibration/patient_evidence_labels.json \
-  --run RUN_ID:none \
+  --run-id NONE_RUN_ID \
+  --run-id RETRIEVAL_ONLY_RUN_ID \
+  --run-id BOUNDED_ADJUDICATION_RUN_ID \
   --strict-labels \
   --min-usable-labels 40 \
   --output-json eval/baselines/2026-05-06/patient_evidence_report.json \
-  --output-md eval/baselines/2026-05-06/patient_evidence_report.md
+  --output-markdown eval/baselines/2026-05-06/patient_evidence_report.md
 ```
 
-Replace or add `--run` entries for retrieval-only and bounded-adjudication run ids as they exist.
+Repeat `--run-id` in baseline, comparison order. Use local/private output paths until the
+report has been converted to a summary-only public artifact.
+
+### Current 22-label pilot signal
+
+A local 22/60 pilot label pass produced enough signal to pick the next engineering target:
+
+- `retrieval_only` attached patient rows but did not change labeled verdicts versus `none`.
+- `bounded_adjudication` reduced abstention on the labeled subset, but introduced at least one wrong decisive `pass`.
+- Several rows labeled as `insufficient_evidence` were not truly hopeless; they exposed criteria that should be mapped, searched, or retrieved as structured patient evidence instead of treated as generic free text.
+
+The next engineering pass should therefore prefer **correlatable free-text / mapping / retrieval fixes** before broader bounded-adjudication rollout:
+
+1. identify free-text criteria that can be normalized into condition, medication, measurement, temporal, or trial-exposure predicates;
+2. improve terminology/search coverage for those surfaces before adjudication;
+3. keep deterministic matching on raw local data and apply privacy wrapping only at outbound boundaries;
+4. keep bounded adjudication fail-closed: no decisive verdict without valid patient citations that support the polarity-adjusted verdict.
 
 ---
 
