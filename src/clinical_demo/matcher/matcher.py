@@ -408,6 +408,16 @@ _SYMBOLIC_THRESHOLD_RE = re.compile(
     r"(?P<op>>=|<=|>|<|=)\s*(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>[A-Za-z%][A-Za-z0-9%/*.^{}_-]*)?",
     re.IGNORECASE,
 )
+_TRIAL_EXPOSURE_RE = re.compile(
+    r"\b(?:"
+    r"investigational\s+(?:agents?|drugs?|products?)|"
+    r"study\s+(?:agents?|drugs?|medications?)|"
+    r"clinical\s+trial|"
+    r"research\s+study|"
+    r"another\s+(?:study|trial)"
+    r")\b",
+    re.IGNORECASE,
+)
 
 
 def _match_correlatable_free_text(
@@ -436,6 +446,13 @@ def _match_correlatable_free_text(
 
     mention = typed_mentions[0]
     surface = mention.text.strip()
+    if mention.type in {"Drug", "Observation"} and (
+        _looks_like_trial_exposure(surface) or _looks_like_trial_exposure(criterion.source_text)
+    ):
+        result = _match_trial_exposure(surface or criterion.source_text, mode=mode)
+        return _with_free_text_promotion_rationale(
+            result, mention_type="trial-exposure", surface=surface
+        )
     if mention.type == "Condition":
         result = _match_condition(ConditionCriterion(condition_text=surface), profile, mode=mode)
         return _with_free_text_promotion_rationale(
@@ -477,6 +494,53 @@ def _free_text_measurement_threshold(
         value_low=None,
         value_high=None,
         unit=match.group("unit"),
+    )
+
+
+def _looks_like_trial_exposure(text: str) -> bool:
+    return bool(_TRIAL_EXPOSURE_RE.search(text))
+
+
+def _match_trial_exposure(
+    surface: str,
+    *,
+    mode: MatcherAssumptionMode,
+) -> _HandlerResult:
+    looked_for = "patient record evidence of clinical trial or investigational-agent exposure"
+    if mode in _CLOSED_WORLD_MODES:
+        return (
+            "fail",
+            "ok",
+            (
+                f"Patient has no recorded clinical trial or investigational-agent exposure "
+                f"matching {surface!r} (closed-world: treating absence in the curated record "
+                "as negative)."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=looked_for,
+                    note=(
+                        "no matching trial-exposure rows on profile; absence treated as "
+                        f"negative under {mode}"
+                    ),
+                )
+            ],
+            True,
+        )
+    return (
+        "indeterminate",
+        "no_data",
+        (
+            f"Patient record has no clinical trial or investigational-agent exposure rows "
+            f"matching {surface!r}; under open_world this is insufficient evidence, not absence."
+        ),
+        [
+            MissingEvidence(
+                looked_for=looked_for,
+                note="no matching trial-exposure rows on profile",
+            )
+        ],
+        False,
     )
 
 

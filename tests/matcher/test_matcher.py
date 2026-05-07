@@ -617,6 +617,46 @@ def test_free_text_single_measurement_threshold_promotes_to_measurement_match() 
     assert any(e.kind == "lab" for e in v.evidence)
 
 
+def test_free_text_trial_exposure_open_world_stays_insufficient() -> None:
+    profile = make_profile()
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text="Use of other investigational agents within 3 months of enrollment",
+            mentions=[
+                EntityMention(text="other investigational agents", type="Drug"),
+                EntityMention(text="3 months", type="Temporal"),
+            ],
+        ),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "indeterminate"
+    assert v.reason == "no_data"
+    assert "trial-exposure" in v.rationale
+
+
+def test_free_text_trial_exposure_closed_world_absence_satisfies_exclusion() -> None:
+    profile = make_profile()
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text="Use of other investigational agents within 3 months of enrollment",
+            mentions=[
+                EntityMention(text="other investigational agents", type="Drug"),
+                EntityMention(text="3 months", type="Temporal"),
+            ],
+        ),
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )
+    assert v.verdict == "pass"
+    assert v.reason == "ok"
+    assert v.evidence_under_assumption is True
+    assert "investigational-agent exposure" in v.rationale
+
+
 def test_free_text_multiple_typed_mentions_stays_human_review() -> None:
     profile = make_profile(conditions=[make_condition(code="44054006", display="T2DM")])
     v = match_criterion(
