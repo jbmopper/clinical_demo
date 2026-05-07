@@ -154,18 +154,22 @@ report has been converted to a summary-only public artifact.
 
 ### Current 22-label pilot signal
 
-A local 22/60 pilot label pass produced enough signal to pick the next engineering target:
+A local 22/60 pilot label pass produced enough signal to pick the next engineering target and then verify two follow-up fixes:
 
-- `retrieval_only` attached patient rows but did not change labeled verdicts versus `none`.
-- `bounded_adjudication` reduced abstention on the labeled subset, but introduced at least one wrong decisive `pass`.
-- Several rows labeled as `insufficient_evidence` were not truly hopeless; they exposed criteria that should be mapped, searched, or retrieved as structured patient evidence instead of treated as generic free text.
+- Before the correlatable free-text work, `retrieval_only` attached patient rows but did not change labeled verdicts versus `none`.
+- Bounded adjudication reduced abstention on the labeled subset, but introduced at least one wrong decisive `pass`; this remains the reason to avoid wider adjudication until deterministic/retrieval gaps shrink.
+- Correlatable free-text promotion now handles narrow one-surface condition, medication, measurement, and trial-exposure predicates before outbound adjudication.
+- Patient-evidence reports are now assumption-aware: a label row only contributes to a run's accuracy/abstention denominator when the label `matcher_assumption_mode` matches the run's matcher assumption mode. Mismatches appear in the `Mode skipped` report column.
+- Fresh local closed-world pilot run `7cb2093f380c` moved the matching-mode subset to `80.0%` accuracy and `40.0%` abstention by treating investigational-agent/trial-exposure absence under the closed-world eval contract.
 
-The next engineering pass should therefore prefer **correlatable free-text / mapping / retrieval fixes** before broader bounded-adjudication rollout:
+The next operator pass is labeling, not more LLM spend:
 
-1. identify free-text criteria that can be normalized into condition, medication, measurement, temporal, or trial-exposure predicates;
-2. improve terminology/search coverage for those surfaces before adjudication;
-3. keep deterministic matching on raw local data and apply privacy wrapping only at outbound boundaries;
+1. grow the local labels from `22/60` toward at least `40/60`;
+2. set `matcher_assumption_mode` deliberately on each label row, using `open_world` unless the row is intentionally testing a closed-world completeness contract;
+3. compare open-world runs against open-world labels and closed-world runs against closed-world labels;
 4. keep bounded adjudication fail-closed: no decisive verdict without valid patient citations that support the polarity-adjusted verdict.
+
+The next likely engineering target after more labels is **normal-range / reference-interval handling**. Example: criteria like "serum calcium within normal limits" should only become deterministic when a trustworthy local reference range or explicit threshold is available; otherwise they should stay in human review / adjudication.
 
 ---
 
