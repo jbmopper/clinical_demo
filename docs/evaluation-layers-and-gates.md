@@ -53,6 +53,8 @@ How automated **layers**, **CLI workflows**, and **regression scripts** fit toge
 
 **Operator path:** Use `docs/patient-evidence-eval-runbook.md` for the current sequence: deterministic eval, private calibration packet, public summary export, privacy gate, then labeling/reporting.
 
+**Current interpretation rule:** Treat small human-label pilots as directional, not scorecard-final. A 22-label local pilot showed `retrieval_only` had no labeled verdict movement while bounded adjudication reduced abstention but produced at least one wrong decisive verdict. That points to a mapping/retrieval engineering target before wider LLM adjudication spend.
+
 ---
 
 ## 6. Terminology regression gate
