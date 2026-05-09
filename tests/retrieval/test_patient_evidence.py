@@ -76,7 +76,12 @@ def test_retrieve_falls_back_to_lexical_overlap_when_unmapped() -> None:
 def test_retrieve_prefers_observations_for_measurements() -> None:
     rows = [
         _row("patient:000", kind="condition", label="Hemoglobinopathy"),
-        _row("patient:001", kind="observation", label="Hemoglobin A1c/Hemoglobin.total"),
+        _row(
+            "patient:001",
+            kind="observation",
+            label="Hemoglobin A1c/Hemoglobin.total",
+            code="4548-4",
+        ),
     ]
 
     retrieved = retrieve_structured_patient_evidence(
@@ -86,6 +91,39 @@ def test_retrieve_prefers_observations_for_measurements() -> None:
 
     assert retrieved[0].row.row_id == "patient:001"
     assert "kind:observation" in retrieved[0].reasons
+
+
+def test_measurement_retrieval_filters_non_anchor_observations_and_unit_noise() -> None:
+    rows = [
+        _row(
+            "patient:000",
+            kind="observation",
+            label="Glucose",
+            value="68.28 mg/dL",
+            code="2339-0",
+        ),
+        _row(
+            "patient:001",
+            kind="observation",
+            label="Calcium",
+            value="8.75 mg/dL",
+            code="49765-1",
+        ),
+        _row(
+            "patient:002",
+            kind="note",
+            label="History and physical note",
+            value="Medications include 24 hr metformin hydrochloride oral tablet.",
+        ),
+    ]
+
+    retrieved = retrieve_structured_patient_evidence(
+        crit_measurement(text="fasting plasma glucose", operator=">=", value=126, unit="mg/dL"),
+        rows,
+    )
+
+    assert [item.row.row_id for item in retrieved] == ["patient:000"]
+    assert "term:glucose" in retrieved[0].reasons
 
 
 def test_retrieve_uses_composite_subcheck_criteria() -> None:
@@ -142,7 +180,13 @@ def test_free_text_measurement_mentions_prefer_observation_rows() -> None:
     )
     rows = [
         _row("patient:000", kind="condition", label="Obesity"),
-        _row("patient:001", kind="observation", label="Body mass index", value="31 kg/m2"),
+        _row(
+            "patient:001",
+            kind="observation",
+            label="Body mass index",
+            value="31 kg/m2",
+            code="39156-5",
+        ),
     ]
 
     retrieved = retrieve_structured_patient_evidence(criterion, rows)
