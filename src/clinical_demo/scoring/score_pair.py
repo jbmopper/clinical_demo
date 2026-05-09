@@ -41,7 +41,11 @@ from pydantic import BaseModel, Field
 
 from ..adjudication.patient_evidence import _ClientLike as _PatientEvidenceClient
 from ..adjudication.patient_evidence import adjudicate_patient_evidence
-from ..compiler import CriterionCompilationResult, compile_extracted_criteria
+from ..compiler import (
+    CriterionCompilationResult,
+    compile_extracted_criteria,
+    match_compiled_criteria,
+)
 from ..cost_telemetry import LLMCallCost
 from ..domain.patient import Patient
 from ..domain.trial import Trial
@@ -226,19 +230,28 @@ def score_pair(
         enriched_criteria = fix_extracted_criteria(
             enrich_with_structured_fields(extraction.extracted, trial)
         )
+        settings = get_settings()
         compilation = compile_extracted_criteria(
             enriched_criteria,
-            resolver_policy=get_settings().resolver_execution_policy,
+            resolver_policy=settings.resolver_execution_policy,
         )
 
         profile = PatientProfile(patient, as_of)
-        verdicts = match_extracted(
-            compilation.matcher_inputs,
-            profile,
-            trial,
-            composite_groups=enriched_criteria.composite_groups,
-            matcher_assumption_mode=matcher_assumption_mode,
-        )
+        if settings.matcher_execution_source == "compiled_predicates":
+            verdicts = match_compiled_criteria(
+                compilation,
+                profile,
+                trial,
+                matcher_assumption_mode=matcher_assumption_mode,
+            )
+        else:
+            verdicts = match_extracted(
+                compilation.matcher_inputs,
+                profile,
+                trial,
+                composite_groups=enriched_criteria.composite_groups,
+                matcher_assumption_mode=matcher_assumption_mode,
+            )
         verdicts, llm_calls = _apply_retrieval_only(
             verdicts,
             patient=patient,

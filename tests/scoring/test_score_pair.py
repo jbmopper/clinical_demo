@@ -10,6 +10,7 @@ the demo.
 
 from __future__ import annotations
 
+import importlib
 from datetime import date
 from types import SimpleNamespace
 from typing import Any
@@ -29,6 +30,7 @@ from clinical_demo.extractor.schema import (
 )
 from clinical_demo.scoring import PatientDeceasedError
 from clinical_demo.scoring.score_pair import _rollup, _summarize, score_pair
+from clinical_demo.settings import Settings
 from tests.matcher._fixtures import (
     AS_OF,
     crit_age,
@@ -137,6 +139,36 @@ def test_rollup_pass_when_all_criteria_pass() -> None:
     )
     result = score_pair(profile_p, make_trial(), AS_OF, extraction=extraction)
     assert result.eligibility == "pass"
+
+
+def test_score_pair_can_execute_compiled_predicates_when_enabled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    score_pair_module = importlib.import_module("clinical_demo.scoring.score_pair")
+    monkeypatch.setattr(
+        score_pair_module,
+        "get_settings",
+        lambda: Settings(matcher_execution_source="compiled_predicates"),
+    )
+    patient = make_patient(
+        birth=date(1990, 1, 1),
+        conditions=[make_condition(code="44054006")],
+        observations=[make_lab(loinc="4548-4", value=7.2, unit="%")],
+    )
+    extraction = _make_extraction(
+        [
+            crit_age(minimum_years=18.0),
+            crit_condition(text="type 2 diabetes"),
+            crit_measurement(text="HbA1c", operator=">=", value=7.0, unit="%"),
+        ]
+    )
+
+    result = score_pair(patient, make_trial(), AS_OF, extraction=extraction)
+
+    assert result.eligibility == "pass"
+    assert result.compilation is not None
+    assert len(result.compilation.checkable_predicates) == 3
+    assert all("+compiled-predicate-" in verdict.matcher_version for verdict in result.verdicts)
 
 
 def test_rollup_fail_when_any_fail_overrides_passes_and_indeterminates() -> None:

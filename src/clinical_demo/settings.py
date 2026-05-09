@@ -48,6 +48,16 @@ ResolverExecutionPolicy = Literal["cached_only", "live_allowed", "disabled"]
   fall back to the legacy alias table if `binding_strategy=two_pass`.
 """
 
+MatcherExecutionSource = Literal["matcher_inputs", "compiled_predicates"]
+"""Which deterministic predicate source `score_pair` should execute.
+
+- `matcher_inputs` (default): preserve the legacy matcher path over
+  extractor criteria.
+- `compiled_predicates`: execute compiler-produced `CheckablePredicate`
+  objects. This is the CC-05 integration lane and is kept opt-in while
+  parity/eval gates mature.
+"""
+
 
 class Settings(BaseSettings):
     """Process-wide configuration.
@@ -87,6 +97,8 @@ class Settings(BaseSettings):
     # matching while still guaranteeing that every terminology answer
     # came from reviewed/local/cache state.
     resolver_execution_policy: ResolverExecutionPolicy = "cached_only"
+
+    matcher_execution_source: MatcherExecutionSource = "matcher_inputs"
 
     # Where the terminology cache (D-69 follow-on slice 2) writes
     # resolved bindings. Lives under `data/cache/` which is already

@@ -14,6 +14,11 @@ from .medication import (
     normalize_medication_surface,
 )
 from .pipeline import compile_extracted_criteria, compiled_criterion_id, source_criterion_id
+from .predicate_matcher import (
+    COMPILED_PREDICATE_MATCHER_VERSION,
+    match_compiled_criteria,
+    match_compiled_criterion,
+)
 from .schema import (
     COMPILER_VERSION,
     CheckablePredicate,
@@ -30,6 +35,7 @@ from .schema import (
 )
 
 __all__ = [
+    "COMPILED_PREDICATE_MATCHER_VERSION",
     "COMPILER_VERSION",
     "CheckablePredicate",
     "CheckablePredicatePlan",
@@ -53,6 +59,8 @@ __all__ = [
     "compile_medication_resolution",
     "compile_temporal_window",
     "compiled_criterion_id",
+    "match_compiled_criteria",
+    "match_compiled_criterion",
     "normalize_medication_surface",
     "source_criterion_id",
 ]
