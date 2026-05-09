@@ -504,6 +504,7 @@ def select_patient_evidence_targets(
     judge_report: LayerThreeReport | None = None,
     limit: int = 60,
     scope: PatientEvidenceScope = "cardiometabolic_core",
+    preserve_keys: set[tuple[str, int]] | None = None,
 ) -> list[JudgeTarget]:
     """Select a deterministic, evidence-focused calibration packet.
 
@@ -521,6 +522,7 @@ def select_patient_evidence_targets(
 
     targets = select_judge_targets(run)
     judgments = _judgments_by_key(judge_report)
+    preserved = preserve_keys or set()
     selected: list[JudgeTarget] = []
     selected_keys: set[tuple[str, int]] = set()
 
@@ -528,6 +530,21 @@ def select_patient_evidence_targets(
         if not _target_in_scope(target, scope):
             continue
         key = (target.pair_id, target.criterion_index)
+        if key not in preserved:
+            continue
+        if patient_evidence_bucket(target, judgments.get(key)) is None:
+            continue
+        selected.append(target)
+        selected_keys.add(key)
+        if len(selected) >= limit:
+            return selected
+
+    for target in targets:
+        if not _target_in_scope(target, scope):
+            continue
+        key = (target.pair_id, target.criterion_index)
+        if key in selected_keys:
+            continue
         judgment = judgments.get(key)
         bucket = patient_evidence_bucket(target, judgment)
         if judgment is None or judgment.judge_label != "incorrect" or bucket is None:

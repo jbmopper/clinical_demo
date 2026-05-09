@@ -26,6 +26,7 @@ from clinical_demo.evals.patient_evidence import (
     summarize_patient_evidence_rows,
 )
 from clinical_demo.evals.store import load_run, open_store
+from clinical_demo.matcher import DEFAULT_MATCHER_ASSUMPTION_MODE
 
 DEFAULT_DB = Path("eval/runs.sqlite")
 DEFAULT_JUDGE_REPORT = Path("eval/baselines/2026-04-30/layer3_judge_calibrated.json")
@@ -66,6 +67,7 @@ def main() -> None:
         judge_report=judge_report,
         limit=args.limit,
         scope=scope,
+        preserve_keys=_reviewed_label_keys(existing_labels),
     )
     labels = _labels_for_targets(targets, existing_labels)
     if args.prune_labels or not existing_labels:
@@ -126,6 +128,23 @@ def _labels_for_targets(
             )
         )
     return labels
+
+
+def _reviewed_label_keys(
+    labels: list[PatientEvidenceHumanLabel],
+) -> set[tuple[str, int]]:
+    return {(label.pair_id, label.criterion_index) for label in labels if _label_has_review(label)}
+
+
+def _label_has_review(label: PatientEvidenceHumanLabel) -> bool:
+    return (
+        label.label is not None
+        or label.expected_matcher_verdict is not None
+        or bool(label.cited_source_row_ids)
+        or bool(label.rationale.strip())
+        or label.reviewer is not None
+        or label.matcher_assumption_mode != DEFAULT_MATCHER_ASSUMPTION_MODE
+    )
 
 
 def public_summary_export_command(
