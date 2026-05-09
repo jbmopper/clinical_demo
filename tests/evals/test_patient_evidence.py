@@ -26,6 +26,7 @@ from clinical_demo.evals.patient_evidence import (
     summarize_patient_evidence_rows,
 )
 from clinical_demo.evals.run import CaseRecord, EvalCase, RunResult
+from clinical_demo.extractor.schema import EntityMention
 from clinical_demo.matcher import (
     DEFAULT_MATCHER_ASSUMPTION_MODE,
     MATCHER_VERSION,
@@ -193,6 +194,34 @@ def test_select_patient_evidence_targets_preserves_reviewed_judge_correct_rows()
     selected = select_patient_evidence_targets(
         run,
         judge_report=report,
+        limit=2,
+        preserve_keys={(all_targets[0].pair_id, all_targets[0].criterion_index)},
+    )
+
+    assert [target.criterion_index for target in selected] == [0, 1]
+
+
+def test_select_patient_evidence_targets_preserves_reviewed_fixed_rows() -> None:
+    run = _run(
+        [
+            _verdict("free_text", verdict="fail", reason="ok"),
+            _verdict("measurement_threshold", reason="no_data"),
+        ]
+    )
+    all_targets = [
+        JudgeTarget(
+            pair_id=record.case.pair_id,
+            patient_id=record.case.patient_id,
+            nct_id=record.case.nct_id,
+            criterion_index=index,
+            verdict=verdict,
+        )
+        for record in run.cases
+        for index, verdict in enumerate(record.result.verdicts if record.result else [])
+    ]
+
+    selected = select_patient_evidence_targets(
+        run,
         limit=2,
         preserve_keys={(all_targets[0].pair_id, all_targets[0].criterion_index)},
     )
@@ -517,6 +546,41 @@ def test_build_patient_evidence_rows_marks_mapping_gap_and_absence_guidance() ->
     assert rows[0].evidence_retrieval_state == "no_patient_evidence_retrieved"
     assert rows[0].free_text_review_hint == "unmapped_or_no_structured_evidence"
     assert "not proof of absence" in rows[0].open_world_label_guidance
+
+
+def test_build_patient_evidence_rows_exposes_free_text_drug_mapping_gaps() -> None:
+    criterion = crit_free_text().model_copy(
+        update={
+            "source_text": (
+                "Treatment with any of the following drugs in past year: "
+                "immunosuppressants, aromatase inhibitors."
+            ),
+            "mentions": [
+                EntityMention(text="immunosuppressants", type="Drug"),
+                EntityMention(text="aromatase inhibitors", type="Drug"),
+            ],
+        }
+    )
+    target = JudgeTarget(
+        pair_id="p1__T1",
+        patient_id="p1",
+        nct_id="T1",
+        criterion_index=0,
+        verdict=MatchVerdict(
+            criterion=criterion,
+            verdict="indeterminate",
+            reason="unmapped_concept",
+            rationale="No ConceptSet mapping.",
+            evidence=[],
+            matcher_version=MATCHER_VERSION,
+        ),
+    )
+    context = LayerThreeSourceContext(patient=[], trial=[])
+
+    rows = build_patient_evidence_rows([target], source_contexts={"p1__T1": context})
+
+    assert rows[0].mapping_state == "all_unmapped"
+    assert rows[0].unmapped_surfaces == ["immunosuppressants", "aromatase inhibitors"]
 
 
 def test_patient_evidence_label_completeness_flags_missing_expected_verdict() -> None:

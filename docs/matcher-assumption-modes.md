@@ -21,7 +21,7 @@ These modes apply when a criterion’s **trial-side concept has already resolved
 - **Unmapped concept:** If trial text never mapped to a `ConceptSet`, the verdict is **indeterminate (unmapped_concept)** in **every** mode. Closed world must not hide terminology failure behind a synthetic “absent.”
 - **Labs (measurement thresholds):** Missing lab, stale lab, or unit mismatch stays **indeterminate** with the appropriate reason in **all** modes — a missing numeric measurement is never upgraded to a confident fail the way a missing condition row can be under closed world.
 - **Age and sex:** Deterministic comparisons; absence semantics above do not apply the same way.
-- **Most free-text criteria:** Deterministic path defers to human review unless the criterion is narrow enough for the correlatable free-text promotion path. Assumption mode only changes the promoted trial-exposure absence case; it does not make arbitrary prose decisive.
+- **Most free-text criteria:** Deterministic path defers to human review unless the criterion is narrow enough for the correlatable free-text promotion path. Assumption mode only changes promoted trial-exposure absence and mapped list-like medication exposure absence; it does not make arbitrary prose decisive.
 
 **Polarity and negation:** Per-kind handlers return a **raw** pass/fail/indeterminate for the predicate; the matcher then applies trial **inclusion/exclusion** and linguistic **negation** in one consistent step so “exclusion + absent disease” does not get silently inverted.
 

@@ -28,6 +28,7 @@ from tests.matcher._fixtures import (
     crit_temporal_window,
     make_condition,
     make_lab,
+    make_medication,
     make_profile,
     make_trial,
 )
@@ -655,6 +656,141 @@ def test_free_text_trial_exposure_closed_world_absence_satisfies_exclusion() -> 
     assert v.reason == "ok"
     assert v.evidence_under_assumption is True
     assert "investigational-agent exposure" in v.rationale
+
+
+def test_free_text_medication_list_promotes_any_mapped_match(monkeypatch) -> None:
+    metformin = ConceptSet(
+        name="metformin (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"860975"}),
+    )
+    teriparatide = ConceptSet(
+        name="teriparatide (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"999999"}),
+    )
+    monkeypatch.setattr(
+        "clinical_demo.matcher.matcher.lookup_medication",
+        lambda text: {"metformin": metformin, "teriparatide": teriparatide}.get(text),
+    )
+    profile = make_profile(
+        medications=[
+            make_medication(
+                code="860975",
+                start=date(2024, 7, 1),
+                end=date(2024, 9, 1),
+            )
+        ]
+    )
+
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text="Treatment with any of the following drugs in past year: metformin, teriparatide.",
+            mentions=[
+                EntityMention(text="metformin", type="Drug"),
+                EntityMention(text="teriparatide", type="Drug"),
+            ],
+        ),
+        profile,
+        make_trial(),
+    )
+
+    assert v.verdict == "fail"
+    assert v.reason == "ok"
+    assert "Promoted correlatable free-text medication-list mention" in v.rationale
+    assert any(e.kind == "medication" for e in v.evidence)
+
+
+def test_free_text_medication_list_open_world_absence_stays_insufficient(monkeypatch) -> None:
+    metformin = ConceptSet(
+        name="metformin (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"860975"}),
+    )
+    teriparatide = ConceptSet(
+        name="teriparatide (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"999999"}),
+    )
+    monkeypatch.setattr(
+        "clinical_demo.matcher.matcher.lookup_medication",
+        lambda text: {"metformin": metformin, "teriparatide": teriparatide}.get(text),
+    )
+    profile = make_profile()
+
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text="Treatment with any of the following drugs in past year: metformin, teriparatide.",
+            mentions=[
+                EntityMention(text="metformin", type="Drug"),
+                EntityMention(text="teriparatide", type="Drug"),
+            ],
+        ),
+        profile,
+        make_trial(),
+    )
+
+    assert v.verdict == "indeterminate"
+    assert v.reason == "no_data"
+
+
+def test_free_text_medication_list_unmapped_surfaces_are_mapping_failures() -> None:
+    profile = make_profile()
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text=(
+                "Treatment with any of the following drugs in past year: "
+                "immunosuppressants, anticonvulsant therapy, aromatase inhibitors."
+            ),
+            mentions=[
+                EntityMention(text="immunosuppressants", type="Drug"),
+                EntityMention(text="anticonvulsant therapy", type="Drug"),
+                EntityMention(text="aromatase inhibitors", type="Drug"),
+            ],
+        ),
+        profile,
+        make_trial(),
+    )
+
+    assert v.verdict == "indeterminate"
+    assert v.reason == "unmapped_concept"
+    assert "listed free-text medication surface" in v.rationale
+
+
+def test_free_text_multiple_drugs_without_list_cue_stays_human_review(monkeypatch) -> None:
+    metformin = ConceptSet(
+        name="metformin (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"860975"}),
+    )
+    insulin = ConceptSet(
+        name="insulin (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"999999"}),
+    )
+    monkeypatch.setattr(
+        "clinical_demo.matcher.matcher.lookup_medication",
+        lambda text: {"metformin": metformin, "insulin": insulin}.get(text),
+    )
+    profile = make_profile(medications=[make_medication(code="860975")])
+
+    v = match_criterion(
+        crit_free_text(
+            source_text="Metformin and insulin management requires clinician judgment.",
+            mentions=[
+                EntityMention(text="metformin", type="Drug"),
+                EntityMention(text="insulin", type="Drug"),
+            ],
+        ),
+        profile,
+        make_trial(),
+    )
+
+    assert v.verdict == "indeterminate"
+    assert v.reason == "human_review_required"
 
 
 def test_free_text_multiple_typed_mentions_stays_human_review() -> None:

@@ -8,6 +8,7 @@ import pytest
 
 from clinical_demo.domain import ClinicalNote
 from clinical_demo.extractor.schema import EntityMention
+from clinical_demo.profile.profile import ConceptSet
 from clinical_demo.retrieval import (
     RetrievalSourceRow,
     retrieve_patient_evidence_with_composite_subchecks,
@@ -194,6 +195,57 @@ def test_free_text_measurement_mentions_prefer_observation_rows() -> None:
     assert retrieved[0].row.row_id == "patient:001"
     assert "correlatable_free_text:measurement_threshold" in retrieved[0].reasons
     assert "kind:observation" in retrieved[0].reasons
+
+
+def test_free_text_medication_lists_use_code_anchors_without_generic_note_noise(
+    monkeypatch,
+) -> None:
+    metformin = ConceptSet(
+        name="metformin (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"860975"}),
+    )
+    teriparatide = ConceptSet(
+        name="teriparatide (RxNorm)",
+        system="http://www.nlm.nih.gov/research/umls/rxnorm",
+        codes=frozenset({"999999"}),
+    )
+    monkeypatch.setattr(
+        "clinical_demo.retrieval.patient_evidence.lookup_medication",
+        lambda text: {"metformin": metformin, "teriparatide": teriparatide}.get(text),
+    )
+    criterion = crit_free_text().model_copy(
+        update={
+            "source_text": (
+                "Treatment with any of the following drugs in past year: metformin, teriparatide."
+            ),
+            "mentions": [
+                EntityMention(text="metformin", type="Drug"),
+                EntityMention(text="teriparatide", type="Drug"),
+            ],
+        }
+    )
+    rows = [
+        _row(
+            "patient:000",
+            kind="medication",
+            label="24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet",
+            value="24 HR Metformin hydrochloride 500 MG Extended Release Oral Tablet",
+            code="860975",
+        ),
+        _row(
+            "patient:001",
+            kind="note",
+            label="History and physical note",
+            value="The following procedures were conducted during the past year.",
+        ),
+    ]
+
+    retrieved = retrieve_structured_patient_evidence(criterion, rows)
+
+    assert [item.row.row_id for item in retrieved] == ["patient:000"]
+    assert "correlatable_free_text:medication_present" in retrieved[0].reasons
+    assert "code:860975" in retrieved[0].reasons
 
 
 def test_retrieve_ignores_numeric_only_overlap() -> None:
