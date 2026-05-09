@@ -141,20 +141,38 @@ _STOPWORDS = frozenset(
         "at",
         "be",
         "by",
+        "during",
         "for",
+        "free",
         "from",
+        "g",
+        "dl",
         "has",
         "have",
+        "hour",
+        "hr",
+        "if",
         "in",
         "is",
+        "kg",
+        "l",
+        "min",
+        "ml",
+        "mg",
+        "mmhg",
+        "mmol",
         "must",
         "no",
         "not",
         "of",
         "on",
+        "oral",
         "or",
+        "patient",
         "per",
         "prior",
+        "tablet",
+        "test",
         "the",
         "to",
         "with",
@@ -218,10 +236,17 @@ def _retrieve_structured_patient_evidence_direct(
     query_terms = _criterion_terms(criterion)
     preferred_kinds = _preferred_patient_kinds(criterion)
     anchored_codes = _anchored_codes(criterion)
+    strict_measurement_codes = criterion.kind == "measurement_threshold" and bool(anchored_codes)
 
     retrieved: list[RetrievedPatientEvidence] = []
     for row in source_rows:
         if row.source != "patient":
+            continue
+        if (
+            strict_measurement_codes
+            and row.kind == "observation"
+            and row.code not in anchored_codes
+        ):
             continue
         score, reasons = _score_row(
             row,
@@ -481,7 +506,7 @@ def _tokens(text: str) -> set[str]:
     return {
         token
         for token in _TOKEN_RE.findall(text.lower())
-        if token not in _STOPWORDS and not token.isdigit()
+        if len(token) > 1 and token not in _STOPWORDS and not token.isdigit()
     }
 
 

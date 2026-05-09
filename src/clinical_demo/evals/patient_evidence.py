@@ -544,7 +544,10 @@ def select_patient_evidence_targets(
         key = (target.pair_id, target.criterion_index)
         if key in selected_keys:
             continue
-        bucket = patient_evidence_bucket(target, judgments.get(key))
+        judgment = judgments.get(key)
+        if judgment is not None and judgment.judge_label == "correct":
+            continue
+        bucket = patient_evidence_bucket(target, judgment)
         if bucket is None:
             continue
         buckets.setdefault(bucket, []).append(target)
