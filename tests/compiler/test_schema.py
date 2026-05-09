@@ -4,6 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from clinical_demo.compiler.schema import (
+    CheckablePredicate,
     CheckablePredicatePlan,
     CompilerDiagnostic,
     DiagnosticFact,
@@ -54,6 +55,31 @@ def test_gap_and_diagnostic_containers_are_typed() -> None:
 
     assert gap.kind == "missing_unit"
     assert diagnostic.facts[0].value == "gap:0"
+
+
+def test_checkable_predicate_records_typed_execution_target() -> None:
+    predicate = CheckablePredicate(
+        predicate_id="predicate:0",
+        predicate_kind="measurement_threshold",
+        source_criterion_id="criterion:0",
+        polarity="inclusion",
+        negated=False,
+        surface="HbA1c",
+        target_system="http://loinc.org",
+        target_codes=frozenset({"4548-4"}),
+        operator=">=",
+        value=7.0,
+        value_low=None,
+        value_high=None,
+        unit="%",
+        window_days=None,
+        support_ids=["support:0"],
+        gap_ids=[],
+    )
+
+    assert predicate.target_codes == frozenset({"4548-4"})
+    assert predicate.operator == ">="
+    assert predicate.support_ids == ["support:0"]
 
 
 def test_future_stage_plan_objects_are_validation_checked() -> None:

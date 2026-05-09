@@ -15,6 +15,8 @@ from clinical_demo.extractor.schema import (
     CompositeOperator,
     CriterionKind,
     ExtractedCriterion,
+    Polarity,
+    ThresholdOperator,
 )
 from clinical_demo.settings import ResolverExecutionPolicy
 
@@ -191,12 +193,55 @@ class UnitNormalizationPlan(BaseModel):
     )
 
 
+class CheckablePredicate(BaseModel):
+    """Typed executable predicate target produced by the compiler.
+
+    The current matcher still consumes `ExtractedCriterion`; this model
+    is the compiler-side shape that later validation/matcher work can
+    promote into the source of execution. Fields are optional by domain
+    so one model can carry condition, medication, measurement, temporal,
+    demographic, and review predicates without unsafe string parsing.
+    """
+
+    predicate_id: str = Field(description="Stable id within the compilation result.")
+    predicate_kind: PredicateKind = Field(description="Kind of predicate to execute.")
+    source_criterion_id: str = Field(description="Criterion id this predicate belongs to.")
+    polarity: Polarity = Field(description="Original criterion polarity.")
+    negated: bool = Field(description="Whether the original criterion was negated.")
+    surface: str | None = Field(description="Original clinical surface, if applicable.")
+    target_system: str | None = Field(description="Coding system URI, when coded.")
+    target_codes: frozenset[str] = Field(
+        default_factory=frozenset,
+        description="Codes or class ids the predicate should check.",
+    )
+    operator: ThresholdOperator | None = Field(
+        description="Numeric threshold operator for measurement predicates."
+    )
+    value: float | None = Field(description="Single threshold value, when applicable.")
+    value_low: float | None = Field(description="Inclusive lower bound, when applicable.")
+    value_high: float | None = Field(description="Inclusive upper bound, when applicable.")
+    unit: str | None = Field(description="Canonical/conventional unit used for comparison.")
+    window_days: int | None = Field(description="Temporal window length in days.")
+    support_ids: list[str] = Field(
+        default_factory=list,
+        description="Resolution supports consumed by this predicate.",
+    )
+    gap_ids: list[str] = Field(
+        default_factory=list,
+        description="Unresolved gaps blocking or qualifying this predicate.",
+    )
+
+
 class CheckablePredicatePlan(BaseModel):
     """Future executable predicate translation for a compiled criterion."""
 
     status: ResolutionStatus = Field(description="Current predicate-translation status.")
     predicate_kind: PredicateKind = Field(description="Kind of predicate to build.")
     expression: str | None = Field(description="Stable predicate expression, once available.")
+    predicate_ids: list[str] = Field(
+        default_factory=list,
+        description="Typed checkable predicate ids produced for this criterion.",
+    )
     input_refs: list[str] = Field(
         default_factory=list,
         description="Compiled/source ids this predicate consumes.",
@@ -236,6 +281,10 @@ class CompiledCriterion(BaseModel):
         default_factory=list,
         description="Unresolved gaps for this criterion.",
     )
+    checkable_predicates: list[CheckablePredicate] = Field(
+        default_factory=list,
+        description="Typed predicates produced for this criterion.",
+    )
     expansion: ExpansionPlan = Field(description="Concept expansion plan.")
     compound_logic: CompoundLogicPlan = Field(description="Compound logic plan.")
     unit_normalization: UnitNormalizationPlan = Field(description="Unit normalization plan.")
@@ -263,6 +312,10 @@ class CriterionCompilationResult(BaseModel):
     unresolved_gaps: list[ResolutionGap] = Field(
         default_factory=list,
         description="All gaps produced by this compilation.",
+    )
+    checkable_predicates: list[CheckablePredicate] = Field(
+        default_factory=list,
+        description="All typed predicates produced by this compilation.",
     )
     diagnostics: list[CompilerDiagnostic] = Field(
         default_factory=list,

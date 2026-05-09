@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from clinical_demo.compiler import compile_extracted_criteria
 from clinical_demo.extractor.schema import (
+    AgeCriterion,
     CompositeCriterionGroup,
     CompositeCriterionSubcheck,
     ConditionCriterion,
@@ -10,6 +11,7 @@ from clinical_demo.extractor.schema import (
     ExtractionMetadata,
     FreeTextCriterion,
     MeasurementCriterion,
+    TemporalWindowCriterion,
 )
 
 
@@ -74,7 +76,47 @@ def _free_text(text: str) -> ExtractedCriterion:
     )
 
 
-def test_noop_pipeline_preserves_count_order_text_and_kind() -> None:
+def _age(minimum_years: float = 18.0) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind="age",
+        polarity="inclusion",
+        source_text=f"Age >= {minimum_years:g} years",
+        negated=False,
+        mood="actual",
+        age=AgeCriterion(minimum_years=minimum_years, maximum_years=None),
+        sex=None,
+        condition=None,
+        medication=None,
+        measurement=None,
+        temporal_window=None,
+        free_text=None,
+        mentions=[],
+    )
+
+
+def _temporal(event_text: str, window_days: int = 365) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind="temporal_window",
+        polarity="exclusion",
+        source_text=f"{event_text} within {window_days} days",
+        negated=False,
+        mood="historical",
+        age=None,
+        sex=None,
+        condition=None,
+        medication=None,
+        measurement=None,
+        temporal_window=TemporalWindowCriterion(
+            event_text=event_text,
+            window_days=window_days,
+            direction="within_past",
+        ),
+        free_text=None,
+        mentions=[],
+    )
+
+
+def test_pipeline_preserves_count_order_text_kind_and_matcher_inputs() -> None:
     criteria = [_condition("type 2 diabetes"), _measurement("HbA1c"), _free_text("Unable")]
     extracted = ExtractedCriteria(criteria=criteria, metadata=ExtractionMetadata(notes=""))
 
@@ -114,7 +156,7 @@ def test_empty_input_compiles_to_empty_result() -> None:
     assert result.diagnostics == []
 
 
-def test_compound_and_unit_placeholders_are_typed_without_changing_matcher_input() -> None:
+def test_compound_logic_compiles_without_changing_matcher_input() -> None:
     parent = _free_text("HbA1c >= 7% or fasting glucose >= 126 mg/dL")
     subcheck = _measurement("HbA1c", unit="%")
     extracted = ExtractedCriteria(
@@ -143,7 +185,7 @@ def test_compound_and_unit_placeholders_are_typed_without_changing_matcher_input
 
     assert result.matcher_inputs == [parent]
     assert compiled.resolver_policy == "live_allowed"
-    assert compiled.compound_logic.status == "not_attempted"
+    assert compiled.compound_logic.status == "resolved"
     assert compiled.compound_logic.operator == "any_of"
     assert compiled.compound_logic.source_group_ids == ["criterion:0:group:001"]
     assert compiled.compound_logic.subcheck_ids == ["criterion:0:group:001:subcheck:001"]
@@ -152,13 +194,68 @@ def test_compound_and_unit_placeholders_are_typed_without_changing_matcher_input
     assert compiled.predicate.predicate_kind == "free_text_review"
 
 
-def test_measurement_unit_placeholder_records_source_unit() -> None:
+def test_measurement_unit_resolution_builds_checkable_predicate() -> None:
     criterion = _measurement("HbA1c", unit="%")
 
     result = compile_extracted_criteria([criterion])
     compiled = result.criteria[0]
 
-    assert compiled.unit_normalization.status == "not_attempted"
+    assert compiled.unit_normalization.status == "resolved"
     assert compiled.unit_normalization.measurement_surface == "HbA1c"
     assert compiled.unit_normalization.source_unit == "%"
+    assert compiled.unit_normalization.conventional_unit == "%"
     assert compiled.predicate.predicate_kind == "measurement_threshold"
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_ids == ["criterion:0:predicate:measurement"]
+    assert [predicate.predicate_id for predicate in result.checkable_predicates] == [
+        "criterion:0:predicate:measurement"
+    ]
+    predicate = compiled.checkable_predicates[0]
+    assert predicate.target_system == "http://loinc.org"
+    assert predicate.target_codes == frozenset({"4548-4"})
+    assert predicate.operator == ">="
+    assert predicate.value == 7.0
+    assert predicate.unit == "%"
+    assert result.resolved_supports == compiled.resolved_supports
+
+
+def test_condition_compiler_maps_reviewed_fracture_surface_after_variant_cleanup() -> None:
+    criterion = _condition(
+        "Bone fractures (excluding skull, facial bones, metacarpals, fingers, toes "
+        "and spontaneous fractures associated with severe trauma) within the past 12 months"
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert result.matcher_inputs == [criterion]
+    assert compiled.expansion.status == "resolved"
+    assert compiled.expansion.strategy == "reviewed_code_list"
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_ids == ["criterion:0:predicate:condition"]
+    assert compiled.checkable_predicates[0].predicate_kind == "condition_presence"
+    assert "263102004" in compiled.checkable_predicates[0].target_codes
+    assert compiled.resolved_supports[0].normalized_surface == "bone fractures"
+    assert {support.stage for support in compiled.resolved_supports} == {
+        "concept_resolution",
+        "expansion",
+    }
+    assert result.checkable_predicates == compiled.checkable_predicates
+    assert result.unresolved_gaps == []
+
+
+def test_demographic_and_temporal_predicates_are_aggregated() -> None:
+    criteria = [_age(), _temporal("type 2 diabetes", window_days=90)]
+
+    result = compile_extracted_criteria(criteria)
+
+    assert result.matcher_inputs == criteria
+    assert [criterion.predicate.status for criterion in result.criteria] == [
+        "resolved",
+        "resolved",
+    ]
+    assert [predicate.predicate_kind for predicate in result.checkable_predicates] == [
+        "demographic",
+        "temporal_event",
+    ]
+    assert result.checkable_predicates[1].window_days == 90

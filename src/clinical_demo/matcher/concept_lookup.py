@@ -155,6 +155,24 @@ _LAB_ALIASES: dict[str, ConceptSet] = {
 _MEDICATION_ALIASES: dict[str, ConceptSet] = {}
 
 
+def lookup_condition_alias(surface: str) -> ConceptSet | None:
+    """Return a condition ConceptSet from the legacy alias backup only."""
+
+    return _CONDITION_ALIASES.get(_normalize(surface))
+
+
+def lookup_lab_alias(surface: str) -> ConceptSet | None:
+    """Return a lab ConceptSet from the legacy alias backup only."""
+
+    return _LAB_ALIASES.get(_normalize(surface))
+
+
+def lookup_medication_alias(surface: str) -> ConceptSet | None:
+    """Return a medication ConceptSet from the legacy alias backup only."""
+
+    return _MEDICATION_ALIASES.get(_normalize(surface))
+
+
 def lookup_condition(
     surface: str, *, resolver: TerminologyResolver | None = None
 ) -> ConceptSet | None:
@@ -176,7 +194,7 @@ def lookup_condition(
         bound = r.resolve_condition(surface)
         if bound is not None:
             return bound
-    return _CONDITION_ALIASES.get(_normalize(surface))
+    return lookup_condition_alias(surface)
 
 
 def lookup_lab(surface: str, *, resolver: TerminologyResolver | None = None) -> ConceptSet | None:
@@ -188,7 +206,7 @@ def lookup_lab(surface: str, *, resolver: TerminologyResolver | None = None) -> 
         bound = r.resolve_lab(surface)
         if bound is not None:
             return bound
-    return _LAB_ALIASES.get(_normalize(surface))
+    return lookup_lab_alias(surface)
 
 
 def lookup_medication(
@@ -204,11 +222,14 @@ def lookup_medication(
         bound = r.resolve_medication(surface)
         if bound is not None:
             return bound
-    return _MEDICATION_ALIASES.get(_normalize(surface))
+    return lookup_medication_alias(surface)
 
 
 __all__ = [
     "lookup_condition",
+    "lookup_condition_alias",
     "lookup_lab",
+    "lookup_lab_alias",
     "lookup_medication",
+    "lookup_medication_alias",
 ]
