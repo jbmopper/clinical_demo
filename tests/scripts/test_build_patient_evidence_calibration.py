@@ -28,3 +28,24 @@ def test_public_summary_export_command_points_to_safe_exporter() -> None:
         "--diagnostics eval/baselines/2026-05-06/composite_v06_none_diagnostics.json "
         "--output eval/baselines/2026-05-06/composite_v06_public_summary.json"
     )
+
+
+def test_reviewed_label_keys_ignore_empty_templates_and_keep_user_work() -> None:
+    labels = [
+        builder.PatientEvidenceHumanLabel(pair_id="empty", criterion_index=0),
+        builder.PatientEvidenceHumanLabel(
+            pair_id="labeled",
+            criterion_index=1,
+            expected_matcher_verdict="pass",
+        ),
+        builder.PatientEvidenceHumanLabel(
+            pair_id="assumption",
+            criterion_index=2,
+            matcher_assumption_mode="closed_world_eval",
+        ),
+    ]
+
+    assert builder._reviewed_label_keys(labels) == {
+        ("labeled", 1),
+        ("assumption", 2),
+    }

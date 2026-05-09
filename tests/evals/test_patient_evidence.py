@@ -170,6 +170,36 @@ def test_select_patient_evidence_targets_skips_judge_correct_fill_rows() -> None
     assert [target.criterion_index for target in selected] == [1]
 
 
+def test_select_patient_evidence_targets_preserves_reviewed_judge_correct_rows() -> None:
+    run = _run(
+        [
+            _verdict("condition_present", reason="unmapped_concept"),
+            _verdict("measurement_threshold", reason="no_data"),
+        ]
+    )
+    all_targets = [
+        JudgeTarget(
+            pair_id=record.case.pair_id,
+            patient_id=record.case.patient_id,
+            nct_id=record.case.nct_id,
+            criterion_index=index,
+            verdict=verdict,
+        )
+        for record in run.cases
+        for index, verdict in enumerate(record.result.verdicts if record.result else [])
+    ]
+    report = _report([_judgment(all_targets[0], label="correct")])
+
+    selected = select_patient_evidence_targets(
+        run,
+        judge_report=report,
+        limit=2,
+        preserve_keys={(all_targets[0].pair_id, all_targets[0].criterion_index)},
+    )
+
+    assert [target.criterion_index for target in selected] == [0, 1]
+
+
 def test_select_patient_evidence_targets_filters_to_cardiometabolic_scope() -> None:
     run = _run([])
     run.cases = [
