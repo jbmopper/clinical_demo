@@ -532,8 +532,6 @@ def select_patient_evidence_targets(
         key = (target.pair_id, target.criterion_index)
         if key not in preserved:
             continue
-        if patient_evidence_bucket(target, judgments.get(key)) is None:
-            continue
         selected.append(target)
         selected_keys.add(key)
         if len(selected) >= limit:
@@ -788,6 +786,42 @@ def _criterion_concept_mappings(
                 slot="temporal_event",
                 surface=criterion.temporal_window.event_text,
                 concept_set=lookup_condition(criterion.temporal_window.event_text),
+            )
+        )
+    if criterion.kind == "free_text":
+        mappings.extend(_free_text_mention_concept_mappings(criterion))
+    return mappings
+
+
+def _free_text_mention_concept_mappings(
+    criterion: ExtractedCriterion,
+) -> list[PatientEvidenceConceptMapping]:
+    mappings: list[PatientEvidenceConceptMapping] = []
+    seen: set[tuple[str, str]] = set()
+    for mention in criterion.mentions:
+        surface = mention.text.strip()
+        if not surface:
+            continue
+        if mention.type == "Condition":
+            slot = "condition"
+            concept_set = lookup_condition(surface)
+        elif mention.type == "Drug":
+            slot = "medication"
+            concept_set = lookup_medication(surface)
+        elif mention.type in {"Measurement", "Observation"}:
+            slot = "measurement"
+            concept_set = lookup_lab(surface)
+        else:
+            continue
+        key = (slot, " ".join(surface.lower().split()))
+        if key in seen:
+            continue
+        seen.add(key)
+        mappings.append(
+            _concept_mapping(
+                slot=slot,  # type: ignore[arg-type]
+                surface=surface,
+                concept_set=concept_set,
             )
         )
     return mappings

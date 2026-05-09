@@ -103,7 +103,8 @@ The current deterministic matcher now includes a narrow normalization pass befor
 3. parse simple symbolic measurement thresholds such as `BMI > 32 kg/m2`;
 4. preserve subcheck ids, row ids, codes, units, numeric values, and citation reasons;
 5. handle investigational-agent / clinical-trial exposure as a trial-exposure predicate rather than an RxNorm medication;
-6. leave multi-surface, note-only, negation-ambiguous, and unsupported semantics as bounded adjudication or human review.
+6. handle explicit list-like medication exposure criteria such as "any of the following drugs..." as conservative ANY_OF medication predicates;
+7. leave non-list multi-surface, note-only, negation-ambiguous, and unsupported semantics as bounded adjudication or human review.
 
 This pass does not turn `retrieval_only` into an adjudicator. Its purpose is to make the deterministic and retrieval substrate less blind before any LLM decides. Closed-world trial-exposure absence is allowed only under the explicit matcher assumption contract; open-world remains `indeterminate(no_data)`.
 

@@ -70,9 +70,15 @@ from .verdict import (
     VerdictReason,
 )
 
-MATCHER_VERSION = "matcher-v0.3"
+MATCHER_VERSION = "matcher-v0.4"
 """Bumped on any change that could shift verdicts on the eval set.
 Recorded on every `MatchVerdict` for run attribution.
+
+v0.4: narrow free-text promotion now handles explicit list-like
+medication exposure criteria ("any of the following drugs...") as an
+ANY_OF medication predicate. It preserves open-world caution when
+listed medications are absent or unmapped, while allowing mapped
+matches to become decisive before bounded adjudication.
 
 v0.3: flat native composite groups (`any_of` / `all_of`) are matched
 as raw subcheck predicates, rolled up under the group operator, and
@@ -418,6 +424,25 @@ _TRIAL_EXPOSURE_RE = re.compile(
     r")\b",
     re.IGNORECASE,
 )
+_MEDICATION_LIST_CUE_RE = re.compile(
+    r"\b(?:"
+    r"any\s+of\s+the\s+following|"
+    r"following\s+(?:drugs?|medications?|agents?|therap(?:y|ies))|"
+    r"(?:treatment|therapy)\s+with\s+any|"
+    r"use\s+of\s+any"
+    r")\b",
+    re.IGNORECASE,
+)
+_RELATIVE_WINDOW_RE = re.compile(
+    r"\b(?:within|in|during|over)?\s*(?:the\s*)?"
+    r"(?:past|last|prior|previous)\s+"
+    r"(?:(?P<num>\d+)\s+)?(?P<unit>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
+_WITHIN_WINDOW_RE = re.compile(
+    r"\bwithin\s+(?P<num>\d+)\s+(?P<unit>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
 
 
 def _match_correlatable_free_text(
@@ -439,6 +464,20 @@ def _match_correlatable_free_text(
         for mention in criterion.mentions
         if mention.type in _PROMOTABLE_MENTION_TYPES and mention.text.strip()
     ]
+    if _is_list_like_medication_free_text(criterion, typed_mentions):
+        surfaces = _unique_surfaces(mention.text for mention in typed_mentions)
+        result = _match_medication_exposure_list(
+            surfaces,
+            profile,
+            mode=mode,
+            window_days=_free_text_window_days(criterion.source_text),
+        )
+        return _with_free_text_promotion_rationale(
+            result,
+            mention_type="medication-list",
+            surface=", ".join(surfaces),
+        )
+
     if len(typed_mentions) != 1:
         return None
     if not criterion.negated and _NEGATION_CUE_RE.search(criterion.source_text):
@@ -474,6 +513,212 @@ def _match_correlatable_free_text(
             surface=surface,
         )
     return None
+
+
+def _is_list_like_medication_free_text(
+    criterion: ExtractedCriterion,
+    typed_mentions: list[Any],
+) -> bool:
+    return (
+        len(typed_mentions) >= 2
+        and all(mention.type == "Drug" for mention in typed_mentions)
+        and bool(_MEDICATION_LIST_CUE_RE.search(criterion.source_text))
+    )
+
+
+def _unique_surfaces(surfaces: Any) -> list[str]:
+    unique: list[str] = []
+    seen: set[str] = set()
+    for surface in surfaces:
+        normalized = " ".join(str(surface).lower().split())
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        unique.append(str(surface).strip())
+    return unique
+
+
+def _match_medication_exposure_list(
+    surfaces: list[str],
+    profile: PatientProfile,
+    *,
+    mode: MatcherAssumptionMode,
+    window_days: int | None,
+) -> _HandlerResult:
+    mapped: list[tuple[str, ConceptSet]] = []
+    unmapped: list[str] = []
+    for surface in surfaces:
+        concept_set = lookup_medication(surface)
+        if concept_set is None:
+            unmapped.append(surface)
+            continue
+        mapped.append((surface, concept_set))
+
+    matches: list[tuple[str, MedicationEvidence]] = []
+    for surface, concept_set in mapped:
+        for medication in _matching_medication_exposures(profile, concept_set, window_days):
+            matches.append(
+                (
+                    surface,
+                    MedicationEvidence(
+                        concept=medication.concept,
+                        start_date=medication.start_date,
+                        end_date=medication.end_date,
+                        note=_medication_exposure_note(medication, profile, window_days),
+                    ),
+                )
+            )
+    if matches:
+        matched_surfaces = sorted({surface for surface, _evidence in matches})
+        return (
+            "pass",
+            "ok",
+            (
+                "Patient has medication exposure matching listed free-text "
+                f"medication surface(s): {', '.join(matched_surfaces)}."
+            ),
+            [evidence for _surface, evidence in matches],
+            False,
+        )
+
+    if unmapped:
+        return (
+            "indeterminate",
+            "unmapped_concept",
+            (
+                "No ConceptSet mapping for listed free-text medication surface(s): "
+                f"{', '.join(unmapped)}."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=f"ConceptSet mapping for medication {surface!r}",
+                    note="listed medication surface not in matcher vocabulary",
+                )
+                for surface in unmapped
+            ],
+            False,
+        )
+
+    looked_for = _medication_exposure_looked_for(
+        [concept_set for _surface, concept_set in mapped],
+        profile,
+        window_days,
+    )
+    if mode in _CLOSED_WORLD_MODES:
+        return (
+            "fail",
+            "ok",
+            (
+                "Patient has no medication exposure matching the listed free-text "
+                "medication surfaces (closed-world: treating absence in the curated "
+                "record as negative)."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=looked_for,
+                    note=(
+                        "no matching medication exposures on profile; "
+                        f"absence treated as negative under {mode}"
+                    ),
+                )
+            ],
+            True,
+        )
+    return (
+        "indeterminate",
+        "no_data",
+        (
+            "Patient record has no medication exposure matching the listed "
+            "free-text medication surfaces; under open_world this is insufficient "
+            "evidence, not absence."
+        ),
+        [
+            MissingEvidence(
+                looked_for=looked_for,
+                note="no matching medication exposures on profile",
+            )
+        ],
+        False,
+    )
+
+
+def _matching_medication_exposures(
+    profile: PatientProfile,
+    concept_set: ConceptSet,
+    window_days: int | None,
+) -> list[Any]:
+    if window_days is None:
+        return [
+            medication
+            for medication in profile.active_medications
+            if _medication_matches_concept_set(medication, concept_set)
+        ]
+
+    cutoff = profile.as_of - _days_timedelta(window_days)
+    return [
+        medication
+        for medication in profile.patient.medications
+        if _medication_matches_concept_set(medication, concept_set)
+        and medication.start_date <= profile.as_of
+        and (medication.end_date is None or medication.end_date >= cutoff)
+    ]
+
+
+def _medication_matches_concept_set(medication: Any, concept_set: ConceptSet) -> bool:
+    return (
+        medication.concept.code in concept_set.codes
+        and medication.concept.system == concept_set.system
+    )
+
+
+def _medication_exposure_note(
+    medication: Any,
+    profile: PatientProfile,
+    window_days: int | None,
+) -> str:
+    display = medication.concept.display or medication.concept.code
+    if window_days is None:
+        return f"{display} (active as of {profile.as_of.isoformat()})"
+    cutoff = profile.as_of - _days_timedelta(window_days)
+    end = medication.end_date.isoformat() if medication.end_date is not None else "active"
+    return (
+        f"{display} exposure from {medication.start_date.isoformat()} to {end} "
+        f"(overlaps {cutoff.isoformat()}..{profile.as_of.isoformat()})"
+    )
+
+
+def _medication_exposure_looked_for(
+    concept_sets: list[ConceptSet],
+    profile: PatientProfile,
+    window_days: int | None,
+) -> str:
+    names = ", ".join(sorted(concept_set.name for concept_set in concept_sets))
+    if window_days is None:
+        return f"active medication in any of: {names}"
+    cutoff = profile.as_of - _days_timedelta(window_days)
+    return (
+        f"medication exposure in any of: {names} between "
+        f"{cutoff.isoformat()} and {profile.as_of.isoformat()}"
+    )
+
+
+def _free_text_window_days(source_text: str) -> int | None:
+    match = _RELATIVE_WINDOW_RE.search(source_text) or _WITHIN_WINDOW_RE.search(source_text)
+    if match is None:
+        return None
+    return _window_days(match.group("num"), match.group("unit"))
+
+
+def _window_days(number_text: str | None, unit: str) -> int:
+    count = int(number_text) if number_text is not None else 1
+    unit = unit.lower()
+    if unit.startswith("day"):
+        return count
+    if unit.startswith("week"):
+        return count * 7
+    if unit.startswith("month"):
+        return count * 30
+    return count * 365
 
 
 def _free_text_measurement_threshold(

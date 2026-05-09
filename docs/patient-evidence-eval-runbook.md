@@ -38,7 +38,7 @@ OTEL_SDK_DISABLED=true uv run python scripts/eval.py run \
   --binding-strategy two_pass \
   --matcher-assumption-mode open_world \
   --llm-use-level none \
-  --notes "matcher-v0.3 extractor-v0.6 deterministic open_world"
+  --notes "matcher-v0.4 extractor-v0.6 deterministic open_world"
 ```
 
 Save the printed `run_id` as `RUN_ID`.
@@ -61,7 +61,7 @@ Use a new dated path when the baseline date or comparison target changes.
 ## 4. Build the private calibration packet
 
 ```bash
-OTEL_SDK_DISABLED=true uv run python scripts/build_patient_evidence_calibration.py \
+BINDING_STRATEGY=two_pass OTEL_SDK_DISABLED=true uv run python scripts/build_patient_evidence_calibration.py \
   --run-id RUN_ID \
   --scope cardiometabolic_core \
   --limit 60 \
@@ -158,7 +158,7 @@ A local 22/60 pilot label pass produced enough signal to pick the next engineeri
 
 - Before the correlatable free-text work, `retrieval_only` attached patient rows but did not change labeled verdicts versus `none`.
 - Bounded adjudication reduced abstention on the labeled subset, but introduced at least one wrong decisive `pass`; this remains the reason to avoid wider adjudication until deterministic/retrieval gaps shrink.
-- Correlatable free-text promotion now handles narrow one-surface condition, medication, measurement, and trial-exposure predicates before outbound adjudication.
+- Correlatable free-text promotion now handles narrow one-surface condition, medication, measurement, trial-exposure predicates, and explicit list-like medication exposure criteria before outbound adjudication.
 - Patient-evidence reports are now assumption-aware: a label row only contributes to a run's accuracy/abstention denominator when the label `matcher_assumption_mode` matches the run's matcher assumption mode. Mismatches appear in the `Mode skipped` report column.
 - Fresh local closed-world pilot run `7cb2093f380c` moved the matching-mode subset to `80.0%` accuracy and `40.0%` abstention by treating investigational-agent/trial-exposure absence under the closed-world eval contract.
 

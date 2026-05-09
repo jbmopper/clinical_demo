@@ -1,6 +1,6 @@
 # Free-text and clinical note evidence
 
-**Implementation status:** v0 note ingestion and retrieval exist. `src/clinical_demo/data/synthea.py` decodes `DocumentReference.content.attachment.data` into `ClinicalNote` objects, and `clinical_demo.retrieval.patient_evidence` projects those notes into citeable `RetrievalSourceRow(kind="note")` snippets. Deterministic free-text handling is intentionally narrow: simple one-surface condition/medication/measurement/trial-exposure criteria may be promoted into existing deterministic matchers, but true note-only, multi-surface, or negation-ambiguous criteria still require bounded adjudication or human review.
+**Implementation status:** v0 note ingestion and retrieval exist. `src/clinical_demo/data/synthea.py` decodes `DocumentReference.content.attachment.data` into `ClinicalNote` objects, and `clinical_demo.retrieval.patient_evidence` projects those notes into citeable `RetrievalSourceRow(kind="note")` snippets. Deterministic free-text handling is intentionally narrow: simple one-surface condition/medication/measurement/trial-exposure criteria, plus explicit list-like medication exposure criteria, may be promoted into existing deterministic matchers. True note-only, non-list multi-surface, or negation-ambiguous criteria still require bounded adjudication or human review.
 
 ---
 
