@@ -61,12 +61,14 @@ Use a new dated path when the baseline date or comparison target changes.
 ## 4. Build the private calibration packet
 
 ```bash
-BINDING_STRATEGY=two_pass OTEL_SDK_DISABLED=true uv run python scripts/build_patient_evidence_calibration.py \
+OTEL_SDK_DISABLED=true uv run python scripts/build_patient_evidence_calibration.py \
   --run-id RUN_ID \
   --scope cardiometabolic_core \
   --limit 60 \
   --prune-labels
 ```
+
+The builder defaults to resolver-backed `two_pass` concept binding so mapping and retrieval metadata agree with the current matcher path. Use `--binding-strategy alias` only for legacy baseline replay.
 
 This writes:
 
