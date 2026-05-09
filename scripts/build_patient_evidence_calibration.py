@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+from typing import Literal
 
 from clinical_demo.api.loaders import load_patient, load_trial
 from clinical_demo.evals.layer_three import JudgeTarget, build_source_context
@@ -33,6 +35,8 @@ DEFAULT_JUDGE_REPORT = Path("eval/baselines/2026-04-30/layer3_judge_calibrated.j
 DEFAULT_LABELS = Path("eval/calibration/patient_evidence_labels.json")
 DEFAULT_OUTPUT = Path("eval/calibration/patient_evidence_candidates.json")
 DEFAULT_PUBLIC_SUMMARY_OUTPUT = Path("eval/baselines/YYYY-MM-DD/composite_v06_public_summary.json")
+BindingStrategy = Literal["alias", "two_pass"]
+DEFAULT_BINDING_STRATEGY: BindingStrategy = "two_pass"
 
 
 def main() -> None:
@@ -54,7 +58,17 @@ def main() -> None:
         action="store_true",
         help="Rewrite the label template to exactly the selected targets, preserving matching labels.",
     )
+    parser.add_argument(
+        "--binding-strategy",
+        choices=["alias", "two_pass"],
+        default=DEFAULT_BINDING_STRATEGY,
+        help=(
+            "Concept binding mode used while building mapping/retrieval metadata. "
+            "Defaults to resolver-backed two_pass; use alias only for legacy replay."
+        ),
+    )
     args = parser.parse_args()
+    _apply_binding_strategy(args.binding_strategy)
     scope: PatientEvidenceScope = args.scope
 
     with open_store(args.db) as store:
@@ -145,6 +159,15 @@ def _label_has_review(label: PatientEvidenceHumanLabel) -> bool:
         or label.reviewer is not None
         or label.matcher_assumption_mode != DEFAULT_MATCHER_ASSUMPTION_MODE
     )
+
+
+def _apply_binding_strategy(strategy: BindingStrategy) -> None:
+    os.environ["BINDING_STRATEGY"] = strategy
+    from clinical_demo.settings import get_settings
+    from clinical_demo.terminology.resolver import get_resolver
+
+    get_settings.cache_clear()
+    get_resolver.cache_clear()
 
 
 def public_summary_export_command(

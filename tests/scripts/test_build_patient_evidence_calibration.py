@@ -49,3 +49,24 @@ def test_reviewed_label_keys_ignore_empty_templates_and_keep_user_work() -> None
         ("labeled", 1),
         ("assumption", 2),
     }
+
+
+def test_builder_defaults_to_resolver_backed_binding_strategy() -> None:
+    assert builder.DEFAULT_BINDING_STRATEGY == "two_pass"
+
+
+def test_apply_binding_strategy_clears_settings_cache(monkeypatch) -> None:
+    from clinical_demo.settings import get_settings
+    from clinical_demo.terminology.resolver import get_resolver
+
+    monkeypatch.setenv("BINDING_STRATEGY", "alias")
+    get_settings.cache_clear()
+    get_resolver.cache_clear()
+
+    try:
+        builder._apply_binding_strategy("two_pass")
+
+        assert get_settings().binding_strategy == "two_pass"
+    finally:
+        get_settings.cache_clear()
+        get_resolver.cache_clear()
