@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "mappings": [
+    {
+      "kind": "condition",
+      "surface": "Bone fractures",
+      "normalized_surface": "bone fractures",
+      "status": "mapped",
+      "concept_set": "FRACTURE",
+      "candidates": [
+        {
+          "name": "Bone fracture code list",
+          "concept_set": "FRACTURE",
+          "source": "clinical_demo.profile.concept_sets",
+          "reason": "Project-owned SNOMED code list created for fracture history criteria."
+        }
+      ],
+      "reason": "Reviewed mapping for an extracted condition surface used in fracture-history exclusion criteria. This maps the atomic surface 'Bone fractures' to the project FRACTURE ConceptSet; temporal scope and anatomical exclusions remain criterion logic, not terminology lookup.",
+      "source": "patient-evidence calibration review",
+      "provenance": "NCT06524960 criterion #17 surfaced as an unmapped free-text condition during patient-evidence calibration.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-08",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "reviewed_code_list"
+    }
+  ]
+}

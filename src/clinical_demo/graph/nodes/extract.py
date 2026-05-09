@@ -18,11 +18,12 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Any
 
+from ...compiler import compile_extracted_criteria
 from ...extractor.enrich import enrich_with_structured_fields
 from ...extractor.extractor import extract_criteria
 from ...extractor.fix import fix_extracted_criteria
 from ...profile import PatientProfile
-from ...settings import Settings
+from ...settings import Settings, get_settings
 from ..state import ScoringState
 
 
@@ -60,7 +61,11 @@ def extract_node(
     )
     if enriched is not extraction.extracted:
         extraction = replace(extraction, extracted=enriched)
+    compilation = compile_extracted_criteria(
+        enriched,
+        resolver_policy=(settings or get_settings()).resolver_execution_policy,
+    )
 
     profile = PatientProfile(state["patient"], state["as_of"])
 
-    return {"extraction": extraction, "profile": profile}
+    return {"extraction": extraction, "compilation": compilation, "profile": profile}

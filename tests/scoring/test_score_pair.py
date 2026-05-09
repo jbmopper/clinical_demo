@@ -544,6 +544,22 @@ def test_score_pair_carries_top_level_identifiers() -> None:
     assert result.as_of == AS_OF
 
 
+def test_score_pair_carries_noop_compilation_plan() -> None:
+    extraction = _make_extraction([crit_age(minimum_years=18.0)])
+
+    result = score_pair(
+        make_patient(birth=date(1990, 1, 1)),
+        make_trial(),
+        AS_OF,
+        extraction=extraction,
+    )
+
+    assert result.compilation is not None
+    assert result.compilation.resolver_policy == "cached_only"
+    assert result.compilation.matcher_inputs == result.extraction.criteria
+    assert result.compilation.criteria[0].compiled_id == "compiled:criterion:0"
+
+
 def test_score_pair_enriches_age_sex_from_ctgov_when_extractor_silent() -> None:
     """End-to-end: when a trial has CT.gov-structured age and sex
     bounds but the extractor produced neither (the eligibility text

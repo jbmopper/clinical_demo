@@ -85,6 +85,22 @@ CHRONIC_KIDNEY_DISEASE = ConceptSet(
     ),
 )
 
+FRACTURE = ConceptSet(
+    name="Bone fracture",
+    system=SNOMED,
+    codes=frozenset(
+        {
+            "263102004",  # Fracture subluxation of wrist
+            "65966004",  # Fracture of forearm
+            "16114001",  # Fracture of ankle
+            "58150001",  # Fracture of clavicle
+            "443165006",  # Pathological fracture due to osteoporosis (disorder)
+            "359817006",  # Closed fracture of hip
+            "33737001",  # Fracture of rib
+        }
+    ),
+)
+
 # ---- labs (LOINC) ----
 # These are *single-code* sets at v0 — included as ConceptSets for API
 # uniformity with conditions; expand to multi-code synonyms only if we
@@ -150,6 +166,7 @@ __all__ = [
     "C_PEPTIDE",
     "DIASTOLIC_BP",
     "EGFR",
+    "FRACTURE",
     "HBA1C",
     "HEMOGLOBIN",
     "HYPERLIPIDEMIA",

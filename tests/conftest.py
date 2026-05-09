@@ -10,13 +10,13 @@ resolver, hitting the live VSAC API, and producing ConceptSets
 that no longer matched the alias-table singletons by identity.
 
 The autouse fixture below pins `Settings.model_config["env_file"]`
-to `None` for every test, so `Settings()` constructs from defaults
-(currently `binding_strategy="alias"`) plus whatever the test
-explicitly monkeypatches. Tests that need `two_pass` continue to
-opt in via the existing per-test `two_pass_settings` fixture in
-`tests/matcher/test_concept_lookup.py`, which still works because
-it monkeypatches `get_settings` directly inside the matcher module
-and clears the singleton.
+to `None` and sets `BINDING_STRATEGY=alias` for every test, so
+unit tests keep the offline legacy baseline unless they explicitly
+opt into resolver-first behavior. Tests that need `two_pass`
+continue to opt in via the existing per-test `two_pass_settings`
+fixture in `tests/matcher/test_concept_lookup.py`, which still works
+because it monkeypatches `get_settings` directly inside the matcher
+module and clears the singleton.
 
 Also clears the `get_settings` lru_cache before each test so a
 prior test's settings construction doesn't bleed into the next.
@@ -24,6 +24,7 @@ prior test's settings construction doesn't bleed into the next.
 
 from __future__ import annotations
 
+import os
 from collections.abc import Iterator
 
 import pytest
@@ -48,10 +49,22 @@ def _hermetic_settings() -> Iterator[None]:
     swapped to a lambda).
     """
     original = Settings.model_config.get("env_file")
+    original_binding_strategy = os.environ.get("BINDING_STRATEGY")
+    original_resolver_execution_policy = os.environ.get("RESOLVER_EXECUTION_POLICY")
     Settings.model_config["env_file"] = None
+    os.environ["BINDING_STRATEGY"] = "alias"
+    os.environ["RESOLVER_EXECUTION_POLICY"] = "cached_only"
     get_settings.cache_clear()
     try:
         yield
     finally:
         Settings.model_config["env_file"] = original
+        if original_binding_strategy is None:
+            os.environ.pop("BINDING_STRATEGY", None)
+        else:
+            os.environ["BINDING_STRATEGY"] = original_binding_strategy
+        if original_resolver_execution_policy is None:
+            os.environ.pop("RESOLVER_EXECUTION_POLICY", None)
+        else:
+            os.environ["RESOLVER_EXECUTION_POLICY"] = original_resolver_execution_policy
         get_settings.cache_clear()

@@ -69,4 +69,57 @@ A watchlist JSON file can record surfaces previously classified **`resolved`**. 
 
 When the resolver returns **candidates** without a single committed `ConceptSet`, the cache can hold **ambiguous** (or similar) status with structured candidate metadata so humans can pick a binding without losing API context.
 
+---
+
+## 8. Next Architecture: Criterion Compiler
+
+The resolver alone is not enough. Trial text often needs to be compiled before
+it is checkable: broad terminology classes need expansion, compound criteria
+need boolean subchecks, measurements need canonical units or normal-range
+semantics, and temporal phrases need event windows. The target flow is:
+
+```text
+extracted criterion
+  -> criterion compiler / resolver
+  -> validated atomic predicates plus explicit unresolved fragments
+  -> deterministic matcher
+```
+
+Manual Python aliases are a compatibility fallback. New reviewed decisions
+should be committed registry rows under `data/terminology/` with provenance,
+reviewer metadata, expansion policy, and regression coverage. Runtime API
+responses and warmed lookup outcomes remain generated cache rows under
+`data/cache/terminology/`.
+
+Resolver execution must also be explicit. Eval and API paths should run
+`cached_only` by default so a deterministic score cannot silently depend on
+today's network response. Probe and cache-warming scripts may opt into
+`live_allowed`, and every persisted run/report should record the resolver
+execution policy alongside the reviewed-registry and resolver versions.
+
+The concrete implementation plan lives in `PLAN.md` under **Criterion Compiler /
+Resolution Layer Plan Objects**. It defines the work objects `CC-00` through
+`CC-12`, their dependencies, exit criteria, test targets, and which parts can
+run in parallel. In short:
+
+- Parallel foundations: compiler IR, reviewed registry, terminology candidate
+  ranking, and unit knowledge base.
+- Parallel specialist compilers after the IR exists: compound criteria,
+  temporal events, measurements, and medications/classes.
+- Serial integration: compiler pipeline, validation gates, reviewer workflow,
+  and eval/baseline gates.
+
+Foundation status:
+
+- `CC-00` now has a behavior-preserving compiler IR and `ScorePairResult`
+  carries the no-op compilation plan used by both imperative and graph scoring.
+- `CC-01` now has a committed reviewed registry under `data/terminology/`;
+  `Bone fractures` maps through that registry before stale cache rows or live
+  lookup.
+- `CC-02` now has the resolver execution policy contract wired into settings
+  and CLIs: eval/API default to `cached_only`, while the cache warmer explicitly
+  opts into `live_allowed`.
+- `CC-04` now has a unit registry shared by the compiler-facing code and
+  `PatientProfile` threshold checks.
+
 Related: `docs/concept-mapping-failure-taxonomy.md`, `docs/evaluation-layers-and-gates.md`.

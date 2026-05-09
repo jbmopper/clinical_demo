@@ -41,6 +41,7 @@ import operator
 from datetime import date
 from typing import Annotated, TypedDict
 
+from ..compiler import CriterionCompilationResult
 from ..domain.patient import Patient
 from ..domain.trial import Trial
 from ..extractor.extractor import ExtractionResult
@@ -117,6 +118,7 @@ class ScoringState(TypedDict, total=False):
     trial: Trial
     as_of: date
     extraction: ExtractionResult | None
+    compilation: CriterionCompilationResult | None
     matcher_assumption_mode: MatcherAssumptionMode
 
     # Computed once after the extract node completes; cached in

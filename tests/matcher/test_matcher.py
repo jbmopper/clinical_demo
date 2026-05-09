@@ -601,6 +601,25 @@ def test_free_text_condition_promotion_respects_exclusion_polarity() -> None:
     assert "Promoted correlatable free-text condition mention" in v.rationale
 
 
+def test_free_text_bone_fracture_promotion_uses_reviewed_mapping() -> None:
+    profile = make_profile(
+        conditions=[make_condition(code="65966004", display="Fracture of forearm")]
+    )
+    v = match_criterion(
+        crit_free_text(
+            polarity="exclusion",
+            source_text="Bone fractures within the past 12 months",
+            mentions=[EntityMention(text="Bone fractures", type="Condition")],
+        ),
+        profile,
+        make_trial(),
+    )
+    assert v.verdict == "fail"
+    assert v.reason == "ok"
+    assert "Promoted correlatable free-text condition mention" in v.rationale
+    assert any(e.kind == "condition" for e in v.evidence)
+
+
 def test_free_text_single_measurement_threshold_promotes_to_measurement_match() -> None:
     profile = make_profile(observations=[make_lab(loinc="39156-5", value=31.0, unit="kg/m2")])
     v = match_criterion(

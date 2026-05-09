@@ -1095,6 +1095,401 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | **Phase 2 total** | | **~89 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 
+### Criterion Compiler / Resolution Layer Plan Objects
+
+The tactical mapping fixes above are not the target architecture. The target
+is a compiler layer between extraction and matching:
+
+```text
+extracted criterion
+  -> criterion compiler / resolver
+  -> validated atomic predicates plus explicit unresolved fragments
+  -> deterministic matcher
+```
+
+This layer owns terminology expansion, compound splitting, unit semantics,
+normal-range interpretation, and translation into checkable predicates. Manual
+Python aliases should become rare compatibility fallbacks; reviewed mappings
+belong in committed registry artifacts under `data/terminology/`; runtime API
+responses and warmed lookup outcomes belong under `data/cache/terminology/`.
+
+Implementation note (2026-05-09): the foundation slice for `CC-00`, `CC-01`,
+part of `CC-02`, and `CC-04` is now wired. Scoring emits a no-op
+`CriterionCompilationResult`, the reviewed registry is committed and consulted
+before stale cache rows, resolver live-network behavior is controlled by
+`ResolverExecutionPolicy`, and profile threshold checks read unit semantics from
+`clinical_demo.units`.
+
+```yaml
+- id: CC-00
+  title: Compiler IR contract
+  goal: Define the versioned intermediate representation emitted after extraction
+    and consumed by the deterministic matcher.
+  write_scope:
+    - src/clinical_demo/compiler/
+    - src/clinical_demo/extractor/schema.py
+    - src/clinical_demo/scoring/score_pair.py
+    - docs/trial-extraction-pipeline.md
+  depends_on: []
+  deliverables:
+    - CriterionCompilationResult with original criterion, normalized criterion,
+      atomic predicates, composite groups, unresolved fragments, provenance, and
+      compiler_version.
+    - AtomicPredicate variants for condition, medication, measurement, temporal
+      event, demographic, procedure/out-of-scope, and human-review fragment.
+    - Serialization round-trip tests and backwards-compatible no-op compiler.
+  exit_criteria:
+    - Existing eval runs can be scored through the no-op compiler with unchanged
+      verdicts.
+    - Every compiled predicate keeps source_text and stable ids for UI labels.
+  tests:
+    - tests/compiler/test_schema.py
+    - parity smoke through scripts/eval.py --no-llm
+  parallel_group: critical_path
+
+- id: CC-01
+  title: Data-backed reviewed mapping registry
+  goal: Move reviewed mappings and negative decisions out of Python constants
+    into versioned JSON/YAML artifacts loaded by the resolver.
+  write_scope:
+    - src/clinical_demo/terminology/reviewed_registry.py
+    - data/terminology/reviewed_mappings.json
+    - data/terminology/README.md
+    - docs/terminology-mapping-architecture.md
+  depends_on: []
+  deliverables:
+    - Registry schema for mapped, ambiguous, true_miss, composite_unhandled,
+      extractor_bug, and out_of_scope decisions.
+    - Loader with schema fingerprinting, provenance, reviewer, reviewed_at,
+      source_vocab, expansion_policy, and optional frozen code list.
+    - Migration path for current local aliases such as fracture, pregnancy,
+      common labs, and high-confidence cardiometabolic conditions.
+  exit_criteria:
+    - Adding "bone fractures" requires a registry row, not a code edit.
+    - Resolver checks registry before UMLS/cache true_miss rows.
+    - The reviewed registry is tracked, human-readable, and safe to commit;
+      generated API responses remain in ignored cache paths.
+  tests:
+    - tests/terminology/test_reviewed_registry.py
+    - resolver stale-miss overwrite tests
+  parallel_group: terminology_foundation
+
+- id: CC-02
+  title: Terminology candidate collection and ranking
+  goal: Replace single exact-search lookups with a candidate pipeline that tries
+    normalized variants and source-appropriate services before declaring a miss.
+  write_scope:
+    - src/clinical_demo/terminology/resolver.py
+    - src/clinical_demo/terminology/umls_search_client.py
+    - src/clinical_demo/terminology/rxnorm_client.py
+    - src/clinical_demo/terminology/cache.py
+  depends_on:
+    - CC-01
+  deliverables:
+    - ResolverExecutionPolicy enum: cached_only, live_allowed, and disabled.
+    - Settings/CLI wiring so eval and API defaults are cached_only, while
+      explicit warmer/probe commands opt into live_allowed.
+    - Query variants: singular/plural, abbreviation expansion, punctuation
+      cleanup, "history of" stripping, severity/body-site qualifier separation.
+    - Ranked candidate envelope with score, source, matched atom, rootSource,
+      code, and reject reasons.
+    - Policy gates for high-confidence auto-map vs ambiguous review.
+  exit_criteria:
+    - Clean atomic surfaces no longer go straight from one exact miss to
+      true_miss.
+    - Ambiguous candidates are visible in calibration UI/API payloads.
+    - Deterministic eval cannot make unplanned live terminology calls; every
+      run records whether it was cache-only or live-network-enabled.
+  tests:
+    - tests/terminology/test_resolver.py
+    - tests/terminology/test_umls_search_client.py
+  parallel_group: terminology_foundation
+
+- id: CC-03
+  title: SNOMED and value-set expansion
+  goal: Support class-like concepts by expanding parent concepts or curated value
+    sets into matcher-ready code sets.
+  write_scope:
+    - src/clinical_demo/terminology/snomed_expansion.py
+    - src/clinical_demo/terminology/vsac_client.py
+    - src/clinical_demo/terminology/cache.py
+  depends_on:
+    - CC-01
+    - CC-02
+  deliverables:
+    - ExpansionPolicy enum: exact_code, descendants, value_set_oid,
+      reviewed_code_list, patient_vocabulary_closure.
+    - Cache namespace for expansion inputs and frozen outputs.
+    - Patient-vocabulary filter so broad SNOMED closures can be narrowed to codes
+      present in the active dataset when appropriate.
+  exit_criteria:
+    - "bone fractures" can map through a parent/closure policy, not a manually
+      typed list of every Synthea fracture code.
+    - Broad expansions record why each code was included or filtered.
+  tests:
+    - offline fixture tests for expansion cache
+    - matcher evidence tests against patient fracture rows
+  parallel_group: terminology_expansion
+
+- id: CC-04
+  title: Unit and normal-range knowledge base
+  goal: Centralize conventional units, UCUM aliases, conversions, and normal-range
+    metadata so measurement compilation is not scattered through matcher code.
+  write_scope:
+    - src/clinical_demo/units/
+    - src/clinical_demo/profile/profile.py
+    - src/clinical_demo/matcher/matcher.py
+  depends_on: []
+  deliverables:
+    - MeasurementUnitRegistry keyed by LOINC/code family with canonical unit,
+      accepted aliases, safe conversions, conventional threshold units, and
+      optional reference-range source.
+    - Explicit refusal path for unsupported conversions.
+    - Migration of current profile unit maps into the registry.
+  exit_criteria:
+    - Unit inference and conversion can be called by the compiler before matcher
+      execution.
+    - "normal labs" and missing-unit thresholds produce structured unresolved
+      fragments rather than ad hoc ambiguous_criterion strings.
+  tests:
+    - tests/units/test_registry.py
+    - existing profile threshold tests
+  parallel_group: measurement_foundation
+
+- id: CC-05
+  title: Deterministic compiler pipeline
+  goal: Add the actual post-extraction compiler entry point and route scoring
+    through it.
+  write_scope:
+    - src/clinical_demo/compiler/pipeline.py
+    - src/clinical_demo/scoring/score_pair.py
+    - src/clinical_demo/graph/nodes/deterministic.py
+    - src/clinical_demo/api/app.py
+  depends_on:
+    - CC-00
+    - CC-01
+    - CC-04
+  deliverables:
+    - compile_extracted_criteria(extraction, trial_context, patient_vocab,
+      settings) -> compiled criteria.
+    - Compiler telemetry: changed rows, unresolved fragments, mapping candidates,
+      warnings, and cost-free deterministic provenance.
+    - Feature flag to compare legacy extractor output vs compiled output during
+      rollout.
+  exit_criteria:
+    - API/eval/UI can display compiler changes separately from matcher verdicts.
+    - Legacy path remains available for one baseline comparison.
+  tests:
+    - tests/compiler/test_pipeline.py
+    - score_pair parity and graph parity tests
+  parallel_group: critical_path
+
+- id: CC-06
+  title: Compound criterion parser
+  goal: Split safe compound criteria into boolean groups while preserving the
+    parent criterion and refusing unsafe decomposition.
+  write_scope:
+    - src/clinical_demo/compiler/compound.py
+    - src/clinical_demo/extractor/composite.py
+    - src/clinical_demo/matcher/composite.py
+  depends_on:
+    - CC-00
+    - CC-05
+  deliverables:
+    - Deterministic patterns for simple A/B lists, A or B, A and B, "any of",
+      "all of", and parenthetical examples.
+    - LLM-assisted interpretation interface behind llm_use_level for cases
+      deterministic patterns mark unsafe.
+    - Explicit unresolved fragments for body-site carveouts, exception clauses,
+      and scope ambiguity.
+  exit_criteria:
+    - OR bundles do not become independent top-level inclusion rows.
+    - Each subcheck has stable ids, source spans, and retrievable evidence.
+  tests:
+    - tests/compiler/test_compound.py
+    - composite rollup regression tests
+  parallel_group: compiler_specialists
+
+- id: CC-07
+  title: Temporal and event compiler
+  goal: Translate history/recency prose into checkable temporal predicates with
+    mapped event concepts and explicit date-window semantics.
+  write_scope:
+    - src/clinical_demo/compiler/temporal.py
+    - src/clinical_demo/matcher/matcher.py
+    - src/clinical_demo/retrieval/patient_evidence.py
+  depends_on:
+    - CC-00
+    - CC-02
+    - CC-05
+  deliverables:
+    - Window parser for within past/future N days/months/years and anchors such
+      as screening, enrollment, baseline, randomization.
+    - Event resolver for condition/procedure/medication events.
+    - Temporal unresolved reasons for unsupported planned events, absent date
+      evidence, and ambiguous anchors.
+  exit_criteria:
+    - "fractures within the past 12 months" compiles to a temporal condition
+      predicate instead of a plain condition presence check.
+  tests:
+    - tests/compiler/test_temporal.py
+    - matcher temporal-window tests
+  parallel_group: compiler_specialists
+
+- id: CC-08
+  title: Measurement criterion compiler
+  goal: Translate measurement prose into LOINC-bound threshold predicates with
+    canonical units, conventional-unit inference, and normal-range handling.
+  write_scope:
+    - src/clinical_demo/compiler/measurement.py
+    - src/clinical_demo/units/
+    - src/clinical_demo/matcher/matcher.py
+  depends_on:
+    - CC-00
+    - CC-04
+    - CC-05
+  deliverables:
+    - Parser/repair for thresholds, ranges, "normal/abnormal", "ULN/LLN",
+      sitting office BP variants, ratios, and missing units.
+    - Normal-range strategy: dataset-provided reference range first, reviewed
+      registry second, unresolved fragment if neither exists.
+    - Structured unit provenance in compiled predicates.
+  exit_criteria:
+    - High-frequency lab/vital strings move from unmapped/ambiguous into mapped
+      threshold predicates or explicit unit/normal-range unresolved fragments.
+  tests:
+    - tests/compiler/test_measurement.py
+    - profile unit conversion tests
+  parallel_group: compiler_specialists
+
+- id: CC-09
+  title: Medication and class compiler
+  goal: Resolve medication ingredients, brands, and therapeutic classes into
+    RxNorm/RxClass-backed predicates.
+  write_scope:
+    - src/clinical_demo/compiler/medication.py
+    - src/clinical_demo/terminology/rxnorm_client.py
+    - src/clinical_demo/terminology/cache.py
+  depends_on:
+    - CC-01
+    - CC-02
+    - CC-05
+  deliverables:
+    - RxNorm exact/approximate candidate collection for ingredients and branded
+      names.
+    - RxClass or reviewed-class expansion policy for SGLT2, GLP-1, statins,
+      RAAS inhibitors, biologics, and common exclusion classes.
+    - Refusal policy for diet/supplement/procedure phrases that are not meds.
+  exit_criteria:
+    - Medication-class surfaces no longer remain opaque true_miss rows when a
+      reviewed class expansion exists.
+  tests:
+    - tests/compiler/test_medication.py
+    - tests/terminology/test_rxnorm_client.py
+  parallel_group: compiler_specialists
+
+- id: CC-10
+  title: Compiler validation gates
+  goal: Prevent unsafe compiled predicates from entering the matcher while
+    preserving actionable review context.
+  write_scope:
+    - src/clinical_demo/compiler/validate.py
+    - src/clinical_demo/matcher/verdict.py
+    - docs/concept-mapping-failure-taxonomy.md
+  depends_on:
+    - CC-05
+    - CC-06
+    - CC-07
+    - CC-08
+    - CC-09
+  deliverables:
+    - Validator checks for exactly one payload per atomic kind, mapped concept
+      where required, unit compatibility, temporal anchor support, polarity
+      consistency, and source-span preservation.
+    - Standard unresolved fragment reasons: ambiguous_mapping,
+      unsupported_unit_conversion, unsafe_composite, unsupported_event_kind,
+      normal_range_unknown, out_of_scope.
+  exit_criteria:
+    - Compiler never silently drops a criterion or silently changes polarity.
+    - Unsafe fixes show up as reviewable fragments, not matcher crashes.
+  tests:
+    - tests/compiler/test_validate.py
+    - extractor invariant and matcher soft-fail tests
+  parallel_group: integration_serial
+
+- id: CC-11
+  title: Reviewer and artifact workflow
+  goal: Let humans review mappings, compounds, units, and unresolved fragments
+    without changing Python code.
+  write_scope:
+    - web/src/lib/
+    - src/clinical_demo/api/app.py
+    - scripts/warm_terminology_surfaces.py
+    - eval/calibration/
+  depends_on:
+    - CC-01
+    - CC-05
+    - CC-10
+  deliverables:
+    - API payloads exposing compiler provenance and candidates.
+    - Calibration packet fields for compiled predicate id, parent criterion id,
+      unresolved fragment id, mapping candidate ids, and reviewer decision.
+    - Script to promote reviewed decisions into the reviewed registry.
+  exit_criteria:
+    - A reviewer can turn an ambiguous mapping into a reusable registry row.
+    - Rebuilding calibration packets preserves reviewed labels by stable ids.
+  tests:
+    - API tests
+    - patient-evidence calibration builder tests
+  parallel_group: integration_serial
+
+- id: CC-12
+  title: Eval gates and baseline rebuild
+  goal: Measure compiler impact and prevent regression back to manual one-off
+    fixes.
+  write_scope:
+    - src/clinical_demo/evals/diagnostics.py
+    - scripts/check_terminology_regressions.py
+    - scripts/eval.py
+    - eval/baselines/
+  depends_on:
+    - CC-10
+    - CC-11
+  deliverables:
+    - Diagnostics for compiled predicates, unresolved fragments, mapped vs
+      ambiguous vs true_miss, unit/normal-range failures, and compound outcomes.
+    - Regression gates for mappable-unmapped, unsafe-polarity-change, and
+      compiler dropped-criterion count.
+    - Baseline metadata records reviewed-registry version, resolver version,
+      terminology cache fingerprint, and resolver execution policy.
+    - Fresh baseline comparing legacy extraction, no-op compiler, deterministic
+      compiler, retrieval-only compiler, and bounded adjudication compiler.
+  exit_criteria:
+    - No high-frequency obvious concept remains in top_unmapped_surfaces without
+      a classification.
+    - Compiler changes are visible in reports before any matcher verdict change.
+  tests:
+    - tests/evals/test_diagnostics.py
+    - full eval smoke
+  parallel_group: integration_serial
+```
+
+**Parallelization map**
+
+- Start immediately and in parallel: `CC-01` reviewed registry, `CC-02`
+  candidate ranking, `CC-04` unit registry, and `CC-00` IR contract. They touch
+  mostly disjoint modules and only meet at the compiler pipeline.
+- After `CC-00` and `CC-05`: `CC-06` compound parsing, `CC-07` temporal/event
+  compilation, `CC-08` measurement compilation, and `CC-09` medication/class
+  compilation can run as separate workstreams with disjoint write scopes.
+- Mostly serial: `CC-05` pipeline integration depends on the IR; `CC-10`
+  validation must follow the specialist compilers; `CC-11` reviewer workflow
+  needs compiler provenance; `CC-12` eval gates come last.
+- Useful sub-agent/workstream split: one terminology worker (`CC-01` to
+  `CC-03`), one unit/measurement worker (`CC-04`, `CC-08`), one compound/time
+  worker (`CC-06`, `CC-07`), one medication worker (`CC-09`), and one
+  integration/eval worker (`CC-05`, then `CC-10` to `CC-12`).
+
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 
 | # | Task | Est. (hr) |
@@ -2451,9 +2846,9 @@ trial-side bindings at scoring time; API-backed resolution plus a
 small cache is a better fit for the current scale.
 
 **Rejected (c):** accept inactive strategy names in configuration.
-`Settings.binding_strategy` currently accepts only `alias`; future
-terminology-backed modes should be wired, tested, and recorded
-before their config values are accepted.
+`Settings.binding_strategy` accepts only wired modes (`alias`,
+`two_pass`); future terminology-backed modes should be wired, tested,
+and recorded before their config values are accepted.
 
 **Rejected (d):** stand up Snowstorm or another self-hosted
 terminology server for this slice. VSAC and NLM APIs are enough to

@@ -55,6 +55,10 @@ def test_builder_defaults_to_resolver_backed_binding_strategy() -> None:
     assert builder.DEFAULT_BINDING_STRATEGY == "two_pass"
 
 
+def test_builder_defaults_to_cached_only_resolver_policy() -> None:
+    assert builder.DEFAULT_RESOLVER_EXECUTION_POLICY == "cached_only"
+
+
 def test_apply_binding_strategy_clears_settings_cache(monkeypatch) -> None:
     from clinical_demo.settings import get_settings
     from clinical_demo.terminology.resolver import get_resolver
@@ -67,6 +71,23 @@ def test_apply_binding_strategy_clears_settings_cache(monkeypatch) -> None:
         builder._apply_binding_strategy("two_pass")
 
         assert get_settings().binding_strategy == "two_pass"
+    finally:
+        get_settings.cache_clear()
+        get_resolver.cache_clear()
+
+
+def test_apply_resolver_execution_policy_clears_settings_cache(monkeypatch) -> None:
+    from clinical_demo.settings import get_settings
+    from clinical_demo.terminology.resolver import get_resolver
+
+    monkeypatch.setenv("RESOLVER_EXECUTION_POLICY", "cached_only")
+    get_settings.cache_clear()
+    get_resolver.cache_clear()
+
+    try:
+        builder._apply_resolver_execution_policy("live_allowed")
+
+        assert get_settings().resolver_execution_policy == "live_allowed"
     finally:
         get_settings.cache_clear()
         get_resolver.cache_clear()

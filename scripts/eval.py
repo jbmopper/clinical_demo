@@ -79,6 +79,7 @@ from clinical_demo.scoring import (
     score_pair,
 )
 from clinical_demo.scoring.score_pair import ScorePairResult
+from clinical_demo.settings import BindingStrategy, ResolverExecutionPolicy
 
 # Default paths mirror scripts/score_pair.py to keep the demo
 # loops aligned. The DB path is configurable but defaults to the
@@ -179,7 +180,7 @@ def _make_scorer(
     return _scorer
 
 
-def _apply_binding_strategy(strategy: Literal["alias", "two_pass"] | None) -> None:
+def _apply_binding_strategy(strategy: BindingStrategy | None) -> None:
     """Override the process-wide binding strategy for this CLI run.
 
     Settings are cached, and the terminology resolver is cached from
@@ -190,10 +191,24 @@ def _apply_binding_strategy(strategy: Literal["alias", "two_pass"] | None) -> No
         return
     os.environ["BINDING_STRATEGY"] = strategy
     from clinical_demo.settings import get_settings
-    from clinical_demo.terminology.resolver import get_resolver
+    from clinical_demo.terminology.resolver import get_resolver, get_reviewed_mapping_registry
 
     get_settings.cache_clear()
     get_resolver.cache_clear()
+    get_reviewed_mapping_registry.cache_clear()
+
+
+def _apply_resolver_execution_policy(policy: ResolverExecutionPolicy | None) -> None:
+    """Override live-network behavior for terminology resolution."""
+    if policy is None:
+        return
+    os.environ["RESOLVER_EXECUTION_POLICY"] = policy
+    from clinical_demo.settings import get_settings
+    from clinical_demo.terminology.resolver import get_resolver, get_reviewed_mapping_registry
+
+    get_settings.cache_clear()
+    get_resolver.cache_clear()
+    get_reviewed_mapping_registry.cache_clear()
 
 
 # --------------------- Chia layer-2 helpers
@@ -356,6 +371,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         print(f"error: dataset {seed_path} not found", file=sys.stderr)
         return 1
     _apply_binding_strategy(args.binding_strategy)
+    _apply_resolver_execution_policy(args.resolver_execution_policy)
 
     pair_ids = set(args.pair_id) if args.pair_id else None
     cases = load_dataset(seed_path, pair_ids=pair_ids, limit=args.limit)
@@ -384,7 +400,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
         cases,
         dataset_path=seed_path,
         notes=_notes_with_scoring_modes(
-            _notes_with_binding_strategy(args.notes, args.binding_strategy),
+            _notes_with_resolver_execution_policy(
+                _notes_with_binding_strategy(args.notes, args.binding_strategy),
+                args.resolver_execution_policy,
+            ),
             matcher_assumption_mode=args.matcher_assumption_mode,
             llm_use_level=args.llm_use_level,
         ),
@@ -654,11 +673,21 @@ def _cmd_report(args: argparse.Namespace) -> int:
 
 def _notes_with_binding_strategy(
     notes: str,
-    strategy: Literal["alias", "two_pass"] | None,
+    strategy: BindingStrategy | None,
 ) -> str:
     if strategy is None:
         return notes
     suffix = f"binding_strategy={strategy}"
+    return f"{notes}; {suffix}" if notes else suffix
+
+
+def _notes_with_resolver_execution_policy(
+    notes: str,
+    policy: ResolverExecutionPolicy | None,
+) -> str:
+    if policy is None:
+        return notes
+    suffix = f"resolver_execution_policy={policy}"
     return f"{notes}; {suffix}" if notes else suffix
 
 
@@ -700,6 +729,12 @@ def main(argv: list[str] | None = None) -> int:
         choices=("alias", "two_pass"),
         default=None,
         help="Override Settings.binding_strategy for this run.",
+    )
+    p_run.add_argument(
+        "--resolver-execution-policy",
+        choices=("cached_only", "live_allowed", "disabled"),
+        default=None,
+        help="Override Settings.resolver_execution_policy for this run.",
     )
     p_run.add_argument(
         "--matcher-assumption-mode",

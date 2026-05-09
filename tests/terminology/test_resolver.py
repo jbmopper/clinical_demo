@@ -21,8 +21,13 @@ from pathlib import Path
 import httpx
 
 from clinical_demo.profile import ConceptSet
+from clinical_demo.profile.concept_sets import FRACTURE
 from clinical_demo.terminology import (
     ECQM_DIABETES_OID,
+    REVIEWED_REGISTRY_VERSION,
+    ReviewedMappingEntry,
+    ReviewedMappingRegistry,
+    ReviewedMappingStatus,
     RxNormBinding,
     RxNormClient,
     RxNormConcepts,
@@ -96,6 +101,35 @@ def _prewarm_rxnorm(
     return concepts
 
 
+def _reviewed_registry(
+    entries: list[ReviewedMappingEntry] | None = None,
+) -> ReviewedMappingRegistry:
+    return ReviewedMappingRegistry(entries or [])
+
+
+def _reviewed_mapping(
+    surface: str,
+    *,
+    status: ReviewedMappingStatus = "mapped",
+    concept_set: str | None = "FRACTURE",
+) -> ReviewedMappingEntry:
+    return ReviewedMappingEntry.model_validate(
+        {
+            "kind": "condition",
+            "surface": surface,
+            "status": status,
+            "concept_set": concept_set,
+            "reason": "unit-test reviewed decision",
+            "source": "unit test",
+            "provenance": "unit test",
+            "reviewer": "unit-test",
+            "reviewed_at": "2026-05-08",
+            "resolver_version": REVIEWED_REGISTRY_VERSION,
+            "expansion_policy": "reviewed_code_list",
+        }
+    )
+
+
 def _vsac_client_with_body(body: bytes) -> tuple[VSACClient, list[httpx.Request]]:
     captured: list[httpx.Request] = []
 
@@ -166,6 +200,23 @@ def test_resolve_vsac_fetches_on_cache_miss_and_caches_result(tmp_path: Path) ->
     # And the row landed on disk for future processes.
     expected = cache_path_for_vsac(ECQM_DIABETES_OID, tmp_path)
     assert expected.exists()
+
+
+def test_cached_only_policy_does_not_fetch_vsac_on_cache_miss(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    body = VSAC_FIXTURE.read_bytes()
+    client, captured = _vsac_client_with_body(body)
+    resolver = TerminologyResolver(
+        cache,
+        vsac_client=client,
+        execution_policy="cached_only",
+    )
+
+    out = resolver.resolve(VSACBinding(oid=ECQM_DIABETES_OID))
+
+    assert out is None
+    assert captured == []
+    assert not cache_path_for_vsac(ECQM_DIABETES_OID, tmp_path).exists()
 
 
 def test_resolve_vsac_cache_miss_with_no_client_soft_fails(tmp_path: Path) -> None:
@@ -611,6 +662,56 @@ def test_resolve_open_condition_caches_true_miss_on_zero_hits(tmp_path: Path) ->
     assert cached.status == "true_miss"
 
 
+def test_cached_only_policy_does_not_call_umls_open_search(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    umls_client, captured = _umls_client_with_body(_snomed_body([("195967001", "Asthma")]))
+    resolver = TerminologyResolver(
+        cache,
+        umls_client=umls_client,
+        execution_policy="cached_only",
+        reviewed_registry=_reviewed_registry(),
+    )
+
+    out = resolver.resolve_condition("asthma")
+
+    assert out is None
+    assert captured == []
+    assert cache.get_surface_resolution("condition", "asthma") is None
+
+
+def test_cached_only_policy_still_returns_warmed_surface_cache(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    asthma = ConceptSet(
+        name="Asthma",
+        system="http://snomed.info/sct",
+        codes=frozenset({"195967001"}),
+    )
+    cache.put_surface_resolution(
+        SurfaceResolution(
+            kind="condition",
+            surface="asthma",
+            normalized_surface="asthma",
+            status="mapped",
+            concept_set=asthma,
+            candidates=[],
+            reason="prewarmed test row",
+            resolver_version="open-surface-v0.2",
+        )
+    )
+    umls_client, captured = _umls_client_with_body(_snomed_body([("304527002", "Acute asthma")]))
+    resolver = TerminologyResolver(
+        cache,
+        umls_client=umls_client,
+        execution_policy="cached_only",
+        reviewed_registry=_reviewed_registry(),
+    )
+
+    out = resolver.resolve_condition("asthma")
+
+    assert out == asthma
+    assert captured == []
+
+
 def test_resolve_open_condition_without_umls_client_soft_fails(tmp_path: Path) -> None:
     """No UMLS_API_KEY -> no umls_client -> resolver returns None and
     does NOT write a cache row. Later, once an API key is set, the
@@ -639,6 +740,58 @@ def test_resolve_open_condition_skips_umls_for_composite_surfaces(tmp_path: Path
     cached = cache.get_surface_resolution("condition", "pregnant or breastfeeding")
     assert cached is not None
     assert cached.status == "composite_unhandled"
+
+
+def test_reviewed_registry_fracture_mapping_overwrites_stale_true_miss(
+    tmp_path: Path,
+) -> None:
+    """Reviewed registry decisions must win before cached non-mapped rows.
+
+    This pins the `Bone fractures` regression: UMLS exact search had
+    cached a `true_miss`, but the committed reviewed mapping should now
+    replace that stale miss without paying another UMLS call.
+    """
+    cache = TerminologyCache(tmp_path)
+    cache.put_surface_resolution(
+        SurfaceResolution(
+            kind="condition",
+            surface="Bone fractures",
+            normalized_surface="bone fractures",
+            status="true_miss",
+            concept_set=None,
+            candidates=[],
+            reason="old exact-search miss",
+            resolver_version="open-surface-v0.2",
+        )
+    )
+    umls_client, captured = _umls_client_with_body(_umls_empty_body())
+    resolver = TerminologyResolver(
+        cache,
+        umls_client=umls_client,
+        reviewed_registry=_reviewed_registry([_reviewed_mapping("Bone fractures")]),
+    )
+
+    out = resolver.resolve_condition("Bone fractures")
+
+    assert out == FRACTURE
+    assert len(captured) == 0
+    cached = cache.get_surface_resolution("condition", "Bone fractures")
+    assert cached is not None
+    assert cached.status == "mapped"
+    assert cached.concept_set == FRACTURE
+    assert cached.candidates[0].source == "reviewed_registry"
+
+
+def test_disabled_policy_bypasses_reviewed_registry(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(
+        cache,
+        execution_policy="disabled",
+        reviewed_registry=_reviewed_registry([_reviewed_mapping("Bone fractures")]),
+    )
+
+    assert resolver.resolve_condition("Bone fractures") is None
+    assert cache.get_surface_resolution("condition", "Bone fractures") is None
 
 
 def test_resolve_open_condition_soft_fails_on_umls_transport_error(tmp_path: Path) -> None:

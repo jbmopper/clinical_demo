@@ -207,6 +207,7 @@ def score_pair_graph(
             llm_use_level=llm_use_level,
             extraction=final_state["extraction"].extracted,
             extraction_meta=final_state["extraction"].meta,
+            compilation=final_state.get("compilation"),
             verdicts=verdicts,
             summary=summary,
             eligibility=eligibility,
@@ -224,6 +225,9 @@ def score_pair_graph(
             "pass_count": str(result.summary.by_verdict.get("pass", 0)),
             "indeterminate_count": str(result.summary.by_verdict.get("indeterminate", 0)),
         }
+        if result.compilation is not None:
+            output_metadata["compiler_version"] = result.compilation.compiler_version
+            output_metadata["resolver_execution_policy"] = result.compilation.resolver_policy
         if critic_enabled:
             output_metadata["critic_iterations"] = str(critic_iterations)
             output_metadata["revisions_total"] = str(len(revisions))

@@ -83,7 +83,10 @@ def fan_out_criteria(state: ScoringState) -> list[Send] | str:
     if extraction is None or not extraction.extracted.criteria:
         return ROLLUP_NODE
 
-    criteria = extraction.extracted.criteria
+    compilation = state.get("compilation")
+    criteria = (
+        compilation.matcher_inputs if compilation is not None else extraction.extracted.criteria
+    )
     composite_groups = {
         group.parent_criterion_index: group
         for group in extraction.extracted.composite_groups

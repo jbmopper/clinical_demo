@@ -18,6 +18,7 @@ from clinical_demo.matcher.concept_lookup import (
 from clinical_demo.profile.concept_sets import (
     CHRONIC_KIDNEY_DISEASE,
     EGFR,
+    FRACTURE,
     HBA1C,
     HYPERLIPIDEMIA,
     HYPERTENSION,
@@ -43,6 +44,8 @@ from clinical_demo.profile.concept_sets import (
         ("dyslipidemia", HYPERLIPIDEMIA),
         ("chronic kidney disease", CHRONIC_KIDNEY_DISEASE),
         ("CKD", CHRONIC_KIDNEY_DISEASE),
+        ("bone fractures", FRACTURE),
+        ("Bone fracture", FRACTURE),
     ],
 )
 def test_lookup_condition_known_aliases(surface: str, expected: object) -> None:

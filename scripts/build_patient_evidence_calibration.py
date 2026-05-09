@@ -12,7 +12,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import Literal
 
 from clinical_demo.api.loaders import load_patient, load_trial
 from clinical_demo.evals.layer_three import JudgeTarget, build_source_context
@@ -29,14 +28,15 @@ from clinical_demo.evals.patient_evidence import (
 )
 from clinical_demo.evals.store import load_run, open_store
 from clinical_demo.matcher import DEFAULT_MATCHER_ASSUMPTION_MODE
+from clinical_demo.settings import BindingStrategy, ResolverExecutionPolicy
 
 DEFAULT_DB = Path("eval/runs.sqlite")
 DEFAULT_JUDGE_REPORT = Path("eval/baselines/2026-04-30/layer3_judge_calibrated.json")
 DEFAULT_LABELS = Path("eval/calibration/patient_evidence_labels.json")
 DEFAULT_OUTPUT = Path("eval/calibration/patient_evidence_candidates.json")
 DEFAULT_PUBLIC_SUMMARY_OUTPUT = Path("eval/baselines/YYYY-MM-DD/composite_v06_public_summary.json")
-BindingStrategy = Literal["alias", "two_pass"]
 DEFAULT_BINDING_STRATEGY: BindingStrategy = "two_pass"
+DEFAULT_RESOLVER_EXECUTION_POLICY: ResolverExecutionPolicy = "cached_only"
 
 
 def main() -> None:
@@ -67,8 +67,18 @@ def main() -> None:
             "Defaults to resolver-backed two_pass; use alias only for legacy replay."
         ),
     )
+    parser.add_argument(
+        "--resolver-execution-policy",
+        choices=["cached_only", "live_allowed", "disabled"],
+        default=DEFAULT_RESOLVER_EXECUTION_POLICY,
+        help=(
+            "Terminology live-network policy used while building mapping/retrieval metadata. "
+            "Defaults to cached_only for reproducible calibration packets."
+        ),
+    )
     args = parser.parse_args()
     _apply_binding_strategy(args.binding_strategy)
+    _apply_resolver_execution_policy(args.resolver_execution_policy)
     scope: PatientEvidenceScope = args.scope
 
     with open_store(args.db) as store:
@@ -164,10 +174,21 @@ def _label_has_review(label: PatientEvidenceHumanLabel) -> bool:
 def _apply_binding_strategy(strategy: BindingStrategy) -> None:
     os.environ["BINDING_STRATEGY"] = strategy
     from clinical_demo.settings import get_settings
-    from clinical_demo.terminology.resolver import get_resolver
+    from clinical_demo.terminology.resolver import get_resolver, get_reviewed_mapping_registry
 
     get_settings.cache_clear()
     get_resolver.cache_clear()
+    get_reviewed_mapping_registry.cache_clear()
+
+
+def _apply_resolver_execution_policy(policy: ResolverExecutionPolicy) -> None:
+    os.environ["RESOLVER_EXECUTION_POLICY"] = policy
+    from clinical_demo.settings import get_settings
+    from clinical_demo.terminology.resolver import get_resolver, get_reviewed_mapping_registry
+
+    get_settings.cache_clear()
+    get_resolver.cache_clear()
+    get_reviewed_mapping_registry.cache_clear()
 
 
 def public_summary_export_command(

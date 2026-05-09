@@ -6,15 +6,14 @@ convert those into coded concept sets so it can query the
 `PatientProfile`. Two paths exist; `Settings.binding_strategy`
 selects between them:
 
-- **`alias` (default, legacy):** the hand-curated `_*_ALIASES`
+- **`alias` (legacy):** the hand-curated `_*_ALIASES`
   tables in this module are the only source. Fully offline, no NLM
   dependency, fully auditable in a 30-second read.
-- **`two_pass` (D-69 slice 4):** consult the trial-side bindings
-  registry first (`terminology.bindings`) -> resolver
-  (`terminology.resolver`) -> `TerminologyCache` -> live VSAC /
-  RxNorm. Soft-fail to the alias table on registry miss or any
-  terminology-side error. Aliases stay as a safety net during
-  migration so behaviour never degrades below the `alias` baseline.
+- **`two_pass` (default):** consult reviewed terminology decisions,
+  the trial-side bindings registry, and warmed resolver cache rows.
+  Live VSAC / UMLS / RxNorm lookup is controlled separately by
+  `Settings.resolver_execution_policy` and is disabled by default.
+  Aliases stay as the offline legacy safety net during migration.
 
 Either way, anything that survives both paths maps to
 `unmapped_concept` and the matcher returns `indeterminate` -- the
@@ -36,6 +35,7 @@ from clinical_demo.profile.concept_sets import (
     CHRONIC_KIDNEY_DISEASE,
     DIASTOLIC_BP,
     EGFR,
+    FRACTURE,
     HBA1C,
     HEMOGLOBIN,
     HYPERLIPIDEMIA,
@@ -96,6 +96,13 @@ _CONDITION_ALIASES: dict[str, ConceptSet] = {
     "ckd": CHRONIC_KIDNEY_DISEASE,
     "renal disease": CHRONIC_KIDNEY_DISEASE,
     "kidney disease": CHRONIC_KIDNEY_DISEASE,
+    # Fractures. These are kept only as a fallback for offline/legacy
+    # alias mode; resolver-first mode reads the reviewed FRACTURE
+    # decision from `data/terminology/reviewed_mappings.json`.
+    "bone fracture": FRACTURE,
+    "bone fractures": FRACTURE,
+    "fracture": FRACTURE,
+    "fractures": FRACTURE,
 }
 
 _LAB_ALIASES: dict[str, ConceptSet] = {

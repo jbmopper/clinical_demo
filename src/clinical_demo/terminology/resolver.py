@@ -4,10 +4,14 @@ Stitches three pieces together for D-69 slice 4:
 
 1. The trial-side bindings registry (`terminology.bindings`) maps a
    surface form to a `VSACBinding` or `RxNormBinding`.
-2. The on-disk `TerminologyCache` (`terminology.cache`) services
-   subsequent calls without paying NLM round-trip cost.
-3. The live `VSACClient` / `RxNormClient` (`terminology.vsac_client` /
-   `.rxnorm_client`) fetch on cache miss when credentials are set.
+2. The committed reviewed registry (`terminology.reviewed_registry`)
+   records project-owned human decisions that should win before cache
+   rows or live/open lookup.
+3. The on-disk `TerminologyCache` (`terminology.cache`) services
+   warmed calls without paying NLM round-trip cost.
+4. The live `VSACClient` / `RxNormClient` / `UMLSSearchClient` clients
+   fetch on cache miss only when `resolver_execution_policy` is
+   explicitly `live_allowed`.
 
 The resolver is what `matcher.concept_lookup.lookup_*` calls when
 `Settings.binding_strategy == "two_pass"`. Its return contract is
@@ -24,9 +28,9 @@ Soft-fail rules
 - Surface form not in the bindings registry -> `None` (caller falls
   back to the alias table).
 - Binding present, cache hit -> `ConceptSet`.
-- Binding present, cache miss, credentials available, fetch
-  succeeds -> `ConceptSet` (and the cache now has the row for next
-  time).
+- Binding present, cache miss, `resolver_execution_policy=live_allowed`,
+  credentials/client available, fetch succeeds -> `ConceptSet` (and the
+  cache now has the row for next time).
 - Binding present, cache miss, no credentials / no client -> `None`
   + warning log. Lets a fresh checkout without `UMLS_API_KEY` opt
   into `two_pass` and still produce useful output for any binding
@@ -58,14 +62,22 @@ from clinical_demo.profile import ConceptSet
 from clinical_demo.profile.concept_sets import (
     BMI,
     C_PEPTIDE,
+    CHRONIC_KIDNEY_DISEASE,
     DIASTOLIC_BP,
+    EGFR,
+    FRACTURE,
+    HBA1C,
     HEMOGLOBIN,
+    HYPERLIPIDEMIA,
     HYPERTENSION,
+    LDL_CHOLESTEROL,
     PLATELET_COUNT,
+    PREDIABETES,
     SYSTOLIC_BP,
     T1DM,
+    T2DM,
 )
-from clinical_demo.settings import Settings, get_settings
+from clinical_demo.settings import ResolverExecutionPolicy, Settings, get_settings
 from clinical_demo.terminology.bindings import (
     Binding,
     RxNormBinding,
@@ -81,6 +93,11 @@ from clinical_demo.terminology.cache import (
     SurfaceResolutionStatus,
     TerminologyCache,
 )
+from clinical_demo.terminology.reviewed_registry import (
+    ReviewedMappingEntry,
+    ReviewedMappingRegistry,
+    load_reviewed_mapping_registry,
+)
 from clinical_demo.terminology.rxnorm_client import RxNormClient, RxNormError
 from clinical_demo.terminology.umls_search_client import (
     LOINC_SOURCE,
@@ -92,6 +109,10 @@ from clinical_demo.terminology.umls_search_client import (
 from clinical_demo.terminology.vsac_client import VSACClient, VSACError
 
 log = logging.getLogger(__name__)
+
+RESOLVER_EXECUTION_POLICIES: frozenset[ResolverExecutionPolicy] = frozenset(
+    {"cached_only", "live_allowed", "disabled"}
+)
 
 OPEN_SURFACE_RESOLVER_VERSION = "open-surface-v0.2"
 """Bumped from v0.1 when `_resolve_open_condition` / `_resolve_open_lab`
@@ -219,6 +240,38 @@ def _candidate(
     )
 
 
+_REVIEWED_CONCEPT_SETS: dict[str, ConceptSet] = {
+    "BMI": BMI,
+    "CHRONIC_KIDNEY_DISEASE": CHRONIC_KIDNEY_DISEASE,
+    "C_PEPTIDE": C_PEPTIDE,
+    "DIASTOLIC_BP": DIASTOLIC_BP,
+    "EGFR": EGFR,
+    "FRACTURE": FRACTURE,
+    "HBA1C": HBA1C,
+    "HEMOGLOBIN": HEMOGLOBIN,
+    "HYPERLIPIDEMIA": HYPERLIPIDEMIA,
+    "HYPERTENSION": HYPERTENSION,
+    "LDL_CHOLESTEROL": LDL_CHOLESTEROL,
+    "PLATELET_COUNT": PLATELET_COUNT,
+    "PREDIABETES": PREDIABETES,
+    "SYSTOLIC_BP": SYSTOLIC_BP,
+    "T1DM": T1DM,
+    "T2DM": T2DM,
+}
+
+
+@lru_cache(maxsize=1)
+def get_reviewed_mapping_registry() -> ReviewedMappingRegistry:
+    """Load committed human-reviewed terminology decisions once."""
+    return load_reviewed_mapping_registry()
+
+
+def _concept_set_for_reviewed_entry(entry: ReviewedMappingEntry) -> ConceptSet | None:
+    if entry.concept_set is None:
+        return None
+    return _REVIEWED_CONCEPT_SETS.get(entry.concept_set)
+
+
 def _is_rxnorm_true_miss(exc: RxNormError) -> bool:
     return "no drug matched this surface form" in str(exc)
 
@@ -281,17 +334,25 @@ class TerminologyResolver:
         vsac_client: VSACClient | None = None,
         rxnorm_client: RxNormClient | None = None,
         umls_client: UMLSSearchClient | None = None,
+        execution_policy: ResolverExecutionPolicy = "live_allowed",
+        reviewed_registry: ReviewedMappingRegistry | None = None,
     ) -> None:
+        if execution_policy not in RESOLVER_EXECUTION_POLICIES:
+            raise ValueError(f"unknown resolver execution policy: {execution_policy!r}")
         self._cache = cache
         self._vsac = vsac_client
         self._rxnorm = rxnorm_client
         self._umls = umls_client
+        self.execution_policy = execution_policy
+        self._reviewed_registry = reviewed_registry or get_reviewed_mapping_registry()
 
     # ----- per-binding-type primitives -----
 
     def resolve(self, binding: Binding) -> ConceptSet | None:
         """Dispatch on binding type. Soft-fails to `None` per the
         module docstring."""
+        if self.execution_policy == "disabled":
+            return None
         if isinstance(binding, VSACBinding):
             return self._resolve_vsac(binding)
         if isinstance(binding, RxNormBinding):
@@ -308,6 +369,9 @@ class TerminologyResolver:
         cached = self._cache.get_vsac_expansion(binding.oid, system_filter=binding.system_filter)
         if cached is not None:
             return cached.concept_set
+
+        if not self._live_fetch_allowed("VSAC", f"OID {binding.oid}"):
+            return None
 
         if self._vsac is None:
             log.warning(
@@ -347,6 +411,9 @@ class TerminologyResolver:
         if cached is not None:
             return cached.concept_set
 
+        if not self._live_fetch_allowed("RxNorm", f"name {binding.name!r}"):
+            return None
+
         if self._rxnorm is None:
             log.warning(
                 "TerminologyResolver: RxNorm cache miss for name %r and no client "
@@ -379,6 +446,11 @@ class TerminologyResolver:
     # one-line delegation.
 
     def resolve_condition(self, surface: str) -> ConceptSet | None:
+        if self.execution_policy == "disabled":
+            return None
+        reviewed_hit, reviewed = self._reviewed_surface_resolution("condition", surface)
+        if reviewed_hit:
+            return reviewed
         if _normalize_surface(surface) in _OPEN_CONDITION_ALIASES:
             return self._resolve_open_condition(surface)
 
@@ -402,6 +474,11 @@ class TerminologyResolver:
         return self._resolve_open_condition(surface)
 
     def resolve_lab(self, surface: str) -> ConceptSet | None:
+        if self.execution_policy == "disabled":
+            return None
+        reviewed_hit, reviewed = self._reviewed_surface_resolution("lab", surface)
+        if reviewed_hit:
+            return reviewed
         normalized = _normalize_surface(surface)
         if normalized in _OPEN_LAB_ALIASES or normalized in _OPEN_AMBIGUOUS_LABS:
             return self._resolve_open_lab(surface)
@@ -426,6 +503,11 @@ class TerminologyResolver:
         return self._resolve_open_lab(surface)
 
     def resolve_medication(self, surface: str) -> ConceptSet | None:
+        if self.execution_policy == "disabled":
+            return None
+        reviewed_hit, reviewed = self._reviewed_surface_resolution("medication", surface)
+        if reviewed_hit:
+            return reviewed
         cache_hit, cached = self._cached_surface_resolution("medication", surface)
         if cache_hit:
             return cached
@@ -446,6 +528,67 @@ class TerminologyResolver:
         return self._resolve_open_medication(surface)
 
     # ----- open surface-form resolver -----
+
+    def _reviewed_surface_resolution(
+        self,
+        kind: SurfaceResolutionKind,
+        surface: str,
+    ) -> tuple[bool, ConceptSet | None]:
+        """Resolve a surface from committed human-reviewed decisions.
+
+        Reviewed mappings are authoritative for the local project and
+        deliberately live outside `data/cache`. They win before stale
+        cache rows and before any live/open terminology lookup.
+        """
+        entry = self._reviewed_registry.lookup(kind, surface)
+        if entry is None:
+            return False, None
+        if entry.status != "mapped":
+            self._cache_nonresolved_surface(
+                kind,
+                surface,
+                status=entry.status,
+                reason=entry.reason,
+            )
+            return True, None
+
+        concept_set = _concept_set_for_reviewed_entry(entry)
+        if concept_set is None:
+            log.warning(
+                "TerminologyResolver: reviewed mapping for %s %r references "
+                "unknown ConceptSet %r; treating as unresolved.",
+                kind,
+                surface,
+                entry.concept_set,
+            )
+            return True, None
+        return True, self._cache_resolved_surface(
+            kind,
+            surface,
+            concept_set,
+            source="reviewed_registry",
+            reason=entry.reason,
+            candidates=[
+                _candidate(
+                    concept_set,
+                    source="reviewed_registry",
+                    reason=entry.reason,
+                    score=1.0,
+                )
+            ],
+        )
+
+    def _live_fetch_allowed(self, source: str, detail: str) -> bool:
+        """Return whether this resolver may make a live terminology call."""
+        if self.execution_policy == "live_allowed":
+            return True
+        log.info(
+            "TerminologyResolver: %s live lookup skipped for %s (resolver_execution_policy=%s).",
+            source,
+            detail,
+            self.execution_policy,
+        )
+        return False
 
     def _cached_surface_resolution(
         self,
@@ -649,6 +792,9 @@ class TerminologyResolver:
             )
             return None
 
+        if not self._live_fetch_allowed("UMLS", f"{kind} surface {surface!r}"):
+            return None
+
         if self._umls is None:
             log.info(
                 "TerminologyResolver: UMLS open search skipped for %s %r (no "
@@ -740,6 +886,9 @@ class TerminologyResolver:
                 reason="Resolved from a cached RxNorm raw-surface lookup.",
             )
 
+        if not self._live_fetch_allowed("RxNorm", f"surface {surface!r}"):
+            return None
+
         if self._rxnorm is None:
             return None
 
@@ -779,17 +928,17 @@ def _build_default_resolver(settings: Settings) -> TerminologyResolver:
     """Construct the singleton resolver from settings.
 
     `VSACClient` and `UMLSSearchClient` both require `UMLS_API_KEY`;
-    if it's unset, both clients are `None` and the resolver
-    soft-fails on VSAC cache misses and on open condition/lab
-    surface resolution (intentional -- a fresh checkout without a
-    UMLS account can still opt into `two_pass` and benefit from any
-    pre-warmed cache rows). `RxNormClient` is unconditional -- the
-    RxNav surface is public, no API key required."""
+    `RxNormClient` is public but still a live-network dependency.
+    The singleton only constructs any live clients when
+    `resolver_execution_policy=live_allowed`; the default
+    `cached_only` path can still use reviewed mappings and warmed
+    cache rows under `two_pass` without network reachability."""
     cache = TerminologyCache(settings.terminology_cache_dir)
 
     vsac_client: VSACClient | None
     umls_client: UMLSSearchClient | None
-    if settings.umls_api_key is not None:
+    rxnorm_client: RxNormClient | None
+    if settings.resolver_execution_policy == "live_allowed" and settings.umls_api_key is not None:
         api_key = settings.umls_api_key.get_secret_value()
         try:
             vsac_client = VSACClient(api_key=api_key)
@@ -813,13 +962,14 @@ def _build_default_resolver(settings: Settings) -> TerminologyResolver:
         vsac_client = None
         umls_client = None
 
-    rxnorm_client = RxNormClient()
+    rxnorm_client = RxNormClient() if settings.resolver_execution_policy == "live_allowed" else None
 
     return TerminologyResolver(
         cache,
         vsac_client=vsac_client,
         rxnorm_client=rxnorm_client,
         umls_client=umls_client,
+        execution_policy=settings.resolver_execution_policy,
     )
 
 
@@ -831,6 +981,8 @@ def get_resolver() -> TerminologyResolver:
 
 
 __all__ = [
+    "RESOLVER_EXECUTION_POLICIES",
     "TerminologyResolver",
     "get_resolver",
+    "get_reviewed_mapping_registry",
 ]

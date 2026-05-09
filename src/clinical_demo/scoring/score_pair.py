@@ -41,6 +41,7 @@ from pydantic import BaseModel, Field
 
 from ..adjudication.patient_evidence import _ClientLike as _PatientEvidenceClient
 from ..adjudication.patient_evidence import adjudicate_patient_evidence
+from ..compiler import CriterionCompilationResult, compile_extracted_criteria
 from ..cost_telemetry import LLMCallCost
 from ..domain.patient import Patient
 from ..domain.trial import Trial
@@ -65,6 +66,7 @@ from ..retrieval import (
     retrieve_patient_evidence_with_composite_subchecks,
     structured_source_rows_for_pair,
 )
+from ..settings import get_settings
 
 EligibilityRollup = Literal["pass", "fail", "indeterminate", "pass_pending_review"]
 """Top-level eligibility rollup. v0 uses three states; v0.2 (PLAN
@@ -138,6 +140,7 @@ class ScorePairResult(BaseModel):
     llm_use_level: LLMUseLevel = DEFAULT_LLM_USE_LEVEL
     extraction: ExtractedCriteria
     extraction_meta: ExtractorRunMeta
+    compilation: CriterionCompilationResult | None = None
     verdicts: list[MatchVerdict]
     summary: ScoringSummary
     eligibility: EligibilityRollup
@@ -223,10 +226,14 @@ def score_pair(
         enriched_criteria = fix_extracted_criteria(
             enrich_with_structured_fields(extraction.extracted, trial)
         )
+        compilation = compile_extracted_criteria(
+            enriched_criteria,
+            resolver_policy=get_settings().resolver_execution_policy,
+        )
 
         profile = PatientProfile(patient, as_of)
         verdicts = match_extracted(
-            enriched_criteria.criteria,
+            compilation.matcher_inputs,
             profile,
             trial,
             composite_groups=enriched_criteria.composite_groups,
@@ -261,6 +268,8 @@ def score_pair(
                 "matcher_version": MATCHER_VERSION,
                 "matcher_assumption_mode": matcher_assumption_mode,
                 "llm_use_level": llm_use_level,
+                "compiler_version": compilation.compiler_version,
+                "resolver_execution_policy": compilation.resolver_policy,
                 "eligibility": eligibility,
                 "total_criteria": str(summary.total_criteria),
                 "fail_count": str(summary.by_verdict.get("fail", 0)),
@@ -281,6 +290,7 @@ def score_pair(
         # `INJECTED_SOURCE_PREFIX` in `source_text`.
         extraction=enriched_criteria,
         extraction_meta=extraction.meta,
+        compilation=compilation,
         verdicts=verdicts,
         summary=summary,
         eligibility=eligibility,

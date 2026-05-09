@@ -255,6 +255,27 @@ def test_settings_accepts_two_pass_binding_strategy() -> None:
     assert s.binding_strategy == "two_pass"
 
 
+def test_settings_defaults_to_cached_only_resolver_policy() -> None:
+    from clinical_demo.settings import Settings
+
+    s = Settings.model_validate({})
+    assert s.resolver_execution_policy == "cached_only"
+
+
+def test_settings_accepts_live_allowed_resolver_policy() -> None:
+    from clinical_demo.settings import Settings
+
+    s = Settings.model_validate({"resolver_execution_policy": "live_allowed"})
+    assert s.resolver_execution_policy == "live_allowed"
+
+
+def test_settings_rejects_unknown_resolver_policy() -> None:
+    from clinical_demo.settings import Settings
+
+    with pytest.raises(ValidationError, match="resolver_execution_policy"):
+        Settings.model_validate({"resolver_execution_policy": "internet_party"})
+
+
 def test_settings_rejects_unwired_binding_strategies() -> None:
     """`one_pass` requires extractor-side schema changes that are
     out of scope for D-69 slice 4; accepting it as config would
