@@ -120,6 +120,21 @@ def test_compiled_temporal_predicate_executes_window() -> None:
     assert verdict.reason == "ok"
 
 
+def test_compiled_temporal_diagnosis_variant_executes_window() -> None:
+    criterion = crit_temporal_window(event_text="recent T2D diagnosis", window_days=90)
+    profile = make_profile(
+        conditions=[make_condition(code="44054006", display="T2DM", onset=AS_OF.replace(day=1))]
+    )
+    compilation = compile_extracted_criteria([criterion])
+
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert compilation.criteria[0].resolved_supports[0].surface == "type 2 diabetes"
+    assert compilation.checkable_predicates[0].predicate_kind == "temporal_event"
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+
+
 def test_compiled_composite_any_of_rolls_up_subcheck_predicates() -> None:
     parent = crit_free_text()
     first = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")

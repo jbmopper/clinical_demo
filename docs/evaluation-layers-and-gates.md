@@ -88,7 +88,9 @@ The concrete APIs are `compare_compilation_parity(...)`, `ParityReport`, and
 gaps by kind/stage/domain, and closed-world blockers. Medication-class surfaces
 with reviewed entries compile through member RxNorm resolution before becoming
 executable predicates, so missing class members remain visible as compiler
-gaps instead of silently narrowing the class. Use
+gaps instead of silently narrowing the class. Temporal event surfaces also emit
+diagnostics when diagnosis/history-shaped text is normalized before lookup, and
+workflow anchors remain unsupported gaps rather than condition matches. Use
 `uv run python scripts/eval.py compiler-review --run-id <run> --output <path>`
 to export private reviewer rows for unresolved compiler gaps.
 

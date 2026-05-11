@@ -8,7 +8,8 @@ main compiler pipeline once predicate execution is ready.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+import re
+from collections.abc import Callable, Sequence
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -48,6 +49,31 @@ _GENERIC_TEMPORAL_EVENT_SURFACES: frozenset[str] = frozenset(
         "week 0",
     }
 )
+_GENERIC_TEMPORAL_EVENT_PATTERNS: tuple[re.Pattern[str], ...] = tuple(
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in (
+        r"^(?:baseline|screening|enrollment|randomization|study entry|trial entry)\s+visit$",
+        r"^(?:baseline|screening|enrollment|randomization)\s+(?:assessment|evaluation)$",
+    )
+)
+_PARENTHETICAL_RE = re.compile(r"\([^()]*\)|\[[^\[\]]*\]|\{[^{}]*\}")
+_HISTORY_PREFIX_RE = re.compile(
+    r"^(?:personal\s+)?(?:(?:past\s+)?medical\s+)?history\s+(?:of|for)\s+",
+    re.IGNORECASE,
+)
+_DIAGNOSIS_PREFIX_RE = re.compile(r"^(?:diagnosis\s+of|diagnosed\s+with)\s+", re.IGNORECASE)
+_DIAGNOSIS_SUFFIX_RE = re.compile(r"\s+(?:diagnosis|diagnoses)\s*$", re.IGNORECASE)
+_QUALIFIER_PREFIX_RE = re.compile(
+    r"^(?:known|documented|confirmed|current|active|prior|previous|recent)\s+",
+    re.IGNORECASE,
+)
+_ONSET_PREFIX_RE = re.compile(r"^(?:new\s+onset|newly\s+diagnosed)\s+", re.IGNORECASE)
+_TEMPORAL_EVENT_ALIAS_VARIANTS: dict[str, str] = {
+    "t1d": "type 1 diabetes",
+    "t1dm": "type 1 diabetes",
+    "t2d": "type 2 diabetes",
+    "t2dm": "type 2 diabetes",
+}
 
 
 class CompoundLogicCompilation(BaseModel):
@@ -226,7 +252,8 @@ def compile_temporal_window(
             )
         )
     else:
-        concept_set = _lookup_condition_cached_only(surface, resolver=resolver)
+        lookup = _lookup_temporal_event_condition(surface, resolver=resolver)
+        concept_set = lookup.concept_set
         if concept_set is None:
             gaps.append(
                 _temporal_gap(
@@ -235,7 +262,8 @@ def compile_temporal_window(
                     surface=surface,
                     message=(
                         "Temporal event surface did not map to a condition ConceptSet "
-                        "using cached/local lookup."
+                        "using cached/local lookup. Tried event variants: "
+                        f"{', '.join(lookup.tried_surfaces)}."
                     ),
                     resolver_policy=resolver_policy,
                     kind="unmapped_concept",
@@ -247,12 +275,30 @@ def compile_temporal_window(
             supports.append(
                 _temporal_event_support(
                     source_criterion_id=source_criterion_id,
-                    surface=surface,
-                    normalized_surface=normalized_surface,
+                    surface=lookup.lookup_surface,
+                    normalized_surface=lookup.normalized_lookup_surface,
                     concept_set=concept_set,
                     resolver_policy=resolver_policy,
                 )
             )
+            if lookup.normalized_lookup_surface != normalized_surface:
+                diagnostics.append(
+                    CompilerDiagnostic(
+                        severity="info",
+                        code="temporal_event_surface_normalized",
+                        message=("Temporal event surface was normalized before condition lookup."),
+                        stage="concept_resolution",
+                        source_criterion_id=source_criterion_id,
+                        facts=[
+                            DiagnosticFact(key="event_surface", value=surface),
+                            DiagnosticFact(key="lookup_surface", value=lookup.lookup_surface),
+                            DiagnosticFact(
+                                key="transforms",
+                                value=", ".join(lookup.transforms) or "none",
+                            ),
+                        ],
+                    )
+                )
 
     if temporal.direction != "within_past":
         gaps.append(
@@ -459,12 +505,109 @@ def _lookup_condition_cached_only(
     return lookup_condition(surface, resolver=cached_only_resolver)
 
 
+class _TemporalEventLookup(BaseModel):
+    concept_set: ConceptSet | None
+    lookup_surface: str
+    normalized_lookup_surface: str
+    transforms: tuple[str, ...] = Field(default_factory=tuple)
+    tried_surfaces: tuple[str, ...] = Field(default_factory=tuple)
+
+
+def _lookup_temporal_event_condition(
+    surface: str,
+    *,
+    resolver: TerminologyResolver | None,
+) -> _TemporalEventLookup:
+    variants = _temporal_event_lookup_variants(surface)
+    tried: list[str] = []
+    for lookup_surface, transforms in variants:
+        normalized = _normalize_surface(lookup_surface)
+        if _is_generic_temporal_event_surface(normalized):
+            continue
+        tried.append(lookup_surface)
+        concept_set = _lookup_condition_cached_only(lookup_surface, resolver=resolver)
+        if concept_set is not None:
+            return _TemporalEventLookup(
+                concept_set=concept_set,
+                lookup_surface=lookup_surface,
+                normalized_lookup_surface=normalized,
+                transforms=transforms,
+                tried_surfaces=tuple(tried),
+            )
+    normalized_surface = _normalize_surface(surface)
+    return _TemporalEventLookup(
+        concept_set=None,
+        lookup_surface=surface,
+        normalized_lookup_surface=normalized_surface,
+        transforms=(),
+        tried_surfaces=tuple(tried) or (surface,),
+    )
+
+
+def _temporal_event_lookup_variants(surface: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    states: list[tuple[str, tuple[str, ...]]] = []
+    seen: set[str] = set()
+
+    def add(candidate: str, transforms: tuple[str, ...]) -> None:
+        normalized = _normalize_surface(candidate)
+        if not normalized or normalized in seen:
+            return
+        seen.add(normalized)
+        states.append((normalized, transforms))
+
+    add(surface, ())
+    transforms: tuple[tuple[str, Callable[[str], str]], ...] = (
+        ("parenthetical_cleanup", _remove_parentheticals),
+        ("history_of_stripped", _strip_history_prefix),
+        ("qualifier_prefix_stripped", _strip_qualifier_prefix),
+        ("onset_prefix_stripped", _strip_onset_prefix),
+        ("diagnosis_prefix_stripped", _strip_diagnosis_prefix),
+        ("diagnosis_suffix_stripped", _strip_diagnosis_suffix),
+    )
+    for transform_name, transform in transforms:
+        for candidate, prior_transforms in tuple(states):
+            add(transform(candidate), (*prior_transforms, transform_name))
+
+    for candidate, prior_transforms in tuple(states):
+        alias = _TEMPORAL_EVENT_ALIAS_VARIANTS.get(_normalize_surface(candidate))
+        if alias is not None:
+            add(alias, (*prior_transforms, "temporal_event_alias"))
+
+    return tuple(states)
+
+
+def _remove_parentheticals(surface: str) -> str:
+    return _PARENTHETICAL_RE.sub(" ", surface)
+
+
+def _strip_history_prefix(surface: str) -> str:
+    return _HISTORY_PREFIX_RE.sub("", surface)
+
+
+def _strip_diagnosis_prefix(surface: str) -> str:
+    return _DIAGNOSIS_PREFIX_RE.sub("", surface)
+
+
+def _strip_diagnosis_suffix(surface: str) -> str:
+    return _DIAGNOSIS_SUFFIX_RE.sub("", surface)
+
+
+def _strip_qualifier_prefix(surface: str) -> str:
+    return _QUALIFIER_PREFIX_RE.sub("", surface)
+
+
+def _strip_onset_prefix(surface: str) -> str:
+    return _ONSET_PREFIX_RE.sub("", surface)
+
+
 def _normalize_surface(surface: str) -> str:
     return " ".join(surface.lower().strip(".,;:()[]{}\"'").split())
 
 
 def _is_generic_temporal_event_surface(normalized_surface: str) -> bool:
-    return normalized_surface in _GENERIC_TEMPORAL_EVENT_SURFACES
+    return normalized_surface in _GENERIC_TEMPORAL_EVENT_SURFACES or any(
+        pattern.match(normalized_surface) for pattern in _GENERIC_TEMPORAL_EVENT_PATTERNS
+    )
 
 
 __all__ = [

@@ -1339,8 +1339,9 @@ promotion remain follow-on work.
   goal: Translate history/recency prose into checkable temporal predicates with
     mapped event concepts and explicit date-window semantics.
   write_scope:
-    - src/clinical_demo/compiler/temporal.py
-    - src/clinical_demo/matcher/matcher.py
+    - src/clinical_demo/compiler/compound_time.py
+    - src/clinical_demo/compiler/pipeline.py
+    - src/clinical_demo/compiler/predicate_matcher.py
     - src/clinical_demo/retrieval/patient_evidence.py
   depends_on:
     - CC-00
@@ -1356,9 +1357,17 @@ promotion remain follow-on work.
     - "fractures within the past 12 months" compiles to a temporal condition
       predicate instead of a plain condition presence check.
   tests:
-    - tests/compiler/test_temporal.py
+    - tests/compiler/test_compound_time.py
+    - tests/compiler/test_predicate_matcher.py
     - matcher temporal-window tests
   parallel_group: compiler_specialists
+  status: >
+    Temporal event normalization slice landed 2026-05-11: condition-shaped
+    event surfaces now try conservative variants before becoming unmapped,
+    including qualifier stripping (`recent`, `prior`, `documented`), history
+    and diagnosis prefix stripping, diagnosis suffix stripping, and T1D/T2D
+    shorthand expansion. Workflow anchors such as screening/baseline visits
+    remain explicit unsupported predicates.
 
 - id: CC-08
   title: Measurement criterion compiler
@@ -1564,10 +1573,11 @@ promotion remain follow-on work.
   normalized aliases, medication compilation strips route-only words before
   ingredient resolution, reviewed medication-class expansions are data-driven
   and fail closed on missing class members, native composite groups now execute
-  on the compiled-predicate path, and compiler diagnostics can be
-  threshold-gated in CI. Next parallel lanes remain temporal-event gap
-  reduction, reviewer promotion into `data/terminology/`, and baseline
-  threshold selection from a fresh eval run.
+  on the compiled-predicate path, temporal event lookup normalizes
+  diagnosis/history-shaped condition surfaces while preserving workflow-anchor
+  gaps, and compiler diagnostics can be threshold-gated in CI. Next parallel
+  lanes remain reviewer promotion into `data/terminology/`, baseline threshold
+  selection from a fresh eval run, and any eval-discovered predicate gaps.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 

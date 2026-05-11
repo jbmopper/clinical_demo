@@ -137,9 +137,12 @@ Foundation status:
   into the parent and execute through the compiled-predicate matcher with the
   same any_of/all_of rollup semantics as the legacy matcher-input path.
 - `CC-06` through `CC-09` have helper foundations for compound/time,
-  measurement, and medication compilation. Medication compilation now strips
-  route-only words such as `oral` before ingredient resolution while preserving
-  the route aspect in compiler provenance. It also reads
+  measurement, and medication compilation. Temporal event lookup now tries
+  conservative condition-event variants for diagnosis/history-shaped surfaces
+  such as `recent T2D diagnosis`, while workflow anchors such as screening or
+  baseline visits remain explicit unsupported predicates. Medication
+  compilation now strips route-only words such as `oral` before ingredient
+  resolution while preserving the route aspect in compiler provenance. It also reads
   `data/terminology/reviewed_medication_classes.json` for reviewed
   patient-vocabulary-closure class expansions such as statins, GLP-1 receptor
   agonists, and SGLT2 inhibitors; class predicates are emitted only when every
@@ -157,7 +160,8 @@ Foundation status:
 
 Active integration status:
 
-- The next integration slice is temporal-event gap reduction, reviewer
-  promotion flows, and baseline threshold selection behind the parity gate.
+- The next integration slice is reviewer promotion flows and baseline threshold
+  selection behind the parity gate, using a fresh eval to expose the remaining
+  predicate gaps.
 
 Related: `docs/concept-mapping-failure-taxonomy.md`, `docs/evaluation-layers-and-gates.md`.

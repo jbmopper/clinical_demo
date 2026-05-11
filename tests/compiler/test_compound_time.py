@@ -196,6 +196,34 @@ def test_temporal_condition_event_mapped_to_condition_support() -> None:
     assert result.gaps == []
 
 
+def test_temporal_diagnosis_surface_normalizes_to_condition_event() -> None:
+    criterion = _temporal(event_text="recent T2D diagnosis", window_days=365)
+
+    result = compile_temporal_window(criterion, source_criterion_id="criterion:4b")
+
+    assert result.event_surface == "recent T2D diagnosis"
+    assert result.normalized_event_surface == "recent t2d diagnosis"
+    assert result.event_resolved is True
+    assert result.event_target_label == "Type 2 diabetes mellitus"
+    assert result.supports[0].surface == "type 2 diabetes"
+    assert result.supports[0].normalized_surface == "type 2 diabetes"
+    assert result.predicate.status == "resolved"
+    assert result.diagnostics[0].code == "temporal_event_surface_normalized"
+    assert result.diagnostics[0].facts[1].key == "lookup_surface"
+    assert result.diagnostics[0].facts[1].value == "type 2 diabetes"
+
+
+def test_temporal_diagnosis_prefix_normalizes_to_condition_event() -> None:
+    criterion = _temporal(event_text="prior diagnosis of type 1 diabetes mellitus")
+
+    result = compile_temporal_window(criterion, source_criterion_id="criterion:4c")
+
+    assert result.event_resolved is True
+    assert result.event_target_label == "Type 1 diabetes mellitus"
+    assert result.supports[0].surface == "type 1 diabetes mellitus"
+    assert result.diagnostics[0].code == "temporal_event_surface_normalized"
+
+
 def test_temporal_unmapped_event_is_gap_not_executable() -> None:
     criterion = _temporal(event_text="liver transplant", window_days=365)
 
@@ -219,6 +247,17 @@ def test_temporal_generic_event_surface_is_unsupported_gap() -> None:
     assert result.event_resolved is False
     assert result.predicate.status == "unsupported"
     assert result.gaps[0].gap_id == "gap:criterion:6:temporal:generic_event"
+    assert result.gaps[0].kind == "unsupported_predicate"
+
+
+def test_temporal_generic_visit_surface_is_unsupported_gap() -> None:
+    criterion = _temporal(event_text="screening visit", window_days=30)
+
+    result = compile_temporal_window(criterion, source_criterion_id="criterion:6b")
+
+    assert result.event_resolved is False
+    assert result.predicate.status == "unsupported"
+    assert result.gaps[0].gap_id == "gap:criterion:6b:temporal:generic_event"
     assert result.gaps[0].kind == "unsupported_predicate"
 
 
