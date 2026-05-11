@@ -247,6 +247,54 @@ def test_score_pair_uses_native_composite_groups_for_parent_verdict() -> None:
     assert "Composite any_of group" in result.verdicts[0].rationale
 
 
+def test_score_pair_compiled_predicates_execute_native_composite_groups(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    score_pair_module = importlib.import_module("clinical_demo.scoring.score_pair")
+    monkeypatch.setattr(
+        score_pair_module,
+        "get_settings",
+        lambda: Settings(matcher_execution_source="compiled_predicates"),
+    )
+    parent = crit_free_text()
+    first = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")
+    second = crit_measurement(text="hba1c", operator="<=", value=6.0, unit="%")
+    group = CompositeCriterionGroup(
+        group_id="criterion:0:group:001",
+        operator="any_of",
+        parent_criterion_index=0,
+        parent_source_text=parent.source_text,
+        subchecks=[
+            CompositeCriterionSubcheck(
+                subcheck_id="criterion:0:group:001:subcheck:001",
+                operator="any_of",
+                source_text=first.source_text,
+                criterion=first,
+            ),
+            CompositeCriterionSubcheck(
+                subcheck_id="criterion:0:group:001:subcheck:002",
+                operator="any_of",
+                source_text=second.source_text,
+                criterion=second,
+            ),
+        ],
+    )
+    patient = make_patient(observations=[make_lab(value=7.2, unit="%")])
+
+    result = score_pair(
+        patient,
+        make_trial(),
+        AS_OF,
+        extraction=_make_extraction([parent], composite_groups=[group]),
+    )
+
+    assert result.eligibility == "pass"
+    assert result.compilation is not None
+    assert result.compilation.criteria[0].predicate.predicate_kind == "compound"
+    assert result.verdicts[0].verdict == "pass"
+    assert "Compiled composite any_of group" in result.verdicts[0].rationale
+
+
 def test_rollup_pass_pending_review_when_only_free_text_indeterminate() -> None:
     """No fails + ≥1 indeterminate but every indeterminate is
     `human_review_required` → `pass_pending_review` (PLAN 2.19).

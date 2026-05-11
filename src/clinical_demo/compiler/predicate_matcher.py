@@ -9,11 +9,13 @@ artifacts can compare the two paths without a second result dialect.
 from __future__ import annotations
 
 from datetime import timedelta
+from typing import cast
 
 from clinical_demo.domain.patient import Condition, LabObservation, Medication
 from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.matcher import MATCHER_VERSION
+from clinical_demo.matcher.composite import CompositeOperator, roll_up_composite_verdict
 from clinical_demo.matcher.modes import DEFAULT_MATCHER_ASSUMPTION_MODE, MatcherAssumptionMode
 from clinical_demo.matcher.verdict import (
     ConditionEvidence,
@@ -37,7 +39,7 @@ from .schema import (
     ResolutionGap,
 )
 
-COMPILED_PREDICATE_MATCHER_VERSION = f"{MATCHER_VERSION}+compiled-predicate-v0.1"
+COMPILED_PREDICATE_MATCHER_VERSION = f"{MATCHER_VERSION}+compiled-predicate-v0.2"
 _CLOSED_WORLD_MODES: frozenset[MatcherAssumptionMode] = frozenset(
     {"closed_world_eval", "closed_world_demo"}
 )
@@ -79,6 +81,14 @@ def match_compiled_criterion(
     """
 
     criterion = compiled.matcher_input
+    if _is_compound_compiled(compiled):
+        return _match_compiled_compound(
+            compiled,
+            profile,
+            trial,
+            matcher_assumption_mode=matcher_assumption_mode,
+        )
+
     if not compiled.checkable_predicates:
         return _gap_verdict(compiled, matcher_assumption_mode)
 
@@ -97,6 +107,111 @@ def match_compiled_criterion(
         evidence=evidence,
         assumption=matcher_assumption_mode,
         evidence_under_assumption=under_assumption,
+    )
+
+
+def _is_compound_compiled(compiled: CompiledCriterion) -> bool:
+    return (
+        compiled.compound_logic.status == "resolved"
+        and compiled.compound_logic.operator in {"any_of", "all_of"}
+        and bool(compiled.compound_logic.subcheck_ids)
+    )
+
+
+def _match_compiled_compound(
+    compiled: CompiledCriterion,
+    profile: PatientProfile,
+    trial: Trial,
+    *,
+    matcher_assumption_mode: MatcherAssumptionMode,
+) -> MatchVerdict:
+    criterion = compiled.matcher_input
+    predicate_by_source = {
+        predicate.source_criterion_id: predicate for predicate in compiled.checkable_predicates
+    }
+    gaps_by_source: dict[str, list[ResolutionGap]] = {}
+    for gap in compiled.unresolved_gaps:
+        gaps_by_source.setdefault(gap.source_criterion_id, []).append(gap)
+
+    raw_results: list[tuple[Verdict, VerdictReason, str, list[Evidence], bool]] = []
+    for subcheck_id in compiled.compound_logic.subcheck_ids:
+        predicate = predicate_by_source.get(subcheck_id)
+        if predicate is None:
+            raw_results.append(_compound_missing_predicate_result(subcheck_id, gaps_by_source))
+            continue
+        raw_results.append(
+            _execute_predicate(
+                predicate,
+                criterion=criterion,
+                profile=profile,
+                trial=trial,
+                matcher_assumption_mode=matcher_assumption_mode,
+            )
+        )
+
+    operator = cast(CompositeOperator, compiled.compound_logic.operator)
+    rollup = roll_up_composite_verdict(operator, [result[0] for result in raw_results])
+    evidence = [evidence for result in raw_results for evidence in result[3]]
+    return _build(
+        criterion,
+        verdict=_apply_polarity(rollup.verdict, criterion.polarity, criterion.negated),
+        reason=rollup.reason,
+        rationale=_compiled_compound_rationale(operator, rollup.rationale, raw_results),
+        evidence=evidence,
+        assumption=matcher_assumption_mode,
+        evidence_under_assumption=any(result[4] for result in raw_results),
+    )
+
+
+def _compound_missing_predicate_result(
+    subcheck_id: str,
+    gaps_by_source: dict[str, list[ResolutionGap]],
+) -> tuple[Verdict, VerdictReason, str, list[Evidence], bool]:
+    gaps = gaps_by_source.get(subcheck_id, [])
+    if not gaps:
+        return (
+            "indeterminate",
+            "ambiguous_criterion",
+            f"Composite subcheck {subcheck_id!r} has no compiled predicate.",
+            [
+                MissingEvidence(
+                    looked_for=f"compiled predicate for {subcheck_id}",
+                    note="compound subcheck has no predicate or compiler gap",
+                )
+            ],
+            False,
+        )
+
+    return (
+        "indeterminate",
+        _reason_for_gaps(gaps),
+        (
+            f"Composite subcheck {subcheck_id!r} has unresolved compiler gaps: "
+            + "; ".join(f"{gap.kind}: {gap.message}" for gap in gaps)
+        ),
+        [
+            MissingEvidence(
+                looked_for=f"{gap.domain}:{gap.kind}",
+                note=gap.message,
+            )
+            for gap in gaps
+        ],
+        False,
+    )
+
+
+def _compiled_compound_rationale(
+    operator: str,
+    rollup_rationale: str,
+    raw_results: list[tuple[Verdict, VerdictReason, str, list[Evidence], bool]],
+) -> str:
+    subcheck_summaries = [
+        f"subcheck {index}: {verdict}/{reason}"
+        for index, (verdict, reason, *_rest) in enumerate(raw_results, start=1)
+    ]
+    return (
+        f"Compiled composite {operator} group: {rollup_rationale} "
+        f"Subchecks: {'; '.join(subcheck_summaries) or '(none)'}."
     )
 
 

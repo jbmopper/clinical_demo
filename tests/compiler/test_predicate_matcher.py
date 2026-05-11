@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from tests.matcher._fixtures import (
     AS_OF,
     crit_condition,
@@ -13,6 +15,13 @@ from tests.matcher._fixtures import (
 )
 
 from clinical_demo.compiler import compile_extracted_criteria, match_compiled_criteria
+from clinical_demo.extractor.schema import (
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
+    ExtractedCriteria,
+    ExtractedCriterion,
+    ExtractionMetadata,
+)
 
 
 def test_compiled_condition_predicate_executes_reviewed_fracture_mapping() -> None:
@@ -109,3 +118,84 @@ def test_compiled_temporal_predicate_executes_window() -> None:
     assert compilation.checkable_predicates[0].predicate_kind == "temporal_event"
     assert verdict.verdict == "pass"
     assert verdict.reason == "ok"
+
+
+def test_compiled_composite_any_of_rolls_up_subcheck_predicates() -> None:
+    parent = crit_free_text()
+    first = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")
+    second = crit_measurement(text="hba1c", operator="<=", value=6.0, unit="%")
+    extraction = _extraction_with_group(parent, [first, second], operator="any_of")
+    profile = make_profile(observations=[make_lab(value=7.2, unit="%")])
+
+    compilation = compile_extracted_criteria(extraction)
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert compilation.criteria[0].predicate.predicate_kind == "compound"
+    assert [predicate.source_criterion_id for predicate in compilation.checkable_predicates] == [
+        "criterion:0:group:001:subcheck:001",
+        "criterion:0:group:001:subcheck:002",
+    ]
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+    assert "Compiled composite any_of group" in verdict.rationale
+
+
+def test_compiled_composite_exclusion_polarity_applies_after_rollup() -> None:
+    parent = crit_free_text(polarity="exclusion")
+    first = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")
+    second = crit_measurement(text="hba1c", operator="<=", value=6.0, unit="%")
+    extraction = _extraction_with_group(parent, [first, second], operator="any_of")
+    profile = make_profile(observations=[make_lab(value=7.2, unit="%")])
+
+    compilation = compile_extracted_criteria(extraction)
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert verdict.verdict == "fail"
+    assert verdict.reason == "ok"
+    assert "Compiled composite any_of group" in verdict.rationale
+
+
+def test_compiled_composite_any_of_can_decide_with_one_unresolved_subcheck() -> None:
+    parent = crit_free_text()
+    mapped = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")
+    unmapped = crit_measurement(text="BNP", operator=">=", value=50.0, unit="pg/mL")
+    extraction = _extraction_with_group(parent, [mapped, unmapped], operator="any_of")
+    profile = make_profile(observations=[make_lab(value=7.2, unit="%")])
+
+    compilation = compile_extracted_criteria(extraction)
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert compilation.criteria[0].predicate.status == "unresolved"
+    assert compilation.criteria[0].unresolved_gaps
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+    assert any(evidence.kind == "missing" for evidence in verdict.evidence)
+
+
+def _extraction_with_group(
+    parent: ExtractedCriterion,
+    subchecks: list[ExtractedCriterion],
+    *,
+    operator: Literal["any_of", "all_of"],
+) -> ExtractedCriteria:
+    return ExtractedCriteria(
+        criteria=[parent],
+        composite_groups=[
+            CompositeCriterionGroup(
+                group_id="criterion:0:group:001",
+                operator=operator,
+                parent_criterion_index=0,
+                parent_source_text=parent.source_text,
+                subchecks=[
+                    CompositeCriterionSubcheck(
+                        subcheck_id=f"criterion:0:group:001:subcheck:{index:03d}",
+                        operator=operator,
+                        source_text=subcheck.source_text,
+                        criterion=subcheck,
+                    )
+                    for index, subcheck in enumerate(subchecks, start=1)
+                ],
+            )
+        ],
+        metadata=ExtractionMetadata(notes=""),
+    )

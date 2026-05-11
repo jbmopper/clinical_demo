@@ -1302,7 +1302,9 @@ promotion remain follow-on work.
   goal: Split safe compound criteria into boolean groups while preserving the
     parent criterion and refusing unsafe decomposition.
   write_scope:
-    - src/clinical_demo/compiler/compound.py
+    - src/clinical_demo/compiler/compound_time.py
+    - src/clinical_demo/compiler/pipeline.py
+    - src/clinical_demo/compiler/predicate_matcher.py
     - src/clinical_demo/extractor/composite.py
     - src/clinical_demo/matcher/composite.py
   depends_on:
@@ -1319,9 +1321,18 @@ promotion remain follow-on work.
     - OR bundles do not become independent top-level inclusion rows.
     - Each subcheck has stable ids, source spans, and retrievable evidence.
   tests:
-    - tests/compiler/test_compound.py
+    - tests/compiler/test_compound_time.py
+    - tests/compiler/test_predicate_matcher.py
     - composite rollup regression tests
   parallel_group: compiler_specialists
+  status: >
+    Compiled-predicate parity slice landed 2026-05-11: native composite
+    groups now compile subcheck predicates under the parent, and the compiled
+    matcher rolls them up with the same any_of/all_of truth table used by the
+    legacy matcher-input path. Parent polarity is still applied once after
+    rollup; unresolved subchecks become branch-level indeterminate evidence so
+    decisive any_of/all_of outcomes can still execute when the truth table
+    permits.
 
 - id: CC-07
   title: Temporal and event compiler
@@ -1552,9 +1563,10 @@ promotion remain follow-on work.
   conservative spelling/case/spacing variants while dropping ambiguous
   normalized aliases, medication compilation strips route-only words before
   ingredient resolution, reviewed medication-class expansions are data-driven
-  and fail closed on missing class members, and compiler diagnostics can be
-  threshold-gated in CI. Next parallel lanes remain compound/time predicate
-  hardening, reviewer promotion into `data/terminology/`, and baseline
+  and fail closed on missing class members, native composite groups now execute
+  on the compiled-predicate path, and compiler diagnostics can be
+  threshold-gated in CI. Next parallel lanes remain temporal-event gap
+  reduction, reviewer promotion into `data/terminology/`, and baseline
   threshold selection from a fresh eval run.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup

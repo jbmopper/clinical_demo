@@ -7,8 +7,12 @@ from clinical_demo.compiler.validation import (
 )
 from clinical_demo.extractor.schema import (
     AgeCriterion,
+    CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
     ConditionCriterion,
+    ExtractedCriteria,
     ExtractedCriterion,
+    ExtractionMetadata,
     FreeTextCriterion,
     MeasurementCriterion,
     ThresholdOperator,
@@ -139,6 +143,47 @@ def test_free_text_without_predicate_is_allowed_review_not_blocking() -> None:
     assert result.ok is True
     assert result.summary.review_criteria_count == 1
     assert result.summary.non_blocking_count == 1
+
+
+def test_free_text_composite_with_executable_subchecks_is_not_review_only() -> None:
+    parent = _free_text("HbA1c >= 7% or HbA1c <= 6%")
+    first = _measurement("HbA1c", operator=">=", value=7.0, unit="%")
+    second = _measurement("HbA1c", operator="<=", value=6.0, unit="%")
+    extraction = ExtractedCriteria(
+        criteria=[parent],
+        composite_groups=[
+            CompositeCriterionGroup(
+                group_id="criterion:0:group:001",
+                operator="any_of",
+                parent_criterion_index=0,
+                parent_source_text=parent.source_text,
+                subchecks=[
+                    CompositeCriterionSubcheck(
+                        subcheck_id="criterion:0:group:001:subcheck:001",
+                        operator="any_of",
+                        source_text=first.source_text,
+                        criterion=first,
+                    ),
+                    CompositeCriterionSubcheck(
+                        subcheck_id="criterion:0:group:001:subcheck:002",
+                        operator="any_of",
+                        source_text=second.source_text,
+                        criterion=second,
+                    ),
+                ],
+            )
+        ],
+        metadata=ExtractionMetadata(notes=""),
+    )
+
+    compilation = compile_extracted_criteria(extraction)
+    result = validate_compilation_for_closed_world(compilation)
+
+    assert compilation.criteria[0].predicate.predicate_kind == "compound"
+    assert compilation.criteria[0].checkable_predicates
+    assert result.ok is True
+    assert result.findings == []
+    assert result.summary.review_criteria_count == 0
 
 
 def test_unmapped_structured_condition_fails_validation_with_gap_ids() -> None:

@@ -100,7 +100,9 @@ them as reviewer fixes land.
 **Why separate from terminology gates:** Terminology regressions answer "did a
 surface stop mapping?" Compiler parity answers "did the new predicate source
 change patient-level verdict behavior?" Both are needed before
-`matcher_execution_source="compiled_predicates"` can become default.
+`matcher_execution_source="compiled_predicates"` can become default. Native
+composite groups are now part of that parity surface: compiled runs should
+roll up subcheck predicates the same way legacy matcher-input runs do.
 
 ---
 

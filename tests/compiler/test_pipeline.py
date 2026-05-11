@@ -190,8 +190,15 @@ def test_compound_logic_compiles_without_changing_matcher_input() -> None:
     assert compiled.compound_logic.source_group_ids == ["criterion:0:group:001"]
     assert compiled.compound_logic.subcheck_ids == ["criterion:0:group:001:subcheck:001"]
     assert compiled.unit_normalization.status == "skipped"
-    assert compiled.predicate.status == "not_attempted"
-    assert compiled.predicate.predicate_kind == "free_text_review"
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.predicate.predicate_ids == [
+        "criterion:0:group:001:subcheck:001:predicate:measurement"
+    ]
+    assert compiled.checkable_predicates[0].source_criterion_id == (
+        "criterion:0:group:001:subcheck:001"
+    )
+    assert compiled.checkable_predicates[0].predicate_kind == "measurement_threshold"
 
 
 def test_measurement_unit_resolution_builds_checkable_predicate() -> None:

@@ -91,7 +91,7 @@ def validate_compiled_criterion_for_closed_world(
 ) -> list[ClosedWorldValidationFinding]:
     """Validate one compiled criterion for closed-world readiness."""
 
-    if compiled.criterion_kind == "free_text":
+    if compiled.criterion_kind == "free_text" and not compiled.checkable_predicates:
         return [
             ClosedWorldValidationFinding(
                 code="allowed_non_executable",

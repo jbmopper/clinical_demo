@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 from clinical_demo.extractor.schema import (
     CompositeCriterionGroup,
+    CompositeCriterionSubcheck,
     CriterionKind,
     ExtractedCriteria,
     ExtractedCriterion,
@@ -154,8 +155,9 @@ def _compile_criterion(
     resolver_policy: ResolverExecutionPolicy,
     composite_groups: Sequence[CompositeCriterionGroup],
     context: _CompilerResolutionContext,
+    source_criterion_id_override: str | None = None,
 ) -> CompiledCriterion:
-    source_id = source_criterion_id(index)
+    source_id = source_criterion_id_override or source_criterion_id(index)
     domain = _resolution_domain(criterion.kind)
     surface = _criterion_surface(criterion)
     supports: list[ResolutionSupport] = []
@@ -245,8 +247,30 @@ def _compile_criterion(
         )
         predicates.extend(medication_predicates)
 
+    if compound.plan.status == "resolved" and composite_groups:
+        compound_supports, compound_gaps, compound_predicates, compound_diagnostics = (
+            _compile_compound_subchecks(
+                composite_groups,
+                index=index,
+                resolver_policy=resolver_policy,
+                context=context,
+            )
+        )
+        supports = [*compound.supports, *compound_supports]
+        gaps = [*compound.gaps, *compound_gaps]
+        diagnostics = [*compound.diagnostics, *compound_diagnostics]
+        predicates = list(compound_predicates)
+        predicate = _compound_predicate_plan(
+            compound.plan.subcheck_ids,
+            predicates=compound_predicates,
+            gaps=compound_gaps,
+            operator=compound.plan.operator,
+        )
+
     return CompiledCriterion(
-        compiled_id=compiled_criterion_id(index),
+        compiled_id=f"compiled:{source_id}"
+        if source_criterion_id_override
+        else compiled_criterion_id(index),
         source_criterion_id=source_id,
         source_index=index,
         criterion_kind=criterion.kind,
@@ -261,6 +285,107 @@ def _compile_criterion(
         unit_normalization=unit_normalization,
         predicate=predicate,
         diagnostics=diagnostics,
+    )
+
+
+def _compile_compound_subchecks(
+    groups: Sequence[CompositeCriterionGroup],
+    *,
+    index: int,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+) -> tuple[
+    list[ResolutionSupport],
+    list[ResolutionGap],
+    list[CheckablePredicate],
+    list[CompilerDiagnostic],
+]:
+    supports: list[ResolutionSupport] = []
+    gaps: list[ResolutionGap] = []
+    predicates: list[CheckablePredicate] = []
+    diagnostics: list[CompilerDiagnostic] = []
+
+    for group in groups:
+        for subcheck in group.subchecks:
+            compiled = _compile_criterion(
+                subcheck.criterion,
+                index=index,
+                resolver_policy=resolver_policy,
+                composite_groups=[],
+                context=context,
+                source_criterion_id_override=subcheck.subcheck_id,
+            )
+            supports.extend(compiled.resolved_supports)
+            gaps.extend(compiled.unresolved_gaps)
+            predicates.extend(compiled.checkable_predicates)
+            diagnostics.extend(compiled.diagnostics)
+            if not compiled.checkable_predicates and not compiled.unresolved_gaps:
+                gap = _compound_subcheck_gap(
+                    subcheck,
+                    resolver_policy=resolver_policy,
+                )
+                gaps.append(gap)
+                diagnostics.append(
+                    _diagnostic(
+                        severity="warning",
+                        code="compound_subcheck_not_executable",
+                        message="Composite subcheck did not produce an executable predicate.",
+                        stage="predicate_translation",
+                        source_criterion_id=subcheck.subcheck_id,
+                        facts=[
+                            ("subcheck_id", subcheck.subcheck_id),
+                            ("criterion_kind", subcheck.criterion.kind),
+                            ("gap_id", gap.gap_id),
+                        ],
+                    )
+                )
+
+    return supports, gaps, predicates, diagnostics
+
+
+def _compound_subcheck_gap(
+    subcheck: CompositeCriterionSubcheck,
+    *,
+    resolver_policy: ResolverExecutionPolicy,
+) -> ResolutionGap:
+    return _gap(
+        gap_id=f"{subcheck.subcheck_id}:compound:gap:not-executable",
+        stage="predicate_translation",
+        domain=_resolution_domain(subcheck.criterion.kind),
+        kind="unsupported_predicate",
+        source_criterion_id=subcheck.subcheck_id,
+        surface=_criterion_surface(subcheck.criterion) or subcheck.source_text,
+        message=(
+            "Composite subcheck did not produce an executable compiler predicate; "
+            "parent compound rollup must treat this branch as indeterminate."
+        ),
+        resolver_policy=resolver_policy,
+    )
+
+
+def _compound_predicate_plan(
+    subcheck_ids: Sequence[str],
+    *,
+    predicates: Sequence[CheckablePredicate],
+    gaps: Sequence[ResolutionGap],
+    operator: str,
+) -> CheckablePredicatePlan:
+    predicate_ids = [predicate.predicate_id for predicate in predicates]
+    gap_ids = [gap.gap_id for gap in gaps]
+    status: ResolutionStatus = "resolved" if predicate_ids and not gap_ids else "unresolved"
+    return CheckablePredicatePlan(
+        status=status,
+        predicate_kind="compound",
+        expression=(
+            f"compound({operator},subchecks={len(subcheck_ids)},"
+            f"predicates={len(predicate_ids)},gaps={len(gap_ids)})"
+        ),
+        predicate_ids=predicate_ids,
+        input_refs=list(subcheck_ids),
+        support_ids=[
+            support_id for predicate in predicates for support_id in predicate.support_ids
+        ],
+        gap_ids=gap_ids,
     )
 
 

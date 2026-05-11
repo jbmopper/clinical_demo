@@ -72,6 +72,7 @@ ExpansionStrategy = Literal[
     "patient_vocabulary_closure",
 ]
 PredicateKind = Literal[
+    "compound",
     "demographic",
     "condition_presence",
     "medication_exposure",

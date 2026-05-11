@@ -133,7 +133,9 @@ Foundation status:
   aliases so unknown units still fail closed.
 - `CC-05` now has an opt-in compiled-predicate matcher, so eval can compare
   legacy matcher-input execution against compiled-predicate execution before
-  the default path changes.
+  the default path changes. Native composite groups now compile their subchecks
+  into the parent and execute through the compiled-predicate matcher with the
+  same any_of/all_of rollup semantics as the legacy matcher-input path.
 - `CC-06` through `CC-09` have helper foundations for compound/time,
   measurement, and medication compilation. Medication compilation now strips
   route-only words such as `oral` before ingredient resolution while preserving
@@ -155,7 +157,7 @@ Foundation status:
 
 Active integration status:
 
-- The next integration slice is compound/time predicate hardening, reviewer
+- The next integration slice is temporal-event gap reduction, reviewer
   promotion flows, and baseline threshold selection behind the parity gate.
 
 Related: `docs/concept-mapping-failure-taxonomy.md`, `docs/evaluation-layers-and-gates.md`.
