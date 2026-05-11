@@ -63,6 +63,12 @@ from clinical_demo.evals.layer_three import (
     select_judge_targets,
 )
 from clinical_demo.evals.layer_two import build_layer_two_report, score_chia_document
+from clinical_demo.evals.movement import (
+    build_run_movement_report,
+    render_run_movement_report,
+    save_run_movement_markdown,
+    save_run_movement_report,
+)
 from clinical_demo.evals.patient_evidence import (
     build_patient_evidence_report,
     load_patient_evidence_labels,
@@ -627,6 +633,37 @@ def _cmd_patient_evidence(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_movement_review(args: argparse.Namespace) -> int:
+    db_path = Path(args.db)
+    if not db_path.exists():
+        print(f"error: no store at {db_path} (run an eval first?)", file=sys.stderr)
+        return 1
+
+    with open_store(args.db) as conn:
+        try:
+            baseline = load_run(conn, args.baseline_run_id)
+            comparison = load_run(conn, args.comparison_run_id)
+        except KeyError as exc:
+            print(f"error: no run with id {exc.args[0]!r}", file=sys.stderr)
+            return 1
+
+    report = build_run_movement_report(
+        baseline,
+        comparison,
+        include_reason_only=args.include_reason_only,
+    )
+    if args.output_json is not None:
+        save_run_movement_report(report, args.output_json)
+    if args.output_markdown is not None:
+        save_run_movement_markdown(report, args.output_markdown)
+
+    if args.format == "json":
+        print(report.model_dump_json(indent=2))
+    else:
+        print(render_run_movement_report(report))
+    return 0
+
+
 def _cmd_compiler_review(args: argparse.Namespace) -> int:
     db_path = Path(args.db)
     if not db_path.exists():
@@ -947,6 +984,31 @@ def main(argv: list[str] | None = None) -> int:
         help="Optional path to write the rendered patient-evidence report Markdown.",
     )
     p_patient_evidence.set_defaults(func=_cmd_patient_evidence)
+
+    p_movement = sub.add_parser(
+        "movement-review",
+        help="Compare two persisted runs and export changed case/criterion verdicts.",
+    )
+    p_movement.add_argument("--db", default=str(DEFAULT_DB))
+    p_movement.add_argument("--baseline-run-id", required=True)
+    p_movement.add_argument("--comparison-run-id", required=True)
+    p_movement.add_argument("--format", choices=("markdown", "json"), default="markdown")
+    p_movement.add_argument(
+        "--include-reason-only",
+        action="store_true",
+        help="Include criteria where verdict stayed the same but reason changed.",
+    )
+    p_movement.add_argument(
+        "--output-json",
+        default=None,
+        help="Optional path to write the structured movement report JSON.",
+    )
+    p_movement.add_argument(
+        "--output-markdown",
+        default=None,
+        help="Optional path to write the rendered movement report Markdown.",
+    )
+    p_movement.set_defaults(func=_cmd_movement_review)
 
     p_compiler_review = sub.add_parser(
         "compiler-review",

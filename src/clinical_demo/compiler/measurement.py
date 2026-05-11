@@ -17,6 +17,11 @@ from clinical_demo.extractor.schema import ExtractedCriterion, ThresholdOperator
 from clinical_demo.matcher.concept_lookup import lookup_lab_alias
 from clinical_demo.profile import ConceptSet
 from clinical_demo.settings import ResolverExecutionPolicy
+from clinical_demo.terminology.reviewed_registry import (
+    ReviewedMappingEntry,
+    ReviewedMappingRegistry,
+    load_reviewed_mapping_registry,
+)
 from clinical_demo.units import DEFAULT_REGISTRY, MeasurementUnitRegistry
 
 from .schema import (
@@ -73,6 +78,7 @@ def compile_measurement_resolution(
     *,
     resolver_policy: ResolverExecutionPolicy = "cached_only",
     unit_registry: MeasurementUnitRegistry | None = None,
+    reviewed_registry: ReviewedMappingRegistry | None = None,
 ) -> MeasurementResolutionResult:
     """Resolve a measurement threshold surface and normalize its threshold unit.
 
@@ -83,6 +89,7 @@ def compile_measurement_resolution(
     """
 
     registry = unit_registry or DEFAULT_REGISTRY
+    mappings = reviewed_registry or load_reviewed_mapping_registry()
     measurement = criterion.measurement
     if criterion.kind != "measurement_threshold" or measurement is None:
         return _skipped_result(
@@ -97,6 +104,16 @@ def compile_measurement_resolution(
     supports: list[ResolutionSupport] = []
     gaps: list[ResolutionGap] = []
     diagnostics: list[CompilerDiagnostic] = []
+
+    reviewed_entry = mappings.lookup("lab", surface)
+    if reviewed_entry is not None and reviewed_entry.status != "mapped":
+        return _reviewed_nonmapped_result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            entry=reviewed_entry,
+            resolver_policy=resolver_policy,
+        )
 
     concept_set = _lookup_measurement_concept_set(surface)
     loinc_codes = _loinc_codes(concept_set)
@@ -345,6 +362,72 @@ def _loinc_codes(concept_set: ConceptSet | None) -> list[str]:
     if concept_set is None or concept_set.system != LOINC_SYSTEM:
         return []
     return sorted(concept_set.codes)
+
+
+def _reviewed_nonmapped_result(
+    *,
+    source_criterion_id: str,
+    surface: str,
+    source_unit: str | None,
+    entry: ReviewedMappingEntry,
+    resolver_policy: ResolverExecutionPolicy,
+) -> MeasurementResolutionResult:
+    gap_kind = _reviewed_nonmapped_gap_kind(entry)
+    gap = _gap(
+        gap_id=f"{source_criterion_id}:measurement:gap:reviewed-{entry.status}",
+        stage="concept_resolution",
+        domain="measurement",
+        kind=gap_kind,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        message=f"Reviewed lab surface classified as {entry.status}: {entry.reason}",
+        resolver_policy=resolver_policy,
+    )
+    status: ResolutionStatus = (
+        "unsupported" if gap_kind == "unsupported_predicate" else "unresolved"
+    )
+    return MeasurementResolutionResult(
+        source_criterion_id=source_criterion_id,
+        measurement_surface=surface,
+        concept_set=None,
+        loinc_codes=[],
+        selected_loinc_code=None,
+        unit_normalization=UnitNormalizationPlan(
+            status=status,
+            measurement_surface=surface,
+            source_unit=source_unit,
+            canonical_unit=None,
+            conventional_unit=None,
+            conversion_factor=None,
+            gap_ids=[gap.gap_id],
+        ),
+        normalized_operator=None,
+        normalized_value=None,
+        normalized_value_low=None,
+        normalized_value_high=None,
+        resolved_supports=[],
+        unresolved_gaps=[gap],
+        diagnostics=[
+            _diagnostic(
+                severity="warning",
+                code=f"measurement.reviewed.{entry.status}",
+                message=gap.message,
+                source_criterion_id=source_criterion_id,
+                facts=[
+                    ("gap_id", gap.gap_id),
+                    ("status", entry.status),
+                    ("reviewer", entry.reviewer),
+                    ("provenance", entry.provenance),
+                ],
+            )
+        ],
+    )
+
+
+def _reviewed_nonmapped_gap_kind(entry: ReviewedMappingEntry) -> ResolutionGapKind:
+    if entry.status == "ambiguous":
+        return "ambiguous_mapping"
+    return "unsupported_predicate"
 
 
 def _infer_missing_unit(

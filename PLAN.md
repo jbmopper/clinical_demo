@@ -1394,6 +1394,12 @@ promotion remain follow-on work.
     - tests/compiler/test_measurement.py
     - profile unit conversion tests
   parallel_group: compiler_specialists
+  status: >
+    Reviewed lab decision slice landed 2026-05-11: measurement compilation now
+    checks `data/terminology/reviewed_mappings.json` before local LOINC alias
+    lookup. Reviewed out-of-scope/extractor-bug/ambiguous lab surfaces become
+    typed compiler gaps instead of generic unmapped concepts, and generic blood
+    pressure retains systolic/diastolic candidates in the resolver cache.
 
 - id: CC-09
   title: Medication and class compiler
@@ -1581,27 +1587,51 @@ promotion remain follow-on work.
   selection from a fresh eval run, and any eval-discovered predicate gaps.
 - Fresh compiler rollout eval (2026-05-11): sequential closed-world,
   deterministic cached-only runs compare legacy `matcher_inputs`
-  (`500e8f14fa5a`) with opt-in `compiled_predicates` (`4a3c127baebb`) after
+  (`500e8f14fa5a`) with opt-in `compiled_predicates` (`6f857bb7c7bd`) after
   compiler-side correlatable free-text promotion, condition-shaped
   trial-exposure promotion, unsafe composite free-text promotion guards, raw
   condition-surface lookup preservation, parenthetical measurement alias
-  handling, and a compiled matcher mood guard for hypothetical/planned
-  criteria. Both runs have the same 2 deceased-patient scoring refusals and the
-  same Layer-1 structured-field metrics (89.0% agreement, 98.6% coverage). The
-  compiled path reduces criterion-level `unmapped_concept` from 316/1076
-  (29.4%) to 223/1076 (20.7%) with no determinate-to-indeterminate criterion
-  regressions against the legacy path; it adds 13 indeterminate-to-determinate
-  criterion wins and changes 5 case rollups (all away from indeterminate). It
-  is still not default-ready: compiler diagnostics show 462 unresolved gaps and
-  43 closed-world-blocking compiled cases. The regenerated compiler-review
-  artifact now dedupes the 462 raw rows to 232 surface/action/policy groups
-  (161 `review_mapping`, 40
-  `implement_compiler_logic`, 22 `choose_candidate`, 8 `add_unit_mapping`, and
-  1 `review_gap`). Snapshot artifacts live under
+  handling, reviewed measurement non-mapping/ambiguity decisions, and a
+  compiled matcher mood guard for hypothetical/planned criteria. Both runs have
+  the same 2 deceased-patient scoring refusals and the same Layer-1
+  structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
+  reduces criterion-level `unmapped_concept` from 316/1076 (29.4%) to 202/1076
+  (18.8%) with no determinate-to-indeterminate criterion regressions against
+  the legacy path; it adds 13 indeterminate-to-determinate criterion wins and
+  changes 5 case rollups (all away from indeterminate). It is still not
+  default-ready: compiler diagnostics show 441 unresolved gaps and 43
+  closed-world-blocking compiled cases. The regenerated compiler-review
+  artifact now dedupes the 441 raw rows to 229 surface/action/policy groups
+  (157 `review_mapping`, 43 `implement_compiler_logic`, 21 `choose_candidate`,
+  7 `add_unit_mapping`, and 1 `review_gap`). Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging the 13 decisive criterion movements / 5 case
   rollups, and using the deduped compiler-review packet for targeted
   reviewer/registry work.
+- Movement review artifact (2026-05-11): `scripts/eval.py movement-review`
+  now exports baseline-vs-comparison case and criterion movements, defaulting
+  to decisive verdict changes with `--include-reason-only` available for
+  noisier reason-code diffs. The rollout snapshot includes
+  `legacy_vs_compiled_movement_review.{json,md}` for
+  `500e8f14fa5a` -> `6f857bb7c7bd`: 5 case movements and 13 decisive
+  criterion movements (6 measurement thresholds, 4 trial-exposure predicates,
+  3 condition predicates), with 7 comparison verdicts depending on
+  closed-world absence. Next work is reviewing those 7 closed-world-dependent
+  movements, then reducing the 229 grouped compiler gaps starting with
+  measurement/data-model surfaces.
+- Reviewed measurement decisions (2026-05-11): the measurement compiler now
+  consults the committed reviewed registry before local LOINC alias lookup for
+  lab surfaces. Standalone `pulmonary vascular resistance`, `pulmonary vascular
+  resistance (PVR)`, `ECOG Performance Status`, `life expectancy`, and generic
+  `blood pressure` are data-backed review decisions instead of Python-only
+  triage or opaque unmapped concepts. Non-mapped reviewed lab rows compile to
+  typed `unsupported_predicate` or `ambiguous_mapping` gaps with diagnostic
+  codes such as `measurement.reviewed.out_of_scope`, and resolver cache rows
+  preserve reviewed ambiguity candidates such as systolic vs diastolic blood
+  pressure. This moved the rollout snapshot from 462 to 441 unresolved compiler
+  gaps; the next CC-08 targets are AST, corrected calcium, vitamin D3,
+  systolic-BP variants, 6-minute walk distance, oxygen supplementation, and
+  missing/unsupported unit decisions.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 

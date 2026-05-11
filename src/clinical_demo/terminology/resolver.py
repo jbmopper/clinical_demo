@@ -272,6 +272,32 @@ def _concept_set_for_reviewed_entry(entry: ReviewedMappingEntry) -> ConceptSet |
     return _REVIEWED_CONCEPT_SETS.get(entry.concept_set)
 
 
+def _reviewed_candidates(entry: ReviewedMappingEntry) -> list[SurfaceResolutionCandidate]:
+    candidates: list[SurfaceResolutionCandidate] = []
+    for candidate in entry.candidates:
+        concept_set = (
+            _REVIEWED_CONCEPT_SETS.get(candidate.concept_set)
+            if candidate.concept_set is not None
+            else None
+        )
+        name = candidate.name or (concept_set.name if concept_set is not None else None)
+        system = candidate.system or (concept_set.system if concept_set is not None else None)
+        codes = candidate.codes or (concept_set.codes if concept_set is not None else frozenset())
+        if name is None or system is None or not codes:
+            continue
+        candidates.append(
+            SurfaceResolutionCandidate(
+                name=name,
+                system=system,
+                codes=codes,
+                source="reviewed_registry",
+                score=candidate.score,
+                reason=candidate.reason or entry.reason,
+            )
+        )
+    return candidates
+
+
 def _is_rxnorm_true_miss(exc: RxNormError) -> bool:
     return "no drug matched this surface form" in str(exc)
 
@@ -549,6 +575,7 @@ class TerminologyResolver:
                 surface,
                 status=entry.status,
                 reason=entry.reason,
+                candidates=_reviewed_candidates(entry),
             )
             return True, None
 

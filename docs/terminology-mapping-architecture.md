@@ -40,9 +40,21 @@ The resolver is the **source of truth** for “is this string mappable today?”
 
 ---
 
-## 4. Curated overrides and manual triage
+## 4. Reviewed registry decisions
 
-Before hitting live resolution, the work-queue path checks a **small manual table** for known problematic surfaces (performance status, life expectancy, etc.). Manual rows **win** over a hypothetical API hit that would produce a misleading `ConceptSet` for Synthea — they are labeled **`extractor_bug`** or **`out_of_scope`** with explicit reasons and are written into the cache so repeated eval runs do not re-query.
+Before hitting live resolution, the resolver checks the committed reviewed
+registry under `data/terminology/`. Those rows are project decisions, not
+generated cache observations. They can map a surface to a reviewed `ConceptSet`,
+record ambiguity with candidates, or classify a surface as `extractor_bug`,
+`out_of_scope`, `true_miss`, or `composite_unhandled`.
+
+Reviewed rows **win** over stale cache entries and over hypothetical API hits
+that would produce a misleading `ConceptSet` for Synthea. Recent examples are
+standalone PVR and ECOG measurement surfaces (`out_of_scope`), life expectancy
+as a measurement (`extractor_bug`), and generic blood pressure (`ambiguous`
+with systolic/diastolic candidates). The resolver writes compatible
+surface-resolution cache rows for repeated eval runs, while the compiler can
+consume the same reviewed decisions directly as typed gaps.
 
 ---
 
@@ -51,8 +63,8 @@ Before hitting live resolution, the work-queue path checks a **small manual tabl
 Eval diagnostics produce **top unmapped surfaces** (criterion kind + surface string + count). The work queue:
 
 1. Maps criterion kind → resolver channel (**condition / medication / lab**) or marks **out_of_scope** if the kind has no resolver (e.g. unsupported kind).
-2. Applies **manual override** if present.
-3. Otherwise calls resolver; on success records **resolved** with the `ConceptSet`.
+2. Applies a **reviewed registry decision** if present.
+3. Otherwise calls resolver; on success records **mapped** with the `ConceptSet`.
 4. If still unresolved, may reuse a **prior cached resolution** with the same open-resolver version.
 5. Heuristics mark **composite_unhandled** when the surface looks like a conjunction/list (`and`, `or`, commas, slashes) or when the kind is **temporal_window** (event extraction is a prerequisite).
 6. Otherwise leaves **unresolved** for human follow-up.
@@ -119,7 +131,8 @@ Foundation status:
   compilation result used by scoring.
 - `CC-01` now has a committed reviewed registry under `data/terminology/`;
   `Bone fractures` maps through that registry before stale cache rows or live
-  lookup.
+  lookup, and reviewed lab non-mapping/ambiguity decisions are consumed by the
+  measurement compiler.
 - `CC-02` now has deterministic query variants, candidate ranking, confidence
   gates, and the resolver execution policy contract wired into settings and
   CLIs: eval/API default to `cached_only`, while the cache warmer explicitly
@@ -147,6 +160,10 @@ Foundation status:
   patient-vocabulary-closure class expansions such as statins, GLP-1 receptor
   agonists, and SGLT2 inhibitors; class predicates are emitted only when every
   member surface resolves through cached/reviewed RxNorm lookup.
+- `CC-08` now checks reviewed lab decisions before local measurement alias
+  lookup, so known out-of-scope, extractor-bug, and ambiguous measurement
+  surfaces become explicit compiler gaps with provenance instead of opaque
+  unmapped concepts.
 - `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
   readiness over compiled criteria, and `ScorePairResult` exposes it to API and
   eval consumers.

@@ -8,6 +8,10 @@ from clinical_demo.extractor.schema import (
     MeasurementCriterion,
     ThresholdOperator,
 )
+from clinical_demo.terminology.reviewed_registry import (
+    ReviewedMappingEntry,
+    ReviewedMappingRegistry,
+)
 from clinical_demo.units import MeasurementUnitRegistry, UnitSpec
 
 
@@ -141,6 +145,43 @@ def test_unknown_measurement_emits_mapping_gap() -> None:
     ]
     assert result.unit_normalization.gap_ids == [gap.gap_id for gap in result.unresolved_gaps]
     assert "measurement.unmapped" in {diagnostic.code for diagnostic in result.diagnostics}
+
+
+def test_reviewed_out_of_scope_measurement_emits_unsupported_gap() -> None:
+    result = compile_measurement_resolution(
+        _measurement("pulmonary vascular resistance (PVR)", value=4.0, unit="Wood units"),
+        "c:reviewed",
+        reviewed_registry=ReviewedMappingRegistry(
+            [
+                ReviewedMappingEntry(
+                    kind="lab",
+                    surface="pulmonary vascular resistance (PVR)",
+                    normalized_surface="pulmonary vascular resistance (pvr",
+                    status="out_of_scope",
+                    concept_set=None,
+                    candidates=(),
+                    reason=(
+                        "Requires right-heart catheterization/hemodynamic observations not "
+                        "modeled in the current patient profile."
+                    ),
+                    source="compiler-review",
+                    provenance="unit test",
+                    reviewer="tests",
+                    reviewed_at="2026-05-11",
+                    resolver_version="reviewed-registry-v1",
+                    expansion_policy="exact_code",
+                )
+            ]
+        ),
+    )
+
+    assert result.concept_set is None
+    assert result.unit_normalization.status == "unsupported"
+    assert [gap.kind for gap in result.unresolved_gaps] == ["unsupported_predicate"]
+    assert result.unresolved_gaps[0].stage == "concept_resolution"
+    assert {diagnostic.code for diagnostic in result.diagnostics} == {
+        "measurement.reviewed.out_of_scope"
+    }
 
 
 def test_missing_unit_unknown_measurement_emits_unit_gap_too() -> None:

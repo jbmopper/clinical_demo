@@ -4,26 +4,26 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "4a3c127baebb",
-  "notes": "2026-05-11 compiled_predicates closed-world deterministic after condition trial-exposure and composite free-text guard; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "6f857bb7c7bd",
+  "notes": "2026-05-11 compiled_predicates closed-world deterministic after reviewed measurement non-mapping decisions; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 16670.211914810352,
-  "avg_scoring_latency_ms": 340.2084064247011,
+  "total_scoring_latency_ms": 17221.13482991699,
+  "avg_scoring_latency_ms": 351.45173122279573,
   "verdict_counts": {
     "fail": 56,
     "indeterminate": 900,
     "pass": 120
   },
   "reason_counts": {
-    "ambiguous_criterion": 22,
+    "ambiguous_criterion": 27,
     "human_review_required": 613,
     "no_data": 3,
     "ok": 176,
-    "unmapped_concept": 223,
-    "unsupported_kind": 21,
+    "unmapped_concept": 202,
+    "unsupported_kind": 37,
     "unsupported_mood": 18
   },
   "kind_counts": {
@@ -37,8 +37,8 @@
     "sex": 6,
     "temporal_window": 15
   },
-  "unmapped_count": 223,
-  "unmapped_rate": 0.20724907063197026,
+  "unmapped_count": 202,
+  "unmapped_rate": 0.18773234200743494,
   "indeterminate_count": 900,
   "indeterminate_rate": 0.8364312267657993,
   "binding_registered_total": 27,
@@ -57,11 +57,6 @@
   },
   "top_unmapped_surfaces": [
     {
-      "surface": "pulmonary vascular resistance (PVR)",
-      "kind": "measurement_threshold",
-      "count": 7
-    },
-    {
       "surface": "stable background therapy for PAH",
       "kind": "temporal_window",
       "count": 7
@@ -70,21 +65,6 @@
       "surface": "history of full pneumonectomy",
       "kind": "condition_absent",
       "count": 7
-    },
-    {
-      "surface": "blood pressure",
-      "kind": "measurement_threshold",
-      "count": 5
-    },
-    {
-      "surface": "life expectancy",
-      "kind": "measurement_threshold",
-      "count": 4
-    },
-    {
-      "surface": "ECOG Performance Status",
-      "kind": "measurement_threshold",
-      "count": 3
     },
     {
       "surface": "aspartate aminotransferase",
@@ -155,24 +135,44 @@
       "surface": "oxygen supplementation",
       "kind": "measurement_threshold",
       "count": 2
+    },
+    {
+      "surface": "current active malignancy",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "history of congenital heart disease",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "concomitant disease with life expectancy <6 months",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "history of liver dysfunction",
+      "kind": "condition_absent",
+      "count": 2
     }
   ],
   "compiler_compilation_present_cases": 47,
   "compiler_compilation_missing_cases": 2,
   "compiler_compiled_criteria_total": 1076,
   "compiler_checkable_predicates_total": 199,
-  "compiler_unresolved_gaps_total": 462,
+  "compiler_unresolved_gaps_total": 441,
   "compiler_unresolved_gaps_by_kind": {
-    "ambiguous_mapping": 75,
+    "ambiguous_mapping": 64,
     "insufficient_source": 10,
-    "missing_unit": 17,
-    "unmapped_concept": 297,
-    "unsupported_predicate": 63
+    "missing_unit": 12,
+    "unmapped_concept": 276,
+    "unsupported_predicate": 79
   },
   "compiler_unresolved_gaps_by_stage": {
     "concept_resolution": 342,
     "predicate_translation": 27,
-    "unit_normalization": 93
+    "unit_normalization": 72
   },
   "compiler_unresolved_gaps_by_domain": {
     "condition": 200,
@@ -180,7 +180,7 @@
     "measurement": 84,
     "medication": 58,
     "temporal": 1,
-    "unit": 93
+    "unit": 72
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,

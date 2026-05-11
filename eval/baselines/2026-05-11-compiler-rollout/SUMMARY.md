@@ -17,17 +17,19 @@ measurement, and medication hardening slices landed.
 - Scoring errors: 2 deceased-patient refusals
 - Code changes in this slice: compiler-side correlatable free-text promotion,
   raw condition-surface lookup preservation, parenthetical measurement alias
-  handling, and compiled matcher mood guard for hypothetical/planned criteria.
+  handling, compiled matcher mood guard for hypothetical/planned criteria, and
+  reviewed measurement non-mapping/ambiguity decisions in
+  `data/terminology/reviewed_mappings.json`.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `500e8f14fa5a` | 25 fail / 21 indeterminate / 0 pass / 1 pass_pending_review | 48 fail / 913 indeterminate / 115 pass | 316 (29.4%) | 17.9s |
-| `compiled_predicates` | `4a3c127baebb` | 29 fail / 16 indeterminate / 0 pass / 2 pass_pending_review | 56 fail / 900 indeterminate / 120 pass | 223 (20.7%) | 16.7s |
+| `compiled_predicates` | `6f857bb7c7bd` | 29 fail / 16 indeterminate / 0 pass / 2 pass_pending_review | 56 fail / 900 indeterminate / 120 pass | 202 (18.8%) | 17.2s |
 
-The compiled path reduces criterion-level `unmapped_concept` by 93 rows
-(-8.7 percentage points) and has no determinate-to-indeterminate criterion
+The compiled path reduces criterion-level `unmapped_concept` by 114 rows
+(-10.6 percentage points) and has no determinate-to-indeterminate criterion
 regressions against the legacy path in this run. It adds 13
 indeterminate-to-determinate criterion wins from more explicit compiler
 execution of mapped condition/measurement/free-text/trial-exposure promotions.
@@ -52,13 +54,21 @@ Five case-level eligibility results changed:
 Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
+`legacy_vs_compiled_movement_review.json` and `.md` are the focused review
+packet for these changes. They contain 13 decisive criterion movements:
+6 measurement thresholds, 4 trial-exposure predicates, and 3 condition
+predicates. Seven of the 13 comparison verdicts rely on closed-world absence
+(`evidence_under_assumption=true`), so the next reviewer pass should confirm
+that those absence-as-negative decisions match the validation contract before
+broad grading resumes.
+
 ## Compiler Readiness
 
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
 - checkable predicates: 199
-- unresolved compiler gaps: 462
+- unresolved compiler gaps: 441
 - closed-world validation: 4 ok cases, 43 blocking cases
 - validation findings: 1151 total, 537 blocking
 
@@ -66,21 +76,21 @@ Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
-| `review_mapping` | 297 |
-| `choose_candidate` | 75 |
-| `implement_compiler_logic` | 63 |
-| `add_unit_mapping` | 17 |
+| `review_mapping` | 276 |
+| `implement_compiler_logic` | 79 |
+| `choose_candidate` | 64 |
+| `add_unit_mapping` | 12 |
 | `review_gap` | 10 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-462 raw rows to 232 distinct surface/action/policy work items:
+441 raw rows to 229 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
-| `review_mapping` | 161 |
-| `implement_compiler_logic` | 40 |
-| `choose_candidate` | 22 |
-| `add_unit_mapping` | 8 |
+| `review_mapping` | 157 |
+| `implement_compiler_logic` | 43 |
+| `choose_candidate` | 21 |
+| `add_unit_mapping` | 7 |
 | `review_gap` | 1 |
 
 The current threshold gate passes only without `--require-compilation`, because
@@ -90,17 +100,19 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 462 \
+  --max-unresolved-gaps 441 \
   --max-closed-world-blocking-cases 43 \
   --max-closed-world-blocking-findings 537
 ```
 
-Top remaining unmapped surfaces are still dominated by measurement/event/data-
-model gaps: pulmonary vascular resistance, stable background PAH therapy,
-history of full pneumonectomy, generic blood pressure, life expectancy, ECOG
-performance status, AST, corrected serum calcium, vitamin D3, ambulatory blood
-pressure variants, uncontrolled severe arrhythmia, RAAS-inhibitor therapy, and
-PH-ILD.
+Top remaining unmapped surfaces are now dominated by event/data-model gaps and
+unreviewed measurement variants: stable background PAH therapy, history of full
+pneumonectomy, AST, corrected serum calcium, vitamin D3, office/ambulatory
+systolic blood-pressure variants, PH-ILD, 6-minute walk distance, oxygen
+supplementation, uncontrolled arrhythmia, and RAAS-inhibitor therapy. The
+standalone PVR, ECOG, life-expectancy, and generic blood-pressure measurement
+surfaces are no longer opaque top-unmapped rows; reviewed registry decisions now
+classify them as out-of-scope, extractor-bug, or ambiguous compiler gaps.
 
 ## Patient-Evidence Calibration
 
@@ -110,11 +122,11 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `500e8f14fa5a` | 5/50 | 80.0% | 40.0% | 17 |
-| `4a3c127baebb` | 5/50 | 80.0% | 40.0% | 17 |
+| `6f857bb7c7bd` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human
-pass should grade a deduped packet, not the raw 462-row compiler review export.
+pass should grade a deduped packet, not the raw 441-row compiler review export.
 
 ## Files
 
@@ -122,5 +134,7 @@ pass should grade a deduped packet, not the raw 462-row compiler review export.
 - `compiled_predicates_diagnostics.json`
 - `compiled_predicates_compiler_review.json`
 - `compiled_predicates_compiler_review_groups.json`
+- `legacy_vs_compiled_movement_review.json`
+- `legacy_vs_compiled_movement_review.md`
 - `patient_evidence_legacy_vs_compiled.json`
 - `patient_evidence_legacy_vs_compiled.md`

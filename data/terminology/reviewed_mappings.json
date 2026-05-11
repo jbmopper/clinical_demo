@@ -22,6 +22,98 @@
       "reviewed_at": "2026-05-08",
       "resolver_version": "reviewed-registry-v1",
       "expansion_policy": "reviewed_code_list"
+    },
+    {
+      "kind": "lab",
+      "surface": "pulmonary vascular resistance (PVR)",
+      "normalized_surface": "pulmonary vascular resistance (pvr",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Requires right-heart catheterization/hemodynamic observations not modeled in the current Synthea patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for NCT06475781 PH-ILD criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "pulmonary vascular resistance",
+      "normalized_surface": "pulmonary vascular resistance",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Requires right-heart catheterization/hemodynamic observations not modeled in the current Synthea patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for NCT06475781 PH-ILD criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "ECOG Performance Status",
+      "normalized_surface": "ecog performance status",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Functional-status observations such as ECOG are not represented in the current Synthea patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for oncology criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "life expectancy",
+      "normalized_surface": "life expectancy",
+      "status": "extractor_bug",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Life expectancy is prognostic/free-text review, not a structured measurement threshold in the current matcher.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for oncology and PH-ILD criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "blood pressure",
+      "normalized_surface": "blood pressure",
+      "status": "ambiguous",
+      "concept_set": null,
+      "candidates": [
+        {
+          "name": "Systolic blood pressure",
+          "concept_set": "SYSTOLIC_BP",
+          "system": "http://loinc.org",
+          "codes": ["8480-6"],
+          "source": "clinical_demo.profile.concept_sets",
+          "reason": "Blood pressure surface needs systolic specificity before it can map to one LOINC."
+        },
+        {
+          "name": "Diastolic blood pressure",
+          "concept_set": "DIASTOLIC_BP",
+          "system": "http://loinc.org",
+          "codes": ["8462-4"],
+          "source": "clinical_demo.profile.concept_sets",
+          "reason": "Blood pressure surface needs diastolic specificity before it can map to one LOINC."
+        }
+      ],
+      "reason": "Generic blood pressure must be decomposed or specified as systolic/diastolic before predicate execution.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for generic BP thresholds.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
     }
   ]
 }

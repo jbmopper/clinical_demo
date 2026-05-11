@@ -90,10 +90,16 @@ with reviewed entries compile through member RxNorm resolution before becoming
 executable predicates, so missing class members remain visible as compiler
 gaps instead of silently narrowing the class. Temporal event surfaces also emit
 diagnostics when diagnosis/history-shaped text is normalized before lookup, and
-workflow anchors remain unsupported gaps rather than condition matches. Use
+workflow anchors remain unsupported gaps rather than condition matches.
+Reviewed measurement decisions are committed under `data/terminology/` and now
+flow into compiler diagnostics as typed unsupported/ambiguous gaps instead of
+plain `unmapped_concept` rows. Use
 `uv run python scripts/eval.py compiler-review --run-id <run> --output <path> --grouped-output <path>`
 to export private reviewer rows plus deduped surface/action groups for
-unresolved compiler gaps.
+unresolved compiler gaps. Use
+`uv run python scripts/eval.py movement-review --baseline-run-id <run> --comparison-run-id <run> --output-json <path> --output-markdown <path>`
+to export the focused case/criterion movement packet before sending a compiled
+run to validation grading.
 
 **CI gate:** Once a baseline is expected to be compiler-complete, use
 `uv run python scripts/check_compiler_diagnostics.py --diagnostics <diagnostics.json> --require-compilation --max-closed-world-blocking-cases 0`.
