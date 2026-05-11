@@ -6,10 +6,10 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "500e8f14fa5a",
-  "comparison_run_id": "dba692258184",
+  "comparison_run_id": "c467039ca2aa",
   "summary": {
     "baseline_run_id": "500e8f14fa5a",
-    "comparison_run_id": "dba692258184",
+    "comparison_run_id": "c467039ca2aa",
     "common_cases": 49,
     "changed_cases": 5,
     "compared_criteria": 1076,

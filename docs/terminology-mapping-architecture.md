@@ -54,10 +54,13 @@ standalone PVR and ECOG measurement surfaces (`out_of_scope`), life expectancy
 as a measurement (`extractor_bug`), generic blood pressure (`ambiguous` with
 systolic/diastolic candidates), and reviewed lab/vital mappings such as AST,
 ANC, serum creatinine, fasting glucose/FPG, LDL-C, triglycerides, bilirubin,
-and mean sitting office systolic BP. The resolver writes compatible
-surface-resolution cache rows for repeated eval runs, while the compiler can
-consume the same reviewed decisions directly as typed gaps or mapped
-measurement predicates.
+and mean sitting office systolic BP. Reviewed non-mapping rows also cover
+provenance-sensitive surfaces such as fasting/random/OGTT plasma glucose, and
+unsupported data-model surfaces such as beta-hydroxybutyrate, QTc, creatine
+kinase, proteinuria, Karnofsky, creatinine clearance, and derived imaging or
+prognostic scores. The resolver writes compatible surface-resolution cache rows
+for repeated eval runs, while the compiler can consume the same reviewed
+decisions directly as typed gaps or mapped measurement predicates.
 
 ---
 

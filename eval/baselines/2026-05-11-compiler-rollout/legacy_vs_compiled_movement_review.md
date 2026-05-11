@@ -3,7 +3,7 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `500e8f14fa5a`
-- comparison: `dba692258184`
+- comparison: `c467039ca2aa`
 - changed cases: 5/49
 - changed criteria: 24/1076
 - criterion directions: indeterminate_to_determinate=24

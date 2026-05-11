@@ -41,8 +41,8 @@
       "adjudicator_output_tokens": 0
     },
     {
-      "run_id": "dba692258184",
-      "notes": "2026-05-11 compiled_predicates closed-world deterministic after reviewed lab mapping tranche; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "run_id": "c467039ca2aa",
+      "notes": "2026-05-11 compiled_predicates closed-world deterministic after reviewed measurement-tail nonmapping tranche; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
       "llm_use_level": "none",
       "matcher_assumption_mode": "closed_world_eval",
       "total_label_targets": 50,
@@ -72,7 +72,7 @@
   "mode_deltas": [
     {
       "baseline_run_id": "500e8f14fa5a",
-      "comparison_run_id": "dba692258184",
+      "comparison_run_id": "c467039ca2aa",
       "changed_cases": 5,
       "movements": {
         "indeterminate->fail": 4,

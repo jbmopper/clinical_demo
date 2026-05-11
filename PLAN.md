@@ -21,22 +21,21 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  eval run `dba692258184` now reflects reviewed lab mappings/non-mappings,
+  eval run `c467039ca2aa` now reflects reviewed lab mappings/non-mappings,
   shared reviewed `ConceptSet` lookup, measurement threshold-value blocking
   gaps, and regenerated compiler review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   `matcher_inputs` run `500e8f14fa5a`, criterion-level
-  `unmapped_concept` is down from 316/1076 (29.4%) to 164/1076 (15.2%),
+  `unmapped_concept` is down from 316/1076 (29.4%) to 148/1076 (13.8%),
   with 24 indeterminate-to-determinate criterion movements and 5 case-rollup
-  movements. The path is still not default-ready: diagnostics show 398
+  movements. The path is still not default-ready: diagnostics show 373
   unresolved compiler gaps, 43 closed-world-blocking cases, and 511 blocking
-  validation findings. The deduped review packet has 211 groups (136
-  `review_mapping`, 54 `implement_compiler_logic`, 15 `choose_candidate`, 4
-  `review_gap`, 2 `add_unit_mapping`). Next work is reviewing the 24 movement
-  rows, especially the 17 measurement movements, then continuing CC-08/CC-10
-  on remaining measurement surfaces such as beta-hydroxybutyrate, glucose
-  variants, creatinine clearance, QTc/CK/proteinuria, missing units,
-  normal-range phrases, and sex/modality/fasting provenance.
+  validation findings. The deduped review packet has 200 groups (119
+  `review_mapping`, 71 `implement_compiler_logic`, 6 `choose_candidate`, and 4
+  `review_gap`). Next work is reviewing the 24 movement rows, especially the
+  17 measurement movements, then shifting the main queue toward condition,
+  temporal/event, and medication-class gaps while CC-08/CC-10 handles
+  normal-range phrases plus sex/modality/fasting provenance.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
   `matcher_assumption_mode` change behavior, not just metadata, and
   fixes the silent-flip bug in v0.1. Before: `_match_condition` /
@@ -1423,7 +1422,11 @@ promotion remain follow-on work.
     creatinine, fasting blood glucose/FPG, LDL-C, triglycerides,
     total bilirubin, and mean sitting office systolic BP while preserving
     non-executable threshold-value gaps when extraction missed the numeric
-    value.
+    value. A follow-on reviewed measurement-tail pass classified remaining
+    provenance-sensitive or unsupported surfaces such as plasma-glucose timing,
+    beta-hydroxybutyrate, creatinine clearance, QTc, CK, proteinuria,
+    Karnofsky, and imaging/prognostic scores as explicit compiler gaps instead
+    of executable mappings.
 
 - id: CC-09
   title: Medication and class compiler
@@ -1611,7 +1614,7 @@ promotion remain follow-on work.
   selection from a fresh eval run, and any eval-discovered predicate gaps.
 - Fresh compiler rollout eval (2026-05-11): sequential closed-world,
   deterministic cached-only runs compare legacy `matcher_inputs`
-  (`500e8f14fa5a`) with opt-in `compiled_predicates` (`dba692258184`) after
+  (`500e8f14fa5a`) with opt-in `compiled_predicates` (`c467039ca2aa`) after
   compiler-side correlatable free-text promotion, condition-shaped
   trial-exposure promotion, unsafe composite free-text promotion guards, raw
   condition-surface lookup preservation, parenthetical measurement alias
@@ -1619,16 +1622,16 @@ promotion remain follow-on work.
   compiled matcher mood guard for hypothetical/planned criteria. Both runs have
   the same 2 deceased-patient scoring refusals and the same Layer-1
   structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
-  reduces criterion-level `unmapped_concept` from 316/1076 (29.4%) to 164/1076
-  (15.2%) with no determinate-to-indeterminate criterion regressions against
+  reduces criterion-level `unmapped_concept` from 316/1076 (29.4%) to 148/1076
+  (13.8%) with no determinate-to-indeterminate criterion regressions against
   the legacy path; it adds 24 indeterminate-to-determinate criterion wins and
   changes 5 case rollups (all away from indeterminate). It is still not
-  default-ready: compiler diagnostics show 398 unresolved gaps and 43
+  default-ready: compiler diagnostics show 373 unresolved gaps and 43
   closed-world-blocking compiled cases, with 511 blocking validation findings.
-  The regenerated compiler-review artifact now dedupes the 398 raw rows to 211
-  surface/action/policy groups (136 `review_mapping`, 54
-  `implement_compiler_logic`, 15 `choose_candidate`, 4 `review_gap`, and 2
-  `add_unit_mapping`). Snapshot artifacts live under
+  The regenerated compiler-review artifact now dedupes the 373 raw rows to 200
+  surface/action/policy groups (119 `review_mapping`, 71
+  `implement_compiler_logic`, 6 `choose_candidate`, and 4 `review_gap`).
+  Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging the 24 decisive criterion movements / 5 case
   rollups, and using the deduped compiler-review packet for targeted
@@ -1638,13 +1641,13 @@ promotion remain follow-on work.
   to decisive verdict changes with `--include-reason-only` available for
   noisier reason-code diffs. The rollout snapshot includes
   `legacy_vs_compiled_movement_review.{json,md}` for
-  `500e8f14fa5a` -> `dba692258184`: 5 case movements and 24 decisive
+  `500e8f14fa5a` -> `c467039ca2aa`: 5 case movements and 24 decisive
   criterion movements (17 measurement thresholds, 4 trial-exposure predicates,
   3 condition predicates), with 7 comparison verdicts depending on
   closed-world absence. Next work is reviewing those 7 closed-world-dependent
   movements and the 11 new measurement movements from the reviewed lab tranche,
-  then reducing the 211 grouped compiler gaps starting with
-  measurement/data-model surfaces.
+  then reducing the 200 grouped compiler gaps starting with
+  condition/event/data-model surfaces.
 - Reviewed measurement decisions (2026-05-11): the measurement compiler now
   consults the committed reviewed registry before local LOINC alias lookup for
   lab surfaces. Standalone `pulmonary vascular resistance`, `pulmonary vascular
@@ -1659,13 +1662,16 @@ promotion remain follow-on work.
   reviewed ambiguity candidates such as systolic vs diastolic blood pressure.
   Reviewed mapped lab rows now resolve through shared `ConceptSet`s and unit
   specs for AST, ANC, creatinine, fasting blood glucose/FPG, LDL-C,
-  triglycerides, total bilirubin, and mean sitting office systolic BP. The two
-  reviewed measurement tranches moved the rollout snapshot from 462 to 441 and
-  then 398 unresolved compiler gaps. The next CC-08 targets are
-  beta-hydroxybutyrate, 2-hour/plasma glucose variants, estimated creatinine
-  clearance, hyperkalemia extractor handling, QTc/CK/proteinuria/Karnofsky
-  surfaces, remaining missing-unit cases, normal/ULN/LLN semantics, and
-  sex/modality/fasting provenance.
+  triglycerides, total bilirubin, and mean sitting office systolic BP. A
+  follow-on tail pass classified beta-hydroxybutyrate, OGTT/random/fasting
+  plasma-glucose provenance variants, estimated creatinine clearance,
+  hyperkalemia extractor handling, QTc/CK/proteinuria/Karnofsky, and derived
+  imaging/prognostic scores as explicit non-executable gaps. The reviewed
+  measurement tranches moved the rollout snapshot from 462 to 441, then 398,
+  then 373 unresolved compiler gaps. The next CC-08/CC-10 targets are
+  normal/ULN/LLN semantics, sex/modality/fasting provenance support, and moving
+  reviewed unsupported measurement decisions into better compiler-specific gap
+  kinds as the IR grows.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 
