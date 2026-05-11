@@ -126,11 +126,15 @@ def compile_medication_resolution(
     surface, required_presence = _criterion_surface_and_presence(criterion)
     normalized = normalize_medication_surface(surface) if surface is not None else None
     route_plan = _route_plan(surface)
+    ingredient_surface = _ingredient_surface_without_route(surface) if surface is not None else None
+    ingredient_normalized = (
+        normalize_medication_surface(ingredient_surface) if ingredient_surface else None
+    )
     ingredient_plan = MedicationAspectPlan(
         aspect="ingredient",
         status="not_attempted" if surface else "skipped",
-        surface=surface,
-        normalized_surface=normalized,
+        surface=ingredient_surface,
+        normalized_surface=ingredient_normalized,
     )
     class_plan = MedicationAspectPlan(
         aspect="medication_class",
@@ -217,8 +221,40 @@ def compile_medication_resolution(
             ],
         )
 
+    if ingredient_surface is None or ingredient_normalized is None:
+        gap = _gap(
+            source_criterion_id,
+            surface=surface,
+            kind="insufficient_source",
+            message=(
+                f"Medication surface {surface!r} only contained route text after "
+                "route normalization; no ingredient remained to resolve."
+            ),
+            resolver_policy=resolver_policy,
+            suffix="missing-ingredient",
+        )
+        return _result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            normalized_surface=normalized,
+            required_presence=required_presence,
+            concept_set=None,
+            route=route_plan,
+            ingredient=ingredient_plan.model_copy(
+                update={"status": "unresolved", "gap_ids": [gap.gap_id]}
+            ),
+            medication_class=class_plan,
+            predicate=_predicate_plan(
+                source_criterion_id,
+                required_presence=required_presence,
+                status="unresolved",
+                gap_ids=[gap.gap_id],
+            ),
+            gaps=[gap],
+        )
+
     concept_set, resolver_diagnostic = _resolve_cached_only(
-        surface,
+        ingredient_surface,
         source_criterion_id=source_criterion_id,
         resolver_policy=resolver_policy,
         resolver=resolver,
@@ -228,9 +264,11 @@ def compile_medication_resolution(
     if concept_set is None:
         gap = _gap(
             source_criterion_id,
-            surface=surface,
+            surface=ingredient_surface,
             kind="unmapped_concept",
-            message=f"No cached/reviewed ConceptSet mapping for medication {surface!r}.",
+            message=(
+                f"No cached/reviewed ConceptSet mapping for medication {ingredient_surface!r}."
+            ),
             resolver_policy=resolver_policy,
             suffix="unmapped",
         )
@@ -260,8 +298,8 @@ def compile_medication_resolution(
         stage="concept_resolution",
         domain="medication",
         source_criterion_id=source_criterion_id,
-        surface=surface,
-        normalized_surface=normalized,
+        surface=ingredient_surface,
+        normalized_surface=ingredient_normalized,
         target_system=concept_set.system,
         target_id=concept_set.name,
         target_label=concept_set.name,
@@ -351,7 +389,7 @@ def _route_plan(surface: str | None) -> MedicationAspectPlan:
         if pattern.search(surface):
             return MedicationAspectPlan(
                 aspect="route",
-                status="not_attempted",
+                status="resolved",
                 surface=route,
                 normalized_surface=route,
             )
@@ -362,6 +400,14 @@ def _route_plan(surface: str | None) -> MedicationAspectPlan:
         surface=None,
         normalized_surface=None,
     )
+
+
+def _ingredient_surface_without_route(surface: str) -> str | None:
+    ingredient_surface = surface
+    for _, pattern in _ROUTE_PATTERNS:
+        ingredient_surface = pattern.sub(" ", ingredient_surface)
+    ingredient_surface = " ".join(ingredient_surface.strip(".,;:()[]{}\"'").split())
+    return ingredient_surface or None
 
 
 def _resolve_cached_only(

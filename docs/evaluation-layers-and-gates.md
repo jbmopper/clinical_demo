@@ -89,6 +89,11 @@ gaps by kind/stage/domain, and closed-world blockers. Use
 `uv run python scripts/eval.py compiler-review --run-id <run> --output <path>`
 to export private reviewer rows for unresolved compiler gaps.
 
+**CI gate:** Once a baseline is expected to be compiler-complete, use
+`uv run python scripts/check_compiler_diagnostics.py --diagnostics <diagnostics.json> --require-compilation --max-closed-world-blocking-cases 0`.
+During rollout, set nonzero thresholds from the current baseline and tighten
+them as reviewer fixes land.
+
 **Why separate from terminology gates:** Terminology regressions answer "did a
 surface stop mapping?" Compiler parity answers "did the new predicate source
 change patient-level verdict behavior?" Both are needed before

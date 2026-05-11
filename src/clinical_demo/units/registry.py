@@ -9,6 +9,7 @@ and whether a conversion is approved for a particular LOINC.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -36,6 +37,9 @@ class MeasurementUnitRegistry:
 
     def __init__(self, specs: Iterable[UnitSpec]) -> None:
         self._specs = {spec.loinc_code: spec for spec in specs}
+        self._normalized_aliases = {
+            spec.loinc_code: _normalized_aliases(spec) for spec in self._specs.values()
+        }
 
     @classmethod
     def default(cls) -> MeasurementUnitRegistry:
@@ -56,7 +60,10 @@ class MeasurementUnitRegistry:
         spec = self.spec_for(loinc_code)
         if spec is None or raw_unit is None or raw_unit.strip() == "":
             return None
-        return spec.aliases.get(raw_unit)
+        canonical = spec.aliases.get(raw_unit)
+        if canonical is not None:
+            return canonical
+        return self._normalized_aliases.get(loinc_code, {}).get(_normalize_unit(raw_unit))
 
     def conversion_factor(
         self,
@@ -94,9 +101,38 @@ class MeasurementUnitRegistry:
         canonical = spec.aliases.get(unit)
         if canonical is not None:
             return canonical
+        normalized_canonical = self._normalized_aliases.get(spec.loinc_code, {}).get(
+            _normalize_unit(unit)
+        )
+        if normalized_canonical is not None:
+            return normalized_canonical
         if unit in spec.canonical_units:
             return unit
         return None
+
+
+def _normalized_aliases(spec: UnitSpec) -> dict[str, str]:
+    aliases: dict[str, str] = {}
+    ambiguous: set[str] = set()
+    for raw_unit, canonical_unit in spec.aliases.items():
+        normalized = _normalize_unit(raw_unit)
+        existing = aliases.get(normalized)
+        if existing is None:
+            aliases[normalized] = canonical_unit
+        elif existing != canonical_unit:
+            ambiguous.add(normalized)
+
+    for normalized in ambiguous:
+        aliases.pop(normalized, None)
+    return aliases
+
+
+def _normalize_unit(raw_unit: str) -> str:
+    unit = raw_unit.strip()
+    unit = unit.replace("µ", "μ")
+    unit = re.sub(r"\s+", " ", unit)
+    unit = re.sub(r"\s*/\s*", "/", unit)
+    return unit.lower()
 
 
 DEFAULT_UNIT_SPECS: tuple[UnitSpec, ...] = (

@@ -74,6 +74,35 @@ def test_ldl_mmol_l_threshold_converts_to_conventional_mg_dl() -> None:
     assert result.normalized_value == pytest.approx(100.542)
 
 
+@pytest.mark.parametrize(
+    ("surface", "unit", "expected_canonical", "expected_conventional", "expected_factor"),
+    [
+        ("LDL cholesterol", "MMOL / L", "mmol/L", "mg/dL", 38.67),
+        ("HbA1c", " percent ", "%", "%", 1.0),
+        ("BMI", "kg / m^2", "kg/m2", "kg/m2", 1.0),
+        ("eGFR", "mL / min / 1.73 m^2", "mL/min/1.73m2", "mL/min/1.73m2", 1.0),
+    ],
+)
+def test_measurement_resolution_accepts_normalized_unit_variants(
+    surface: str,
+    unit: str,
+    expected_canonical: str,
+    expected_conventional: str,
+    expected_factor: float,
+) -> None:
+    result = compile_measurement_resolution(
+        _measurement(surface, value=2.6, unit=unit),
+        "c:normalized",
+    )
+
+    assert result.unit_normalization.status == "resolved"
+    assert result.unit_normalization.source_unit == unit
+    assert result.unit_normalization.canonical_unit == expected_canonical
+    assert result.unit_normalization.conventional_unit == expected_conventional
+    assert result.unit_normalization.conversion_factor == expected_factor
+    assert result.unresolved_gaps == []
+
+
 def test_egfr_missing_unit_infers_single_registered_conventional_unit() -> None:
     result = compile_measurement_resolution(_measurement("eGFR", value=25.0, unit=None), "c:2")
 
@@ -144,3 +173,17 @@ def test_unsupported_conversion_emits_structured_unit_gap() -> None:
     assert [gap.kind for gap in result.unresolved_gaps] == ["unsupported_predicate"]
     assert result.unresolved_gaps[0].stage == "unit_normalization"
     assert {diagnostic.code for diagnostic in result.diagnostics} == {"unit.unsupported_conversion"}
+
+
+def test_unknown_normalized_unit_variant_still_fails_closed() -> None:
+    result = compile_measurement_resolution(
+        _measurement("HbA1c", value=7.0, unit="percent-ish"),
+        "c:6",
+    )
+
+    assert result.selected_loinc_code == "4548-4"
+    assert result.unit_normalization.status == "unsupported"
+    assert result.unit_normalization.canonical_unit is None
+    assert result.unit_normalization.conversion_factor is None
+    assert result.normalized_value is None
+    assert [gap.kind for gap in result.unresolved_gaps] == ["unsupported_predicate"]

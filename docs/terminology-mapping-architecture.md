@@ -128,12 +128,16 @@ Foundation status:
   code lists, patient-vocabulary closure, and explicit unsupported states for
   descendant/value-set expansion that still need graph/cache backing.
 - `CC-04` now has a unit registry shared by the compiler-facing code and
-  `PatientProfile` threshold checks.
+  `PatientProfile` threshold checks. It accepts conservative spelling, casing,
+  spacing, slash, and micro-symbol variants while dropping ambiguous normalized
+  aliases so unknown units still fail closed.
 - `CC-05` now has an opt-in compiled-predicate matcher, so eval can compare
   legacy matcher-input execution against compiled-predicate execution before
   the default path changes.
 - `CC-06` through `CC-09` have helper foundations for compound/time,
-  measurement, and medication compilation.
+  measurement, and medication compilation. Medication compilation now strips
+  route-only words such as `oral` before ingredient resolution while preserving
+  the route aspect in compiler provenance.
 - `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
   readiness over compiled criteria, and `ScorePairResult` exposes it to API and
   eval consumers.
@@ -141,7 +145,9 @@ Foundation status:
   workflow plus `CompilerGapReviewRow` artifacts from persisted eval runs.
 - `CC-12` now has `ParityReport` and `compare_compilation_parity(...)` for
   legacy-vs-compiled execution comparison, and eval diagnostics aggregate
-  compiler coverage, unresolved gaps, and closed-world blockers.
+  compiler coverage, unresolved gaps, and closed-world blockers. The companion
+  `scripts/check_compiler_diagnostics.py` gate can fail CI when those counts
+  exceed baseline thresholds.
 
 Active integration status:
 

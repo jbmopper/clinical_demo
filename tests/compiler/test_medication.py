@@ -66,6 +66,50 @@ def test_mapped_injected_resolver_emits_medication_exposure_support() -> None:
     assert result.gaps == []
 
 
+def test_route_prefixed_medication_resolves_stripped_ingredient_surface() -> None:
+    resolver = StubMedicationResolver({"metformin": METFORMIN, "oral metformin": None})
+
+    result = compile_medication_resolution(
+        _criterion("oral metformin"),
+        source_criterion_id="criterion:oral",
+        resolver=resolver,
+    )
+
+    assert resolver.calls == ["metformin"]
+    assert result.surface == "oral metformin"
+    assert result.normalized_surface == "oral metformin"
+    assert result.route.status == "resolved"
+    assert result.route.normalized_surface == "oral"
+    assert result.ingredient.status == "resolved"
+    assert result.ingredient.surface == "metformin"
+    assert result.ingredient.normalized_surface == "metformin"
+    assert result.concept_set == METFORMIN
+    assert result.supports[0].surface == "metformin"
+    assert result.supports[0].normalized_surface == "metformin"
+    assert result.gaps == []
+
+
+def test_route_only_surface_is_insufficient_without_resolver_call() -> None:
+    resolver = StubMedicationResolver({"oral": METFORMIN})
+
+    result = compile_medication_resolution(
+        _criterion("oral"),
+        source_criterion_id="criterion:route-only",
+        resolver=resolver,
+    )
+
+    assert resolver.calls == []
+    assert result.surface == "oral"
+    assert result.normalized_surface == "oral"
+    assert result.route.status == "resolved"
+    assert result.route.normalized_surface == "oral"
+    assert result.ingredient.status == "unresolved"
+    assert result.ingredient.surface is None
+    assert result.gaps[0].kind == "insufficient_source"
+    assert result.predicate.status == "unresolved"
+    assert result.supports == []
+
+
 def test_unmapped_medication_emits_unmapped_concept_gap() -> None:
     resolver = StubMedicationResolver({"warfarin": None})
 

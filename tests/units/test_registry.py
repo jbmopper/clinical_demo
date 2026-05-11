@@ -7,6 +7,7 @@ import pytest
 from clinical_demo.units import (
     DEFAULT_REGISTRY,
     MeasurementUnitRegistry,
+    UnitSpec,
     canonical_unit,
     conventional_unit,
     conversion_factor,
@@ -19,6 +20,7 @@ from clinical_demo.units import (
         ("mL/min/{1.73_m2}", "mL/min/1.73m2"),
         ("mL/min", "mL/min/1.73m2"),
         ("ml/min/1.73 m^2", "mL/min/1.73m2"),
+        (" mL / min / 1.73 m^2 ", "mL/min/1.73m2"),
     ],
 )
 def test_egfr_units_canonicalize_to_single_conventional_form(
@@ -28,8 +30,30 @@ def test_egfr_units_canonicalize_to_single_conventional_form(
     assert canonical_unit("33914-3", raw_unit) == expected
 
 
+@pytest.mark.parametrize(
+    ("loinc_code", "raw_unit", "expected"),
+    [
+        ("18262-6", "mg / dL", "mg/dL"),
+        ("18262-6", "MMOL/L", "mmol/L"),
+        ("18262-6", "mmol / l", "mmol/L"),
+        ("4548-4", " percent ", "%"),
+        ("4548-4", "%", "%"),
+        ("39156-5", "kg / m^2", "kg/m2"),
+        ("777-3", "µL", "count/uL"),
+        ("777-3", "/ µL", "count/uL"),
+    ],
+)
+def test_unit_alias_lookup_accepts_conservative_normalized_variants(
+    loinc_code: str,
+    raw_unit: str,
+    expected: str,
+) -> None:
+    assert canonical_unit(loinc_code, raw_unit) == expected
+
+
 def test_ldl_mmol_l_to_mg_dl_conversion_factor() -> None:
     assert conversion_factor("18262-6", "mmol/L", "mg/dL") == 38.67
+    assert conversion_factor("18262-6", "MMOL / L", "mg / dL") == 38.67
     assert conversion_factor("18262-6", "mg/dL", "mmol/L") == pytest.approx(1 / 38.67)
 
 
@@ -62,6 +86,7 @@ def test_unknown_conversion_returns_none() -> None:
     assert conversion_factor("4548-4", "%", "mmol/mol") is None
     assert conversion_factor("99999-9", "mg/dL", "mmol/L") is None
     assert conversion_factor("18262-6", "", "mg/dL") is None
+    assert conversion_factor("18262-6", "moles maybe", "mg/dL") is None
 
 
 def test_identical_canonical_units_have_identity_conversion() -> None:
@@ -93,3 +118,23 @@ def test_registry_exposes_unit_spec_metadata_for_compiler() -> None:
 
 def test_default_registry_is_reusable_singleton() -> None:
     assert DEFAULT_REGISTRY.canonical_unit("39156-5", "kg/m²") == "kg/m2"
+
+
+def test_normalized_alias_collisions_fail_closed() -> None:
+    registry = MeasurementUnitRegistry(
+        [
+            UnitSpec(
+                loinc_code="test",
+                name="Test measurement",
+                conventional_unit="unit/a",
+                aliases={
+                    "x / y": "unit/a",
+                    "x/y": "unit/b",
+                },
+            )
+        ]
+    )
+
+    assert registry.canonical_unit("test", "x / y") == "unit/a"
+    assert registry.canonical_unit("test", "x/y") == "unit/b"
+    assert registry.canonical_unit("test", " X / Y ") is None

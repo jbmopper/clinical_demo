@@ -1494,6 +1494,8 @@ promotion remain follow-on work.
       cached-fixture gates.
     - Eval diagnostics roll up compiler coverage, checkable predicate counts,
       unresolved compiler gaps by kind/stage/domain, and closed-world blockers.
+    - CI-style compiler diagnostics gate via
+      `scripts/check_compiler_diagnostics.py`.
     - Regression gates for mappable-unmapped, unsafe-polarity-change, and
       compiler dropped-criterion count.
     - Baseline metadata records reviewed-registry version, resolver version,
@@ -1537,6 +1539,13 @@ promotion remain follow-on work.
   remaining parallel-friendly lanes are hardening specialist predicate coverage
   (`CC-06` to `CC-09`), adding regression thresholds to CI/baselines, and
   promoting reviewed artifact decisions back into the committed registry.
+- Hardening continuation (2026-05-11): measurement unit lookup now accepts
+  conservative spelling/case/spacing variants while dropping ambiguous
+  normalized aliases, medication compilation strips route-only words before
+  ingredient resolution, and compiler diagnostics can be threshold-gated in CI.
+  Next parallel lanes remain compound/time predicate hardening, medication class
+  expansion, reviewer promotion into `data/terminology/`, and baseline threshold
+  selection from a fresh eval run.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 
