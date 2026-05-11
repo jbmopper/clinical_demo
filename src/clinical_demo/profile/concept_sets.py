@@ -148,6 +148,48 @@ C_PEPTIDE = ConceptSet(
     codes=frozenset({"1986-9"}),
 )
 
+ASPARTATE_AMINOTRANSFERASE = ConceptSet(
+    name="Aspartate aminotransferase",
+    system=LOINC,
+    codes=frozenset({"1920-8"}),
+)
+
+ALANINE_AMINOTRANSFERASE = ConceptSet(
+    name="Alanine aminotransferase",
+    system=LOINC,
+    codes=frozenset({"1742-6"}),
+)
+
+TOTAL_BILIRUBIN = ConceptSet(
+    name="Total bilirubin",
+    system=LOINC,
+    codes=frozenset({"1975-2"}),
+)
+
+ABSOLUTE_NEUTROPHIL_COUNT = ConceptSet(
+    name="Absolute neutrophil count",
+    system=LOINC,
+    codes=frozenset({"751-8"}),
+)
+
+SERUM_CREATININE = ConceptSet(
+    name="Serum creatinine",
+    system=LOINC,
+    codes=frozenset({"38483-4"}),
+)
+
+GLUCOSE = ConceptSet(
+    name="Glucose",
+    system=LOINC,
+    codes=frozenset({"2339-0"}),
+)
+
+TRIGLYCERIDES = ConceptSet(
+    name="Triglycerides",
+    system=LOINC,
+    codes=frozenset({"2571-8"}),
+)
+
 SYSTOLIC_BP = ConceptSet(
     name="Systolic blood pressure",
     system=LOINC,
@@ -160,13 +202,53 @@ DIASTOLIC_BP = ConceptSet(
     codes=frozenset({"8462-4"}),
 )
 
+CONCEPT_SETS_BY_ID: dict[str, ConceptSet] = {
+    "ABSOLUTE_NEUTROPHIL_COUNT": ABSOLUTE_NEUTROPHIL_COUNT,
+    "ALANINE_AMINOTRANSFERASE": ALANINE_AMINOTRANSFERASE,
+    "ASPARTATE_AMINOTRANSFERASE": ASPARTATE_AMINOTRANSFERASE,
+    "BMI": BMI,
+    "CHRONIC_KIDNEY_DISEASE": CHRONIC_KIDNEY_DISEASE,
+    "C_PEPTIDE": C_PEPTIDE,
+    "DIASTOLIC_BP": DIASTOLIC_BP,
+    "EGFR": EGFR,
+    "FRACTURE": FRACTURE,
+    "GLUCOSE": GLUCOSE,
+    "HBA1C": HBA1C,
+    "HEMOGLOBIN": HEMOGLOBIN,
+    "HYPERLIPIDEMIA": HYPERLIPIDEMIA,
+    "HYPERTENSION": HYPERTENSION,
+    "LDL_CHOLESTEROL": LDL_CHOLESTEROL,
+    "PLATELET_COUNT": PLATELET_COUNT,
+    "PREDIABETES": PREDIABETES,
+    "SERUM_CREATININE": SERUM_CREATININE,
+    "SYSTOLIC_BP": SYSTOLIC_BP,
+    "T1DM": T1DM,
+    "T2DM": T2DM,
+    "TOTAL_BILIRUBIN": TOTAL_BILIRUBIN,
+    "TRIGLYCERIDES": TRIGLYCERIDES,
+}
+
+
+def concept_set_by_id(concept_set_id: str | None) -> ConceptSet | None:
+    """Return a project ConceptSet referenced by reviewed registry id."""
+
+    if concept_set_id is None:
+        return None
+    return CONCEPT_SETS_BY_ID.get(concept_set_id)
+
+
 __all__ = [
+    "ABSOLUTE_NEUTROPHIL_COUNT",
+    "ALANINE_AMINOTRANSFERASE",
+    "ASPARTATE_AMINOTRANSFERASE",
     "BMI",
     "CHRONIC_KIDNEY_DISEASE",
+    "CONCEPT_SETS_BY_ID",
     "C_PEPTIDE",
     "DIASTOLIC_BP",
     "EGFR",
     "FRACTURE",
+    "GLUCOSE",
     "HBA1C",
     "HEMOGLOBIN",
     "HYPERLIPIDEMIA",
@@ -174,7 +256,11 @@ __all__ = [
     "LDL_CHOLESTEROL",
     "PLATELET_COUNT",
     "PREDIABETES",
+    "SERUM_CREATININE",
     "SYSTOLIC_BP",
     "T1DM",
     "T2DM",
+    "TOTAL_BILIRUBIN",
+    "TRIGLYCERIDES",
+    "concept_set_by_id",
 ]

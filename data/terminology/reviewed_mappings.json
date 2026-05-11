@@ -114,6 +114,429 @@
       "reviewed_at": "2026-05-11",
       "resolver_version": "reviewed-registry-v1",
       "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "aspartate aminotransferase",
+      "normalized_surface": "aspartate aminotransferase",
+      "status": "mapped",
+      "concept_set": "ASPARTATE_AMINOTRANSFERASE",
+      "candidates": [
+        {
+          "name": "Aspartate aminotransferase",
+          "concept_set": "ASPARTATE_AMINOTRANSFERASE",
+          "system": "http://loinc.org",
+          "codes": ["1920-8"],
+          "source": "patient vocabulary review",
+          "reason": "Synthea carries AST as LOINC 1920-8 in serum/plasma observations."
+        }
+      ],
+      "reason": "Reviewed AST measurement surface maps to the project AST ConceptSet. ULN multiplier semantics remain unit/normal-range compiler logic.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for hepatic lab criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "absolute neutrophil count",
+      "normalized_surface": "absolute neutrophil count",
+      "status": "mapped",
+      "concept_set": "ABSOLUTE_NEUTROPHIL_COUNT",
+      "candidates": [
+        {
+          "name": "Absolute neutrophil count",
+          "concept_set": "ABSOLUTE_NEUTROPHIL_COUNT",
+          "system": "http://loinc.org",
+          "codes": ["751-8"],
+          "source": "patient vocabulary review",
+          "reason": "Synthea carries absolute neutrophils as LOINC 751-8."
+        }
+      ],
+      "reason": "Reviewed ANC surface maps to the project absolute-neutrophil-count ConceptSet.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for NSCLC hematology criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "creatinine",
+      "normalized_surface": "creatinine",
+      "status": "mapped",
+      "concept_set": "SERUM_CREATININE",
+      "candidates": [
+        {
+          "name": "Serum creatinine",
+          "concept_set": "SERUM_CREATININE",
+          "system": "http://loinc.org",
+          "codes": ["38483-4"],
+          "source": "patient vocabulary review",
+          "reason": "The active Synthea vocabulary primarily carries creatinine as LOINC 38483-4."
+        }
+      ],
+      "reason": "Reviewed generic creatinine threshold maps to the Synthea serum-creatinine observation used in the patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for T2DM renal exclusion criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "patient_vocabulary_closure"
+    },
+    {
+      "kind": "lab",
+      "surface": "fasting blood glucose",
+      "normalized_surface": "fasting blood glucose",
+      "status": "mapped",
+      "concept_set": "GLUCOSE",
+      "candidates": [
+        {
+          "name": "Glucose",
+          "concept_set": "GLUCOSE",
+          "system": "http://loinc.org",
+          "codes": ["2339-0"],
+          "source": "patient vocabulary review",
+          "reason": "The active Synthea vocabulary carries blood glucose as LOINC 2339-0."
+        }
+      ],
+      "reason": "Reviewed fasting-glucose surface maps to the available Synthea glucose observation; fasting state is not separately modeled.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for glucose thresholds.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "patient_vocabulary_closure"
+    },
+    {
+      "kind": "lab",
+      "surface": "fpg",
+      "normalized_surface": "fpg",
+      "status": "mapped",
+      "concept_set": "GLUCOSE",
+      "candidates": [
+        {
+          "name": "Glucose",
+          "concept_set": "GLUCOSE",
+          "system": "http://loinc.org",
+          "codes": ["2339-0"],
+          "source": "patient vocabulary review",
+          "reason": "FPG is a fasting plasma glucose abbreviation; the active patient vocabulary exposes glucose as LOINC 2339-0."
+        }
+      ],
+      "reason": "Reviewed FPG abbreviation maps to the available Synthea glucose observation; fasting state is not separately modeled.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for glucose thresholds.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "patient_vocabulary_closure"
+    },
+    {
+      "kind": "lab",
+      "surface": "fasting serum ldl-c",
+      "normalized_surface": "fasting serum ldl-c",
+      "status": "mapped",
+      "concept_set": "LDL_CHOLESTEROL",
+      "candidates": [
+        {
+          "name": "LDL cholesterol",
+          "concept_set": "LDL_CHOLESTEROL",
+          "system": "http://loinc.org",
+          "codes": ["18262-6"],
+          "source": "clinical_demo.profile.concept_sets",
+          "reason": "Fasting serum LDL-C maps to the existing LDL cholesterol ConceptSet."
+        }
+      ],
+      "reason": "Reviewed LDL-C surface maps to the project LDL cholesterol ConceptSet; fasting state is not separately modeled.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for hyperlipidemia LDL criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "fasting ldl-c",
+      "normalized_surface": "fasting ldl-c",
+      "status": "mapped",
+      "concept_set": "LDL_CHOLESTEROL",
+      "candidates": [
+        {
+          "name": "LDL cholesterol",
+          "concept_set": "LDL_CHOLESTEROL",
+          "system": "http://loinc.org",
+          "codes": ["18262-6"],
+          "source": "clinical_demo.profile.concept_sets",
+          "reason": "Fasting LDL-C maps to the existing LDL cholesterol ConceptSet."
+        }
+      ],
+      "reason": "Reviewed LDL-C surface maps to the project LDL cholesterol ConceptSet; fasting state is not separately modeled.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for hyperlipidemia LDL criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "fasting triglyceride",
+      "normalized_surface": "fasting triglyceride",
+      "status": "mapped",
+      "concept_set": "TRIGLYCERIDES",
+      "candidates": [
+        {
+          "name": "Triglycerides",
+          "concept_set": "TRIGLYCERIDES",
+          "system": "http://loinc.org",
+          "codes": ["2571-8"],
+          "source": "patient vocabulary review",
+          "reason": "Synthea carries triglycerides as LOINC 2571-8."
+        }
+      ],
+      "reason": "Reviewed fasting triglyceride surface maps to the project triglycerides ConceptSet; fasting state is not separately modeled.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for triglyceride thresholds.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "serum total bilirubin",
+      "normalized_surface": "serum total bilirubin",
+      "status": "mapped",
+      "concept_set": "TOTAL_BILIRUBIN",
+      "candidates": [
+        {
+          "name": "Total bilirubin",
+          "concept_set": "TOTAL_BILIRUBIN",
+          "system": "http://loinc.org",
+          "codes": ["1975-2"],
+          "source": "patient vocabulary review",
+          "reason": "Synthea carries serum/plasma total bilirubin as LOINC 1975-2."
+        }
+      ],
+      "reason": "Reviewed serum total bilirubin surface maps to the project total bilirubin ConceptSet. ULN multiplier semantics remain unit/normal-range compiler logic.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for hepatic lab criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "total bilirubin",
+      "normalized_surface": "total bilirubin",
+      "status": "mapped",
+      "concept_set": "TOTAL_BILIRUBIN",
+      "candidates": [
+        {
+          "name": "Total bilirubin",
+          "concept_set": "TOTAL_BILIRUBIN",
+          "system": "http://loinc.org",
+          "codes": ["1975-2"],
+          "source": "patient vocabulary review",
+          "reason": "Synthea carries serum/plasma total bilirubin as LOINC 1975-2."
+        }
+      ],
+      "reason": "Reviewed total bilirubin surface maps to the project total bilirubin ConceptSet. ULN multiplier semantics remain unit/normal-range compiler logic.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for hepatic lab criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "mean sitting office systolic blood pressure",
+      "normalized_surface": "mean sitting office systolic blood pressure",
+      "status": "mapped",
+      "concept_set": "SYSTOLIC_BP",
+      "candidates": [
+        {
+          "name": "Systolic blood pressure",
+          "concept_set": "SYSTOLIC_BP",
+          "system": "http://loinc.org",
+          "codes": ["8480-6"],
+          "source": "clinical_demo.profile.concept_sets",
+          "reason": "Office systolic BP maps to the existing systolic blood pressure ConceptSet."
+        }
+      ],
+      "reason": "Reviewed office systolic BP surface maps to the project systolic BP ConceptSet.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for hypertension criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "24-hour mean systolic blood pressure",
+      "normalized_surface": "24-hour mean systolic blood pressure",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [
+        {
+          "name": "Systolic blood pressure",
+          "concept_set": "SYSTOLIC_BP",
+          "system": "http://loinc.org",
+          "codes": ["8480-6"],
+          "source": "clinical_demo.profile.concept_sets",
+          "reason": "Ordinary office/vital-sign systolic BP is close but does not preserve ABPM 24-hour mean modality."
+        }
+      ],
+      "reason": "24-hour ABPM mean systolic BP is not represented in the current Synthea patient profile and must not collapse to ordinary office systolic BP.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for hypertension ABPM criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "6-minute walk distance",
+      "normalized_surface": "6-minute walk distance",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Six-minute walk distance is a functional test not represented in the current Synthea patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for PH-ILD functional criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "oxygen supplementation",
+      "normalized_surface": "oxygen supplementation",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Oxygen flow supplementation is therapy/support data, not a LOINC lab or vital observation available in the current patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for PH-ILD oxygen criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "clinical laboratory values",
+      "normalized_surface": "clinical laboratory values",
+      "status": "composite_unhandled",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Generic clinical laboratory values must be decomposed into named lab subchecks and normal-range semantics before execution.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for PH-ILD generic lab criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "duration of T1D",
+      "normalized_surface": "duration of t1d",
+      "status": "extractor_bug",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Duration of type 1 diabetes should compile from condition onset/history, not as a measurement threshold.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for CKD duration criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "expected survival",
+      "normalized_surface": "expected survival",
+      "status": "extractor_bug",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Expected survival is prognostic/free-text review, not a structured measurement threshold in the current matcher.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for oncology criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "measurable non-CNS lesion",
+      "normalized_surface": "measurable non-cns lesion",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "RECIST measurable-lesion status is radiology/oncology assessment data not represented in the current Synthea patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for oncology measurable-disease criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "measurable disease",
+      "normalized_surface": "measurable disease",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "RECIST measurable-disease status is radiology/oncology assessment data not represented in the current Synthea patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for oncology measurable-disease criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "serum calcium (corrected for albumin)",
+      "normalized_surface": "serum calcium (corrected for albumin",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Corrected serum calcium and local normal-range interpretation are not represented in the current patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for local-normal-range calcium criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
+    },
+    {
+      "kind": "lab",
+      "surface": "vitamin D3",
+      "normalized_surface": "vitamin d3",
+      "status": "out_of_scope",
+      "concept_set": null,
+      "candidates": [],
+      "reason": "Vitamin D3 observations are not represented in the current Synthea patient profile.",
+      "source": "compiler rollout review",
+      "provenance": "2026-05-11 compiler-review group for vitamin D deficiency criteria.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-registry-v1",
+      "expansion_policy": "exact_code"
     }
   ]
 }

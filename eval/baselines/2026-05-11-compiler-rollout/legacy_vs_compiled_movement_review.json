@@ -6,24 +6,24 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "500e8f14fa5a",
-  "comparison_run_id": "6f857bb7c7bd",
+  "comparison_run_id": "dba692258184",
   "summary": {
     "baseline_run_id": "500e8f14fa5a",
-    "comparison_run_id": "6f857bb7c7bd",
+    "comparison_run_id": "dba692258184",
     "common_cases": 49,
     "changed_cases": 5,
     "compared_criteria": 1076,
-    "changed_criteria": 13,
+    "changed_criteria": 24,
     "by_case_movement": {
       "indeterminate->fail": 4,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 8,
-      "indeterminate->pass": 5
+      "indeterminate->fail": 12,
+      "indeterminate->pass": 12
     },
     "by_direction": {
-      "indeterminate_to_determinate": 13
+      "indeterminate_to_determinate": 24
     }
   },
   "case_movements": [
@@ -138,6 +138,35 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:28db1c55__NCT07297797:3",
+      "pair_id": "28db1c55__NCT07297797",
+      "patient_id": "28db1c55-fe99-d5c8-8fc4-bffda09ab3be",
+      "nct_id": "NCT07297797",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 3,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "At the Screening and Baseline periods, the mean sitting office systolic blood pressure is > 130 mmHg, and the 24-hour mean systolic blood pressure assessed by ABPM at Screening is ≥ 130 mmHg and < 160 mmHg.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:3",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:3:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:3:measurement:loinc",
+        "criterion:3:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:38f38890__NCT06217302:2",
       "pair_id": "38f38890__NCT06217302",
       "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
@@ -191,6 +220,35 @@
       ],
       "comparison_support_ids": [
         "criterion:27:free-text:support:trial-exposure"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:38f38890__NCT07489209:2",
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 2,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Fasting serum LDL-C ≥2.6 mmol/L.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:2",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:2:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:2:measurement:loinc",
+        "criterion:2:unit:normalization"
       ],
       "comparison_gap_ids": []
     },
@@ -252,6 +310,122 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:3beee40e__NCT06143566:8",
+      "pair_id": "3beee40e__NCT06143566",
+      "patient_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
+      "nct_id": "NCT06143566",
+      "eval_slice": "t2dm-academic",
+      "criterion_index": 8,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Creatinine >2.0mg/dL in men and >1.8mg/dL in women",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "no_data",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:8",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:8:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:8:measurement:loinc",
+        "criterion:8:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:3beee40e__NCT07394114:13",
+      "pair_id": "3beee40e__NCT07394114",
+      "patient_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
+      "nct_id": "NCT07394114",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 13,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "FPG ≥13.9 mmol/L.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:13",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:13:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:measurement:loinc",
+        "criterion:13:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:3beee40e__NCT07394114:16",
+      "pair_id": "3beee40e__NCT07394114",
+      "patient_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
+      "nct_id": "NCT07394114",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 16,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Fasting triglyceride (TG) >5.6 mmol/L (500 mg/dL).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "no_data",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:16",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:16:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:16:measurement:loinc",
+        "criterion:16:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:407ef75b__NCT07297797:3",
+      "pair_id": "407ef75b__NCT07297797",
+      "patient_id": "407ef75b-0a9c-ec23-60e5-c90ba86e27af",
+      "nct_id": "NCT07297797",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 3,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "At the Screening and Baseline periods, the mean sitting office systolic blood pressure is > 130 mmHg, and the 24-hour mean systolic blood pressure assessed by ABPM at Screening is ≥ 130 mmHg and < 160 mmHg.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:3",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:3:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:3:measurement:loinc",
+        "criterion:3:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:9cbf47d8__NCT07362459:32",
       "pair_id": "9cbf47d8__NCT07362459",
       "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
@@ -276,6 +450,35 @@
       ],
       "comparison_support_ids": [
         "criterion:32:free-text:support:trial-exposure"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:9e84e569__NCT04602754:12",
+      "pair_id": "9e84e569__NCT04602754",
+      "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
+      "nct_id": "NCT04602754",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 12,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Fasting blood glucose > 300 mg/dL;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "no_data",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:12",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:12:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:12:measurement:loinc",
+        "criterion:12:unit:normalization"
       ],
       "comparison_gap_ids": []
     },
@@ -337,6 +540,35 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:c2786fee__NCT06597006:2",
+      "pair_id": "c2786fee__NCT06597006",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06597006",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 2,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Fasting LDL-C >130 mg/dL (3.4 mmol/L) at screening",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:2",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:2:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:2:measurement:loinc",
+        "criterion:2:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:c2786fee__NCT06597006:13",
       "pair_id": "c2786fee__NCT06597006",
       "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
@@ -366,6 +598,35 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:d02b2ca5__NCT07489209:2",
+      "pair_id": "d02b2ca5__NCT07489209",
+      "patient_id": "d02b2ca5-7e63-1c3d-505f-3a7218bac46d",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 2,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Fasting serum LDL-C ≥2.6 mmol/L.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:2",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:2:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:2:measurement:loinc",
+        "criterion:2:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:d57e867e__NCT06143566:3",
       "pair_id": "d57e867e__NCT06143566",
       "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
@@ -391,6 +652,35 @@
       "comparison_support_ids": [
         "criterion:3:measurement:loinc",
         "criterion:3:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:d57e867e__NCT06143566:8",
+      "pair_id": "d57e867e__NCT06143566",
+      "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
+      "nct_id": "NCT06143566",
+      "eval_slice": "t2dm-academic",
+      "criterion_index": 8,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Creatinine >2.0mg/dL in men and >1.8mg/dL in women",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "no_data",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:8",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:8:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:8:measurement:loinc",
+        "criterion:8:unit:normalization"
       ],
       "comparison_gap_ids": []
     },
@@ -449,6 +739,35 @@
       "comparison_support_ids": [
         "criterion:8:measurement:loinc",
         "criterion:8:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:e7d52393__NCT06568471:11",
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT06568471",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 11,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Poorly controlled Type 1 or Type 2 diabetes mellitus defined as fasting blood glucose ≥11.0 mmol/L (200 mg/dL) and glycosylated hemoglobin (HbA1c) ≥ 9%;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "no_data",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:11",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:unit:normalization"
       ],
       "comparison_gap_ids": []
     }

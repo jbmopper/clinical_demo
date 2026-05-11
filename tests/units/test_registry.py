@@ -41,6 +41,8 @@ def test_egfr_units_canonicalize_to_single_conventional_form(
         ("39156-5", "kg / m^2", "kg/m2"),
         ("777-3", "µL", "count/uL"),
         ("777-3", "/ µL", "count/uL"),
+        ("751-8", "/ µL", "count/uL"),
+        ("1920-8", "u / L", "U/L"),
     ],
 )
 def test_unit_alias_lookup_accepts_conservative_normalized_variants(
@@ -66,6 +68,12 @@ def test_platelet_conversion_factors() -> None:
     assert conversion_factor("777-3", "μL", "10*3/uL") == 0.001
     assert conversion_factor("777-3", "count/uL", "10*3/uL") == 0.001
     assert conversion_factor("777-3", "10*3/uL", "mm3") == 1000.0
+
+
+def test_new_reviewed_measurement_conversion_factors() -> None:
+    assert conversion_factor("751-8", "μL", "10*3/uL") == 0.001
+    assert conversion_factor("2339-0", "mmol/L", "mg/dL") == 18.018
+    assert conversion_factor("2571-8", "mmol/L", "mg/dL") == 88.57
 
 
 @pytest.mark.parametrize(
@@ -100,6 +108,11 @@ def test_identical_canonical_units_have_identity_conversion() -> None:
         ("18262-6", "mg/dL"),
         ("718-7", "g/dL"),
         ("777-3", "10*3/uL"),
+        ("751-8", "10*3/uL"),
+        ("1920-8", "U/L"),
+        ("1975-2", "mg/dL"),
+        ("2339-0", "mg/dL"),
+        ("2571-8", "mg/dL"),
         ("99999-9", None),
     ],
 )

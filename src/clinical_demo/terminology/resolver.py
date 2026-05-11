@@ -62,20 +62,13 @@ from clinical_demo.profile import ConceptSet
 from clinical_demo.profile.concept_sets import (
     BMI,
     C_PEPTIDE,
-    CHRONIC_KIDNEY_DISEASE,
+    CONCEPT_SETS_BY_ID,
     DIASTOLIC_BP,
-    EGFR,
-    FRACTURE,
-    HBA1C,
     HEMOGLOBIN,
-    HYPERLIPIDEMIA,
     HYPERTENSION,
-    LDL_CHOLESTEROL,
     PLATELET_COUNT,
-    PREDIABETES,
     SYSTOLIC_BP,
     T1DM,
-    T2DM,
 )
 from clinical_demo.settings import ResolverExecutionPolicy, Settings, get_settings
 from clinical_demo.terminology.bindings import (
@@ -240,26 +233,6 @@ def _candidate(
     )
 
 
-_REVIEWED_CONCEPT_SETS: dict[str, ConceptSet] = {
-    "BMI": BMI,
-    "CHRONIC_KIDNEY_DISEASE": CHRONIC_KIDNEY_DISEASE,
-    "C_PEPTIDE": C_PEPTIDE,
-    "DIASTOLIC_BP": DIASTOLIC_BP,
-    "EGFR": EGFR,
-    "FRACTURE": FRACTURE,
-    "HBA1C": HBA1C,
-    "HEMOGLOBIN": HEMOGLOBIN,
-    "HYPERLIPIDEMIA": HYPERLIPIDEMIA,
-    "HYPERTENSION": HYPERTENSION,
-    "LDL_CHOLESTEROL": LDL_CHOLESTEROL,
-    "PLATELET_COUNT": PLATELET_COUNT,
-    "PREDIABETES": PREDIABETES,
-    "SYSTOLIC_BP": SYSTOLIC_BP,
-    "T1DM": T1DM,
-    "T2DM": T2DM,
-}
-
-
 @lru_cache(maxsize=1)
 def get_reviewed_mapping_registry() -> ReviewedMappingRegistry:
     """Load committed human-reviewed terminology decisions once."""
@@ -269,14 +242,14 @@ def get_reviewed_mapping_registry() -> ReviewedMappingRegistry:
 def _concept_set_for_reviewed_entry(entry: ReviewedMappingEntry) -> ConceptSet | None:
     if entry.concept_set is None:
         return None
-    return _REVIEWED_CONCEPT_SETS.get(entry.concept_set)
+    return CONCEPT_SETS_BY_ID.get(entry.concept_set)
 
 
 def _reviewed_candidates(entry: ReviewedMappingEntry) -> list[SurfaceResolutionCandidate]:
     candidates: list[SurfaceResolutionCandidate] = []
     for candidate in entry.candidates:
         concept_set = (
-            _REVIEWED_CONCEPT_SETS.get(candidate.concept_set)
+            CONCEPT_SETS_BY_ID.get(candidate.concept_set)
             if candidate.concept_set is not None
             else None
         )

@@ -18,7 +18,7 @@ measurement, and medication hardening slices landed.
 - Code changes in this slice: compiler-side correlatable free-text promotion,
   raw condition-surface lookup preservation, parenthetical measurement alias
   handling, compiled matcher mood guard for hypothetical/planned criteria, and
-  reviewed measurement non-mapping/ambiguity decisions in
+  reviewed measurement mapping/non-mapping/ambiguity decisions in
   `data/terminology/reviewed_mappings.json`.
 
 ## Run Comparison
@@ -26,11 +26,11 @@ measurement, and medication hardening slices landed.
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `500e8f14fa5a` | 25 fail / 21 indeterminate / 0 pass / 1 pass_pending_review | 48 fail / 913 indeterminate / 115 pass | 316 (29.4%) | 17.9s |
-| `compiled_predicates` | `6f857bb7c7bd` | 29 fail / 16 indeterminate / 0 pass / 2 pass_pending_review | 56 fail / 900 indeterminate / 120 pass | 202 (18.8%) | 17.2s |
+| `compiled_predicates` | `dba692258184` | 29 fail / 16 indeterminate / 0 pass / 2 pass_pending_review | 60 fail / 889 indeterminate / 127 pass | 164 (15.2%) | 17.4s |
 
-The compiled path reduces criterion-level `unmapped_concept` by 114 rows
-(-10.6 percentage points) and has no determinate-to-indeterminate criterion
-regressions against the legacy path in this run. It adds 13
+The compiled path reduces criterion-level `unmapped_concept` by 152 rows
+(-14.2 percentage points) and has no determinate-to-indeterminate criterion
+regressions against the legacy path in this run. It adds 24
 indeterminate-to-determinate criterion wins from more explicit compiler
 execution of mapped condition/measurement/free-text/trial-exposure promotions.
 The latest compiler guard also keeps unsafe composite free-text condition
@@ -55,43 +55,45 @@ Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
 `legacy_vs_compiled_movement_review.json` and `.md` are the focused review
-packet for these changes. They contain 13 decisive criterion movements:
-6 measurement thresholds, 4 trial-exposure predicates, and 3 condition
-predicates. Seven of the 13 comparison verdicts rely on closed-world absence
+packet for these changes. They contain 24 decisive criterion movements:
+17 measurement thresholds, 4 trial-exposure predicates, and 3 condition
+predicates. Seven of the 24 comparison verdicts rely on closed-world absence
 (`evidence_under_assumption=true`), so the next reviewer pass should confirm
-that those absence-as-negative decisions match the validation contract before
-broad grading resumes.
+that those absence-as-negative decisions match the validation contract. The 11
+additional measurement movements from the reviewed lab tranche should be
+reviewed as a group, especially where extracted prose had fasting/modality or
+sex-specific threshold details that are not independently modeled yet.
 
 ## Compiler Readiness
 
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 199
-- unresolved compiler gaps: 441
+- checkable predicates: 212
+- unresolved compiler gaps: 398
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 1151 total, 537 blocking
+- validation findings: 1125 total, 511 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
-| `review_mapping` | 276 |
-| `implement_compiler_logic` | 79 |
-| `choose_candidate` | 64 |
-| `add_unit_mapping` | 12 |
-| `review_gap` | 10 |
+| `review_mapping` | 238 |
+| `implement_compiler_logic` | 100 |
+| `choose_candidate` | 35 |
+| `review_gap` | 22 |
+| `add_unit_mapping` | 3 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-441 raw rows to 229 distinct surface/action/policy work items:
+398 raw rows to 211 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
-| `review_mapping` | 157 |
-| `implement_compiler_logic` | 43 |
-| `choose_candidate` | 21 |
-| `add_unit_mapping` | 7 |
-| `review_gap` | 1 |
+| `review_mapping` | 136 |
+| `implement_compiler_logic` | 54 |
+| `choose_candidate` | 15 |
+| `review_gap` | 4 |
+| `add_unit_mapping` | 2 |
 
 The current threshold gate passes only without `--require-compilation`, because
 the 2 deceased-patient scorer refusals mean compilation is missing for those
@@ -100,19 +102,20 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 441 \
+  --max-unresolved-gaps 398 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 537
+  --max-closed-world-blocking-findings 511
 ```
 
 Top remaining unmapped surfaces are now dominated by event/data-model gaps and
-unreviewed measurement variants: stable background PAH therapy, history of full
-pneumonectomy, AST, corrected serum calcium, vitamin D3, office/ambulatory
-systolic blood-pressure variants, PH-ILD, 6-minute walk distance, oxygen
-supplementation, uncontrolled arrhythmia, and RAAS-inhibitor therapy. The
-standalone PVR, ECOG, life-expectancy, and generic blood-pressure measurement
-surfaces are no longer opaque top-unmapped rows; reviewed registry decisions now
-classify them as out-of-scope, extractor-bug, or ambiguous compiler gaps.
+a smaller measurement tail: stable background PAH therapy, history of full
+pneumonectomy, PH-ILD variants, severe hypoglycemia event counts, beta-
+hydroxybutyrate surfaces, uncontrolled arrhythmia, RAAS-inhibitor therapy, and
+oncology/cardiopulmonary history concepts. The reviewed lab tranche removed AST,
+corrected calcium, vitamin D3, systolic-BP variants, 6-minute walk distance,
+oxygen supplementation, creatinine, glucose/FPG, LDL-C, triglycerides, ANC, and
+bilirubin from the opaque top-unmapped bucket by either mapping them or
+classifying them as explicit compiler gaps.
 
 ## Patient-Evidence Calibration
 
@@ -122,11 +125,11 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `500e8f14fa5a` | 5/50 | 80.0% | 40.0% | 17 |
-| `6f857bb7c7bd` | 5/50 | 80.0% | 40.0% | 17 |
+| `dba692258184` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human
-pass should grade a deduped packet, not the raw 441-row compiler review export.
+pass should grade a deduped packet, not the raw 398-row compiler review export.
 
 ## Files
 

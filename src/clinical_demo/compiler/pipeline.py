@@ -265,6 +265,7 @@ def _compile_criterion(
             criterion,
             source_id,
             resolver_policy=resolver_policy,
+            reviewed_registry=context.reviewed_registry,
         )
         unit_normalization = measurement.unit_normalization
         supports.extend(measurement.resolved_supports)
@@ -1328,7 +1329,11 @@ def _measurement_predicate(
 ) -> tuple[CheckablePredicatePlan, list[CheckablePredicate]]:
     support_ids = [support.support_id for support in measurement.resolved_supports]
     gap_ids = [gap.gap_id for gap in measurement.unresolved_gaps]
-    if measurement.concept_set is None or measurement.unit_normalization.status != "resolved":
+    if (
+        measurement.concept_set is None
+        or measurement.unit_normalization.status != "resolved"
+        or measurement.unresolved_gaps
+    ):
         return (
             CheckablePredicatePlan(
                 status="unsupported"

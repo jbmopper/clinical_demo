@@ -184,6 +184,73 @@ def test_reviewed_out_of_scope_measurement_emits_unsupported_gap() -> None:
     }
 
 
+def test_reviewed_mapped_measurement_resolves_without_alias_entry() -> None:
+    result = compile_measurement_resolution(
+        _measurement("fasting serum LDL-C", value=2.6, unit="mmol/L"),
+        "c:reviewed-mapped",
+        reviewed_registry=ReviewedMappingRegistry(
+            [
+                ReviewedMappingEntry.model_validate(
+                    {
+                        "kind": "lab",
+                        "surface": "fasting serum LDL-C",
+                        "status": "mapped",
+                        "concept_set": "LDL_CHOLESTEROL",
+                        "candidates": [],
+                        "reason": "unit-test reviewed LDL decision",
+                        "source": "compiler-review",
+                        "provenance": "unit test",
+                        "reviewer": "tests",
+                        "reviewed_at": "2026-05-11",
+                        "resolver_version": "reviewed-registry-v1",
+                        "expansion_policy": "exact_code",
+                    }
+                )
+            ]
+        ),
+    )
+
+    assert result.selected_loinc_code == "18262-6"
+    assert result.unit_normalization.status == "resolved"
+    assert result.normalized_value == pytest.approx(100.542)
+    assert result.unresolved_gaps == []
+
+
+def test_missing_threshold_value_emits_predicate_translation_gap() -> None:
+    result = compile_measurement_resolution(
+        _measurement("aspartate aminotransferase", operator="<=", value=None, unit=None),
+        "c:missing-value",
+        reviewed_registry=ReviewedMappingRegistry(
+            [
+                ReviewedMappingEntry.model_validate(
+                    {
+                        "kind": "lab",
+                        "surface": "aspartate aminotransferase",
+                        "status": "mapped",
+                        "concept_set": "ASPARTATE_AMINOTRANSFERASE",
+                        "candidates": [],
+                        "reason": "unit-test reviewed AST decision",
+                        "source": "compiler-review",
+                        "provenance": "unit test",
+                        "reviewer": "tests",
+                        "reviewed_at": "2026-05-11",
+                        "resolver_version": "reviewed-registry-v1",
+                        "expansion_policy": "exact_code",
+                    }
+                )
+            ]
+        ),
+    )
+
+    assert result.selected_loinc_code == "1920-8"
+    assert result.unit_normalization.status == "resolved"
+    assert [gap.kind for gap in result.unresolved_gaps] == ["insufficient_source"]
+    assert result.unresolved_gaps[0].stage == "predicate_translation"
+    assert "measurement.threshold_value_missing" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
+
+
 def test_missing_unit_unknown_measurement_emits_unit_gap_too() -> None:
     result = compile_measurement_resolution(_measurement("BNP", value=100.0, unit=None), "c:4")
 

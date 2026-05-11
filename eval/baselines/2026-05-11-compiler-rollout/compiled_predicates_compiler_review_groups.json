@@ -420,66 +420,6 @@
       "trial_count": 1
     },
     {
-      "case_count": 3,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "nsclc",
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 14,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Aspartate aminotransferase (AST) >3\u00d7 upper limit of normal (ULN) and/or alanine aminotransferase (ALT) >3\u00d7 ULN.",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:14:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'aspartate aminotransferase'.",
-          "nct_id": "NCT07394114",
-          "pair_id": "3beee40e__NCT07394114",
-          "row_id": "3beee40e__NCT07394114:criterion:14:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): \u22643.0 \u00d7 upper limit of normal (ULN) (or \u22645.0 \u00d7 ULN, for participants with concurrent liver metastases).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'aspartate aminotransferase'.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:8:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): \u22643.0 \u00d7 upper limit of normal (ULN) (or \u22645.0 \u00d7 ULN, for participants with concurrent liver metastases).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'aspartate aminotransferase'.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:8:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:bc61d189d464",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'aspartate aminotransferase'."
-      ],
-      "normalized_surface": "aspartate aminotransferase",
-      "occurrence_count": 3,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "aspartate aminotransferase",
-      "trial_count": 2
-    },
-    {
       "case_count": 2,
       "criterion_kinds": [
         "condition_present"
@@ -2743,150 +2683,6 @@
       ],
       "domain": "measurement",
       "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 4,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:4:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement '24-hour mean systolic blood pressure'.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:criterion:4:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 4,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:4:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement '24-hour mean systolic blood pressure'.",
-          "nct_id": "NCT07297797",
-          "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:criterion:4:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:b6dbed105acd",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement '24-hour mean systolic blood pressure'."
-      ],
-      "normalized_surface": "24-hour mean systolic blood pressure",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "24-hour mean systolic blood pressure",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have a baseline 6-minute walk distance \u2265100 meters and \u2264500 meters.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement '6-minute walk distance'.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:9:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have a baseline 6-minute walk distance \u2265100 meters and \u2264500 meters.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement '6-minute walk distance'.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:9:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:71f98f11793a",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement '6-minute walk distance'."
-      ],
-      "normalized_surface": "6-minute walk distance",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "6-minute walk distance",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Absolute neutrophil count: \u22651500/\u03bcL.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:10:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'absolute neutrophil count'.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:10:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Absolute neutrophil count: \u22651500/\u03bcL.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:10:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'absolute neutrophil count'.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:10:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:3d9c756ec461",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'absolute neutrophil count'."
-      ],
-      "normalized_surface": "absolute neutrophil count",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "absolute neutrophil count",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
         "ckd"
       ],
       "example_rows": [
@@ -2983,150 +2779,6 @@
       ],
       "domain": "measurement",
       "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 14,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit of normal (ULN) as specified by the testing laboratory.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:14:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'clinical laboratory values'.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:14:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 14,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit of normal (ULN) as specified by the testing laboratory.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:14:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'clinical laboratory values'.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:14:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:540bbba186b6",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'clinical laboratory values'."
-      ],
-      "normalized_surface": "clinical laboratory values",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "clinical laboratory values",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "t2dm-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Creatinine >2.0mg/dL in men and >1.8mg/dL in women",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:8:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'creatinine'.",
-          "nct_id": "NCT06143566",
-          "pair_id": "3beee40e__NCT06143566",
-          "row_id": "3beee40e__NCT06143566:criterion:8:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Creatinine >2.0mg/dL in men and >1.8mg/dL in women",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:8:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'creatinine'.",
-          "nct_id": "NCT06143566",
-          "pair_id": "d57e867e__NCT06143566",
-          "row_id": "d57e867e__NCT06143566:criterion:8:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:466eb1dcb79f",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'creatinine'."
-      ],
-      "normalized_surface": "creatinine",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "creatinine",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 1,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Duration of T1D \u2265 8 years;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:1:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'duration of T1D'.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:1:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 1,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Duration of T1D \u2265 8 years;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:1:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'duration of T1D'.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:1:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:d610255a3769",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'duration of T1D'."
-      ],
-      "normalized_surface": "duration of t1d",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "duration of T1D",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
         "nsclc"
       ],
       "example_rows": [
@@ -3167,103 +2819,6 @@
       "stage": "concept_resolution",
       "surface": "estimated creatinine clearance",
       "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 3,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "An expected survival of \u2265 3 months.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:3:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'expected survival'.",
-          "nct_id": "NCT07362459",
-          "pair_id": "3a364909__NCT07362459",
-          "row_id": "3a364909__NCT07362459:criterion:3:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 3,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "An expected survival of \u2265 3 months.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:3:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'expected survival'.",
-          "nct_id": "NCT07362459",
-          "pair_id": "9cbf47d8__NCT07362459",
-          "row_id": "9cbf47d8__NCT07362459:criterion:3:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:d56810e0217e",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'expected survival'."
-      ],
-      "normalized_surface": "expected survival",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "expected survival",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "hyperlipidemia",
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 12,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Fasting blood glucose > 300 mg/dL;",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:12:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'fasting blood glucose'.",
-          "nct_id": "NCT04602754",
-          "pair_id": "9e84e569__NCT04602754",
-          "row_id": "9e84e569__NCT04602754:criterion:12:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 11,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Poorly controlled Type 1 or Type 2 diabetes mellitus defined as fasting blood glucose \u226511.0 mmol/L (200 mg/dL) and glycosylated hemoglobin (HbA1c) \u2265 9%;",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:11:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'fasting blood glucose'.",
-          "nct_id": "NCT06568471",
-          "pair_id": "e7d52393__NCT06568471",
-          "row_id": "e7d52393__NCT06568471:criterion:11:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:e01aa74a11c0",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'fasting blood glucose'."
-      ],
-      "normalized_surface": "fasting blood glucose",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "fasting blood glucose",
-      "trial_count": 2
     },
     {
       "case_count": 2,
@@ -3311,54 +2866,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "fasting plasma glucose",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 2,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Fasting serum LDL-C \u22652.6 mmol/L.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:2:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'fasting serum ldl-c'.",
-          "nct_id": "NCT07489209",
-          "pair_id": "38f38890__NCT07489209",
-          "row_id": "38f38890__NCT07489209:criterion:2:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 2,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Fasting serum LDL-C \u22652.6 mmol/L.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:2:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'fasting serum ldl-c'.",
-          "nct_id": "NCT07489209",
-          "pair_id": "d02b2ca5__NCT07489209",
-          "row_id": "d02b2ca5__NCT07489209:criterion:2:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:a85ee86a1644",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'fasting serum ldl-c'."
-      ],
-      "normalized_surface": "fasting serum ldl-c",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "fasting serum ldl-c",
       "trial_count": 1
     },
     {
@@ -3460,150 +2967,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 3,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At the Screening and Baseline periods, the mean sitting office systolic blood pressure is > 130 mmHg, and the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:3:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'mean sitting office systolic blood pressure'.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:criterion:3:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 3,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At the Screening and Baseline periods, the mean sitting office systolic blood pressure is > 130 mmHg, and the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:3:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'mean sitting office systolic blood pressure'.",
-          "nct_id": "NCT07297797",
-          "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:criterion:3:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:6d02864f13b6",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'mean sitting office systolic blood pressure'."
-      ],
-      "normalized_surface": "mean sitting office systolic blood pressure",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "mean sitting office systolic blood pressure",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At least one measurable non-CNS lesion according to RECIST v1.1 criteria.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'measurable non-CNS lesion'.",
-          "nct_id": "NCT07362459",
-          "pair_id": "3a364909__NCT07362459",
-          "row_id": "3a364909__NCT07362459:criterion:8:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At least one measurable non-CNS lesion according to RECIST v1.1 criteria.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'measurable non-CNS lesion'.",
-          "nct_id": "NCT07362459",
-          "pair_id": "9cbf47d8__NCT07362459",
-          "row_id": "9cbf47d8__NCT07362459:criterion:8:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:2adb0e4fe482",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'measurable non-CNS lesion'."
-      ],
-      "normalized_surface": "measurable non-cns lesion",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "measurable non-CNS lesion",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 21,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:21:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'oxygen supplementation'.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:21:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 21,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:21:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'oxygen supplementation'.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:21:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:6320cba3cdbf",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'oxygen supplementation'."
-      ],
-      "normalized_surface": "oxygen supplementation",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "oxygen supplementation",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "free_text"
       ],
       "domain": "measurement",
@@ -3647,150 +3010,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "plasma glucose",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "t2dm-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 6,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum calcium (corrected for albumin) within normal limits per site's local lab",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:6:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'serum calcium (corrected for albumin)'.",
-          "nct_id": "NCT06524960",
-          "pair_id": "1293efbb__NCT06524960",
-          "row_id": "1293efbb__NCT06524960:criterion:6:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 6,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum calcium (corrected for albumin) within normal limits per site's local lab",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:6:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'serum calcium (corrected for albumin)'.",
-          "nct_id": "NCT06524960",
-          "pair_id": "9e84e569__NCT06524960",
-          "row_id": "9e84e569__NCT06524960:criterion:6:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:e57f7a6b45aa",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'serum calcium (corrected for albumin)'."
-      ],
-      "normalized_surface": "serum calcium (corrected for albumin",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "serum calcium (corrected for albumin)",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum total bilirubin: \u22641.5 \u00d7 ULN (\u22643.0 \u00d7 ULN for participants with Gilbert syndrome).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:9:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'serum total bilirubin'.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:9:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum total bilirubin: \u22641.5 \u00d7 ULN (\u22643.0 \u00d7 ULN for participants with Gilbert syndrome).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:9:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'serum total bilirubin'.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:9:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:9343a7420548",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'serum total bilirubin'."
-      ],
-      "normalized_surface": "serum total bilirubin",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "serum total bilirubin",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "t2dm-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Vitamin D3 deficiency (< 30 ng/ml)",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:10:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'vitamin D3'.",
-          "nct_id": "NCT06524960",
-          "pair_id": "1293efbb__NCT06524960",
-          "row_id": "1293efbb__NCT06524960:criterion:10:measurement:gap:unmapped"
-        },
-        {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Vitamin D3 deficiency (< 30 ng/ml)",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:10:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'vitamin D3'.",
-          "nct_id": "NCT06524960",
-          "pair_id": "9e84e569__NCT06524960",
-          "row_id": "9e84e569__NCT06524960:criterion:10:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:ea20820af1b8",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'vitamin D3'."
-      ],
-      "normalized_surface": "vitamin d3",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "vitamin D3",
       "trial_count": 1
     },
     {
@@ -6315,117 +5534,6 @@
       ],
       "domain": "measurement",
       "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 2,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Fasting LDL-C >130 mg/dL (3.4 mmol/L) at screening",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:2:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'fasting ldl-c'.",
-          "nct_id": "NCT06597006",
-          "pair_id": "c2786fee__NCT06597006",
-          "row_id": "c2786fee__NCT06597006:criterion:2:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:871576d53f41",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'fasting ldl-c'."
-      ],
-      "normalized_surface": "fasting ldl-c",
-      "occurrence_count": 1,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "fasting ldl-c",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 16,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Fasting triglyceride (TG) >5.6 mmol/L (500 mg/dL).",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:16:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'fasting triglyceride'.",
-          "nct_id": "NCT07394114",
-          "pair_id": "3beee40e__NCT07394114",
-          "row_id": "3beee40e__NCT07394114:criterion:16:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:b1768eb8d25c",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'fasting triglyceride'."
-      ],
-      "normalized_surface": "fasting triglyceride",
-      "occurrence_count": 1,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "fasting triglyceride",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 13,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "FPG \u226513.9 mmol/L.",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:13:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'fpg'.",
-          "nct_id": "NCT07394114",
-          "pair_id": "3beee40e__NCT07394114",
-          "row_id": "3beee40e__NCT07394114:criterion:13:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:bc7675665dd5",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'fpg'."
-      ],
-      "normalized_surface": "fpg",
-      "occurrence_count": 1,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "fpg",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
         "nsclc"
       ],
       "example_rows": [
@@ -6454,43 +5562,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "karnofsky ps scale",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have measurable disease per RECIST v1.1.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'measurable disease'.",
-          "nct_id": "NCT06090266",
-          "pair_id": "fa2d28b1__NCT06090266",
-          "row_id": "fa2d28b1__NCT06090266:criterion:8:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:c536c05a2914",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'measurable disease'."
-      ],
-      "normalized_surface": "measurable disease",
-      "occurrence_count": 1,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "measurable disease",
       "trial_count": 1
     },
     {
@@ -6718,43 +5789,6 @@
     {
       "case_count": 1,
       "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 15,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Total bilirubin >1.5\u00d7 ULN.",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:15:measurement:gap:unmapped",
-          "message": "No cached/local LOINC mapping is available for measurement 'total bilirubin'.",
-          "nct_id": "NCT07394114",
-          "pair_id": "3beee40e__NCT07394114",
-          "row_id": "3beee40e__NCT07394114:criterion:15:measurement:gap:unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:f3d73cb805b2",
-      "message_examples": [
-        "No cached/local LOINC mapping is available for measurement 'total bilirubin'."
-      ],
-      "normalized_surface": "total bilirubin",
-      "occurrence_count": 1,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "total bilirubin",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
         "free_text"
       ],
       "domain": "medication",
@@ -6864,16 +5898,13 @@
       "trial_count": 1
     },
     {
-      "case_count": 6,
+      "case_count": 2,
       "criterion_kinds": [
-        "free_text",
-        "measurement_threshold"
+        "free_text"
       ],
       "domain": "unit",
       "eval_slices": [
-        "hyperlipidemia",
-        "t2dm-academic",
-        "t2dm-industry"
+        "t2dm-academic"
       ],
       "example_rows": [
         {
@@ -6918,77 +5949,14 @@
         "Cannot normalize unit 'mg/dl' because measurement 'plasma glucose' did not resolve to exactly one LOINC code."
       ],
       "normalized_surface": "mg/dl",
-      "occurrence_count": 10,
+      "occurrence_count": 6,
       "priority": 30,
       "recommended_action": "choose_candidate",
       "resolver_policy": "cached_only",
       "severity": "high",
       "stage": "unit_normalization",
-      "surface": "mg/dL",
-      "trial_count": 4
-    },
-    {
-      "case_count": 6,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "ckd",
-        "hyperlipidemia",
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 17,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Blood beta-hydroxybutyrate (BHB) >0.6 mmol/L for >2 hours on >2 occasions during the Run-in period;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:17:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'mmol/L' because measurement 'blood beta-hydroxybutyrate (BHB)' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:17:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 2,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Fasting serum LDL-C \u22652.6 mmol/L.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:2:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'mmol/L' because measurement 'fasting serum ldl-c' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07489209",
-          "pair_id": "38f38890__NCT07489209",
-          "row_id": "38f38890__NCT07489209:criterion:2:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "FPG \u226513.9 mmol/L.",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:13:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'mmol/L' because measurement 'fpg' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07394114",
-          "pair_id": "3beee40e__NCT07394114",
-          "row_id": "3beee40e__NCT07394114:criterion:13:unit:gap:ambiguous_loinc"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:9b9de920e057",
-      "message_examples": [
-        "Cannot normalize unit 'mmol/L' because measurement 'blood beta-hydroxybutyrate (BHB)' did not resolve to exactly one LOINC code.",
-        "Cannot normalize unit 'mmol/L' because measurement 'fasting serum ldl-c' did not resolve to exactly one LOINC code.",
-        "Cannot normalize unit 'mmol/L' because measurement 'fpg' did not resolve to exactly one LOINC code."
-      ],
-      "normalized_surface": "mmol/l",
-      "occurrence_count": 7,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "mmol/L",
-      "trial_count": 4
+      "surface": "mg/dl",
+      "trial_count": 1
     },
     {
       "case_count": 5,
@@ -7112,191 +6080,6 @@
       "stage": "unit_normalization",
       "surface": "%",
       "trial_count": 4
-    },
-    {
-      "case_count": 4,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "hyperlipidemia",
-        "hypertension-industry",
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 14,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit of normal (ULN) as specified by the testing laboratory.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:14:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'ULN' because measurement 'clinical laboratory values' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:14:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 14,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Aspartate aminotransferase (AST) >3\u00d7 upper limit of normal (ULN) and/or alanine aminotransferase (ALT) >3\u00d7 ULN.",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:14:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'ULN' because measurement 'aspartate aminotransferase' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07394114",
-          "pair_id": "3beee40e__NCT07394114",
-          "row_id": "3beee40e__NCT07394114:criterion:14:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 15,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Total bilirubin >1.5\u00d7 ULN.",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:15:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'ULN' because measurement 'total bilirubin' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07394114",
-          "pair_id": "3beee40e__NCT07394114",
-          "row_id": "3beee40e__NCT07394114:criterion:15:unit:gap:ambiguous_loinc"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:58e7f03d800b",
-      "message_examples": [
-        "Cannot normalize unit 'ULN' because measurement 'clinical laboratory values' did not resolve to exactly one LOINC code.",
-        "Cannot normalize unit 'ULN' because measurement 'aspartate aminotransferase' did not resolve to exactly one LOINC code.",
-        "Cannot normalize unit 'ULN' because measurement 'total bilirubin' did not resolve to exactly one LOINC code."
-      ],
-      "normalized_surface": "uln",
-      "occurrence_count": 5,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "ULN",
-      "trial_count": 3
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 3,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At the Screening and Baseline periods, the mean sitting office systolic blood pressure is > 130 mmHg, and the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:3:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'mmHg' because measurement 'mean sitting office systolic blood pressure' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:criterion:3:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 4,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:4:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'mmHg' because measurement '24-hour mean systolic blood pressure' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:criterion:4:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 3,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At the Screening and Baseline periods, the mean sitting office systolic blood pressure is > 130 mmHg, and the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:3:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'mmHg' because measurement 'mean sitting office systolic blood pressure' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07297797",
-          "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:criterion:3:unit:gap:ambiguous_loinc"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:27aa965805f2",
-      "message_examples": [
-        "Cannot normalize unit 'mmHg' because measurement 'mean sitting office systolic blood pressure' did not resolve to exactly one LOINC code.",
-        "Cannot normalize unit 'mmHg' because measurement '24-hour mean systolic blood pressure' did not resolve to exactly one LOINC code."
-      ],
-      "normalized_surface": "mmhg",
-      "occurrence_count": 4,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "mmHg",
-      "trial_count": 1
-    },
-    {
-      "case_count": 4,
-      "criterion_kinds": [
-        "free_text",
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "ckd",
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 6,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'years' because measurement 'in women' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 1,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Duration of T1D \u2265 8 years;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:1:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'years' because measurement 'duration of T1D' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:1:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 6,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'years' because measurement 'in women' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:79dd7527d876",
-      "message_examples": [
-        "Cannot normalize unit 'years' because measurement 'in women' did not resolve to exactly one LOINC code.",
-        "Cannot normalize unit 'years' because measurement 'duration of T1D' did not resolve to exactly one LOINC code."
-      ],
-      "normalized_surface": "years",
-      "occurrence_count": 4,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "years",
-      "trial_count": 2
     },
     {
       "case_count": 2,
@@ -7449,102 +6232,6 @@
       ],
       "domain": "unit",
       "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 21,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:21:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'L/min' because measurement 'oxygen supplementation' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:21:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 21,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:21:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'L/min' because measurement 'oxygen supplementation' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:21:unit:gap:ambiguous_loinc"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:ff07824a6341",
-      "message_examples": [
-        "Cannot normalize unit 'L/min' because measurement 'oxygen supplementation' did not resolve to exactly one LOINC code."
-      ],
-      "normalized_surface": "l/min",
-      "occurrence_count": 2,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "L/min",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have a baseline 6-minute walk distance \u2265100 meters and \u2264500 meters.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'meters' because measurement '6-minute walk distance' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:9:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have a baseline 6-minute walk distance \u2265100 meters and \u2264500 meters.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'meters' because measurement '6-minute walk distance' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:9:unit:gap:ambiguous_loinc"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:429ee6ecdd8d",
-      "message_examples": [
-        "Cannot normalize unit 'meters' because measurement '6-minute walk distance' did not resolve to exactly one LOINC code."
-      ],
-      "normalized_surface": "meters",
-      "occurrence_count": 2,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "meters",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
         "nsclc"
       ],
       "example_rows": [
@@ -7593,45 +6280,45 @@
       ],
       "domain": "unit",
       "eval_slices": [
-        "nsclc"
+        "ckd"
       ],
       "example_rows": [
         {
-          "criterion_index": 3,
+          "criterion_index": 17,
           "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "An expected survival of \u2265 3 months.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:3:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'months' because measurement 'expected survival' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07362459",
-          "pair_id": "3a364909__NCT07362459",
-          "row_id": "3a364909__NCT07362459:criterion:3:unit:gap:ambiguous_loinc"
+          "criterion_source_text": "Blood beta-hydroxybutyrate (BHB) >0.6 mmol/L for >2 hours on >2 occasions during the Run-in period;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:17:unit:gap:ambiguous_loinc",
+          "message": "Cannot normalize unit 'mmol/L' because measurement 'blood beta-hydroxybutyrate (BHB)' did not resolve to exactly one LOINC code.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:17:unit:gap:ambiguous_loinc"
         },
         {
-          "criterion_index": 3,
+          "criterion_index": 17,
           "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "An expected survival of \u2265 3 months.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:3:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'months' because measurement 'expected survival' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT07362459",
-          "pair_id": "9cbf47d8__NCT07362459",
-          "row_id": "9cbf47d8__NCT07362459:criterion:3:unit:gap:ambiguous_loinc"
+          "criterion_source_text": "Blood beta-hydroxybutyrate (BHB) >0.6 mmol/L for >2 hours on >2 occasions during the Run-in period;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:17:unit:gap:ambiguous_loinc",
+          "message": "Cannot normalize unit 'mmol/L' because measurement 'blood beta-hydroxybutyrate (BHB)' did not resolve to exactly one LOINC code.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:17:unit:gap:ambiguous_loinc"
         }
       ],
       "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:b06d01fe0c3e",
+      "group_id": "compiler-gap-group:9b9de920e057",
       "message_examples": [
-        "Cannot normalize unit 'months' because measurement 'expected survival' did not resolve to exactly one LOINC code."
+        "Cannot normalize unit 'mmol/L' because measurement 'blood beta-hydroxybutyrate (BHB)' did not resolve to exactly one LOINC code."
       ],
-      "normalized_surface": "months",
+      "normalized_surface": "mmol/l",
       "occurrence_count": 2,
       "priority": 30,
       "recommended_action": "choose_candidate",
       "resolver_policy": "cached_only",
       "severity": "high",
       "stage": "unit_normalization",
-      "surface": "months",
+      "surface": "mmol/L",
       "trial_count": 1
     },
     {
@@ -7687,97 +6374,49 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "measurement_threshold"
+        "free_text"
       ],
       "domain": "unit",
       "eval_slices": [
-        "t2dm-academic"
+        "hypertension-industry"
       ],
       "example_rows": [
         {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Vitamin D3 deficiency (< 30 ng/ml)",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:10:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'ng/ml' because measurement 'vitamin D3' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06524960",
-          "pair_id": "1293efbb__NCT06524960",
-          "row_id": "1293efbb__NCT06524960:criterion:10:unit:gap:ambiguous_loinc"
+          "criterion_index": 6,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc",
+          "message": "Cannot normalize unit 'years' because measurement 'in women' did not resolve to exactly one LOINC code.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc"
         },
         {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Vitamin D3 deficiency (< 30 ng/ml)",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:10:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit 'ng/ml' because measurement 'vitamin D3' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06524960",
-          "pair_id": "9e84e569__NCT06524960",
-          "row_id": "9e84e569__NCT06524960:criterion:10:unit:gap:ambiguous_loinc"
+          "criterion_index": 6,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc",
+          "message": "Cannot normalize unit 'years' because measurement 'in women' did not resolve to exactly one LOINC code.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:6:group:001:subcheck:001:unit:gap:ambiguous_loinc"
         }
       ],
       "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:8e0474ee44ec",
+      "group_id": "compiler-gap-group:79dd7527d876",
       "message_examples": [
-        "Cannot normalize unit 'ng/ml' because measurement 'vitamin D3' did not resolve to exactly one LOINC code."
+        "Cannot normalize unit 'years' because measurement 'in women' did not resolve to exactly one LOINC code."
       ],
-      "normalized_surface": "ng/ml",
+      "normalized_surface": "years",
       "occurrence_count": 2,
       "priority": 30,
       "recommended_action": "choose_candidate",
       "resolver_policy": "cached_only",
       "severity": "high",
       "stage": "unit_normalization",
-      "surface": "ng/ml",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Absolute neutrophil count: \u22651500/\u03bcL.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:10:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit '\u03bcL' because measurement 'absolute neutrophil count' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:10:unit:gap:ambiguous_loinc"
-        },
-        {
-          "criterion_index": 10,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Absolute neutrophil count: \u22651500/\u03bcL.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:10:unit:gap:ambiguous_loinc",
-          "message": "Cannot normalize unit '\u03bcL' because measurement 'absolute neutrophil count' did not resolve to exactly one LOINC code.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:10:unit:gap:ambiguous_loinc"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:f41513f7ed3c",
-      "message_examples": [
-        "Cannot normalize unit '\u03bcL' because measurement 'absolute neutrophil count' did not resolve to exactly one LOINC code."
-      ],
-      "normalized_surface": "\u03bcl",
-      "occurrence_count": 2,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "\u03bcL",
+      "surface": "years",
       "trial_count": 1
     },
     {
@@ -7929,51 +6568,40 @@
       "trial_count": 1
     },
     {
-      "case_count": 2,
+      "case_count": 1,
       "criterion_kinds": [
         "measurement_threshold"
       ],
       "domain": "unit",
       "eval_slices": [
-        "nsclc"
+        "hyperlipidemia"
       ],
       "example_rows": [
         {
-          "criterion_index": 8,
+          "criterion_index": 17,
           "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): \u22643.0 \u00d7 upper limit of normal (ULN) (or \u22645.0 \u00d7 ULN, for participants with concurrent liver metastases).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'aspartate aminotransferase' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:8:unit:gap:missing_unit"
-        },
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): \u22643.0 \u00d7 upper limit of normal (ULN) (or \u22645.0 \u00d7 ULN, for participants with concurrent liver metastases).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'aspartate aminotransferase' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:8:unit:gap:missing_unit"
+          "criterion_source_text": "Unexplained creatine kinase (CK) > 5 x ULN (retested once is needed if suspected to be related to excessive exercise or abnormal activity);",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:17:unit:gap:ambiguous_loinc",
+          "message": "Cannot normalize unit 'ULN' because measurement 'creatine kinase (CK)' did not resolve to exactly one LOINC code.",
+          "nct_id": "NCT06568471",
+          "pair_id": "e7d52393__NCT06568471",
+          "row_id": "e7d52393__NCT06568471:criterion:17:unit:gap:ambiguous_loinc"
         }
       ],
-      "gap_kind": "missing_unit",
-      "group_id": "compiler-gap-group:8ef8443c4b0b",
+      "gap_kind": "ambiguous_mapping",
+      "group_id": "compiler-gap-group:58e7f03d800b",
       "message_examples": [
-        "Cannot infer a missing unit for measurement 'aspartate aminotransferase' because it did not resolve to exactly one LOINC code with a registered conventional unit."
+        "Cannot normalize unit 'ULN' because measurement 'creatine kinase (CK)' did not resolve to exactly one LOINC code."
       ],
-      "normalized_surface": "aspartate aminotransferase",
-      "occurrence_count": 2,
-      "priority": 40,
-      "recommended_action": "add_unit_mapping",
+      "normalized_surface": "uln",
+      "occurrence_count": 1,
+      "priority": 30,
+      "recommended_action": "choose_candidate",
       "resolver_policy": "cached_only",
       "severity": "high",
       "stage": "unit_normalization",
-      "surface": "aspartate aminotransferase",
+      "surface": "ULN",
       "trial_count": 1
     },
     {
@@ -8022,187 +6650,6 @@
       "severity": "high",
       "stage": "unit_normalization",
       "surface": "hyperkalemia",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At least one measurable non-CNS lesion according to RECIST v1.1 criteria.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'measurable non-CNS lesion' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT07362459",
-          "pair_id": "3a364909__NCT07362459",
-          "row_id": "3a364909__NCT07362459:criterion:8:unit:gap:missing_unit"
-        },
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "At least one measurable non-CNS lesion according to RECIST v1.1 criteria.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'measurable non-CNS lesion' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT07362459",
-          "pair_id": "9cbf47d8__NCT07362459",
-          "row_id": "9cbf47d8__NCT07362459:criterion:8:unit:gap:missing_unit"
-        }
-      ],
-      "gap_kind": "missing_unit",
-      "group_id": "compiler-gap-group:c10c462573f0",
-      "message_examples": [
-        "Cannot infer a missing unit for measurement 'measurable non-CNS lesion' because it did not resolve to exactly one LOINC code with a registered conventional unit."
-      ],
-      "normalized_surface": "measurable non-cns lesion",
-      "occurrence_count": 2,
-      "priority": 40,
-      "recommended_action": "add_unit_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "measurable non-CNS lesion",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "t2dm-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 6,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum calcium (corrected for albumin) within normal limits per site's local lab",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:6:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'serum calcium (corrected for albumin)' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT06524960",
-          "pair_id": "1293efbb__NCT06524960",
-          "row_id": "1293efbb__NCT06524960:criterion:6:unit:gap:missing_unit"
-        },
-        {
-          "criterion_index": 6,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum calcium (corrected for albumin) within normal limits per site's local lab",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:6:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'serum calcium (corrected for albumin)' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT06524960",
-          "pair_id": "9e84e569__NCT06524960",
-          "row_id": "9e84e569__NCT06524960:criterion:6:unit:gap:missing_unit"
-        }
-      ],
-      "gap_kind": "missing_unit",
-      "group_id": "compiler-gap-group:e63de887bbaf",
-      "message_examples": [
-        "Cannot infer a missing unit for measurement 'serum calcium (corrected for albumin)' because it did not resolve to exactly one LOINC code with a registered conventional unit."
-      ],
-      "normalized_surface": "serum calcium (corrected for albumin",
-      "occurrence_count": 2,
-      "priority": 40,
-      "recommended_action": "add_unit_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "serum calcium (corrected for albumin)",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum total bilirubin: \u22641.5 \u00d7 ULN (\u22643.0 \u00d7 ULN for participants with Gilbert syndrome).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:9:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'serum total bilirubin' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:9:unit:gap:missing_unit"
-        },
-        {
-          "criterion_index": 9,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Serum total bilirubin: \u22641.5 \u00d7 ULN (\u22643.0 \u00d7 ULN for participants with Gilbert syndrome).",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:9:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'serum total bilirubin' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:9:unit:gap:missing_unit"
-        }
-      ],
-      "gap_kind": "missing_unit",
-      "group_id": "compiler-gap-group:e2385374b75b",
-      "message_examples": [
-        "Cannot infer a missing unit for measurement 'serum total bilirubin' because it did not resolve to exactly one LOINC code with a registered conventional unit."
-      ],
-      "normalized_surface": "serum total bilirubin",
-      "occurrence_count": 2,
-      "priority": 40,
-      "recommended_action": "add_unit_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "serum total bilirubin",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "unit",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 8,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Subjects must have measurable disease per RECIST v1.1.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:8:unit:gap:missing_unit",
-          "message": "Cannot infer a missing unit for measurement 'measurable disease' because it did not resolve to exactly one LOINC code with a registered conventional unit.",
-          "nct_id": "NCT06090266",
-          "pair_id": "fa2d28b1__NCT06090266",
-          "row_id": "fa2d28b1__NCT06090266:criterion:8:unit:gap:missing_unit"
-        }
-      ],
-      "gap_kind": "missing_unit",
-      "group_id": "compiler-gap-group:533562e642ca",
-      "message_examples": [
-        "Cannot infer a missing unit for measurement 'measurable disease' because it did not resolve to exactly one LOINC code with a registered conventional unit."
-      ],
-      "normalized_surface": "measurable disease",
-      "occurrence_count": 1,
-      "priority": 40,
-      "recommended_action": "add_unit_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "unit_normalization",
-      "surface": "measurable disease",
       "trial_count": 1
     },
     {
@@ -8769,6 +7216,438 @@
     {
       "case_count": 2,
       "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 4,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:4:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: 24-hour ABPM mean systolic BP is not represented in the current Synthea patient profile and must not collapse to ordinary office systolic BP.",
+          "nct_id": "NCT07297797",
+          "pair_id": "28db1c55__NCT07297797",
+          "row_id": "28db1c55__NCT07297797:criterion:4:measurement:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 4,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "the 24-hour mean systolic blood pressure assessed by ABPM at Screening is \u2265 130 mmHg and < 160 mmHg.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:4:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: 24-hour ABPM mean systolic BP is not represented in the current Synthea patient profile and must not collapse to ordinary office systolic BP.",
+          "nct_id": "NCT07297797",
+          "pair_id": "407ef75b__NCT07297797",
+          "row_id": "407ef75b__NCT07297797:criterion:4:measurement:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:e2acae4d2080",
+      "message_examples": [
+        "Reviewed lab surface classified as out_of_scope: 24-hour ABPM mean systolic BP is not represented in the current Synthea patient profile and must not collapse to ordinary office systolic BP."
+      ],
+      "normalized_surface": "24-hour mean systolic blood pressure",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "24-hour mean systolic blood pressure",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 9,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Subjects must have a baseline 6-minute walk distance \u2265100 meters and \u2264500 meters.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:9:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Six-minute walk distance is a functional test not represented in the current Synthea patient profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:9:measurement:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 9,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Subjects must have a baseline 6-minute walk distance \u2265100 meters and \u2264500 meters.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:9:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Six-minute walk distance is a functional test not represented in the current Synthea patient profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:9:measurement:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:0b991b80d336",
+      "message_examples": [
+        "Reviewed lab surface classified as out_of_scope: Six-minute walk distance is a functional test not represented in the current Synthea patient profile."
+      ],
+      "normalized_surface": "6-minute walk distance",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "6-minute walk distance",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 14,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit of normal (ULN) as specified by the testing laboratory.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:14:measurement:gap:reviewed-composite_unhandled",
+          "message": "Reviewed lab surface classified as composite_unhandled: Generic clinical laboratory values must be decomposed into named lab subchecks and normal-range semantics before execution.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:14:measurement:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 14,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit of normal (ULN) as specified by the testing laboratory.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:14:measurement:gap:reviewed-composite_unhandled",
+          "message": "Reviewed lab surface classified as composite_unhandled: Generic clinical laboratory values must be decomposed into named lab subchecks and normal-range semantics before execution.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:14:measurement:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:84640cb7e54d",
+      "message_examples": [
+        "Reviewed lab surface classified as composite_unhandled: Generic clinical laboratory values must be decomposed into named lab subchecks and normal-range semantics before execution."
+      ],
+      "normalized_surface": "clinical laboratory values",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "clinical laboratory values",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 1,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Duration of T1D \u2265 8 years;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:1:measurement:gap:reviewed-extractor_bug",
+          "message": "Reviewed lab surface classified as extractor_bug: Duration of type 1 diabetes should compile from condition onset/history, not as a measurement threshold.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:1:measurement:gap:reviewed-extractor_bug"
+        },
+        {
+          "criterion_index": 1,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Duration of T1D \u2265 8 years;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:1:measurement:gap:reviewed-extractor_bug",
+          "message": "Reviewed lab surface classified as extractor_bug: Duration of type 1 diabetes should compile from condition onset/history, not as a measurement threshold.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:1:measurement:gap:reviewed-extractor_bug"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:ce9a73e7e549",
+      "message_examples": [
+        "Reviewed lab surface classified as extractor_bug: Duration of type 1 diabetes should compile from condition onset/history, not as a measurement threshold."
+      ],
+      "normalized_surface": "duration of t1d",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "duration of T1D",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 3,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "An expected survival of \u2265 3 months.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:3:measurement:gap:reviewed-extractor_bug",
+          "message": "Reviewed lab surface classified as extractor_bug: Expected survival is prognostic/free-text review, not a structured measurement threshold in the current matcher.",
+          "nct_id": "NCT07362459",
+          "pair_id": "3a364909__NCT07362459",
+          "row_id": "3a364909__NCT07362459:criterion:3:measurement:gap:reviewed-extractor_bug"
+        },
+        {
+          "criterion_index": 3,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "An expected survival of \u2265 3 months.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:3:measurement:gap:reviewed-extractor_bug",
+          "message": "Reviewed lab surface classified as extractor_bug: Expected survival is prognostic/free-text review, not a structured measurement threshold in the current matcher.",
+          "nct_id": "NCT07362459",
+          "pair_id": "9cbf47d8__NCT07362459",
+          "row_id": "9cbf47d8__NCT07362459:criterion:3:measurement:gap:reviewed-extractor_bug"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:22a0fa3b9225",
+      "message_examples": [
+        "Reviewed lab surface classified as extractor_bug: Expected survival is prognostic/free-text review, not a structured measurement threshold in the current matcher."
+      ],
+      "normalized_surface": "expected survival",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "expected survival",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 8,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "At least one measurable non-CNS lesion according to RECIST v1.1 criteria.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:8:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: RECIST measurable-lesion status is radiology/oncology assessment data not represented in the current Synthea patient profile.",
+          "nct_id": "NCT07362459",
+          "pair_id": "3a364909__NCT07362459",
+          "row_id": "3a364909__NCT07362459:criterion:8:measurement:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 8,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "At least one measurable non-CNS lesion according to RECIST v1.1 criteria.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:8:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: RECIST measurable-lesion status is radiology/oncology assessment data not represented in the current Synthea patient profile.",
+          "nct_id": "NCT07362459",
+          "pair_id": "9cbf47d8__NCT07362459",
+          "row_id": "9cbf47d8__NCT07362459:criterion:8:measurement:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:ceece280336b",
+      "message_examples": [
+        "Reviewed lab surface classified as out_of_scope: RECIST measurable-lesion status is radiology/oncology assessment data not represented in the current Synthea patient profile."
+      ],
+      "normalized_surface": "measurable non-cns lesion",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "measurable non-CNS lesion",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 21,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:21:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Oxygen flow supplementation is therapy/support data, not a LOINC lab or vital observation available in the current patient profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:21:measurement:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 21,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:21:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Oxygen flow supplementation is therapy/support data, not a LOINC lab or vital observation available in the current patient profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:21:measurement:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:70bbe92346fd",
+      "message_examples": [
+        "Reviewed lab surface classified as out_of_scope: Oxygen flow supplementation is therapy/support data, not a LOINC lab or vital observation available in the current patient profile."
+      ],
+      "normalized_surface": "oxygen supplementation",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "oxygen supplementation",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "t2dm-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 6,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Serum calcium (corrected for albumin) within normal limits per site's local lab",
+          "eval_slice": "t2dm-academic",
+          "gap_id": "criterion:6:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Corrected serum calcium and local normal-range interpretation are not represented in the current patient profile.",
+          "nct_id": "NCT06524960",
+          "pair_id": "1293efbb__NCT06524960",
+          "row_id": "1293efbb__NCT06524960:criterion:6:measurement:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 6,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Serum calcium (corrected for albumin) within normal limits per site's local lab",
+          "eval_slice": "t2dm-academic",
+          "gap_id": "criterion:6:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Corrected serum calcium and local normal-range interpretation are not represented in the current patient profile.",
+          "nct_id": "NCT06524960",
+          "pair_id": "9e84e569__NCT06524960",
+          "row_id": "9e84e569__NCT06524960:criterion:6:measurement:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:8c0909305349",
+      "message_examples": [
+        "Reviewed lab surface classified as out_of_scope: Corrected serum calcium and local normal-range interpretation are not represented in the current patient profile."
+      ],
+      "normalized_surface": "serum calcium (corrected for albumin",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "serum calcium (corrected for albumin)",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "t2dm-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 10,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Vitamin D3 deficiency (< 30 ng/ml)",
+          "eval_slice": "t2dm-academic",
+          "gap_id": "criterion:10:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Vitamin D3 observations are not represented in the current Synthea patient profile.",
+          "nct_id": "NCT06524960",
+          "pair_id": "1293efbb__NCT06524960",
+          "row_id": "1293efbb__NCT06524960:criterion:10:measurement:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 10,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Vitamin D3 deficiency (< 30 ng/ml)",
+          "eval_slice": "t2dm-academic",
+          "gap_id": "criterion:10:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: Vitamin D3 observations are not represented in the current Synthea patient profile.",
+          "nct_id": "NCT06524960",
+          "pair_id": "9e84e569__NCT06524960",
+          "row_id": "9e84e569__NCT06524960:criterion:10:measurement:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:46c5d6e011cc",
+      "message_examples": [
+        "Reviewed lab surface classified as out_of_scope: Vitamin D3 observations are not represented in the current Synthea patient profile."
+      ],
+      "normalized_surface": "vitamin d3",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "vitamin D3",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
         "free_text"
       ],
       "domain": "medication",
@@ -9297,6 +8176,55 @@
     {
       "case_count": 1,
       "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "unit",
+      "eval_slices": [
+        "t2dm-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 14,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Aspartate aminotransferase (AST) >3\u00d7 upper limit of normal (ULN) and/or alanine aminotransferase (ALT) >3\u00d7 ULN.",
+          "eval_slice": "t2dm-industry",
+          "gap_id": "criterion:14:unit:gap:unsupported_conversion",
+          "message": "Cannot convert unit 'ULN' for measurement 'aspartate aminotransferase' (canonical=unknown, conventional=U/L).",
+          "nct_id": "NCT07394114",
+          "pair_id": "3beee40e__NCT07394114",
+          "row_id": "3beee40e__NCT07394114:criterion:14:unit:gap:unsupported_conversion"
+        },
+        {
+          "criterion_index": 15,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Total bilirubin >1.5\u00d7 ULN.",
+          "eval_slice": "t2dm-industry",
+          "gap_id": "criterion:15:unit:gap:unsupported_conversion",
+          "message": "Cannot convert unit 'ULN' for measurement 'total bilirubin' (canonical=unknown, conventional=mg/dL).",
+          "nct_id": "NCT07394114",
+          "pair_id": "3beee40e__NCT07394114",
+          "row_id": "3beee40e__NCT07394114:criterion:15:unit:gap:unsupported_conversion"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:b7af1fd133aa",
+      "message_examples": [
+        "Cannot convert unit 'ULN' for measurement 'aspartate aminotransferase' (canonical=unknown, conventional=U/L).",
+        "Cannot convert unit 'ULN' for measurement 'total bilirubin' (canonical=unknown, conventional=mg/dL)."
+      ],
+      "normalized_surface": "uln",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "unit_normalization",
+      "surface": "ULN",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
         "free_text"
       ],
       "domain": "free_text",
@@ -9815,6 +8743,43 @@
     {
       "case_count": 1,
       "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 8,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Subjects must have measurable disease per RECIST v1.1.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:8:measurement:gap:reviewed-out_of_scope",
+          "message": "Reviewed lab surface classified as out_of_scope: RECIST measurable-disease status is radiology/oncology assessment data not represented in the current Synthea patient profile.",
+          "nct_id": "NCT06090266",
+          "pair_id": "fa2d28b1__NCT06090266",
+          "row_id": "fa2d28b1__NCT06090266:criterion:8:measurement:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:804dc6af9cbc",
+      "message_examples": [
+        "Reviewed lab surface classified as out_of_scope: RECIST measurable-disease status is radiology/oncology assessment data not represented in the current Synthea patient profile."
+      ],
+      "normalized_surface": "measurable disease",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "measurable disease",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
         "medication_present"
       ],
       "domain": "medication",
@@ -10168,6 +9133,174 @@
       "stage": "concept_resolution",
       "surface": null,
       "trial_count": 3
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 11,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:11:measurement:gap:threshold_value",
+          "message": "Measurement 'hemoglobin' has operator '>' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:11:measurement:gap:threshold_value"
+        },
+        {
+          "criterion_index": 11,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:11:measurement:gap:threshold_value",
+          "message": "Measurement 'hemoglobin' has operator '>' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:11:measurement:gap:threshold_value"
+        },
+        {
+          "criterion_index": 11,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:11:measurement:gap:threshold_value",
+          "message": "Measurement 'hemoglobin' has operator '>' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:11:measurement:gap:threshold_value"
+        }
+      ],
+      "gap_kind": "insufficient_source",
+      "group_id": "compiler-gap-group:6be744bb01e3",
+      "message_examples": [
+        "Measurement 'hemoglobin' has operator '>' but lacks the numeric threshold fields needed for an executable predicate."
+      ],
+      "normalized_surface": "hemoglobin",
+      "occurrence_count": 7,
+      "priority": 80,
+      "recommended_action": "review_gap",
+      "resolver_policy": "cached_only",
+      "severity": "low",
+      "stage": "predicate_translation",
+      "surface": "hemoglobin",
+      "trial_count": 1
+    },
+    {
+      "case_count": 3,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "nsclc",
+        "t2dm-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 14,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Aspartate aminotransferase (AST) >3\u00d7 upper limit of normal (ULN) and/or alanine aminotransferase (ALT) >3\u00d7 ULN.",
+          "eval_slice": "t2dm-industry",
+          "gap_id": "criterion:14:measurement:gap:threshold_value",
+          "message": "Measurement 'aspartate aminotransferase' has operator '>' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT07394114",
+          "pair_id": "3beee40e__NCT07394114",
+          "row_id": "3beee40e__NCT07394114:criterion:14:measurement:gap:threshold_value"
+        },
+        {
+          "criterion_index": 8,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): \u22643.0 \u00d7 upper limit of normal (ULN) (or \u22645.0 \u00d7 ULN, for participants with concurrent liver metastases).",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:8:measurement:gap:threshold_value",
+          "message": "Measurement 'aspartate aminotransferase' has operator '<=' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:8:measurement:gap:threshold_value"
+        },
+        {
+          "criterion_index": 8,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): \u22643.0 \u00d7 upper limit of normal (ULN) (or \u22645.0 \u00d7 ULN, for participants with concurrent liver metastases).",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:8:measurement:gap:threshold_value",
+          "message": "Measurement 'aspartate aminotransferase' has operator '<=' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:8:measurement:gap:threshold_value"
+        }
+      ],
+      "gap_kind": "insufficient_source",
+      "group_id": "compiler-gap-group:76209bdc8b5c",
+      "message_examples": [
+        "Measurement 'aspartate aminotransferase' has operator '>' but lacks the numeric threshold fields needed for an executable predicate.",
+        "Measurement 'aspartate aminotransferase' has operator '<=' but lacks the numeric threshold fields needed for an executable predicate."
+      ],
+      "normalized_surface": "aspartate aminotransferase",
+      "occurrence_count": 3,
+      "priority": 80,
+      "recommended_action": "review_gap",
+      "resolver_policy": "cached_only",
+      "severity": "low",
+      "stage": "predicate_translation",
+      "surface": "aspartate aminotransferase",
+      "trial_count": 2
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "measurement_threshold"
+      ],
+      "domain": "measurement",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 9,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Serum total bilirubin: \u22641.5 \u00d7 ULN (\u22643.0 \u00d7 ULN for participants with Gilbert syndrome).",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:9:measurement:gap:threshold_value",
+          "message": "Measurement 'serum total bilirubin' has operator '<=' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:9:measurement:gap:threshold_value"
+        },
+        {
+          "criterion_index": 9,
+          "criterion_kind": "measurement_threshold",
+          "criterion_source_text": "Serum total bilirubin: \u22641.5 \u00d7 ULN (\u22643.0 \u00d7 ULN for participants with Gilbert syndrome).",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:9:measurement:gap:threshold_value",
+          "message": "Measurement 'serum total bilirubin' has operator '<=' but lacks the numeric threshold fields needed for an executable predicate.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:9:measurement:gap:threshold_value"
+        }
+      ],
+      "gap_kind": "insufficient_source",
+      "group_id": "compiler-gap-group:f5164b6e036e",
+      "message_examples": [
+        "Measurement 'serum total bilirubin' has operator '<=' but lacks the numeric threshold fields needed for an executable predicate."
+      ],
+      "normalized_surface": "serum total bilirubin",
+      "occurrence_count": 2,
+      "priority": 80,
+      "recommended_action": "review_gap",
+      "resolver_policy": "cached_only",
+      "severity": "low",
+      "stage": "predicate_translation",
+      "surface": "serum total bilirubin",
+      "trial_count": 1
     }
   ]
 }

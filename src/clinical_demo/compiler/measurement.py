@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from clinical_demo.extractor.schema import ExtractedCriterion, ThresholdOperator
 from clinical_demo.matcher.concept_lookup import lookup_lab_alias
 from clinical_demo.profile import ConceptSet
+from clinical_demo.profile.concept_sets import concept_set_by_id
 from clinical_demo.settings import ResolverExecutionPolicy
 from clinical_demo.terminology.reviewed_registry import (
     ReviewedMappingEntry,
@@ -106,16 +107,18 @@ def compile_measurement_resolution(
     diagnostics: list[CompilerDiagnostic] = []
 
     reviewed_entry = mappings.lookup("lab", surface)
-    if reviewed_entry is not None and reviewed_entry.status != "mapped":
-        return _reviewed_nonmapped_result(
-            source_criterion_id=source_criterion_id,
-            surface=surface,
-            source_unit=source_unit,
-            entry=reviewed_entry,
-            resolver_policy=resolver_policy,
-        )
-
-    concept_set = _lookup_measurement_concept_set(surface)
+    if reviewed_entry is not None:
+        if reviewed_entry.status != "mapped":
+            return _reviewed_nonmapped_result(
+                source_criterion_id=source_criterion_id,
+                surface=surface,
+                source_unit=source_unit,
+                entry=reviewed_entry,
+                resolver_policy=resolver_policy,
+            )
+        concept_set = concept_set_by_id(reviewed_entry.concept_set)
+    else:
+        concept_set = _lookup_measurement_concept_set(surface)
     loinc_codes = _loinc_codes(concept_set)
     selected_loinc_code = loinc_codes[0] if len(loinc_codes) == 1 else None
 
@@ -275,6 +278,26 @@ def compile_measurement_resolution(
         value_high=measurement.value_high,
         conversion_factor=conversion_factor,
     )
+    value_gaps = _threshold_value_gaps(
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        operator=measurement.operator,
+        value=measurement.value,
+        value_low=measurement.value_low,
+        value_high=measurement.value_high,
+        resolver_policy=resolver_policy,
+    )
+    for gap in value_gaps:
+        gaps.append(gap)
+        diagnostics.append(
+            _diagnostic(
+                severity="warning",
+                code="measurement.threshold_value_missing",
+                message=gap.message,
+                source_criterion_id=source_criterion_id,
+                facts=[("gap_id", gap.gap_id)],
+            )
+        )
 
     return MeasurementResolutionResult(
         source_criterion_id=source_criterion_id,
@@ -528,6 +551,39 @@ def _convert_threshold(value: float | None, conversion_factor: float) -> float |
     if value is None:
         return None
     return value * conversion_factor
+
+
+def _threshold_value_gaps(
+    *,
+    source_criterion_id: str,
+    surface: str,
+    operator: ThresholdOperator,
+    value: float | None,
+    value_low: float | None,
+    value_high: float | None,
+    resolver_policy: ResolverExecutionPolicy,
+) -> list[ResolutionGap]:
+    missing_single_value = operator in {"<", "<=", "=", ">=", ">"} and value is None
+    missing_range_value = operator in {"in_range", "out_of_range"} and (
+        value_low is None or value_high is None
+    )
+    if not missing_single_value and not missing_range_value:
+        return []
+    return [
+        _gap(
+            gap_id=f"{source_criterion_id}:measurement:gap:threshold_value",
+            stage="predicate_translation",
+            domain="measurement",
+            kind="insufficient_source",
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            message=(
+                f"Measurement '{surface}' has operator {operator!r} but lacks the numeric "
+                "threshold fields needed for an executable predicate."
+            ),
+            resolver_policy=resolver_policy,
+        )
+    ]
 
 
 def _unit_support(

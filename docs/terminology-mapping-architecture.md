@@ -51,10 +51,13 @@ record ambiguity with candidates, or classify a surface as `extractor_bug`,
 Reviewed rows **win** over stale cache entries and over hypothetical API hits
 that would produce a misleading `ConceptSet` for Synthea. Recent examples are
 standalone PVR and ECOG measurement surfaces (`out_of_scope`), life expectancy
-as a measurement (`extractor_bug`), and generic blood pressure (`ambiguous`
-with systolic/diastolic candidates). The resolver writes compatible
+as a measurement (`extractor_bug`), generic blood pressure (`ambiguous` with
+systolic/diastolic candidates), and reviewed lab/vital mappings such as AST,
+ANC, serum creatinine, fasting glucose/FPG, LDL-C, triglycerides, bilirubin,
+and mean sitting office systolic BP. The resolver writes compatible
 surface-resolution cache rows for repeated eval runs, while the compiler can
-consume the same reviewed decisions directly as typed gaps.
+consume the same reviewed decisions directly as typed gaps or mapped
+measurement predicates.
 
 ---
 
@@ -163,7 +166,10 @@ Foundation status:
 - `CC-08` now checks reviewed lab decisions before local measurement alias
   lookup, so known out-of-scope, extractor-bug, and ambiguous measurement
   surfaces become explicit compiler gaps with provenance instead of opaque
-  unmapped concepts.
+  unmapped concepts. Reviewed mapped lab surfaces resolve through the shared
+  profile `ConceptSet` registry and unit registry, while missing threshold
+  values remain blocking `predicate_translation` gaps instead of executable
+  predicates.
 - `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
   readiness over compiled criteria, and `ScorePairResult` exposes it to API and
   eval consumers.

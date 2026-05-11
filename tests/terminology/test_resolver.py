@@ -130,6 +130,24 @@ def _reviewed_mapping(
     )
 
 
+def _reviewed_lab_mapping(surface: str, concept_set: str) -> ReviewedMappingEntry:
+    return ReviewedMappingEntry.model_validate(
+        {
+            "kind": "lab",
+            "surface": surface,
+            "status": "mapped",
+            "concept_set": concept_set,
+            "reason": "unit-test reviewed lab decision",
+            "source": "unit test",
+            "provenance": "unit test",
+            "reviewer": "unit-test",
+            "reviewed_at": "2026-05-11",
+            "resolver_version": REVIEWED_REGISTRY_VERSION,
+            "expansion_policy": "exact_code",
+        }
+    )
+
+
 def _vsac_client_with_body(body: bytes) -> tuple[VSACClient, list[httpx.Request]]:
     captured: list[httpx.Request] = []
 
@@ -779,6 +797,25 @@ def test_reviewed_registry_fracture_mapping_overwrites_stale_true_miss(
     assert cached is not None
     assert cached.status == "mapped"
     assert cached.concept_set == FRACTURE
+    assert cached.candidates[0].source == "reviewed_registry"
+
+
+def test_reviewed_registry_lab_mapping_uses_shared_concept_registry(tmp_path: Path) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(
+        cache,
+        reviewed_registry=_reviewed_registry(
+            [_reviewed_lab_mapping("fasting serum LDL-C", "LDL_CHOLESTEROL")]
+        ),
+    )
+
+    out = resolver.resolve_lab("fasting serum LDL-C")
+
+    assert out is not None
+    assert out.codes == frozenset({"18262-6"})
+    cached = cache.get_surface_resolution("lab", "fasting serum LDL-C")
+    assert cached is not None
+    assert cached.status == "mapped"
     assert cached.candidates[0].source == "reviewed_registry"
 
 

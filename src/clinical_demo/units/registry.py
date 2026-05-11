@@ -232,6 +232,81 @@ DEFAULT_UNIT_SPECS: tuple[UnitSpec, ...] = (
             ("10*3/uL", "count/uL"): 1000.0,
         },
     ),
+    UnitSpec(
+        loinc_code="1920-8",
+        name="Aspartate aminotransferase",
+        conventional_unit="U/L",
+        aliases={"U/L": "U/L", "u/L": "U/L", "IU/L": "U/L"},
+    ),
+    UnitSpec(
+        loinc_code="1742-6",
+        name="Alanine aminotransferase",
+        conventional_unit="U/L",
+        aliases={"U/L": "U/L", "u/L": "U/L", "IU/L": "U/L"},
+    ),
+    UnitSpec(
+        loinc_code="1975-2",
+        name="Total bilirubin",
+        conventional_unit="mg/dL",
+        aliases={"mg/dL": "mg/dL", "mg/dl": "mg/dL"},
+    ),
+    UnitSpec(
+        loinc_code="751-8",
+        name="Absolute neutrophil count",
+        conventional_unit="10*3/uL",
+        aliases={
+            "10*3/uL": "10*3/uL",
+            "10^3/uL": "10*3/uL",
+            "K/uL": "10*3/uL",
+            "x10^9/L": "10*3/uL",
+            "10^9/L": "10*3/uL",
+            "mm3": "count/uL",
+            "uL": "count/uL",
+            "μL": "count/uL",
+            "/uL": "count/uL",
+            "/μL": "count/uL",
+        },
+        conversion_factors={
+            ("count/uL", "10*3/uL"): 0.001,
+            ("10*3/uL", "count/uL"): 1000.0,
+        },
+    ),
+    UnitSpec(
+        loinc_code="38483-4",
+        name="Creatinine",
+        conventional_unit="mg/dL",
+        aliases={"mg/dL": "mg/dL", "mg/dl": "mg/dL"},
+    ),
+    UnitSpec(
+        loinc_code="2339-0",
+        name="Glucose",
+        conventional_unit="mg/dL",
+        aliases={
+            "mg/dL": "mg/dL",
+            "mg/dl": "mg/dL",
+            "mmol/L": "mmol/L",
+            "mmol/l": "mmol/L",
+        },
+        conversion_factors={
+            ("mmol/L", "mg/dL"): 18.018,
+            ("mg/dL", "mmol/L"): 1 / 18.018,
+        },
+    ),
+    UnitSpec(
+        loinc_code="2571-8",
+        name="Triglycerides",
+        conventional_unit="mg/dL",
+        aliases={
+            "mg/dL": "mg/dL",
+            "mg/dl": "mg/dL",
+            "mmol/L": "mmol/L",
+            "mmol/l": "mmol/L",
+        },
+        conversion_factors={
+            ("mmol/L", "mg/dL"): 88.57,
+            ("mg/dL", "mmol/L"): 1 / 88.57,
+        },
+    ),
 )
 
 DEFAULT_REGISTRY = MeasurementUnitRegistry.default()

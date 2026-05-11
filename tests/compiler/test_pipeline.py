@@ -13,6 +13,7 @@ from clinical_demo.extractor.schema import (
     FreeTextCriterion,
     MeasurementCriterion,
     TemporalWindowCriterion,
+    ThresholdOperator,
 )
 
 
@@ -49,6 +50,37 @@ def _measurement(text: str, unit: str | None = "%") -> ExtractedCriterion:
             measurement_text=text,
             operator=">=",
             value=7.0,
+            value_low=None,
+            value_high=None,
+            unit=unit,
+        ),
+        temporal_window=None,
+        free_text=None,
+        mentions=[],
+    )
+
+
+def _measurement_with_value(
+    text: str,
+    *,
+    operator: ThresholdOperator = ">=",
+    value: float | None,
+    unit: str | None,
+) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind="measurement_threshold",
+        polarity="inclusion",
+        source_text=f"{text} {operator} {value if value is not None else ''}{unit or ''}",
+        negated=False,
+        mood="actual",
+        age=None,
+        sex=None,
+        condition=None,
+        medication=None,
+        measurement=MeasurementCriterion(
+            measurement_text=text,
+            operator=operator,
+            value=value,
             value_low=None,
             value_high=None,
             unit=unit,
@@ -225,6 +257,24 @@ def test_measurement_unit_resolution_builds_checkable_predicate() -> None:
     assert predicate.value == 7.0
     assert predicate.unit == "%"
     assert result.resolved_supports == compiled.resolved_supports
+
+
+def test_measurement_missing_threshold_value_blocks_checkable_predicate() -> None:
+    criterion = _measurement_with_value(
+        "aspartate aminotransferase",
+        operator="<=",
+        value=None,
+        unit=None,
+    )
+
+    result = compile_extracted_criteria([criterion])
+    compiled = result.criteria[0]
+
+    assert compiled.unit_normalization.status == "resolved"
+    assert compiled.predicate.status == "unresolved"
+    assert compiled.checkable_predicates == []
+    assert [gap.kind for gap in compiled.unresolved_gaps] == ["insufficient_source"]
+    assert compiled.unresolved_gaps[0].stage == "predicate_translation"
 
 
 def test_condition_compiler_maps_reviewed_fracture_surface_after_variant_cleanup() -> None:

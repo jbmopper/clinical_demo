@@ -4,26 +4,26 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "6f857bb7c7bd",
-  "notes": "2026-05-11 compiled_predicates closed-world deterministic after reviewed measurement non-mapping decisions; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "dba692258184",
+  "notes": "2026-05-11 compiled_predicates closed-world deterministic after reviewed lab mapping tranche; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 17221.13482991699,
-  "avg_scoring_latency_ms": 351.45173122279573,
+  "total_scoring_latency_ms": 17421.980916056782,
+  "avg_scoring_latency_ms": 355.5506309399343,
   "verdict_counts": {
-    "fail": 56,
-    "indeterminate": 900,
-    "pass": 120
+    "fail": 60,
+    "indeterminate": 889,
+    "pass": 127
   },
   "reason_counts": {
-    "ambiguous_criterion": 27,
+    "ambiguous_criterion": 31,
     "human_review_required": 613,
-    "no_data": 3,
-    "ok": 176,
-    "unmapped_concept": 202,
-    "unsupported_kind": 37,
+    "no_data": 5,
+    "ok": 187,
+    "unmapped_concept": 164,
+    "unsupported_kind": 58,
     "unsupported_mood": 18
   },
   "kind_counts": {
@@ -37,10 +37,10 @@
     "sex": 6,
     "temporal_window": 15
   },
-  "unmapped_count": 202,
-  "unmapped_rate": 0.18773234200743494,
-  "indeterminate_count": 900,
-  "indeterminate_rate": 0.8364312267657993,
+  "unmapped_count": 164,
+  "unmapped_rate": 0.1524163568773234,
+  "indeterminate_count": 889,
+  "indeterminate_rate": 0.8262081784386617,
   "binding_registered_total": 27,
   "binding_registered_resolved": 27,
   "binding_registered_unmapped": 0,
@@ -67,31 +67,6 @@
       "count": 7
     },
     {
-      "surface": "aspartate aminotransferase",
-      "kind": "measurement_threshold",
-      "count": 3
-    },
-    {
-      "surface": "serum calcium (corrected for albumin)",
-      "kind": "measurement_threshold",
-      "count": 2
-    },
-    {
-      "surface": "vitamin D3",
-      "kind": "measurement_threshold",
-      "count": 2
-    },
-    {
-      "surface": "mean sitting office systolic blood pressure",
-      "kind": "measurement_threshold",
-      "count": 2
-    },
-    {
-      "surface": "24-hour mean systolic blood pressure",
-      "kind": "measurement_threshold",
-      "count": 2
-    },
-    {
       "surface": "uncontrolled severe arrhythmia",
       "kind": "condition_absent",
       "count": 2
@@ -112,16 +87,6 @@
       "count": 2
     },
     {
-      "surface": "6-minute walk distance",
-      "kind": "measurement_threshold",
-      "count": 2
-    },
-    {
-      "surface": "clinical laboratory values",
-      "kind": "measurement_threshold",
-      "count": 2
-    },
-    {
       "surface": "pulmonary hypertension not otherwise considered to be ph-ild",
       "kind": "condition_absent",
       "count": 2
@@ -129,11 +94,6 @@
     {
       "surface": "clinically significant left-sided heart disease",
       "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "oxygen supplementation",
-      "kind": "measurement_threshold",
       "count": 2
     },
     {
@@ -155,35 +115,75 @@
       "surface": "history of liver dysfunction",
       "kind": "condition_absent",
       "count": 2
+    },
+    {
+      "surface": "worse than mild untreated sleep apnea",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "\u22653 severe hypoglycemic events",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "blood beta-hydroxybutyrate (BHB)",
+      "kind": "measurement_threshold",
+      "count": 2
+    },
+    {
+      "surface": "beta hydroxybutyrate (BHB) testing",
+      "kind": "measurement_threshold",
+      "count": 2
+    },
+    {
+      "surface": "primary renal glycosuria",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "biopsy-proven non-diabetic chronic kidney disease (CKD)",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "cancer treatment",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "illicit drug abuse",
+      "kind": "condition_absent",
+      "count": 2
     }
   ],
   "compiler_compilation_present_cases": 47,
   "compiler_compilation_missing_cases": 2,
   "compiler_compiled_criteria_total": 1076,
-  "compiler_checkable_predicates_total": 199,
-  "compiler_unresolved_gaps_total": 441,
+  "compiler_checkable_predicates_total": 212,
+  "compiler_unresolved_gaps_total": 398,
   "compiler_unresolved_gaps_by_kind": {
-    "ambiguous_mapping": 64,
-    "insufficient_source": 10,
-    "missing_unit": 12,
-    "unmapped_concept": 276,
-    "unsupported_predicate": 79
+    "ambiguous_mapping": 35,
+    "insufficient_source": 22,
+    "missing_unit": 3,
+    "unmapped_concept": 238,
+    "unsupported_predicate": 100
   },
   "compiler_unresolved_gaps_by_stage": {
-    "concept_resolution": 342,
-    "predicate_translation": 27,
-    "unit_normalization": 72
+    "concept_resolution": 323,
+    "predicate_translation": 39,
+    "unit_normalization": 36
   },
   "compiler_unresolved_gaps_by_domain": {
     "condition": 200,
     "free_text": 26,
-    "measurement": 84,
+    "measurement": 77,
     "medication": 58,
     "temporal": 1,
-    "unit": 72
+    "unit": 36
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,
-  "compiler_closed_world_findings_total": 1151,
-  "compiler_closed_world_blocking_findings_total": 537
+  "compiler_closed_world_findings_total": 1125,
+  "compiler_closed_world_blocking_findings_total": 511
 }

@@ -9,10 +9,13 @@ Cache rows under `data/cache/terminology/` record observed resolver results and
 can be deleted or regenerated; rows here should move through normal code review.
 Compiler code may also read these rows directly when the right outcome is a
 typed unresolved fragment rather than a terminology lookup. For example,
-reviewed lab rows for standalone PVR, ECOG, life expectancy, and generic blood
-pressure let measurement compilation emit `unsupported_predicate`,
-`ambiguous_mapping`, or extractor-bug diagnostics instead of an opaque
-`unmapped_concept`.
+reviewed lab rows for standalone PVR, ECOG, life expectancy, corrected calcium,
+vitamin D3, and generic blood pressure let measurement compilation emit
+`unsupported_predicate`, `ambiguous_mapping`, or extractor-bug diagnostics
+instead of an opaque `unmapped_concept`. Reviewed mapped lab rows such as AST,
+ANC, serum creatinine, fasting glucose/FPG, LDL-C, triglycerides, total
+bilirubin, and mean sitting office systolic BP resolve through the shared
+profile `ConceptSet` registry rather than through ad hoc compiler aliases.
 
 Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at
