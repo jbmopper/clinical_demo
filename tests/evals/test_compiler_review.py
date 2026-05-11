@@ -5,9 +5,13 @@ from datetime import datetime
 
 from clinical_demo.compiler import compile_extracted_criteria
 from clinical_demo.evals.compiler_review import (
+    build_compiler_gap_review_groups,
     build_compiler_gap_review_rows,
+    load_compiler_gap_review_groups,
     load_compiler_gap_review_rows,
+    save_compiler_gap_review_groups,
     save_compiler_gap_review_rows,
+    summarize_compiler_gap_review_groups,
     summarize_compiler_gap_review_rows,
 )
 from clinical_demo.evals.run import CaseRecord, EvalCase, RunResult
@@ -171,8 +175,8 @@ def test_json_round_trip_uses_stable_list_artifact(tmp_path) -> None:
     text = path.read_text()
     assert text.endswith("\n")
     payload = json.loads(text)
-    assert isinstance(payload, list)
-    assert [item["row_id"] for item in payload] == [row.row_id for row in rows]
+    assert payload["artifact_safety"]["public_export"] == "synthetic"
+    assert [item["row_id"] for item in payload["rows"]] == [row.row_id for row in rows]
 
 
 def test_summary_counts_actions_severity_and_gap_kind() -> None:
@@ -189,3 +193,75 @@ def test_summary_counts_actions_severity_and_gap_kind() -> None:
     }
     assert summary.by_severity == {"high": 3}
     assert summary.by_gap_kind == {"unmapped_concept": 2, "missing_unit": 1}
+
+
+def test_build_groups_dedupes_equivalent_surface_gaps() -> None:
+    rows = build_compiler_gap_review_rows(
+        _run(
+            [
+                _record("pair-1", [_condition("rare unknown syndrome")]),
+                _record("pair-2", [_condition("rare unknown syndrome")]),
+            ]
+        )
+    )
+
+    groups = build_compiler_gap_review_groups(rows)
+
+    assert len(rows) == 2
+    assert len(groups) == 1
+    group = groups[0]
+    assert group.recommended_action == "review_mapping"
+    assert group.gap_kind == "unmapped_concept"
+    assert group.domain == "condition"
+    assert group.surface == "rare unknown syndrome"
+    assert group.normalized_surface == "rare unknown syndrome"
+    assert group.occurrence_count == 2
+    assert group.case_count == 2
+    assert group.trial_count == 1
+    assert group.criterion_kinds == ["condition_present"]
+    assert [example.pair_id for example in group.example_rows] == ["pair-1", "pair-2"]
+
+
+def test_group_json_round_trip_uses_stable_list_artifact(tmp_path) -> None:
+    rows = build_compiler_gap_review_rows(
+        _run(
+            [
+                _record("pair-1", [_condition("rare unknown syndrome")]),
+                _record("pair-2", [_condition("rare unknown syndrome")]),
+            ]
+        )
+    )
+    groups = build_compiler_gap_review_groups(rows)
+    path = tmp_path / "compiler-review-groups.json"
+
+    save_compiler_gap_review_groups(groups, path)
+
+    assert load_compiler_gap_review_groups(path) == groups
+    text = path.read_text()
+    assert text.endswith("\n")
+    payload = json.loads(text)
+    assert payload["artifact_safety"]["public_export"] == "synthetic"
+    assert payload["groups"][0]["occurrence_count"] == 2
+
+
+def test_group_summary_counts_groups_and_underlying_rows() -> None:
+    rows = build_compiler_gap_review_rows(
+        _run(
+            [
+                _record("pair-1", [_condition("rare unknown syndrome")]),
+                _record("pair-2", [_condition("rare unknown syndrome")]),
+                _record("pair-3", [_measurement("BNP")]),
+            ]
+        )
+    )
+    groups = build_compiler_gap_review_groups(rows)
+
+    summary = summarize_compiler_gap_review_groups(groups)
+
+    assert summary.total_rows == 4
+    assert summary.total_groups == 3
+    assert summary.by_recommended_action == {
+        "add_unit_mapping": 1,
+        "review_mapping": 2,
+    }
+    assert summary.by_domain == {"condition": 1, "measurement": 1, "unit": 1}

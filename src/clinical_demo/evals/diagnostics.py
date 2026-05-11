@@ -34,6 +34,12 @@ from clinical_demo.terminology.bindings import (
 from .layer_one import LayerOneReport
 from .run import RunResult
 
+ARTIFACT_SAFETY = {
+    "public_export": "synthetic",
+    "contains_real_patient_data": False,
+    "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata.",
+}
+
 
 class SurfaceCount(BaseModel):
     """Frequency of an unmapped trial-side surface form."""
@@ -428,7 +434,7 @@ def write_diagnostics(path: Path | str, diagnostics: EvalDiagnostics) -> None:
 
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(diagnostics.model_dump_json(indent=2) + "\n")
+    out.write_text(diagnostics_to_json(diagnostics) + "\n")
 
 
 def load_layer_one(path: Path | str) -> LayerOneReport:
@@ -438,10 +444,15 @@ def load_layer_one(path: Path | str) -> LayerOneReport:
 def diagnostics_to_json(diagnostics: EvalDiagnostics) -> str:
     """Small helper for CLI stdout paths."""
 
-    return json.dumps(diagnostics.model_dump(mode="json"), indent=2)
+    payload = {
+        "artifact_safety": ARTIFACT_SAFETY,
+        **diagnostics.model_dump(mode="json"),
+    }
+    return json.dumps(payload, indent=2)
 
 
 __all__ = [
+    "ARTIFACT_SAFETY",
     "EvalDiagnostics",
     "SurfaceCount",
     "build_diagnostics",

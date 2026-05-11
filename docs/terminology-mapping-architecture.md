@@ -151,7 +151,8 @@ Foundation status:
   readiness over compiled criteria, and `ScorePairResult` exposes it to API and
   eval consumers.
 - `CC-11` now has deterministic `CompilerGapQueueItem` projection for reviewer
-  workflow plus `CompilerGapReviewRow` artifacts from persisted eval runs.
+  workflow plus `CompilerGapReviewRow` and deduped `CompilerGapReviewGroup`
+  artifacts from persisted eval runs.
 - `CC-12` now has `ParityReport` and `compare_compilation_parity(...)` for
   legacy-vs-compiled execution comparison, and eval diagnostics aggregate
   compiler coverage, unresolved gaps, and closed-world blockers. The companion

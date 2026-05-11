@@ -78,6 +78,7 @@ PredicateKind = Literal[
     "medication_exposure",
     "measurement_threshold",
     "temporal_event",
+    "trial_exposure",
     "free_text_review",
     "unsupported",
 ]

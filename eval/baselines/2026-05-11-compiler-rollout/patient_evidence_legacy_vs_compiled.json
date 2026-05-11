@@ -1,0 +1,83 @@
+{
+  "artifact_safety": {
+    "public_export": "synthetic",
+    "contains_real_patient_data": false,
+    "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
+  },
+  "label_path": "eval/calibration/patient_evidence_labels.json",
+  "label_completeness": {
+    "total_labels": 50,
+    "filled_labels": 22,
+    "usable_labels": 22,
+    "missing_expected_verdict": []
+  },
+  "runs": [
+    {
+      "run_id": "500e8f14fa5a",
+      "notes": "2026-05-11 legacy matcher_inputs closed-world deterministic after free-text promotion triage; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "llm_use_level": "none",
+      "matcher_assumption_mode": "closed_world_eval",
+      "total_label_targets": 50,
+      "comparable_targets": 5,
+      "skipped_assumption_mismatch_targets": 17,
+      "missing_result_targets": 0,
+      "correct_verdicts": 4,
+      "verdict_accuracy": 0.8,
+      "abstentions": 2,
+      "abstention_rate": 0.4,
+      "citation_targets": 1,
+      "citation_matches": 0,
+      "citation_agreement": 0.0,
+      "retrieved_patient_row_counts": {},
+      "cited_patient_row_counts": {},
+      "eligibility_counts": {
+        "fail": 25,
+        "indeterminate": 21,
+        "pass_pending_review": 1
+      },
+      "adjudicator_calls": 0,
+      "adjudicator_cost_usd": 0.0,
+      "adjudicator_input_tokens": 0,
+      "adjudicator_output_tokens": 0
+    },
+    {
+      "run_id": "4a3c127baebb",
+      "notes": "2026-05-11 compiled_predicates closed-world deterministic after condition trial-exposure and composite free-text guard; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "llm_use_level": "none",
+      "matcher_assumption_mode": "closed_world_eval",
+      "total_label_targets": 50,
+      "comparable_targets": 5,
+      "skipped_assumption_mismatch_targets": 17,
+      "missing_result_targets": 0,
+      "correct_verdicts": 4,
+      "verdict_accuracy": 0.8,
+      "abstentions": 2,
+      "abstention_rate": 0.4,
+      "citation_targets": 1,
+      "citation_matches": 0,
+      "citation_agreement": 0.0,
+      "retrieved_patient_row_counts": {},
+      "cited_patient_row_counts": {},
+      "eligibility_counts": {
+        "fail": 29,
+        "indeterminate": 16,
+        "pass_pending_review": 2
+      },
+      "adjudicator_calls": 0,
+      "adjudicator_cost_usd": 0.0,
+      "adjudicator_input_tokens": 0,
+      "adjudicator_output_tokens": 0
+    }
+  ],
+  "mode_deltas": [
+    {
+      "baseline_run_id": "500e8f14fa5a",
+      "comparison_run_id": "4a3c127baebb",
+      "changed_cases": 5,
+      "movements": {
+        "indeterminate->fail": 4,
+        "indeterminate->pass_pending_review": 1
+      }
+    }
+  ]
+}

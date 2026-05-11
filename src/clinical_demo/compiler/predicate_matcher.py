@@ -39,7 +39,7 @@ from .schema import (
     ResolutionGap,
 )
 
-COMPILED_PREDICATE_MATCHER_VERSION = f"{MATCHER_VERSION}+compiled-predicate-v0.2"
+COMPILED_PREDICATE_MATCHER_VERSION = f"{MATCHER_VERSION}+compiled-predicate-v0.3"
 _CLOSED_WORLD_MODES: frozenset[MatcherAssumptionMode] = frozenset(
     {"closed_world_eval", "closed_world_demo"}
 )
@@ -81,6 +81,20 @@ def match_compiled_criterion(
     """
 
     criterion = compiled.matcher_input
+    if criterion.mood == "hypothetical":
+        return _build(
+            criterion,
+            verdict="indeterminate",
+            reason="unsupported_mood",
+            rationale=(
+                "Criterion is hypothetical (planned/expected); compiled predicate matcher "
+                "has no patient-side data on planned events."
+            ),
+            evidence=[],
+            assumption=matcher_assumption_mode,
+            evidence_under_assumption=False,
+        )
+
     if _is_compound_compiled(compiled):
         return _match_compiled_compound(
             compiled,
@@ -233,6 +247,8 @@ def _execute_predicate(
         return _execute_measurement(predicate, profile)
     if predicate.predicate_kind == "temporal_event":
         return _execute_temporal(predicate, profile, matcher_assumption_mode)
+    if predicate.predicate_kind == "trial_exposure":
+        return _execute_trial_exposure(predicate, matcher_assumption_mode)
     return (
         "indeterminate",
         "unsupported_kind",
@@ -649,6 +665,49 @@ def _execute_temporal(
             f"{predicate.window_days} days; under open_world this is insufficient evidence."
         ),
         [MissingEvidence(looked_for=looked_for, note="no matching temporal events found")],
+        False,
+    )
+
+
+def _execute_trial_exposure(
+    predicate: CheckablePredicate,
+    mode: MatcherAssumptionMode,
+) -> tuple[Verdict, VerdictReason, str, list[Evidence], bool]:
+    surface = predicate.surface or "trial exposure"
+    looked_for = "patient record evidence of clinical trial or investigational-agent exposure"
+    if mode in _CLOSED_WORLD_MODES:
+        return (
+            "fail",
+            "ok",
+            (
+                "Patient has no recorded clinical trial or investigational-agent exposure "
+                f"matching {surface!r} (closed-world: treating absence in the curated record "
+                "as negative)."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=looked_for,
+                    note=(
+                        "no matching trial-exposure rows on profile; absence treated as "
+                        f"negative under {mode}"
+                    ),
+                )
+            ],
+            True,
+        )
+    return (
+        "indeterminate",
+        "no_data",
+        (
+            "Patient record has no clinical trial or investigational-agent exposure rows "
+            f"matching {surface!r}; under open_world this is insufficient evidence, not absence."
+        ),
+        [
+            MissingEvidence(
+                looked_for=looked_for,
+                note="no matching trial-exposure rows on profile",
+            )
+        ],
         False,
     )
 

@@ -103,6 +103,19 @@ def test_measurement_resolution_accepts_normalized_unit_variants(
     assert result.unresolved_gaps == []
 
 
+def test_measurement_resolution_accepts_parenthetical_surface_variant() -> None:
+    result = compile_measurement_resolution(
+        _measurement("body mass index (bmi)", value=45.0, unit="kg/m2"),
+        "c:parenthetical",
+    )
+
+    assert result.concept_set is not None
+    assert result.loinc_codes == ["39156-5"]
+    assert result.unit_normalization.status == "resolved"
+    assert result.unit_normalization.conventional_unit == "kg/m2"
+    assert result.unresolved_gaps == []
+
+
 def test_egfr_missing_unit_infers_single_registered_conventional_unit() -> None:
     result = compile_measurement_resolution(_measurement("eGFR", value=25.0, unit=None), "c:2")
 

@@ -18,6 +18,7 @@ from clinical_demo.compiler import compile_extracted_criteria, match_compiled_cr
 from clinical_demo.extractor.schema import (
     CompositeCriterionGroup,
     CompositeCriterionSubcheck,
+    EntityMention,
     ExtractedCriteria,
     ExtractedCriterion,
     ExtractionMetadata,
@@ -84,6 +85,23 @@ def test_compiled_condition_predicate_preserves_open_and_closed_world_absence() 
     assert closed_world.evidence_under_assumption is True
 
 
+def test_compiled_predicate_preserves_unsupported_hypothetical_mood() -> None:
+    criterion = crit_condition(text="type 2 diabetes", mood="hypothetical")
+    compilation = compile_extracted_criteria([criterion])
+
+    verdict = match_compiled_criteria(
+        compilation,
+        make_profile(),
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.criteria[0].predicate.status == "resolved"
+    assert verdict.verdict == "indeterminate"
+    assert verdict.reason == "unsupported_mood"
+    assert verdict.evidence_under_assumption is False
+
+
 def test_compiled_unmapped_gap_becomes_unmapped_indeterminate() -> None:
     criterion = crit_condition(text="rare unknown disease")
     compilation = compile_extracted_criteria([criterion])
@@ -104,6 +122,112 @@ def test_compiled_free_text_without_predicate_stays_human_review() -> None:
 
     assert verdict.verdict == "indeterminate"
     assert verdict.reason == "human_review_required"
+
+
+def test_compiled_free_text_condition_promotion_executes() -> None:
+    criterion = crit_free_text(
+        polarity="exclusion",
+        source_text="Bone fractures within the past 12 months",
+        mentions=[
+            EntityMention(text="Bone fractures", type="Condition"),
+            EntityMention(text="12 months", type="Temporal"),
+        ],
+    )
+    profile = make_profile()
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(
+        compilation,
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.criteria[0].predicate.predicate_kind == "condition_presence"
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+    assert verdict.evidence_under_assumption is True
+
+
+def test_compiled_free_text_composite_condition_mention_stays_human_review() -> None:
+    criterion = crit_free_text(
+        polarity="exclusion",
+        source_text="Pregnant or breastfeeding females",
+        mentions=[EntityMention(text="Pregnant or breastfeeding females", type="Condition")],
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(
+        compilation,
+        make_profile(),
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.criteria[0].predicate.status == "not_attempted"
+    assert verdict.verdict == "indeterminate"
+    assert verdict.reason == "human_review_required"
+
+
+def test_compiled_free_text_trial_exposure_promotion_executes() -> None:
+    criterion = crit_free_text(
+        polarity="exclusion",
+        source_text="Use of other investigational agents within 3 months of enrollment",
+        mentions=[
+            EntityMention(text="other investigational agents", type="Drug"),
+            EntityMention(text="3 months", type="Temporal"),
+        ],
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(
+        compilation,
+        make_profile(),
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.criteria[0].predicate.predicate_kind == "trial_exposure"
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+    assert verdict.evidence_under_assumption is True
+
+
+def test_compiled_condition_shaped_trial_exposure_promotion_executes() -> None:
+    criterion = crit_condition(
+        text="Currently enrolled in or have completed any other investigational product study",
+        polarity="exclusion",
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(
+        compilation,
+        make_profile(),
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.criteria[0].predicate.predicate_kind == "trial_exposure"
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+    assert verdict.evidence_under_assumption is True
+
+
+def test_compiled_parenthetical_bmi_surface_executes_threshold() -> None:
+    criterion = crit_measurement(
+        text="body mass index (bmi)",
+        operator=">",
+        value=45.0,
+        unit="kg/m2",
+    )
+    profile = make_profile(observations=[make_lab(loinc="39156-5", value=46.0, unit="kg/m2")])
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert compilation.criteria[0].predicate.status == "resolved"
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
 
 
 def test_compiled_temporal_predicate_executes_window() -> None:

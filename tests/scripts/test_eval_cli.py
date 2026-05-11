@@ -26,6 +26,7 @@ SPEC.loader.exec_module(eval_cli)
 def test_compiler_review_command_writes_gap_artifact(tmp_path: Path, capsys) -> None:
     db_path = tmp_path / "runs.sqlite"
     output_path = tmp_path / "review" / "compiler_gaps.json"
+    grouped_output_path = tmp_path / "review" / "compiler_gap_groups.json"
     case = EvalCase(
         pair_id="pair-1",
         patient_id="P-1",
@@ -59,6 +60,7 @@ def test_compiler_review_command_writes_gap_artifact(tmp_path: Path, capsys) -> 
             db=db_path,
             run_id="compiler-review-run",
             output=output_path,
+            grouped_output=grouped_output_path,
             format="text",
         )
     )
@@ -66,7 +68,11 @@ def test_compiler_review_command_writes_gap_artifact(tmp_path: Path, capsys) -> 
     assert rc == 0
     stdout = capsys.readouterr().out
     assert "compiler gap review rows for run compiler-review-run: 1" in stdout
+    assert "deduped compiler gap groups: 1" in stdout
     assert "review_mapping: 1" in stdout
     payload = json.loads(output_path.read_text())
-    assert payload[0]["pair_id"] == "pair-1"
-    assert payload[0]["gap_kind"] == "unmapped_concept"
+    assert payload["rows"][0]["pair_id"] == "pair-1"
+    assert payload["rows"][0]["gap_kind"] == "unmapped_concept"
+    group_payload = json.loads(grouped_output_path.read_text())
+    assert group_payload["groups"][0]["occurrence_count"] == 1
+    assert group_payload["groups"][0]["example_rows"][0]["pair_id"] == "pair-1"

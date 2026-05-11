@@ -485,9 +485,7 @@ def _match_correlatable_free_text(
 
     mention = typed_mentions[0]
     surface = mention.text.strip()
-    if mention.type in {"Drug", "Observation"} and (
-        _looks_like_trial_exposure(surface) or _looks_like_trial_exposure(criterion.source_text)
-    ):
+    if mention.type in {"Drug", "Observation"} and _looks_like_trial_exposure(surface):
         result = _match_trial_exposure(surface or criterion.source_text, mode=mode)
         return _with_free_text_promotion_rationale(
             result, mention_type="trial-exposure", surface=surface

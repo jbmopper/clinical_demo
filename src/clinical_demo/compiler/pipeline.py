@@ -9,15 +9,20 @@ predicates for the new compiler path.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+import re
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 
 from clinical_demo.extractor.schema import (
     CompositeCriterionGroup,
     CompositeCriterionSubcheck,
+    ConditionCriterion,
     CriterionKind,
+    EntityMention,
     ExtractedCriteria,
     ExtractedCriterion,
+    MeasurementCriterion,
+    MedicationCriterion,
     ThresholdOperator,
 )
 from clinical_demo.matcher.concept_lookup import lookup_condition_alias
@@ -53,6 +58,7 @@ from .schema import (
     CheckablePredicatePlan,
     CompiledCriterion,
     CompilerDiagnostic,
+    CompoundLogicPlan,
     CriterionCompilationResult,
     DiagnosticFact,
     DiagnosticSeverity,
@@ -74,6 +80,46 @@ class _CompilerResolutionContext:
     resolver_policy: ResolverExecutionPolicy
     resolver: TerminologyResolver
     reviewed_registry: ReviewedMappingRegistry
+
+
+_PROMOTABLE_MENTION_TYPES = frozenset({"Condition", "Drug", "Measurement", "Observation"})
+_NEGATION_CUE_RE = re.compile(
+    r"\b(?:no|not|without|absence of|free of|negative for|denies|denied)\b",
+    re.IGNORECASE,
+)
+_SYMBOLIC_THRESHOLD_RE = re.compile(
+    r"(?P<op>>=|<=|>|<|=)\s*(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>[A-Za-z%][A-Za-z0-9%/*.^{}_-]*)?",
+    re.IGNORECASE,
+)
+_TRIAL_EXPOSURE_RE = re.compile(
+    r"\b(?:"
+    r"investigational\s+(?:agents?|drugs?|products?)|"
+    r"study\s+(?:agents?|drugs?|medications?)|"
+    r"clinical\s+trial|"
+    r"research\s+study|"
+    r"another\s+(?:study|trial)"
+    r")\b",
+    re.IGNORECASE,
+)
+_MEDICATION_LIST_CUE_RE = re.compile(
+    r"\b(?:"
+    r"any\s+of\s+the\s+following|"
+    r"following\s+(?:drugs?|medications?|agents?|therap(?:y|ies))|"
+    r"(?:treatment|therapy)\s+with\s+any|"
+    r"use\s+of\s+any"
+    r")\b",
+    re.IGNORECASE,
+)
+_RELATIVE_WINDOW_RE = re.compile(
+    r"\b(?:within|in|during|over)?\s*(?:the\s*)?"
+    r"(?:past|last|prior|previous)\s+"
+    r"(?:(?P<num>\d+)\s+)?(?P<unit>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
+_WITHIN_WINDOW_RE = re.compile(
+    r"\bwithin\s+(?P<num>\d+)\s+(?P<unit>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
 
 
 def compile_extracted_criteria(
@@ -170,6 +216,7 @@ def _compile_criterion(
         source_criterion_id=source_id,
         resolver_policy=resolver_policy,
     )
+    compound_plan = compound.plan
     supports.extend(compound.supports)
     gaps.extend(compound.gaps)
     diagnostics.extend(compound.diagnostics)
@@ -187,17 +234,32 @@ def _compile_criterion(
         gaps.extend(demographic_gaps)
         diagnostics.extend(demographic_diagnostics)
     elif criterion.kind in {"condition_present", "condition_absent"}:
-        condition = _compile_condition_resolution(
-            criterion,
-            source_criterion_id=source_id,
-            context=context,
-        )
-        expansion = condition.expansion
-        predicate = condition.predicate
-        predicates.extend(condition.predicates)
-        supports.extend(condition.supports)
-        gaps.extend(condition.gaps)
-        diagnostics.extend(condition.diagnostics)
+        if surface is not None and _looks_like_trial_exposure(surface):
+            trial_promotion = _compile_trial_exposure_promotion(
+                criterion,
+                source_criterion_id=source_id,
+                surface=surface,
+                resolver_policy=resolver_policy,
+                support_domain="condition",
+                promotion_label="condition",
+            )
+            predicate = trial_promotion.predicate
+            predicates.extend(trial_promotion.predicates)
+            supports.extend(trial_promotion.supports)
+            gaps.extend(trial_promotion.gaps)
+            diagnostics.extend(trial_promotion.diagnostics)
+        else:
+            condition = _compile_condition_resolution(
+                criterion,
+                source_criterion_id=source_id,
+                context=context,
+            )
+            expansion = condition.expansion
+            predicate = condition.predicate
+            predicates.extend(condition.predicates)
+            supports.extend(condition.supports)
+            gaps.extend(condition.gaps)
+            diagnostics.extend(condition.diagnostics)
     elif criterion.kind == "measurement_threshold":
         measurement = compile_measurement_resolution(
             criterion,
@@ -246,6 +308,26 @@ def _compile_criterion(
             medication=medication,
         )
         predicates.extend(medication_predicates)
+    elif criterion.kind == "free_text":
+        free_text_promotion = _compile_free_text_promotion(
+            criterion,
+            index=index,
+            source_criterion_id=source_id,
+            resolver_policy=resolver_policy,
+            context=context,
+        )
+        if free_text_promotion is not None:
+            supports.extend(free_text_promotion.supports)
+            gaps.extend(free_text_promotion.gaps)
+            diagnostics.extend(free_text_promotion.diagnostics)
+            predicates.extend(free_text_promotion.predicates)
+            predicate = free_text_promotion.predicate
+            if free_text_promotion.compound_logic is not None:
+                compound_plan = free_text_promotion.compound_logic
+            if free_text_promotion.expansion is not None:
+                expansion = free_text_promotion.expansion
+            if free_text_promotion.unit_normalization is not None:
+                unit_normalization = free_text_promotion.unit_normalization
 
     if compound.plan.status == "resolved" and composite_groups:
         compound_supports, compound_gaps, compound_predicates, compound_diagnostics = (
@@ -260,6 +342,7 @@ def _compile_criterion(
         gaps = [*compound.gaps, *compound_gaps]
         diagnostics = [*compound.diagnostics, *compound_diagnostics]
         predicates = list(compound_predicates)
+        compound_plan = compound.plan
         predicate = _compound_predicate_plan(
             compound.plan.subcheck_ids,
             predicates=compound_predicates,
@@ -281,7 +364,7 @@ def _compile_criterion(
         unresolved_gaps=gaps,
         checkable_predicates=predicates,
         expansion=expansion,
-        compound_logic=compound.plan,
+        compound_logic=compound_plan,
         unit_normalization=unit_normalization,
         predicate=predicate,
         diagnostics=diagnostics,
@@ -341,6 +424,362 @@ def _compile_compound_subchecks(
                 )
 
     return supports, gaps, predicates, diagnostics
+
+
+def _compile_free_text_promotion(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+) -> _FreeTextPromotionCompilation | None:
+    typed_mentions: list[EntityMention] = [
+        mention
+        for mention in criterion.mentions
+        if mention.type in _PROMOTABLE_MENTION_TYPES and mention.text.strip()
+    ]
+    if _is_list_like_medication_free_text(criterion, typed_mentions):
+        return _compile_free_text_medication_list(
+            criterion,
+            typed_mentions=typed_mentions,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            resolver_policy=resolver_policy,
+            context=context,
+        )
+
+    if len(typed_mentions) != 1:
+        return None
+    if not criterion.negated and _NEGATION_CUE_RE.search(criterion.source_text):
+        return None
+
+    mention = typed_mentions[0]
+    surface = mention.text.strip()
+    if mention.type in {"Drug", "Observation"} and _looks_like_trial_exposure(surface):
+        return _compile_trial_exposure_promotion(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            support_domain="free_text",
+            promotion_label="free-text",
+        )
+
+    surrogate: ExtractedCriterion | None = None
+    promotion_kind: str | None = None
+    if mention.type == "Condition":
+        if _looks_unsafe_composite_surface(surface):
+            return None
+        surrogate = _criterion_like(
+            criterion,
+            kind="condition_present",
+            condition=ConditionCriterion(condition_text=surface),
+        )
+        promotion_kind = "condition"
+    elif mention.type == "Drug":
+        surrogate = _criterion_like(
+            criterion,
+            kind="medication_present",
+            medication=MedicationCriterion(medication_text=surface),
+        )
+        promotion_kind = "medication"
+    elif mention.type in {"Measurement", "Observation"}:
+        measurement = _free_text_measurement_threshold(criterion.source_text, surface)
+        if measurement is None:
+            return None
+        surrogate = _criterion_like(
+            criterion,
+            kind="measurement_threshold",
+            measurement=measurement,
+        )
+        promotion_kind = "measurement"
+
+    if surrogate is None or promotion_kind is None:
+        return None
+
+    sub_id = f"{source_criterion_id}:free-text:{promotion_kind}"
+    compiled = _compile_criterion(
+        surrogate,
+        index=index,
+        resolver_policy=resolver_policy,
+        composite_groups=[],
+        context=context,
+        source_criterion_id_override=sub_id,
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind=promotion_kind,
+        predicate=compiled.predicate,
+        predicates=compiled.checkable_predicates,
+        supports=compiled.resolved_supports,
+        gaps=compiled.unresolved_gaps,
+        diagnostics=compiled.diagnostics,
+        expansion=compiled.expansion,
+        unit_normalization=compiled.unit_normalization,
+    )
+
+
+def _compile_free_text_medication_list(
+    criterion: ExtractedCriterion,
+    *,
+    typed_mentions: Sequence[EntityMention],
+    index: int,
+    source_criterion_id: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+) -> _FreeTextPromotionCompilation | None:
+    surfaces = _unique_surfaces(mention.text for mention in typed_mentions)
+    supports: list[ResolutionSupport] = []
+    gaps: list[ResolutionGap] = []
+    predicates: list[CheckablePredicate] = []
+    diagnostics: list[CompilerDiagnostic] = []
+    subcheck_ids: list[str] = []
+
+    for sub_index, surface in enumerate(surfaces, start=1):
+        sub_id = f"{source_criterion_id}:free-text:medication-list:{sub_index:03d}"
+        subcheck_ids.append(sub_id)
+        surrogate = _criterion_like(
+            criterion,
+            kind="medication_present",
+            medication=MedicationCriterion(medication_text=surface),
+        )
+        compiled = _compile_criterion(
+            surrogate,
+            index=index,
+            resolver_policy=resolver_policy,
+            composite_groups=[],
+            context=context,
+            source_criterion_id_override=sub_id,
+        )
+        supports.extend(compiled.resolved_supports)
+        gaps.extend(compiled.unresolved_gaps)
+        predicates.extend(compiled.checkable_predicates)
+        diagnostics.extend(compiled.diagnostics)
+
+    if not predicates and not gaps:
+        return None
+
+    predicate = _compound_predicate_plan(
+        subcheck_ids,
+        predicates=predicates,
+        gaps=gaps,
+        operator="any_of",
+    )
+    compound_logic = CompoundLogicPlan(
+        status="resolved" if predicates else "unresolved",
+        operator="any_of" if predicates else "none",
+        source_group_ids=[],
+        subcheck_ids=subcheck_ids if predicates else [],
+        gap_ids=[gap.gap_id for gap in gaps],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=", ".join(surfaces),
+        promotion_kind="medication-list",
+        predicate=predicate,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        compound_logic=compound_logic,
+    )
+
+
+def _compile_trial_exposure_promotion(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    support_domain: ResolutionDomain,
+    promotion_label: str,
+) -> _FreeTextPromotionCompilation:
+    support = _support(
+        support_id=f"{source_criterion_id}:free-text:support:trial-exposure",
+        stage="predicate_translation",
+        domain=support_domain,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        normalized_surface=_normalize_text(surface),
+        target_system="internal.trial_exposure",
+        target_id="trial_exposure",
+        target_label="Clinical trial or investigational-agent exposure",
+        resolver_policy=resolver_policy,
+    )
+    predicate = _checkable_predicate(
+        predicate_id=f"{source_criterion_id}:predicate:trial-exposure",
+        predicate_kind="trial_exposure",
+        source_criterion_id=source_criterion_id,
+        criterion=criterion,
+        surface=surface,
+        target_system="internal.trial_exposure",
+        target_codes=frozenset({"trial_exposure"}),
+        window_days=_free_text_window_days(criterion.source_text),
+        support_ids=[support.support_id],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind="trial-exposure",
+        predicate=_resolved_predicate_plan(predicate, support_ids=[support.support_id]),
+        predicates=[predicate],
+        supports=[support],
+        gaps=[],
+        diagnostics=[],
+        promotion_domain=support_domain,
+        promotion_label=promotion_label,
+    )
+
+
+def _promoted_compilation(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str,
+    promotion_kind: str,
+    predicate: CheckablePredicatePlan,
+    predicates: list[CheckablePredicate],
+    supports: list[ResolutionSupport],
+    gaps: list[ResolutionGap],
+    diagnostics: list[CompilerDiagnostic],
+    promotion_domain: ResolutionDomain = "free_text",
+    promotion_label: str = "free-text",
+    compound_logic: CompoundLogicPlan | None = None,
+    expansion: ExpansionPlan | None = None,
+    unit_normalization: UnitNormalizationPlan | None = None,
+) -> _FreeTextPromotionCompilation:
+    return _FreeTextPromotionCompilation(
+        predicate=predicate,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=[
+            _diagnostic(
+                severity="info",
+                code=f"{promotion_domain}.promoted.{promotion_kind}",
+                message=(
+                    f"Promoted correlatable {promotion_label} {promotion_kind} surface "
+                    f"{surface!r} to compiler predicate translation."
+                ),
+                stage="predicate_translation",
+                source_criterion_id=source_criterion_id,
+                facts=[
+                    ("surface", surface),
+                    ("source_text", criterion.source_text),
+                ],
+            ),
+            *diagnostics,
+        ],
+        compound_logic=compound_logic,
+        expansion=expansion,
+        unit_normalization=unit_normalization,
+    )
+
+
+def _is_list_like_medication_free_text(
+    criterion: ExtractedCriterion,
+    typed_mentions: Sequence[object],
+) -> bool:
+    return (
+        len(typed_mentions) >= 2
+        and all(getattr(mention, "type", None) == "Drug" for mention in typed_mentions)
+        and bool(_MEDICATION_LIST_CUE_RE.search(criterion.source_text))
+    )
+
+
+def _unique_surfaces(surfaces: Iterable[object]) -> list[str]:
+    unique: list[str] = []
+    seen: set[str] = set()
+    for surface in surfaces:
+        normalized = " ".join(str(surface).lower().split())
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        unique.append(str(surface).strip())
+    return unique
+
+
+def _criterion_like(
+    criterion: ExtractedCriterion,
+    *,
+    kind: CriterionKind,
+    condition: ConditionCriterion | None = None,
+    medication: MedicationCriterion | None = None,
+    measurement: MeasurementCriterion | None = None,
+) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind=kind,
+        polarity=criterion.polarity,
+        source_text=criterion.source_text,
+        negated=criterion.negated,
+        mood=criterion.mood,
+        age=None,
+        sex=None,
+        condition=condition,
+        medication=medication,
+        measurement=measurement,
+        temporal_window=None,
+        free_text=None,
+        mentions=criterion.mentions,
+    )
+
+
+def _free_text_measurement_threshold(
+    source_text: str,
+    surface: str,
+) -> MeasurementCriterion | None:
+    surface_index = source_text.lower().find(surface.lower())
+    if surface_index < 0:
+        return None
+    window = source_text[surface_index : surface_index + max(len(surface) + 48, 64)]
+    match = _SYMBOLIC_THRESHOLD_RE.search(window)
+    if match is None:
+        return None
+    return MeasurementCriterion(
+        measurement_text=surface,
+        operator=match.group("op"),  # type: ignore[arg-type]
+        value=float(match.group("value")),
+        value_low=None,
+        value_high=None,
+        unit=match.group("unit"),
+    )
+
+
+def _looks_like_trial_exposure(text: str) -> bool:
+    return bool(_TRIAL_EXPOSURE_RE.search(text))
+
+
+def _looks_unsafe_composite_surface(text: str) -> bool:
+    normalized = f" {_normalize_text(text)} "
+    return any(token in normalized for token in (" and ", " or ", ",", ";", "/"))
+
+
+def _free_text_window_days(source_text: str) -> int | None:
+    match = _RELATIVE_WINDOW_RE.search(source_text) or _WITHIN_WINDOW_RE.search(source_text)
+    if match is None:
+        return None
+    return _window_days(match.group("num"), match.group("unit"))
+
+
+def _window_days(number_text: str | None, unit: str) -> int:
+    count = int(number_text) if number_text is not None else 1
+    unit = unit.lower()
+    if unit.startswith("day"):
+        return count
+    if unit.startswith("week"):
+        return count * 7
+    if unit.startswith("month"):
+        return count * 30
+    return count * 365
+
+
+def _normalize_text(text: str) -> str:
+    return " ".join(text.lower().strip(".,;:()[]{}\"'").split())
 
 
 def _compound_subcheck_gap(
@@ -464,6 +903,18 @@ class _ConditionCompilation:
     supports: list[ResolutionSupport]
     gaps: list[ResolutionGap]
     diagnostics: list[CompilerDiagnostic]
+
+
+@dataclass(frozen=True)
+class _FreeTextPromotionCompilation:
+    predicate: CheckablePredicatePlan
+    predicates: list[CheckablePredicate]
+    supports: list[ResolutionSupport]
+    gaps: list[ResolutionGap]
+    diagnostics: list[CompilerDiagnostic]
+    compound_logic: CompoundLogicPlan | None = None
+    expansion: ExpansionPlan | None = None
+    unit_normalization: UnitNormalizationPlan | None = None
 
 
 def _compile_condition_resolution(
@@ -643,11 +1094,24 @@ def _condition_candidates(
 ) -> tuple[list[TerminologyCandidate], dict[tuple[str, str], ConceptSet]]:
     candidates: list[TerminologyCandidate] = []
     concept_sets: dict[tuple[str, str], ConceptSet] = {}
+    lookup_variants: list[tuple[str, int]] = []
+    seen_lookup_variants: set[str] = set()
 
+    def add_lookup_variant(candidate: str, transform_count: int) -> None:
+        normalized = " ".join(candidate.lower().split())
+        if not normalized or normalized in seen_lookup_variants:
+            return
+        seen_lookup_variants.add(normalized)
+        lookup_variants.append((candidate, transform_count))
+
+    add_lookup_variant(surface, 0)
     for variant in generate_query_variants(surface):
-        reviewed_entry = context.reviewed_registry.lookup("condition", variant.variant)
+        add_lookup_variant(variant.variant, len(variant.transforms))
+
+    for lookup_surface, transform_count in lookup_variants:
+        reviewed_entry = context.reviewed_registry.lookup("condition", lookup_surface)
         concept_set = (
-            context.resolver.resolve_condition(variant.variant)
+            context.resolver.resolve_condition(lookup_surface)
             if context.resolver_policy != "disabled"
             else None
         )
@@ -655,16 +1119,16 @@ def _condition_candidates(
             "reviewed_registry" if reviewed_entry is not None else "surface_cache"
         )
         if concept_set is None and reviewed_entry is None and context.resolver_policy != "disabled":
-            concept_set = lookup_condition_alias(variant.variant)
+            concept_set = lookup_condition_alias(lookup_surface)
             source_kind = "local_alias"
         if concept_set is None:
             continue
 
-        score = _candidate_score(source_kind, len(variant.transforms))
+        score = _candidate_score(source_kind, transform_count)
         candidate = TerminologyCandidate(
             source=CandidateSource(kind=source_kind, name=source_kind),
             matched_surface=surface,
-            matched_variant=variant.variant,
+            matched_variant=lookup_surface,
             code=_concept_set_target_id(concept_set),
             system=concept_set.system,
             name=concept_set.name,

@@ -677,6 +677,31 @@ def test_free_text_trial_exposure_closed_world_absence_satisfies_exclusion() -> 
     assert "investigational-agent exposure" in v.rationale
 
 
+def test_free_text_trial_exposure_does_not_steal_pregnancy_test_requirement() -> None:
+    profile = make_profile()
+    v = match_criterion(
+        crit_free_text(
+            source_text=(
+                "Female of childbearing potential must have a negative pregnancy test "
+                "at the last screening visit and consent to use highly effective "
+                "contraceptives during the trial and 3 months after the last dose of "
+                "investigational drug."
+            ),
+            mentions=[
+                EntityMention(text="negative pregnancy test", type="Observation"),
+                EntityMention(text="highly effective contraceptives", type="Qualifier"),
+                EntityMention(text="3 months after the last dose", type="Temporal"),
+            ],
+        ),
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )
+
+    assert v.verdict == "indeterminate"
+    assert v.reason == "human_review_required"
+
+
 def test_free_text_medication_list_promotes_any_mapped_match(monkeypatch) -> None:
     metformin = ConceptSet(
         name="metformin (RxNorm)",

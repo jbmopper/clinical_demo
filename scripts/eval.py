@@ -40,8 +40,11 @@ from clinical_demo.data.synthea import iter_bundles
 from clinical_demo.domain.patient import Patient
 from clinical_demo.domain.trial import Trial
 from clinical_demo.evals.compiler_review import (
+    build_compiler_gap_review_groups,
     build_compiler_gap_review_rows,
+    save_compiler_gap_review_groups,
     save_compiler_gap_review_rows,
+    summarize_compiler_gap_review_groups,
     summarize_compiler_gap_review_rows,
 )
 from clinical_demo.evals.diagnostics import (
@@ -97,6 +100,11 @@ EXTRACTIONS_DIR = Path("data/curated/extractions")
 DEFAULT_CHIA_DIR = Path("data/raw/chia")
 CHIA_EXTRACTIONS_DIR = Path("data/curated/chia_extractions")
 DEFAULT_CHIA_SAMPLE_SEED = 20260430
+PUBLIC_ARTIFACT_SAFETY = {
+    "public_export": "synthetic",
+    "contains_real_patient_data": False,
+    "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata.",
+}
 
 ChiaDocRef = tuple[str, str, ChiaDocument]
 
@@ -602,12 +610,16 @@ def _cmd_patient_evidence(args: argparse.Namespace) -> int:
     if args.output_json is not None:
         out = Path(args.output_json)
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(report.model_dump_json(indent=2) + "\n")
+        payload = {
+            "artifact_safety": PUBLIC_ARTIFACT_SAFETY,
+            **report.model_dump(mode="json"),
+        }
+        out.write_text(json.dumps(payload, indent=2) + "\n")
     rendered = render_patient_evidence_report(report)
     if args.output_markdown is not None:
         out = Path(args.output_markdown)
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(rendered)
+        out.write_text(f"Public-Artifact-Safety: synthetic\n\n{rendered}")
     if args.format == "json":
         print(report.model_dump_json(indent=2))
     else:
@@ -630,8 +642,13 @@ def _cmd_compiler_review(args: argparse.Namespace) -> int:
 
     rows = build_compiler_gap_review_rows(run)
     summary = summarize_compiler_gap_review_rows(rows)
+    groups = build_compiler_gap_review_groups(rows)
+    group_summary = summarize_compiler_gap_review_groups(groups)
     if args.output is not None:
         save_compiler_gap_review_rows(rows, args.output)
+    grouped_output = getattr(args, "grouped_output", None)
+    if grouped_output is not None:
+        save_compiler_gap_review_groups(groups, grouped_output)
 
     if args.format == "json":
         print(
@@ -639,8 +656,11 @@ def _cmd_compiler_review(args: argparse.Namespace) -> int:
                 {
                     "run_id": run.run_id,
                     "output": str(args.output) if args.output else None,
+                    "grouped_output": str(grouped_output) if grouped_output else None,
                     "summary": summary.model_dump(mode="json"),
+                    "group_summary": group_summary.model_dump(mode="json"),
                     "rows": [row.model_dump(mode="json") for row in rows],
+                    "groups": [group.model_dump(mode="json") for group in groups],
                 },
                 indent=2,
             )
@@ -649,9 +669,16 @@ def _cmd_compiler_review(args: argparse.Namespace) -> int:
         print(f"compiler gap review rows for run {run.run_id}: {summary.total_rows}")
         if args.output is not None:
             print(f"wrote {summary.total_rows} row(s) to {args.output}")
+        print(f"deduped compiler gap groups: {group_summary.total_groups}")
+        if grouped_output is not None:
+            print(f"wrote {group_summary.total_groups} group(s) to {grouped_output}")
         if summary.by_recommended_action:
             print("recommended actions:")
             for action, count in summary.by_recommended_action.items():
+                print(f"  {action}: {count}")
+        if group_summary.by_recommended_action:
+            print("deduped actions:")
+            for action, count in group_summary.by_recommended_action.items():
                 print(f"  {action}: {count}")
         if summary.by_gap_kind:
             print("gap kinds:")
@@ -931,6 +958,11 @@ def main(argv: list[str] | None = None) -> int:
         "--output",
         default=None,
         help="Optional JSON path to write CompilerGapReviewRow artifacts.",
+    )
+    p_compiler_review.add_argument(
+        "--grouped-output",
+        default=None,
+        help="Optional JSON path to write deduped CompilerGapReviewGroup artifacts.",
     )
     p_compiler_review.add_argument("--format", choices=("text", "json"), default="text")
     p_compiler_review.set_defaults(func=_cmd_compiler_review)

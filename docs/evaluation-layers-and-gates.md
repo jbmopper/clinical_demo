@@ -91,8 +91,9 @@ executable predicates, so missing class members remain visible as compiler
 gaps instead of silently narrowing the class. Temporal event surfaces also emit
 diagnostics when diagnosis/history-shaped text is normalized before lookup, and
 workflow anchors remain unsupported gaps rather than condition matches. Use
-`uv run python scripts/eval.py compiler-review --run-id <run> --output <path>`
-to export private reviewer rows for unresolved compiler gaps.
+`uv run python scripts/eval.py compiler-review --run-id <run> --output <path> --grouped-output <path>`
+to export private reviewer rows plus deduped surface/action groups for
+unresolved compiler gaps.
 
 **CI gate:** Once a baseline is expected to be compiler-complete, use
 `uv run python scripts/check_compiler_diagnostics.py --diagnostics <diagnostics.json> --require-compilation --max-closed-world-blocking-cases 0`.

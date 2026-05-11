@@ -9,6 +9,8 @@ cached-only eval runs.
 
 from __future__ import annotations
 
+import re
+
 from pydantic import BaseModel, Field
 
 from clinical_demo.extractor.schema import ExtractedCriterion, ThresholdOperator
@@ -31,6 +33,7 @@ from .schema import (
 )
 
 LOINC_SYSTEM = "http://loinc.org"
+_PARENTHETICAL_RE = re.compile(r"\(([^()]*)\)")
 
 
 class MeasurementResolutionResult(BaseModel):
@@ -314,7 +317,28 @@ def _skipped_result(
 
 
 def _lookup_measurement_concept_set(surface: str) -> ConceptSet | None:
-    return lookup_lab_alias(surface)
+    for variant in _measurement_surface_variants(surface):
+        concept_set = lookup_lab_alias(variant)
+        if concept_set is not None:
+            return concept_set
+    return None
+
+
+def _measurement_surface_variants(surface: str) -> tuple[str, ...]:
+    variants: list[str] = []
+    seen: set[str] = set()
+
+    def add(candidate: str) -> None:
+        normalized = _normalize_surface(candidate)
+        if not normalized or normalized in seen:
+            return
+        seen.add(normalized)
+        variants.append(candidate)
+
+    add(surface)
+    add(_PARENTHETICAL_RE.sub(lambda match: f" {match.group(1)} ", surface))
+    add(_PARENTHETICAL_RE.sub(" ", surface))
+    return tuple(variants)
 
 
 def _loinc_codes(concept_set: ConceptSet | None) -> list[str]:

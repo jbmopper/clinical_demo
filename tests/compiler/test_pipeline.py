@@ -6,6 +6,7 @@ from clinical_demo.extractor.schema import (
     CompositeCriterionGroup,
     CompositeCriterionSubcheck,
     ConditionCriterion,
+    EntityMention,
     ExtractedCriteria,
     ExtractedCriterion,
     ExtractionMetadata,
@@ -248,6 +249,89 @@ def test_condition_compiler_maps_reviewed_fracture_surface_after_variant_cleanup
         "expansion",
     }
     assert result.checkable_predicates == compiled.checkable_predicates
+    assert result.unresolved_gaps == []
+
+
+def test_condition_compiler_preserves_raw_hyphenated_lookup_surface() -> None:
+    criterion = _condition("end-stage renal disease")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.resolved_supports[0].normalized_surface == "end-stage renal disease"
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"46177005"})
+
+
+def test_free_text_condition_mention_compiles_to_condition_predicate() -> None:
+    criterion = _free_text("Bone fractures within the past 12 months").model_copy(
+        update={
+            "mentions": [
+                EntityMention(text="Bone fractures", type="Condition"),
+                EntityMention(text="12 months", type="Temporal"),
+            ]
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.criterion_kind == "free_text"
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "condition_presence"
+    assert compiled.checkable_predicates[0].predicate_kind == "condition_presence"
+    assert compiled.diagnostics[0].code == "free_text.promoted.condition"
+
+
+def test_free_text_composite_condition_mention_stays_human_review() -> None:
+    criterion = _free_text("Pregnant or breastfeeding females").model_copy(
+        update={
+            "mentions": [EntityMention(text="Pregnant or breastfeeding females", type="Condition")]
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.criterion_kind == "free_text"
+    assert compiled.predicate.status == "not_attempted"
+    assert compiled.checkable_predicates == []
+    assert result.unresolved_gaps == []
+
+
+def test_free_text_trial_exposure_compiles_to_internal_predicate() -> None:
+    criterion = _free_text("Use of other investigational agents within 3 months").model_copy(
+        update={
+            "mentions": [
+                EntityMention(text="other investigational agents", type="Drug"),
+                EntityMention(text="3 months", type="Temporal"),
+            ]
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "trial_exposure"
+    assert compiled.checkable_predicates[0].window_days == 90
+    assert compiled.diagnostics[0].code == "free_text.promoted.trial-exposure"
+
+
+def test_condition_shaped_trial_exposure_compiles_to_internal_predicate() -> None:
+    criterion = _condition(
+        "Currently enrolled in or have completed any other investigational product study"
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.criterion_kind == "condition_present"
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "trial_exposure"
+    assert compiled.checkable_predicates[0].predicate_kind == "trial_exposure"
+    assert compiled.resolved_supports[0].domain == "condition"
+    assert compiled.diagnostics[0].code == "condition.promoted.trial-exposure"
     assert result.unresolved_gaps == []
 
 

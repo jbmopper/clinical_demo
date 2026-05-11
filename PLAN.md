@@ -1491,8 +1491,9 @@ promotion remain follow-on work.
     - `ScorePairResult` and `/score` expose `compiler_validation` and
       `compiler_gap_queue` so reviewer/API consumers see compiler readiness
       without recomputing it.
-    - Eval reviewer artifact rows (`CompilerGapReviewRow`) can be exported from
-      persisted runs with `scripts/eval.py compiler-review`.
+    - Eval reviewer artifact rows (`CompilerGapReviewRow`) and deduped surface
+      groups (`CompilerGapReviewGroup`) can be exported from persisted runs with
+      `scripts/eval.py compiler-review`.
   exit_criteria:
     - A reviewer can turn an ambiguous mapping into a reusable registry row.
     - Rebuilding calibration packets preserves reviewed labels by stable ids.
@@ -1578,6 +1579,29 @@ promotion remain follow-on work.
   gaps, and compiler diagnostics can be threshold-gated in CI. Next parallel
   lanes remain reviewer promotion into `data/terminology/`, baseline threshold
   selection from a fresh eval run, and any eval-discovered predicate gaps.
+- Fresh compiler rollout eval (2026-05-11): sequential closed-world,
+  deterministic cached-only runs compare legacy `matcher_inputs`
+  (`500e8f14fa5a`) with opt-in `compiled_predicates` (`4a3c127baebb`) after
+  compiler-side correlatable free-text promotion, condition-shaped
+  trial-exposure promotion, unsafe composite free-text promotion guards, raw
+  condition-surface lookup preservation, parenthetical measurement alias
+  handling, and a compiled matcher mood guard for hypothetical/planned
+  criteria. Both runs have the same 2 deceased-patient scoring refusals and the
+  same Layer-1 structured-field metrics (89.0% agreement, 98.6% coverage). The
+  compiled path reduces criterion-level `unmapped_concept` from 316/1076
+  (29.4%) to 223/1076 (20.7%) with no determinate-to-indeterminate criterion
+  regressions against the legacy path; it adds 13 indeterminate-to-determinate
+  criterion wins and changes 5 case rollups (all away from indeterminate). It
+  is still not default-ready: compiler diagnostics show 462 unresolved gaps and
+  43 closed-world-blocking compiled cases. The regenerated compiler-review
+  artifact now dedupes the 462 raw rows to 232 surface/action/policy groups
+  (161 `review_mapping`, 40
+  `implement_compiler_logic`, 22 `choose_candidate`, 8 `add_unit_mapping`, and
+  1 `review_gap`). Snapshot artifacts live under
+  `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
+  eval seed policy, triaging the 13 decisive criterion movements / 5 case
+  rollups, and using the deduped compiler-review packet for targeted
+  reviewer/registry work.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 
