@@ -9,6 +9,16 @@ METFORMIN = ConceptSet(
     system="http://www.nlm.nih.gov/research/umls/rxnorm",
     codes=frozenset({"860975"}),
 )
+ATORVASTATIN = ConceptSet(
+    name="atorvastatin",
+    system="http://www.nlm.nih.gov/research/umls/rxnorm",
+    codes=frozenset({"259255"}),
+)
+SIMVASTATIN = ConceptSet(
+    name="simvastatin",
+    system="http://www.nlm.nih.gov/research/umls/rxnorm",
+    codes=frozenset({"312961"}),
+)
 
 
 class StubMedicationResolver:
@@ -145,11 +155,59 @@ def test_composite_list_medication_emits_ambiguous_gap_without_resolving() -> No
     assert result.supports == []
 
 
-def test_class_like_medication_emits_unsupported_gap_without_false_mapping() -> None:
-    resolver = StubMedicationResolver({"GLP-1 receptor agonists": METFORMIN})
+def test_reviewed_medication_class_expands_to_member_code_union() -> None:
+    resolver = StubMedicationResolver({"atorvastatin": ATORVASTATIN, "simvastatin": SIMVASTATIN})
 
     result = compile_medication_resolution(
-        _criterion("GLP-1 receptor agonists"),
+        _criterion("statins"),
+        source_criterion_id="criterion:3",
+        resolver=resolver,
+    )
+
+    assert resolver.calls == ["atorvastatin", "simvastatin"]
+    assert result.concept_set is not None
+    assert result.concept_set.name == "Statins"
+    assert result.concept_set.codes == frozenset({"259255", "312961"})
+    assert result.medication_class.status == "resolved"
+    assert result.medication_class.surface == "statins"
+    assert result.ingredient.status == "skipped"
+    assert result.predicate.status == "resolved"
+    assert result.predicate.support_ids == [
+        "criterion:3:medication:support:class-expansion",
+        "criterion:3:medication:support:class-member-001",
+        "criterion:3:medication:support:class-member-002",
+    ]
+    assert [support.stage for support in result.supports] == [
+        "expansion",
+        "concept_resolution",
+        "concept_resolution",
+    ]
+    assert result.gaps == []
+
+
+def test_reviewed_medication_class_requires_every_member_to_resolve() -> None:
+    resolver = StubMedicationResolver({"atorvastatin": ATORVASTATIN, "simvastatin": None})
+
+    result = compile_medication_resolution(
+        _criterion("statins"),
+        source_criterion_id="criterion:class-gap",
+        resolver=resolver,
+    )
+
+    assert resolver.calls == ["atorvastatin", "simvastatin"]
+    assert result.concept_set is None
+    assert result.gaps[0].kind == "unmapped_concept"
+    assert "simvastatin" in result.gaps[0].message
+    assert result.medication_class.status == "unresolved"
+    assert result.predicate.status == "unresolved"
+    assert result.diagnostics[0].code == "medication.class_member_unmapped"
+
+
+def test_unreviewed_class_like_medication_emits_unsupported_gap_without_false_mapping() -> None:
+    resolver = StubMedicationResolver({"DPP-4 inhibitors": METFORMIN})
+
+    result = compile_medication_resolution(
+        _criterion("DPP-4 inhibitors"),
         source_criterion_id="criterion:3",
         resolver=resolver,
     )

@@ -1381,6 +1381,8 @@ promotion remain follow-on work.
     RxNorm/RxClass-backed predicates.
   write_scope:
     - src/clinical_demo/compiler/medication.py
+    - src/clinical_demo/terminology/medication_classes.py
+    - data/terminology/reviewed_medication_classes.json
     - src/clinical_demo/terminology/rxnorm_client.py
     - src/clinical_demo/terminology/cache.py
   depends_on:
@@ -1398,8 +1400,15 @@ promotion remain follow-on work.
       reviewed class expansion exists.
   tests:
     - tests/compiler/test_medication.py
+    - tests/terminology/test_medication_classes.py
     - tests/terminology/test_rxnorm_client.py
   parallel_group: compiler_specialists
+  status: >
+    First reviewed-class slice landed 2026-05-11: statins, GLP-1 receptor
+    agonists, and SGLT2 inhibitors are data-driven registry entries closed over
+    the current patient vocabulary. The compiler resolves every member surface
+    through cached/reviewed RxNorm lookup before emitting a medication exposure
+    predicate, and surfaces an unresolved class-member gap on partial coverage.
 
 - id: CC-10
   title: Compiler validation gates
@@ -1542,10 +1551,11 @@ promotion remain follow-on work.
 - Hardening continuation (2026-05-11): measurement unit lookup now accepts
   conservative spelling/case/spacing variants while dropping ambiguous
   normalized aliases, medication compilation strips route-only words before
-  ingredient resolution, and compiler diagnostics can be threshold-gated in CI.
-  Next parallel lanes remain compound/time predicate hardening, medication class
-  expansion, reviewer promotion into `data/terminology/`, and baseline threshold
-  selection from a fresh eval run.
+  ingredient resolution, reviewed medication-class expansions are data-driven
+  and fail closed on missing class members, and compiler diagnostics can be
+  threshold-gated in CI. Next parallel lanes remain compound/time predicate
+  hardening, reviewer promotion into `data/terminology/`, and baseline
+  threshold selection from a fresh eval run.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 

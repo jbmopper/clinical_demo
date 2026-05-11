@@ -18,6 +18,10 @@ from pydantic import BaseModel, Field
 from clinical_demo.extractor.schema import ExtractedCriterion, MedicationCriterion
 from clinical_demo.profile import ConceptSet
 from clinical_demo.settings import ResolverExecutionPolicy, get_settings
+from clinical_demo.terminology.medication_classes import (
+    ReviewedMedicationClassEntry,
+    get_reviewed_medication_class_registry,
+)
 from clinical_demo.terminology.resolver import get_resolver
 
 from .schema import (
@@ -171,6 +175,21 @@ def compile_medication_resolution(
         )
 
     composite_reason = _class_or_composite_reason(surface)
+    if composite_reason == "medication_class":
+        class_entry = get_reviewed_medication_class_registry().lookup(surface)
+        if class_entry is not None:
+            return _compile_reviewed_medication_class(
+                source_criterion_id=source_criterion_id,
+                surface=surface,
+                normalized_surface=normalized,
+                required_presence=required_presence,
+                route_plan=route_plan,
+                ingredient_plan=ingredient_plan,
+                class_entry=class_entry,
+                resolver_policy=resolver_policy,
+                resolver=resolver,
+            )
+
     if composite_reason is not None:
         gap_kind: ResolutionGapKind = (
             "ambiguous_mapping"
@@ -372,7 +391,235 @@ def _class_or_composite_message(
         )
     return (
         f"Medication surface {surface!r} appears to name a medication class; "
-        "RxNorm class expansion is not implemented in CC-09."
+        "no reviewed medication-class expansion exists for this surface."
+    )
+
+
+def _compile_reviewed_medication_class(
+    *,
+    source_criterion_id: str,
+    surface: str,
+    normalized_surface: str | None,
+    required_presence: MedicationPresence,
+    route_plan: MedicationAspectPlan,
+    ingredient_plan: MedicationAspectPlan,
+    class_entry: ReviewedMedicationClassEntry,
+    resolver_policy: ResolverExecutionPolicy,
+    resolver: MedicationResolver | None,
+) -> MedicationCompilationResult:
+    supports: list[ResolutionSupport] = []
+    diagnostics: list[CompilerDiagnostic] = []
+    resolved_members: list[tuple[str, ConceptSet]] = []
+    missing_members: list[str] = []
+
+    for index, member_surface in enumerate(class_entry.member_surfaces, start=1):
+        concept_set, resolver_diagnostic = _resolve_cached_only(
+            member_surface,
+            source_criterion_id=source_criterion_id,
+            resolver_policy=resolver_policy,
+            resolver=resolver,
+        )
+        if resolver_diagnostic is not None:
+            diagnostics.append(resolver_diagnostic)
+        if concept_set is None:
+            missing_members.append(member_surface)
+            continue
+        resolved_members.append((member_surface, concept_set))
+        supports.append(
+            ResolutionSupport(
+                support_id=(f"{source_criterion_id}:medication:support:class-member-{index:03d}"),
+                stage="concept_resolution",
+                domain="medication",
+                source_criterion_id=source_criterion_id,
+                surface=member_surface,
+                normalized_surface=normalize_medication_surface(member_surface),
+                target_system=concept_set.system,
+                target_id=_concept_set_target_id(concept_set),
+                target_label=concept_set.name,
+                resolver_policy=resolver_policy,
+            )
+        )
+
+    if missing_members:
+        gap = _gap(
+            source_criterion_id,
+            surface=surface,
+            kind="unmapped_concept",
+            message=(
+                f"Reviewed medication class {class_entry.display!r} could not be "
+                "compiled because these member surfaces did not resolve through "
+                f"cached/reviewed RxNorm lookup: {', '.join(missing_members)}."
+            ),
+            resolver_policy=resolver_policy,
+            suffix="class-member-unmapped",
+        )
+        diagnostics.append(
+            _diagnostic(
+                source_criterion_id,
+                code="medication.class_member_unmapped",
+                message=gap.message,
+                severity="warning",
+                facts=[
+                    DiagnosticFact(key="class_id", value=class_entry.class_id),
+                    DiagnosticFact(key="missing_members", value=", ".join(missing_members)),
+                    DiagnosticFact(key="gap_id", value=gap.gap_id),
+                ],
+            )
+        )
+        return _result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            normalized_surface=normalized_surface,
+            required_presence=required_presence,
+            concept_set=None,
+            route=route_plan,
+            ingredient=ingredient_plan.model_copy(update={"status": "skipped"}),
+            medication_class=MedicationAspectPlan(
+                aspect="medication_class",
+                status="unresolved",
+                surface=surface,
+                normalized_surface=normalized_surface,
+                gap_ids=[gap.gap_id],
+            ),
+            predicate=_predicate_plan(
+                source_criterion_id,
+                required_presence=required_presence,
+                status="unresolved",
+                support_ids=[support.support_id for support in supports],
+                gap_ids=[gap.gap_id],
+            ),
+            supports=supports,
+            gaps=[gap],
+            diagnostics=diagnostics,
+        )
+
+    systems = {concept_set.system for _, concept_set in resolved_members}
+    if len(systems) != 1:
+        gap = _gap(
+            source_criterion_id,
+            surface=surface,
+            kind="ambiguous_mapping",
+            message=(
+                f"Reviewed medication class {class_entry.display!r} resolved to "
+                "member ConceptSets from multiple coding systems; compiler requires "
+                "one executable target system per medication predicate."
+            ),
+            resolver_policy=resolver_policy,
+            suffix="class-system-conflict",
+        )
+        return _result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            normalized_surface=normalized_surface,
+            required_presence=required_presence,
+            concept_set=None,
+            route=route_plan,
+            ingredient=ingredient_plan.model_copy(update={"status": "skipped"}),
+            medication_class=MedicationAspectPlan(
+                aspect="medication_class",
+                status="ambiguous",
+                surface=surface,
+                normalized_surface=normalized_surface,
+                support_ids=[support.support_id for support in supports],
+                gap_ids=[gap.gap_id],
+            ),
+            predicate=_predicate_plan(
+                source_criterion_id,
+                required_presence=required_presence,
+                status="ambiguous",
+                support_ids=[support.support_id for support in supports],
+                gap_ids=[gap.gap_id],
+            ),
+            supports=supports,
+            gaps=[gap],
+            diagnostics=diagnostics,
+        )
+
+    system = next(iter(systems))
+    codes = frozenset(code for _, concept_set in resolved_members for code in concept_set.codes)
+    if not codes:
+        gap = _gap(
+            source_criterion_id,
+            surface=surface,
+            kind="unmapped_concept",
+            message=(
+                f"Reviewed medication class {class_entry.display!r} resolved member "
+                "ConceptSets, but their code union was empty."
+            ),
+            resolver_policy=resolver_policy,
+            suffix="class-empty-code-union",
+        )
+        return _result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            normalized_surface=normalized_surface,
+            required_presence=required_presence,
+            concept_set=None,
+            route=route_plan,
+            ingredient=ingredient_plan.model_copy(update={"status": "skipped"}),
+            medication_class=MedicationAspectPlan(
+                aspect="medication_class",
+                status="unresolved",
+                surface=surface,
+                normalized_surface=normalized_surface,
+                support_ids=[support.support_id for support in supports],
+                gap_ids=[gap.gap_id],
+            ),
+            predicate=_predicate_plan(
+                source_criterion_id,
+                required_presence=required_presence,
+                status="unresolved",
+                support_ids=[support.support_id for support in supports],
+                gap_ids=[gap.gap_id],
+            ),
+            supports=supports,
+            gaps=[gap],
+            diagnostics=diagnostics,
+        )
+
+    class_concept_set = ConceptSet(
+        name=class_entry.display,
+        system=system,
+        codes=codes,
+    )
+    class_support = ResolutionSupport(
+        support_id=f"{source_criterion_id}:medication:support:class-expansion",
+        stage="expansion",
+        domain="medication",
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        normalized_surface=normalized_surface,
+        target_system=system,
+        target_id=class_entry.class_id,
+        target_label=class_entry.display,
+        resolver_policy=resolver_policy,
+    )
+    all_supports = [class_support, *supports]
+    support_ids = [support.support_id for support in all_supports]
+    return _result(
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        normalized_surface=normalized_surface,
+        required_presence=required_presence,
+        concept_set=class_concept_set,
+        route=route_plan,
+        ingredient=ingredient_plan.model_copy(update={"status": "skipped"}),
+        medication_class=MedicationAspectPlan(
+            aspect="medication_class",
+            status="resolved",
+            surface=surface,
+            normalized_surface=normalized_surface,
+            support_ids=support_ids,
+        ),
+        predicate=_predicate_plan(
+            source_criterion_id,
+            required_presence=required_presence,
+            status="resolved",
+            support_ids=support_ids,
+            concept_set=class_concept_set,
+        ),
+        supports=all_supports,
+        diagnostics=diagnostics,
     )
 
 
@@ -488,6 +735,10 @@ def _predicate_plan(
         support_ids=support_ids or [],
         gap_ids=gap_ids or [],
     )
+
+
+def _concept_set_target_id(concept_set: ConceptSet) -> str:
+    return f"{concept_set.name}|{','.join(sorted(concept_set.codes))}"
 
 
 def _gap(

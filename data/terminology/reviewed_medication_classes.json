@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "classes": [
+    {
+      "class_id": "reviewed-medication-class:statins",
+      "display": "Statins",
+      "surfaces": [
+        "statin",
+        "statins",
+        "statin therapy"
+      ],
+      "member_surfaces": [
+        "atorvastatin",
+        "simvastatin"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed statin class expansion closed over the current cardiometabolic synthetic patient medication vocabulary and cached RxNorm ingredient bindings.",
+      "source": "compiler CC-09 review",
+      "provenance": "High-frequency CHIA medication class surfaces include statin/statins; current Synthea cardiometabolic cohort carries atorvastatin and simvastatin as active medication codes.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
+      "class_id": "reviewed-medication-class:glp-1-receptor-agonists",
+      "display": "GLP-1 receptor agonists",
+      "surfaces": [
+        "glp-1 receptor agonist",
+        "glp-1 receptor agonists",
+        "glp-1 agonist",
+        "glp-1 agonists",
+        "glp-1 ra",
+        "glp-1 analogue",
+        "glp-1 analog"
+      ],
+      "member_surfaces": [
+        "semaglutide"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed GLP-1 class expansion closed over the current cardiometabolic synthetic patient medication vocabulary and cached RxNorm ingredient bindings.",
+      "source": "compiler CC-09 review",
+      "provenance": "High-frequency diabetes trial surfaces mention GLP-1 class exposure; semaglutide is the current reviewed representative in the project medication bindings.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
+      "class_id": "reviewed-medication-class:sglt2-inhibitors",
+      "display": "SGLT2 inhibitors",
+      "surfaces": [
+        "sglt2",
+        "sglt-2",
+        "sglt2 inhibitor",
+        "sglt2 inhibitors",
+        "sglt-2 inhibitor",
+        "sglt-2 inhibitors"
+      ],
+      "member_surfaces": [
+        "dapagliflozin"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed SGLT2 class expansion closed over the current cardiometabolic synthetic patient medication vocabulary and cached RxNorm ingredient bindings.",
+      "source": "compiler CC-09 review",
+      "provenance": "High-frequency diabetes trial surfaces mention SGLT2 class exposure; dapagliflozin is the current reviewed representative in the project medication bindings.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    }
+  ]
+}

@@ -137,7 +137,11 @@ Foundation status:
 - `CC-06` through `CC-09` have helper foundations for compound/time,
   measurement, and medication compilation. Medication compilation now strips
   route-only words such as `oral` before ingredient resolution while preserving
-  the route aspect in compiler provenance.
+  the route aspect in compiler provenance. It also reads
+  `data/terminology/reviewed_medication_classes.json` for reviewed
+  patient-vocabulary-closure class expansions such as statins, GLP-1 receptor
+  agonists, and SGLT2 inhibitors; class predicates are emitted only when every
+  member surface resolves through cached/reviewed RxNorm lookup.
 - `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
   readiness over compiled criteria, and `ScorePairResult` exposes it to API and
   eval consumers.
@@ -151,7 +155,7 @@ Foundation status:
 
 Active integration status:
 
-- The next integration slice is adding CI/baseline thresholds and reviewer
-  promotion flows, then hardening predicate behavior behind the parity gate.
+- The next integration slice is compound/time predicate hardening, reviewer
+  promotion flows, and baseline threshold selection behind the parity gate.
 
 Related: `docs/concept-mapping-failure-taxonomy.md`, `docs/evaluation-layers-and-gates.md`.
