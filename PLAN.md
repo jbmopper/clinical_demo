@@ -1113,12 +1113,20 @@ Python aliases should become rare compatibility fallbacks; reviewed mappings
 belong in committed registry artifacts under `data/terminology/`; runtime API
 responses and warmed lookup outcomes belong under `data/cache/terminology/`.
 
-Implementation note (2026-05-09): the foundation slice for `CC-00`, `CC-01`,
-part of `CC-02`, and `CC-04` is now wired. Scoring emits a no-op
-`CriterionCompilationResult`, the reviewed registry is committed and consulted
-before stale cache rows, resolver live-network behavior is controlled by
-`ResolverExecutionPolicy`, and profile threshold checks read unit semantics from
-`clinical_demo.units`.
+Implementation note (2026-05-11): the compiler is no longer a no-op carrier.
+The foundation slice for `CC-00`, `CC-01`, `CC-02`, `CC-03`, `CC-04`, and the
+first executable `CC-05` slice is wired. Scoring emits
+`CriterionCompilationResult` with resolved supports, gaps, expansion plans, unit
+plans, and `CheckablePredicate`s; the reviewed registry is committed and
+consulted before stale cache rows; resolver live-network behavior is controlled
+by `ResolverExecutionPolicy`; profile threshold checks read unit semantics from
+`clinical_demo.units`; and `matcher_execution_source="compiled_predicates"`
+can execute compiler predicates through the opt-in compiled matcher. `CC-06`,
+`CC-07`, `CC-08`, and `CC-09` have helper foundations for compound/time,
+measurement, and medication compilation. The `CC-10`, `CC-11`, and `CC-12`
+reporting foundations now expose closed-world validation, reviewer gap queue,
+and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
+promotion remain follow-on work.
 
 ```yaml
 - id: CC-00
@@ -1276,11 +1284,16 @@ before stale cache rows, resolver live-network behavior is controlled by
       warnings, and cost-free deterministic provenance.
     - Feature flag to compare legacy extractor output vs compiled output during
       rollout.
+    - Opt-in compiled-predicate matcher that returns the same `MatchVerdict`
+      envelope as the legacy matcher.
   exit_criteria:
     - API/eval/UI can display compiler changes separately from matcher verdicts.
     - Legacy path remains available for one baseline comparison.
+    - Scoring can execute either `matcher_inputs` or `compiled_predicates` via a
+      typed setting without changing the result envelope.
   tests:
     - tests/compiler/test_pipeline.py
+    - tests/compiler/test_predicate_matcher.py
     - score_pair parity and graph parity tests
   parallel_group: critical_path
 
@@ -1409,11 +1422,17 @@ before stale cache rows, resolver live-network behavior is controlled by
     - Standard unresolved fragment reasons: ambiguous_mapping,
       unsupported_unit_conversion, unsafe_composite, unsupported_event_kind,
       normal_range_unknown, out_of_scope.
+    - Closed-world compilation validation report where every structured
+      criterion is either executable or blocked by an explicit allowed-review or
+      unresolved-gap class.
+    - `ClosedWorldValidationResult` with deterministic finding and summary
+      objects for closed-world readiness.
   exit_criteria:
     - Compiler never silently drops a criterion or silently changes polarity.
     - Unsafe fixes show up as reviewable fragments, not matcher crashes.
   tests:
     - tests/compiler/test_validate.py
+    - tests/compiler/test_validation.py
     - extractor invariant and matcher soft-fail tests
   parallel_group: integration_serial
 
@@ -1435,6 +1454,11 @@ before stale cache rows, resolver live-network behavior is controlled by
     - Calibration packet fields for compiled predicate id, parent criterion id,
       unresolved fragment id, mapping candidate ids, and reviewer decision.
     - Script to promote reviewed decisions into the reviewed registry.
+    - Compiler-gap queue items with stable ids, recommended action, priority,
+      and provenance for `unmapped_concept`, `ambiguous_mapping`, `missing_unit`,
+      `unsupported_predicate`, and compound gaps.
+    - `CompilerGapQueueItem` and `CompilerGapQueue` projection helpers over
+      unresolved compiler gaps.
   exit_criteria:
     - A reviewer can turn an ambiguous mapping into a reusable registry row.
     - Rebuilding calibration packets preserves reviewed labels by stable ids.
@@ -1458,6 +1482,11 @@ before stale cache rows, resolver live-network behavior is controlled by
   deliverables:
     - Diagnostics for compiled predicates, unresolved fragments, mapped vs
       ambiguous vs true_miss, unit/normal-range failures, and compound outcomes.
+    - Side-by-side parity report comparing legacy `matcher_inputs` execution to
+      compiled-predicate execution, classified as same, improved, regressed, or
+      changed.
+    - `ParityReport` and `compare_compilation_parity(...)` for deterministic
+      cached-fixture gates.
     - Regression gates for mappable-unmapped, unsafe-polarity-change, and
       compiler dropped-criterion count.
     - Baseline metadata records reviewed-registry version, resolver version,
@@ -1489,6 +1518,12 @@ before stale cache rows, resolver live-network behavior is controlled by
   `CC-03`), one unit/measurement worker (`CC-04`, `CC-08`), one compound/time
   worker (`CC-06`, `CC-07`), one medication worker (`CC-09`), and one
   integration/eval worker (`CC-05`, then `CC-10` to `CC-12`).
+- Current parallel split (2026-05-11): the `CC-05` executable predicate slice
+  has landed, and the first `CC-10`, `CC-11`, and `CC-12` foundations were
+  parallelized across separate write scopes: parity/eval reporting (`CC-12`),
+  closed-world compiler validation (`CC-10`), and reviewer gap queue generation
+  (`CC-11`). Predicate hardening should continue after parity reporting exists
+  so regressions are visible before behavior is flipped on by default.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 

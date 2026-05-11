@@ -71,7 +71,7 @@ When the resolver returns **candidates** without a single committed `ConceptSet`
 
 ---
 
-## 8. Next Architecture: Criterion Compiler
+## 8. Criterion Compiler
 
 The resolver alone is not enough. Trial text often needs to be compiled before
 it is checkable: broad terminology classes need expansion, compound criteria
@@ -100,7 +100,11 @@ execution policy alongside the reviewed-registry and resolver versions.
 The concrete implementation plan lives in `PLAN.md` under **Criterion Compiler /
 Resolution Layer Plan Objects**. It defines the work objects `CC-00` through
 `CC-12`, their dependencies, exit criteria, test targets, and which parts can
-run in parallel. In short:
+run in parallel. As of 2026-05-11, the compiler emits concrete supports, gaps,
+expansion plans, unit-normalization plans, and `CheckablePredicate`s. Scoring
+still defaults to legacy `matcher_inputs`, but
+`matcher_execution_source="compiled_predicates"` can execute the compiler
+predicate source through the same `MatchVerdict` envelope.
 
 - Parallel foundations: compiler IR, reviewed registry, terminology candidate
   ranking, and unit knowledge base.
@@ -111,15 +115,36 @@ run in parallel. In short:
 
 Foundation status:
 
-- `CC-00` now has a behavior-preserving compiler IR and `ScorePairResult`
-  carries the no-op compilation plan used by both imperative and graph scoring.
+- `CC-00` now has a versioned compiler IR and `ScorePairResult` carries the
+  compilation result used by scoring.
 - `CC-01` now has a committed reviewed registry under `data/terminology/`;
   `Bone fractures` maps through that registry before stale cache rows or live
   lookup.
-- `CC-02` now has the resolver execution policy contract wired into settings
-  and CLIs: eval/API default to `cached_only`, while the cache warmer explicitly
+- `CC-02` now has deterministic query variants, candidate ranking, confidence
+  gates, and the resolver execution policy contract wired into settings and
+  CLIs: eval/API default to `cached_only`, while the cache warmer explicitly
   opts into `live_allowed`.
+- `CC-03` now has offline expansion policy objects for exact codes, reviewed
+  code lists, patient-vocabulary closure, and explicit unsupported states for
+  descendant/value-set expansion that still need graph/cache backing.
 - `CC-04` now has a unit registry shared by the compiler-facing code and
   `PatientProfile` threshold checks.
+- `CC-05` now has an opt-in compiled-predicate matcher, so eval can compare
+  legacy matcher-input execution against compiled-predicate execution before
+  the default path changes.
+- `CC-06` through `CC-09` have helper foundations for compound/time,
+  measurement, and medication compilation.
+- `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
+  readiness over compiled criteria.
+- `CC-11` now has deterministic `CompilerGapQueueItem` projection for reviewer
+  workflow.
+- `CC-12` now has `ParityReport` and `compare_compilation_parity(...)` for
+  legacy-vs-compiled execution comparison.
+
+Active integration status:
+
+- The next integration slice is wiring these report objects into eval/CI
+  artifacts and reviewer promotion flows, then hardening predicate behavior
+  behind the parity gate.
 
 Related: `docs/concept-mapping-failure-taxonomy.md`, `docs/evaluation-layers-and-gates.md`.

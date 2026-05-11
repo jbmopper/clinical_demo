@@ -25,18 +25,20 @@ Stages run **in order** inside one call:
 
 3. **Enrichment:** Deterministic pass adds **age** and **sex** criterion rows from structured CT fields when the model omitted them, so the matcher always sees the same gates the trial record implies.
 
-4. **Patient profile:** Wrap the patient in an **as-of profile** — the only surface matchers use for “does this person have code X / lab Y / threshold Z.”
+4. **Criterion compiler / resolver:** Enriched extractor rows flow through the compiler before matching. The compiler records resolver policy, supports, gaps, expansion plans, unit-normalization plans, compound/time metadata, and typed `CheckablePredicate`s. It preserves original `matcher_inputs` so legacy matching remains available for parity and rollback.
 
-5. **Per-criterion deterministic match:** For each extracted row, dispatch on **kind** (age, sex, condition present/absent, medication present/absent, measurement, temporal window, free text). Consult terminology lookups for coded concepts; compare against the profile. Respect **matcher assumption mode** (open vs closed world) where it applies. Apply **polarity and negation** once to produce final pass / fail / indeterminate.
+5. **Patient profile:** Wrap the patient in an **as-of profile** — the only surface matchers use for “does this person have code X / lab Y / threshold Z.”
 
-6. **Retrieval layer (optional):** Controlled by **LLM use level** (separate from the graph critic):
+6. **Per-criterion deterministic match:** The default path still dispatches over legacy `matcher_inputs`. The opt-in compiler path executes `compiled_predicates` and returns the same `MatchVerdict` envelope. Both paths respect **matcher assumption mode** (open vs closed world) where it applies and apply **polarity and negation** once to produce final pass / fail / indeterminate.
+
+7. **Retrieval layer (optional):** Controlled by **LLM use level** (separate from the graph critic):
    - **None:** skip.
    - **Retrieval only:** for each criterion still indeterminate after step 5, rank **structured patient source rows**, attach them as evidence, **do not** change the verdict.
    - **Bounded adjudication:** same ranking, then a **small structured LLM** may re-decide only from those rows, with citation fail-closed rules; polarity still applied in code after the model.
 
-7. **Rollup:** Combine per-criterion outcomes into one case-level eligibility label using conservative rules (any fail → case fail; indeterminate classes block a blanket pass; a special state exists when only free-text remains indeterminate alongside passes).
+8. **Rollup:** Combine per-criterion outcomes into one case-level eligibility label using conservative rules (any fail → case fail; indeterminate classes block a blanket pass; a special state exists when only free-text remains indeterminate alongside passes).
 
-8. **Envelope:** Return patient id, trial id, as-of, assumption mode, LLM use level, enriched criteria, extraction metadata (model, prompt version, tokens, cost), verdict list, summary counts, optional per-call cost records for adjudication.
+9. **Envelope:** Return patient id, trial id, as-of, assumption mode, LLM use level, enriched criteria, extraction metadata (model, prompt version, tokens, cost), compiler result, verdict list, summary counts, optional per-call cost records for adjudication.
 
 ---
 
@@ -67,6 +69,7 @@ Stub **clients** (OpenAI-shaped) can be injected at graph build time for tests; 
 | Concern | Role |
 |---------|------|
 | **Terminology cache** | Pins resolver results (VSAC / RxNorm / open resolver) so replays stay deterministic and offline runs avoid hammering NLM. |
+| **Criterion compiler** | Turns extractor rows into checkable predicates or typed gaps. Current execution source is configurable: legacy `matcher_inputs` by default, opt-in `compiled_predicates` for parity/eval rollout. |
 | **Observability** | Parent span per (patient, trial); nested **generation** spans for extractor, free-text matcher, adjudicator, critic as applicable — metadata carries ids, modes, and counts for dashboards. |
 | **Eval store** | SQLite records full score envelopes per seed pair for layer-1 / layer-3 / patient-evidence reports. |
 | **HTTP API** | Thin validation + loader + scorer call; returns the same JSON shape as the CLI. |
@@ -76,7 +79,7 @@ Stub **clients** (OpenAI-shaped) can be injected at graph build time for tests; 
 
 ## 5. How the two orchestrations relate
 
-- **Parity goal:** With graph **critic off** and equivalent flags, results should match the imperative scorer — the graph exists to add **parallelism**, **free-text LLM matching**, and **critic/revise**, not to fork the domain model.
+- **Parity goal:** With graph **critic off** and equivalent flags, results should match the imperative scorer — the graph exists to add **parallelism**, **free-text LLM matching**, and **critic/revise**, not to fork the domain model. A second parity goal now compares legacy `matcher_inputs` verdicts against opt-in compiled-predicate verdicts before compiled execution becomes default.
 
 - **When to use which:** Imperative path is simpler for libraries and tests; graph path when you need Send-based parallelism, the LLM matcher for free-text, critic iterations, or LangGraph checkpoints.
 

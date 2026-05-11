@@ -67,31 +67,55 @@ How automated **layers**, **CLI workflows**, and **regression scripts** fit toge
 
 ---
 
-## 7. Bounded adjudication smoke vs full
+## 7. Compiler parity and closed-world gates
+
+**Question:** Does compiled-predicate execution match, improve, or regress
+against the legacy matcher-input path?
+
+**Inputs:** A `CriterionCompilationResult`, patient profile, trial, and matcher
+assumption mode. The parity harness runs both deterministic execution sources:
+legacy `matcher_inputs` and opt-in `compiled_predicates`.
+
+**Gate shape:** Initially report-only. Classify each criterion as same,
+compiled improved, compiled regressed, or changed. The next hard gate should
+block closed-world eval runs when a structured criterion has neither an
+executable compiled predicate nor an allowed review/unsupported class.
+The concrete APIs are `compare_compilation_parity(...)`, `ParityReport`, and
+`ClosedWorldValidationResult`.
+
+**Why separate from terminology gates:** Terminology regressions answer "did a
+surface stop mapping?" Compiler parity answers "did the new predicate source
+change patient-level verdict behavior?" Both are needed before
+`matcher_execution_source="compiled_predicates"` can become default.
+
+---
+
+## 8. Bounded adjudication smoke vs full
 
 - **Smoke:** Tiny limit on pairs or criteria with stub clients in tests — no network.
 - **Full:** Whole seed with live OpenAI — costful; typically manual or budgeted job. Reporting should always record **model + versions + assumption mode + llm_use_level**.
 
 ---
 
-## 8. Red-team set (planned / partial)
+## 9. Red-team set (planned / partial)
 
 Adversarial cases (negation, temporal traps, prompt injection strings) belong in a **tracked fixture suite** once authored — many items still live in planning docs rather than a single consolidated JSON gate. When added, they should run under **`pytest`** or a dedicated eval recipe so they cannot rot.
 
 ---
 
-## 9. Benchmark scorecards
+## 10. Benchmark scorecards
 
 - **Local TrialGPT/TREC scaffold:** export JSON + optional ranking metrics once relevance labels exist.
 - **Baselines directory:** stores diagnostics summaries and small JSON manifests; large per-case report dumps are gitignored by pattern.
 
 ---
 
-## 10. Recommended CI ordering (cost-aware)
+## 11. Recommended CI ordering (cost-aware)
 
 1. Unit + lint + typecheck
 2. Terminology regression script on pinned diagnostic + watchlist
-3. Optional: layer-1 render on cached sqlite from a committed baseline run
-4. LLM-heavy jobs **nightly** or manual — not on every push
+3. Compiler parity report on cached deterministic fixtures
+4. Optional: layer-1 render on cached sqlite from a committed baseline run
+5. LLM-heavy jobs **nightly** or manual — not on every push
 
 Related: `docs/patient-evidence-eval-runbook.md`, `docs/patient-evidence-labeling-guide.md`, `docs/trec-trialgpt-benchmark-plan.md`, `docs/terminology-mapping-architecture.md`.
