@@ -102,6 +102,29 @@ def test_returns_score_pair_result_envelope() -> None:
     assert isinstance(result, ScorePairResult)
     assert result.summary.total_criteria == 1
     assert result.eligibility in ("pass", "fail", "indeterminate")
+    assert result.compiler_validation is not None
+    assert result.compiler_validation.ok is True
+    assert result.compiler_gap_queue is not None
+    assert result.compiler_gap_queue.items == []
+
+
+def test_score_pair_graph_exposes_blocking_compiler_audit_for_unmapped_structured_criterion() -> (
+    None
+):
+    result = score_pair_graph(
+        make_patient(),
+        make_trial(eligibility_text="History of rare unknown syndrome."),
+        AS_OF,
+        extractor_client=_extractor_stub([crit_condition(text="definitely unmapped syndrome xyz")]),
+        llm_matcher_client=_llm_matcher_stub(),
+        settings=_settings(),
+    )
+
+    assert result.compiler_validation is not None
+    assert result.compiler_validation.ok is False
+    assert result.compiler_validation.summary.blocking_count == 2
+    assert result.compiler_gap_queue is not None
+    assert [item.gap_kind for item in result.compiler_gap_queue.items] == ["unmapped_concept"]
 
 
 def test_score_pair_graph_refuses_deceased_patient() -> None:

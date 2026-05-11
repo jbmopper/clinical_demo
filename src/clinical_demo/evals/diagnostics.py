@@ -22,6 +22,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
+from clinical_demo.compiler.reviewer_queue import compiler_gap_queue
+from clinical_demo.compiler.validation import validate_compilation_for_closed_world
 from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.terminology.bindings import (
     lookup_condition_binding,
@@ -64,6 +66,18 @@ class EvalDiagnostics(BaseModel):
     binding_registered_unmapped: int = 0
     binding_registered_by_kind: dict[str, dict[str, int]] = Field(default_factory=dict)
     top_unmapped_surfaces: list[SurfaceCount] = Field(default_factory=list)
+    compiler_compilation_present_cases: int = 0
+    compiler_compilation_missing_cases: int = 0
+    compiler_compiled_criteria_total: int = 0
+    compiler_checkable_predicates_total: int = 0
+    compiler_unresolved_gaps_total: int = 0
+    compiler_unresolved_gaps_by_kind: dict[str, int] = Field(default_factory=dict)
+    compiler_unresolved_gaps_by_stage: dict[str, int] = Field(default_factory=dict)
+    compiler_unresolved_gaps_by_domain: dict[str, int] = Field(default_factory=dict)
+    compiler_closed_world_ok_cases: int = 0
+    compiler_closed_world_blocking_cases: int = 0
+    compiler_closed_world_findings_total: int = 0
+    compiler_closed_world_blocking_findings_total: int = 0
 
 
 def build_diagnostics(run: RunResult, *, top_n: int = 20) -> EvalDiagnostics:
@@ -77,6 +91,18 @@ def build_diagnostics(run: RunResult, *, top_n: int = 20) -> EvalDiagnostics:
     binding_registered_total = 0
     binding_registered_resolved = 0
     binding_registered_unmapped = 0
+    compiler_compilation_present_cases = 0
+    compiler_compilation_missing_cases = 0
+    compiler_compiled_criteria_total = 0
+    compiler_checkable_predicates_total = 0
+    compiler_unresolved_gaps_total = 0
+    compiler_unresolved_gaps_by_kind: Counter[str] = Counter()
+    compiler_unresolved_gaps_by_stage: Counter[str] = Counter()
+    compiler_unresolved_gaps_by_domain: Counter[str] = Counter()
+    compiler_closed_world_ok_cases = 0
+    compiler_closed_world_blocking_cases = 0
+    compiler_closed_world_findings_total = 0
+    compiler_closed_world_blocking_findings_total = 0
     scored_cases = 0
     total_criteria = 0
     total_latency = 0.0
@@ -84,9 +110,32 @@ def build_diagnostics(run: RunResult, *, top_n: int = 20) -> EvalDiagnostics:
     for record in run.cases:
         total_latency += record.scoring_latency_ms
         if record.result is None:
+            compiler_compilation_missing_cases += 1
             continue
         scored_cases += 1
         total_criteria += len(record.result.verdicts)
+        compilation = record.result.compilation
+        if compilation is None:
+            compiler_compilation_missing_cases += 1
+        else:
+            compiler_compilation_present_cases += 1
+            compiler_compiled_criteria_total += len(compilation.criteria)
+            compiler_checkable_predicates_total += len(compilation.checkable_predicates)
+
+            queue_items = compiler_gap_queue(compilation)
+            compiler_unresolved_gaps_total += len(queue_items)
+            compiler_unresolved_gaps_by_kind.update(str(item.gap_kind) for item in queue_items)
+            compiler_unresolved_gaps_by_stage.update(str(item.stage) for item in queue_items)
+            compiler_unresolved_gaps_by_domain.update(str(item.domain) for item in queue_items)
+
+            validation = validate_compilation_for_closed_world(compilation)
+            if validation.ok:
+                compiler_closed_world_ok_cases += 1
+            else:
+                compiler_closed_world_blocking_cases += 1
+            compiler_closed_world_findings_total += validation.summary.finding_count
+            compiler_closed_world_blocking_findings_total += validation.summary.blocking_count
+
         for verdict in record.result.verdicts:
             kind = str(verdict.criterion.kind)
             reason = str(verdict.reason)
@@ -138,6 +187,18 @@ def build_diagnostics(run: RunResult, *, top_n: int = 20) -> EvalDiagnostics:
             SurfaceCount(surface=surface, kind=kind, count=count)
             for (kind, surface), count in top_unmapped.most_common(top_n)
         ],
+        compiler_compilation_present_cases=compiler_compilation_present_cases,
+        compiler_compilation_missing_cases=compiler_compilation_missing_cases,
+        compiler_compiled_criteria_total=compiler_compiled_criteria_total,
+        compiler_checkable_predicates_total=compiler_checkable_predicates_total,
+        compiler_unresolved_gaps_total=compiler_unresolved_gaps_total,
+        compiler_unresolved_gaps_by_kind=dict(sorted(compiler_unresolved_gaps_by_kind.items())),
+        compiler_unresolved_gaps_by_stage=dict(sorted(compiler_unresolved_gaps_by_stage.items())),
+        compiler_unresolved_gaps_by_domain=dict(sorted(compiler_unresolved_gaps_by_domain.items())),
+        compiler_closed_world_ok_cases=compiler_closed_world_ok_cases,
+        compiler_closed_world_blocking_cases=compiler_closed_world_blocking_cases,
+        compiler_closed_world_findings_total=compiler_closed_world_findings_total,
+        compiler_closed_world_blocking_findings_total=compiler_closed_world_blocking_findings_total,
     )
 
 
@@ -167,6 +228,33 @@ def render_diagnostics(
     )
     if current.avg_scoring_latency_ms is not None:
         lines.append(f"  avg scoring latency: {current.avg_scoring_latency_ms:.0f}ms / case")
+
+    lines.append("")
+    lines.append("  compiler diagnostics:")
+    lines.append(
+        f"    compilation cases: present={current.compiler_compilation_present_cases}  "
+        f"missing={current.compiler_compilation_missing_cases}"
+    )
+    lines.append(
+        f"    criteria: compiled={current.compiler_compiled_criteria_total}  "
+        f"checkable_predicates={current.compiler_checkable_predicates_total}  "
+        f"unresolved_gaps={current.compiler_unresolved_gaps_total}"
+    )
+    lines.append(
+        f"    closed-world: ok={current.compiler_closed_world_ok_cases}  "
+        f"blocking={current.compiler_closed_world_blocking_cases}  "
+        f"findings={current.compiler_closed_world_findings_total}  "
+        f"blocking_findings={current.compiler_closed_world_blocking_findings_total}"
+    )
+    if current.compiler_unresolved_gaps_by_kind:
+        lines.append("    unresolved gaps by kind:")
+        lines.extend(_compact_count_lines(current.compiler_unresolved_gaps_by_kind))
+    if current.compiler_unresolved_gaps_by_stage:
+        lines.append("    unresolved gaps by stage:")
+        lines.extend(_compact_count_lines(current.compiler_unresolved_gaps_by_stage))
+    if current.compiler_unresolved_gaps_by_domain:
+        lines.append("    unresolved gaps by domain:")
+        lines.extend(_compact_count_lines(current.compiler_unresolved_gaps_by_domain))
 
     lines.append("")
     lines.append("  headline:")
@@ -329,6 +417,10 @@ def _count_lines(
             line += f"  delta={count - baseline_counts[key]:+d}"
         out.append(line)
     return out
+
+
+def _compact_count_lines(counts: dict[str, int]) -> list[str]:
+    return [f"      {key:<28} {count:>5}" for key, count in counts.items()]
 
 
 def write_diagnostics(path: Path | str, diagnostics: EvalDiagnostics) -> None:

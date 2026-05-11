@@ -135,16 +135,17 @@ Foundation status:
 - `CC-06` through `CC-09` have helper foundations for compound/time,
   measurement, and medication compilation.
 - `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
-  readiness over compiled criteria.
+  readiness over compiled criteria, and `ScorePairResult` exposes it to API and
+  eval consumers.
 - `CC-11` now has deterministic `CompilerGapQueueItem` projection for reviewer
-  workflow.
+  workflow plus `CompilerGapReviewRow` artifacts from persisted eval runs.
 - `CC-12` now has `ParityReport` and `compare_compilation_parity(...)` for
-  legacy-vs-compiled execution comparison.
+  legacy-vs-compiled execution comparison, and eval diagnostics aggregate
+  compiler coverage, unresolved gaps, and closed-world blockers.
 
 Active integration status:
 
-- The next integration slice is wiring these report objects into eval/CI
-  artifacts and reviewer promotion flows, then hardening predicate behavior
-  behind the parity gate.
+- The next integration slice is adding CI/baseline thresholds and reviewer
+  promotion flows, then hardening predicate behavior behind the parity gate.
 
 Related: `docs/concept-mapping-failure-taxonomy.md`, `docs/evaluation-layers-and-gates.md`.

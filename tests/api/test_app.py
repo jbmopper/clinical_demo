@@ -17,12 +17,18 @@ from fastapi.testclient import TestClient
 from clinical_demo.api import app as api_app
 from clinical_demo.api import create_app
 from clinical_demo.api import loaders as api_loaders
+from clinical_demo.compiler import (
+    compile_extracted_criteria,
+    compiler_gap_queue_object,
+    validate_compilation_for_closed_world,
+)
 from clinical_demo.domain.patient import Patient
 from clinical_demo.domain.trial import Trial
 from clinical_demo.evals.run import CaseRecord, EvalCase, RunResult
 from clinical_demo.evals.store import open_store, save_run
 from clinical_demo.research import CriterionResearchBlurb, ResearchSource
 from tests.evals._fixtures import make_age_verdict, make_score_pair_result
+from tests.matcher._fixtures import crit_age
 
 
 @pytest.fixture
@@ -391,7 +397,17 @@ def test_score_imperative_round_trips_score_pair_result(
         seen["extraction"] = extraction
         seen["matcher_assumption_mode"] = matcher_assumption_mode
         seen["llm_use_level"] = llm_use_level
-        return make_score_pair_result(patient_id=patient.patient_id, nct_id=trial.nct_id)
+        compilation = compile_extracted_criteria([crit_age(minimum_years=18.0)])
+        return make_score_pair_result(
+            patient_id=patient.patient_id,
+            nct_id=trial.nct_id,
+        ).model_copy(
+            update={
+                "compilation": compilation,
+                "compiler_validation": validate_compilation_for_closed_world(compilation),
+                "compiler_gap_queue": compiler_gap_queue_object(compilation),
+            }
+        )
 
     monkeypatch.setattr(api_app, "load_patient", lambda _: stub_patient)
     monkeypatch.setattr(api_app, "load_trial", lambda _: stub_trial)
@@ -415,6 +431,9 @@ def test_score_imperative_round_trips_score_pair_result(
     assert seen["extraction"] is None
     assert seen["matcher_assumption_mode"] == "open_world"
     assert seen["llm_use_level"] == "none"
+    assert body["compiler_validation"]["ok"] is True
+    assert body["compiler_validation"]["summary"]["blocking_count"] == 0
+    assert body["compiler_gap_queue"]["items"] == []
 
 
 def test_score_defaults_as_of_to_today(

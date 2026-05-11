@@ -39,6 +39,11 @@ from clinical_demo.data.clinicaltrials import trial_from_raw
 from clinical_demo.data.synthea import iter_bundles
 from clinical_demo.domain.patient import Patient
 from clinical_demo.domain.trial import Trial
+from clinical_demo.evals.compiler_review import (
+    build_compiler_gap_review_rows,
+    save_compiler_gap_review_rows,
+    summarize_compiler_gap_review_rows,
+)
 from clinical_demo.evals.diagnostics import (
     build_diagnostics,
     diagnostics_to_json,
@@ -610,6 +615,51 @@ def _cmd_patient_evidence(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_compiler_review(args: argparse.Namespace) -> int:
+    db_path = Path(args.db)
+    if not db_path.exists():
+        print(f"error: no store at {db_path} (run an eval first?)", file=sys.stderr)
+        return 1
+
+    with open_store(args.db) as conn:
+        try:
+            run = load_run(conn, args.run_id)
+        except KeyError:
+            print(f"error: no run with id {args.run_id!r}", file=sys.stderr)
+            return 1
+
+    rows = build_compiler_gap_review_rows(run)
+    summary = summarize_compiler_gap_review_rows(rows)
+    if args.output is not None:
+        save_compiler_gap_review_rows(rows, args.output)
+
+    if args.format == "json":
+        print(
+            json.dumps(
+                {
+                    "run_id": run.run_id,
+                    "output": str(args.output) if args.output else None,
+                    "summary": summary.model_dump(mode="json"),
+                    "rows": [row.model_dump(mode="json") for row in rows],
+                },
+                indent=2,
+            )
+        )
+    else:
+        print(f"compiler gap review rows for run {run.run_id}: {summary.total_rows}")
+        if args.output is not None:
+            print(f"wrote {summary.total_rows} row(s) to {args.output}")
+        if summary.by_recommended_action:
+            print("recommended actions:")
+            for action, count in summary.by_recommended_action.items():
+                print(f"  {action}: {count}")
+        if summary.by_gap_kind:
+            print("gap kinds:")
+            for gap_kind, count in summary.by_gap_kind.items():
+                print(f"  {gap_kind}: {count}")
+    return 0
+
+
 def _cmd_report(args: argparse.Namespace) -> int:
     db_path = Path(args.db)
     if not db_path.exists():
@@ -870,6 +920,20 @@ def main(argv: list[str] | None = None) -> int:
         help="Optional path to write the rendered patient-evidence report Markdown.",
     )
     p_patient_evidence.set_defaults(func=_cmd_patient_evidence)
+
+    p_compiler_review = sub.add_parser(
+        "compiler-review",
+        help="Build a compiler-gap reviewer artifact from a persisted eval run.",
+    )
+    p_compiler_review.add_argument("--db", default=str(DEFAULT_DB))
+    p_compiler_review.add_argument("--run-id", required=True)
+    p_compiler_review.add_argument(
+        "--output",
+        default=None,
+        help="Optional JSON path to write CompilerGapReviewRow artifacts.",
+    )
+    p_compiler_review.add_argument("--format", choices=("text", "json"), default="text")
+    p_compiler_review.set_defaults(func=_cmd_compiler_review)
 
     p_report = sub.add_parser("report", help="Render a persisted run; or list runs.")
     p_report.add_argument("--db", default=str(DEFAULT_DB))

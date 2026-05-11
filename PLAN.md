@@ -1459,6 +1459,11 @@ promotion remain follow-on work.
       `unsupported_predicate`, and compound gaps.
     - `CompilerGapQueueItem` and `CompilerGapQueue` projection helpers over
       unresolved compiler gaps.
+    - `ScorePairResult` and `/score` expose `compiler_validation` and
+      `compiler_gap_queue` so reviewer/API consumers see compiler readiness
+      without recomputing it.
+    - Eval reviewer artifact rows (`CompilerGapReviewRow`) can be exported from
+      persisted runs with `scripts/eval.py compiler-review`.
   exit_criteria:
     - A reviewer can turn an ambiguous mapping into a reusable registry row.
     - Rebuilding calibration packets preserves reviewed labels by stable ids.
@@ -1487,6 +1492,8 @@ promotion remain follow-on work.
       changed.
     - `ParityReport` and `compare_compilation_parity(...)` for deterministic
       cached-fixture gates.
+    - Eval diagnostics roll up compiler coverage, checkable predicate counts,
+      unresolved compiler gaps by kind/stage/domain, and closed-world blockers.
     - Regression gates for mappable-unmapped, unsafe-polarity-change, and
       compiler dropped-criterion count.
     - Baseline metadata records reviewed-registry version, resolver version,
@@ -1524,6 +1531,12 @@ promotion remain follow-on work.
   closed-world compiler validation (`CC-10`), and reviewer gap queue generation
   (`CC-11`). Predicate hardening should continue after parity reporting exists
   so regressions are visible before behavior is flipped on by default.
+- Follow-on integration split (2026-05-11): `ScorePairResult` now carries
+  compiler validation and gap queues, eval diagnostics report compiler readiness
+  aggregates, and `eval compiler-review` emits private reviewer artifacts. The
+  remaining parallel-friendly lanes are hardening specialist predicate coverage
+  (`CC-06` to `CC-09`), adding regression thresholds to CI/baselines, and
+  promoting reviewed artifact decisions back into the committed registry.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 

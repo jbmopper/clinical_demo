@@ -83,6 +83,12 @@ executable compiled predicate nor an allowed review/unsupported class.
 The concrete APIs are `compare_compilation_parity(...)`, `ParityReport`, and
 `ClosedWorldValidationResult`.
 
+**Current artifacts:** `ScorePairResult` carries `compiler_validation` and
+`compiler_gap_queue`; eval diagnostics aggregate compiler coverage, unresolved
+gaps by kind/stage/domain, and closed-world blockers. Use
+`uv run python scripts/eval.py compiler-review --run-id <run> --output <path>`
+to export private reviewer rows for unresolved compiler gaps.
+
 **Why separate from terminology gates:** Terminology regressions answer "did a
 surface stop mapping?" Compiler parity answers "did the new predicate source
 change patient-level verdict behavior?" Both are needed before

@@ -38,7 +38,7 @@ Stages run **in order** inside one call:
 
 8. **Rollup:** Combine per-criterion outcomes into one case-level eligibility label using conservative rules (any fail → case fail; indeterminate classes block a blanket pass; a special state exists when only free-text remains indeterminate alongside passes).
 
-9. **Envelope:** Return patient id, trial id, as-of, assumption mode, LLM use level, enriched criteria, extraction metadata (model, prompt version, tokens, cost), compiler result, verdict list, summary counts, optional per-call cost records for adjudication.
+9. **Envelope:** Return patient id, trial id, as-of, assumption mode, LLM use level, enriched criteria, extraction metadata (model, prompt version, tokens, cost), compiler result, compiler validation, compiler gap queue, verdict list, summary counts, optional per-call cost records for adjudication.
 
 ---
 
@@ -69,7 +69,7 @@ Stub **clients** (OpenAI-shaped) can be injected at graph build time for tests; 
 | Concern | Role |
 |---------|------|
 | **Terminology cache** | Pins resolver results (VSAC / RxNorm / open resolver) so replays stay deterministic and offline runs avoid hammering NLM. |
-| **Criterion compiler** | Turns extractor rows into checkable predicates or typed gaps. Current execution source is configurable: legacy `matcher_inputs` by default, opt-in `compiled_predicates` for parity/eval rollout. |
+| **Criterion compiler** | Turns extractor rows into checkable predicates or typed gaps. Current execution source is configurable: legacy `matcher_inputs` by default, opt-in `compiled_predicates` for parity/eval rollout. Score/API envelopes include closed-world validation and reviewer gap queues. |
 | **Observability** | Parent span per (patient, trial); nested **generation** spans for extractor, free-text matcher, adjudicator, critic as applicable — metadata carries ids, modes, and counts for dashboards. |
 | **Eval store** | SQLite records full score envelopes per seed pair for layer-1 / layer-3 / patient-evidence reports. |
 | **HTTP API** | Thin validation + loader + scorer call; returns the same JSON shape as the CLI. |

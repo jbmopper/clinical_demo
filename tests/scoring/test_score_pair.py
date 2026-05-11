@@ -169,6 +169,29 @@ def test_score_pair_can_execute_compiled_predicates_when_enabled(
     assert result.compilation is not None
     assert len(result.compilation.checkable_predicates) == 3
     assert all("+compiled-predicate-" in verdict.matcher_version for verdict in result.verdicts)
+    assert result.compiler_validation is not None
+    assert result.compiler_validation.ok is True
+    assert result.compiler_validation.summary.blocking_count == 0
+    assert result.compiler_gap_queue is not None
+    assert result.compiler_gap_queue.items == []
+
+
+def test_score_pair_exposes_blocking_compiler_audit_for_unmapped_structured_criterion() -> None:
+    patient = make_patient(birth=date(1990, 1, 1))
+    extraction = _make_extraction([crit_condition(text="definitely unmapped syndrome xyz")])
+
+    result = score_pair(patient, make_trial(), AS_OF, extraction=extraction)
+
+    assert result.compiler_validation is not None
+    assert result.compiler_validation.ok is False
+    assert result.compiler_validation.summary.blocking_count == 2
+    assert [finding.code for finding in result.compiler_validation.findings] == [
+        "structured_unresolved_gaps",
+        "structured_missing_executable",
+    ]
+    assert result.compiler_gap_queue is not None
+    assert [item.gap_kind for item in result.compiler_gap_queue.items] == ["unmapped_concept"]
+    assert result.compiler_gap_queue.items[0].recommended_action == "review_mapping"
 
 
 def test_rollup_fail_when_any_fail_overrides_passes_and_indeterminates() -> None:

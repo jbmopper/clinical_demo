@@ -34,6 +34,7 @@ from ..scoring.score_pair import (
     PatientDeceasedError,
     ScorePairResult,
     _apply_retrieval_only,
+    _compiler_audit_fields,
     _rollup,
     _summarize,
 )
@@ -199,6 +200,8 @@ def score_pair_graph(
         else:
             summary = final_state["summary"]
             eligibility = final_state["eligibility"]
+        compilation = final_state.get("compilation")
+        compiler_validation, compiler_gap_queue = _compiler_audit_fields(compilation)
         result = ScorePairResult(
             patient_id=patient.patient_id,
             nct_id=trial.nct_id,
@@ -207,7 +210,9 @@ def score_pair_graph(
             llm_use_level=llm_use_level,
             extraction=final_state["extraction"].extracted,
             extraction_meta=final_state["extraction"].meta,
-            compilation=final_state.get("compilation"),
+            compilation=compilation,
+            compiler_validation=compiler_validation,
+            compiler_gap_queue=compiler_gap_queue,
             verdicts=verdicts,
             summary=summary,
             eligibility=eligibility,

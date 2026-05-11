@@ -42,9 +42,13 @@ from pydantic import BaseModel, Field
 from ..adjudication.patient_evidence import _ClientLike as _PatientEvidenceClient
 from ..adjudication.patient_evidence import adjudicate_patient_evidence
 from ..compiler import (
+    ClosedWorldValidationResult,
+    CompilerGapQueue,
     CriterionCompilationResult,
     compile_extracted_criteria,
+    compiler_gap_queue_object,
     match_compiled_criteria,
+    validate_compilation_for_closed_world,
 )
 from ..cost_telemetry import LLMCallCost
 from ..domain.patient import Patient
@@ -145,6 +149,8 @@ class ScorePairResult(BaseModel):
     extraction: ExtractedCriteria
     extraction_meta: ExtractorRunMeta
     compilation: CriterionCompilationResult | None = None
+    compiler_validation: ClosedWorldValidationResult | None = None
+    compiler_gap_queue: CompilerGapQueue | None = None
     verdicts: list[MatchVerdict]
     summary: ScoringSummary
     eligibility: EligibilityRollup
@@ -235,6 +241,7 @@ def score_pair(
             enriched_criteria,
             resolver_policy=settings.resolver_execution_policy,
         )
+        compiler_validation, compiler_gap_queue = _compiler_audit_fields(compilation)
 
         profile = PatientProfile(patient, as_of)
         if settings.matcher_execution_source == "compiled_predicates":
@@ -304,10 +311,24 @@ def score_pair(
         extraction=enriched_criteria,
         extraction_meta=extraction.meta,
         compilation=compilation,
+        compiler_validation=compiler_validation,
+        compiler_gap_queue=compiler_gap_queue,
         verdicts=verdicts,
         summary=summary,
         eligibility=eligibility,
         llm_calls=llm_calls,
+    )
+
+
+def _compiler_audit_fields(
+    compilation: CriterionCompilationResult | None,
+) -> tuple[ClosedWorldValidationResult | None, CompilerGapQueue | None]:
+    """Derive reviewer-facing compiler audit projections."""
+    if compilation is None:
+        return None, None
+    return (
+        validate_compilation_for_closed_world(compilation),
+        compiler_gap_queue_object(compilation),
     )
 
 
