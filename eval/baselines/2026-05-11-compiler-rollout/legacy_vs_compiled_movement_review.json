@@ -6,37 +6,57 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "f77c112ef220",
+  "comparison_run_id": "a123e6b96d41",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "f77c112ef220",
+    "comparison_run_id": "a123e6b96d41",
     "common_cases": 49,
-    "changed_cases": 9,
+    "changed_cases": 13,
     "compared_criteria": 1076,
     "changed_criteria": 362,
     "by_case_movement": {
-      "indeterminate->fail": 8,
+      "indeterminate->fail": 12,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 20,
-      "indeterminate->indeterminate": 297,
+      "indeterminate->fail": 27,
+      "indeterminate->indeterminate": 290,
       "indeterminate->pass": 44,
       "pass->fail": 1
     },
     "by_direction": {
       "determinate_changed": 1,
-      "indeterminate_to_determinate": 64,
-      "reason_changed": 297
+      "indeterminate_to_determinate": 71,
+      "reason_changed": 290
     }
   },
   "case_movements": [
+    {
+      "row_id": "case:28db1c55__NCT06941441",
+      "pair_id": "28db1c55__NCT06941441",
+      "patient_id": "28db1c55-fe99-d5c8-8fc4-bffda09ab3be",
+      "nct_id": "NCT06941441",
+      "eval_slice": "hypertension-academic",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
     {
       "row_id": "case:2e555528__NCT06475781",
       "pair_id": "2e555528__NCT06475781",
       "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
       "nct_id": "NCT06475781",
       "eval_slice": "hypertension-industry",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
+      "row_id": "case:2e555528__NCT06941441",
+      "pair_id": "2e555528__NCT06941441",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06941441",
+      "eval_slice": "hypertension-academic",
       "baseline_eligibility": "indeterminate",
       "comparison_eligibility": "fail",
       "movement": "indeterminate->fail"
@@ -55,6 +75,16 @@
       "row_id": "case:407ef75b__NCT06941441",
       "pair_id": "407ef75b__NCT06941441",
       "patient_id": "407ef75b-0a9c-ec23-60e5-c90ba86e27af",
+      "nct_id": "NCT06941441",
+      "eval_slice": "hypertension-academic",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
+      "row_id": "case:509f9a77__NCT06941441",
+      "pair_id": "509f9a77__NCT06941441",
+      "patient_id": "509f9a77-2a22-f98b-c539-9a44057efb51",
       "nct_id": "NCT06941441",
       "eval_slice": "hypertension-academic",
       "baseline_eligibility": "indeterminate",
@@ -105,6 +135,16 @@
       "row_id": "case:a06bce31__NCT06941441",
       "pair_id": "a06bce31__NCT06941441",
       "patient_id": "a06bce31-d0dc-f345-df41-777fb453afaf",
+      "nct_id": "NCT06941441",
+      "eval_slice": "hypertension-academic",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
+      "row_id": "case:c46a254d__NCT06941441",
+      "pair_id": "c46a254d__NCT06941441",
+      "patient_id": "c46a254d-cd25-4375-528b-e8d0da9c6a29",
       "nct_id": "NCT06941441",
       "eval_slice": "hypertension-academic",
       "baseline_eligibility": "indeterminate",
@@ -297,13 +337,11 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:9",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "not_attempted",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:9:free-text:condition:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:060e72d3__NCT05713006:10",
@@ -323,13 +361,11 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:10",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "not_attempted",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:10:free-text:condition:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:060e72d3__NCT05713006:11",
@@ -883,20 +919,22 @@
       "criterion_source_text": "History of full pneumonectomy",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:18",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:18:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:18:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:28db1c55__NCT06941441:22",
@@ -1683,20 +1721,22 @@
       "criterion_source_text": "History of full pneumonectomy",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:18",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:18:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:18:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:2e555528__NCT06941441:22",
@@ -3121,20 +3161,22 @@
       "criterion_source_text": "History of full pneumonectomy",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:18",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:18:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:18:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:407ef75b__NCT06941441:22",
@@ -3564,20 +3606,22 @@
       "criterion_source_text": "History of full pneumonectomy",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:18",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:18:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:18:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:509f9a77__NCT06941441:22",
@@ -3752,13 +3796,11 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:2",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "not_attempted",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:509f9a77__NCT07221513:7",
@@ -5038,20 +5080,22 @@
       "criterion_source_text": "History of full pneumonectomy",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:18",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:18:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:18:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:56cfe6a5__NCT06941441:22",
@@ -5623,13 +5667,11 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "not_attempted",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:83f922a9__NCT05967689:14",
@@ -6335,13 +6377,11 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:20",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "not_attempted",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:20:free-text:condition:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:9e84e569__NCT04602754:23",
@@ -6874,20 +6914,22 @@
       "criterion_source_text": "History of full pneumonectomy",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:18",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:18:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:18:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:a06bce31__NCT06941441:22",
@@ -7062,13 +7104,11 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:2",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "not_attempted",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:a06bce31__NCT07221513:7",
@@ -8235,20 +8275,22 @@
       "criterion_source_text": "History of full pneumonectomy",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:18",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:18:condition:gap:reviewed-out_of_scope"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:18:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:c46a254d__NCT06941441:22",

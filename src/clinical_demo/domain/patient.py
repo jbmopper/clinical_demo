@@ -89,6 +89,17 @@ class Medication(BaseModel):
         return True
 
 
+class Procedure(BaseModel):
+    """A completed clinical procedure or surgery recorded for the patient."""
+
+    concept: CodedConcept
+    performed_date: date
+    status: str = "completed"
+
+    def is_completed_as_of(self, as_of: date) -> bool:
+        return self.status == "completed" and self.performed_date <= as_of
+
+
 class ClinicalNote(BaseModel):
     """A citeable clinical note extracted from a source document.
 
@@ -120,6 +131,7 @@ class Patient(BaseModel):
     conditions: list[Condition] = Field(default_factory=list)
     observations: list[LabObservation] = Field(default_factory=list)
     medications: list[Medication] = Field(default_factory=list)
+    procedures: list[Procedure] = Field(default_factory=list)
     notes: list[ClinicalNote] = Field(default_factory=list)
 
     def age_years(self, as_of: date) -> int:
@@ -136,6 +148,9 @@ class Patient(BaseModel):
 
     def active_medications(self, as_of: date) -> list[Medication]:
         return [m for m in self.medications if m.is_active(as_of)]
+
+    def completed_procedures(self, as_of: date) -> list[Procedure]:
+        return [procedure for procedure in self.procedures if procedure.is_completed_as_of(as_of)]
 
     def latest_observation(
         self,

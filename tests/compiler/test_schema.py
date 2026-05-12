@@ -82,6 +82,30 @@ def test_checkable_predicate_records_typed_execution_target() -> None:
     assert predicate.support_ids == ["support:0"]
 
 
+def test_checkable_predicate_accepts_procedure_history_target() -> None:
+    predicate = CheckablePredicate(
+        predicate_id="predicate:procedure",
+        predicate_kind="procedure_history",
+        source_criterion_id="criterion:procedure",
+        polarity="exclusion",
+        negated=False,
+        surface="history of full pneumonectomy",
+        target_system="http://snomed.info/sct",
+        target_codes=frozenset({"49795001"}),
+        operator=None,
+        value=None,
+        value_low=None,
+        value_high=None,
+        unit=None,
+        window_days=None,
+        support_ids=["support:procedure"],
+        gap_ids=[],
+    )
+
+    assert predicate.predicate_kind == "procedure_history"
+    assert predicate.target_codes == frozenset({"49795001"})
+
+
 def test_future_stage_plan_objects_are_validation_checked() -> None:
     expansion = ExpansionPlan(
         status="not_attempted",

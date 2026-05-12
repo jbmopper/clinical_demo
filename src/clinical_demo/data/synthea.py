@@ -32,6 +32,9 @@ generator-side updates since):
 - `DocumentReference.content.attachment.data` is surfaced as unstructured
   `ClinicalNote` text. Generated `resource.text.div` narrative is ignored
   because it is display markup, not a high-trust clinical evidence field.
+- Completed FHIR `Procedure` resources are surfaced as dated procedure-history
+  rows so procedure/surgical-history criteria can be executed separately from
+  diagnosis/Condition evidence.
 """
 
 from __future__ import annotations
@@ -54,6 +57,7 @@ from clinical_demo.domain import (
     LabObservation,
     Medication,
     Patient,
+    Procedure,
     Sex,
 )
 
@@ -139,6 +143,13 @@ def _patient_from_bundle(bundle: dict[str, Any]) -> Patient:
             if e["resource"]["resourceType"] == "MedicationRequest"
             for med in [_parse_medication_request(e["resource"], by_id)]
             if med is not None
+        ],
+        procedures=[
+            procedure
+            for e in entries
+            if e["resource"]["resourceType"] == "Procedure"
+            for procedure in [_parse_procedure(e["resource"])]
+            if procedure is not None
         ],
         notes=[
             note
@@ -306,6 +317,29 @@ def _parse_medication_request(
         start_date=start,
         end_date=None,  # Synthea MedicationRequest does not record a stop in v0 scope
     )
+
+
+def _parse_procedure(resource: dict[str, Any]) -> Procedure | None:
+    performed = _parse_procedure_date(resource)
+    if performed is None:
+        return None
+    code = resource.get("code")
+    if not isinstance(code, dict):
+        return None
+    return Procedure(
+        concept=_parse_concept(code),
+        performed_date=performed,
+        status=str(resource.get("status") or "unknown"),
+    )
+
+
+def _parse_procedure_date(resource: dict[str, Any]) -> date | None:
+    if "performedDateTime" in resource:
+        return _parse_date(resource.get("performedDateTime"))
+    period = resource.get("performedPeriod")
+    if isinstance(period, dict):
+        return _parse_date(period.get("end")) or _parse_date(period.get("start"))
+    return None
 
 
 class _TextExtractor(HTMLParser):

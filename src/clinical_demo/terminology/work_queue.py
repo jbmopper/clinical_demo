@@ -344,7 +344,7 @@ def _manual_nonresolved(item: SurfaceCount) -> tuple[SurfaceResolutionStatus, st
     if surface == "history of full pneumonectomy":
         return (
             "out_of_scope",
-            "Procedure-history evidence is not modeled by the current condition/medication/lab matcher primitives.",
+            "Procedure-history evidence is handled by reviewed procedure mappings and the procedure_history compiler predicate, not condition lookup.",
         )
     if surface == "life expectancy":
         return (

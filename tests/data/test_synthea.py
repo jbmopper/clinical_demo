@@ -69,6 +69,59 @@ def test_loads_medication_with_inline_concept(francisco: Patient) -> None:
     assert med.start_date == date(1988, 5, 21)
 
 
+def test_loads_procedures(francisco: Patient) -> None:
+    assert len(francisco.procedures) == 3
+    codes = {procedure.concept.code for procedure in francisco.procedures}
+    assert {"430193006", "54550000"} == codes
+    assert all(
+        procedure.concept.system == "http://snomed.info/sct" for procedure in francisco.procedures
+    )
+    assert all(procedure.status == "completed" for procedure in francisco.procedures)
+    assert {procedure.performed_date for procedure in francisco.procedures} == {
+        date(1988, 1, 30),
+        date(1988, 5, 21),
+        date(1988, 7, 9),
+    }
+
+
+def test_loads_procedure_with_performed_datetime() -> None:
+    fabricated = {
+        "entry": [
+            {
+                "resource": {
+                    "resourceType": "Patient",
+                    "id": "p1",
+                    "gender": "female",
+                    "birthDate": "1970-01-01",
+                }
+            },
+            {
+                "resource": {
+                    "resourceType": "Procedure",
+                    "id": "proc1",
+                    "status": "completed",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "49795001",
+                                "display": "Total pneumonectomy",
+                            }
+                        ]
+                    },
+                    "performedDateTime": "2020-02-03T00:00:00Z",
+                }
+            },
+        ]
+    }
+
+    patient = _patient_from_bundle(fabricated)
+
+    assert len(patient.procedures) == 1
+    assert patient.procedures[0].concept.code == "49795001"
+    assert patient.procedures[0].performed_date == date(2020, 2, 3)
+
+
 def test_age_years_handles_birthday_not_yet_reached(francisco: Patient) -> None:
     assert francisco.age_years(date(2020, 1, 30)) == 32  # birthday today
     assert francisco.age_years(date(2020, 1, 29)) == 31  # day before

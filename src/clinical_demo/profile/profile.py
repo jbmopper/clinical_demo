@@ -45,6 +45,7 @@ from clinical_demo.domain.patient import (
     LabObservation,
     Medication,
     Patient,
+    Procedure,
 )
 from clinical_demo.units import (
     canonical_unit as _registry_canonical_unit,
@@ -128,6 +129,10 @@ class PatientProfile:
     def active_medications(self) -> list[Medication]:
         return self.patient.active_medications(self.as_of)
 
+    @property
+    def completed_procedures(self) -> list[Procedure]:
+        return self.patient.completed_procedures(self.as_of)
+
     # ---- condition primitives ----
 
     def has_active_condition_in(self, codes: Iterable[str] | ConceptSet) -> bool:
@@ -171,6 +176,22 @@ class PatientProfile:
             )
         wanted = set(codes)
         return any(m.concept.code in wanted for m in self.active_medications)
+
+    # ---- procedure primitives ----
+
+    def matching_completed_procedures(self, codes: Iterable[str] | ConceptSet) -> list[Procedure]:
+        """All completed procedures whose code is in `codes` as of the profile date."""
+        if isinstance(codes, ConceptSet):
+            return [
+                procedure
+                for procedure in self.completed_procedures
+                if procedure.concept.code in codes.codes
+                and procedure.concept.system == codes.system
+            ]
+        wanted = set(codes)
+        return [
+            procedure for procedure in self.completed_procedures if procedure.concept.code in wanted
+        ]
 
     # ---- lab primitives ----
 

@@ -16,6 +16,7 @@ from clinical_demo.domain.patient import (
     LabObservation,
     Medication,
     Patient,
+    Procedure,
 )
 from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.schema import (
@@ -44,6 +45,7 @@ def make_patient(
     conditions: list[Condition] | None = None,
     observations: list[LabObservation] | None = None,
     medications: list[Medication] | None = None,
+    procedures: list[Procedure] | None = None,
     notes: list[ClinicalNote] | None = None,
 ) -> Patient:
     return Patient(
@@ -54,6 +56,7 @@ def make_patient(
         conditions=conditions or [],
         observations=observations or [],
         medications=medications or [],
+        procedures=procedures or [],
         notes=notes or [],
     )
 
@@ -125,6 +128,21 @@ def make_medication(
         concept=CodedConcept(system=system, code=code, display="Rx"),
         start_date=start,
         end_date=end,
+    )
+
+
+def make_procedure(
+    *,
+    code: str = "49795001",
+    system: str = SNOMED,
+    display: str = "Total pneumonectomy",
+    performed: date = date(2020, 1, 1),
+    status: str = "completed",
+) -> Procedure:
+    return Procedure(
+        concept=CodedConcept(system=system, code=code, display=display),
+        performed_date=performed,
+        status=status,
     )
 
 

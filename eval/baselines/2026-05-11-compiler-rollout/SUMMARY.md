@@ -7,7 +7,8 @@ registry-closure, cache-independent terminology-closure, reviewed
 descendant-expansion, condition/event decomposition, qualifier/top-gap review,
 final opaque-unmapped registry slices, blood-pressure threshold decomposition,
 reviewed sex-specific ULN reference-limit translation, and reviewed
-antidiabetic medication-class closure, and C-peptide unit conversion.
+antidiabetic medication-class closure, C-peptide unit conversion, and reviewed
+procedure-history predicate execution.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -57,26 +58,31 @@ measurement, and medication hardening slices landed.
   variants, and non-insulin antidiabetic current-vocabulary closure over
   metformin, semaglutide, and dapagliflozin. The C-peptide unit pass adds a
   LOINC-scoped `nmol/L` to `ng/mL` conversion using the trial-provided
-  0.2 nmol/L = 0.6 ng/mL equivalence.
+  0.2 nmol/L = 0.6 ng/mL equivalence. The procedure-history pass adds parsed
+  patient `Procedure` rows, reviewed SNOMED procedure code-list rows for full
+  pneumonectomy, and a compiled `procedure_history` predicate so
+  procedure/surgical-history criteria execute against completed procedures
+  instead of remaining condition-mapping gaps.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `f77c112ef220` | 36 fail / 9 indeterminate / 0 pass / 2 pass_pending_review | 78 fail / 830 indeterminate / 168 pass | 0 (0.0%) | 17.0s |
+| `compiled_predicates` | `a123e6b96d41` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 85 fail / 823 indeterminate / 168 pass | 0 (0.0%) | 25.9s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
 compiled snapshot from 37 to 0 `unmapped_concept` rows versus the previous
-qualifier/top-gap snapshot. It adds 64 indeterminate-to-determinate
+qualifier/top-gap snapshot. It adds 71 indeterminate-to-determinate
 criterion wins from more explicit compiler execution of mapped condition,
 measurement, trial-exposure, medication exposure, PH-ILD, HoFH, congenital heart
 disease, cardiovascular event-list promotions, GLP-1 class closure, and
 diabetes/HF/pregnancy variant mapping, plus blood-pressure threshold
 decomposition, sex-specific hemoglobin ULN translation, antidiabetic
-medication-class closure, and C-peptide unit conversion. The final movement
-packet has 64 indeterminate-to-determinate criterion wins plus 1
+medication-class closure, C-peptide unit conversion, and full-pneumonectomy
+procedure-history execution. The final movement packet has 71
+indeterminate-to-determinate criterion wins plus 1
 determinate-to-determinate movement. The prior broad-parent
 determinate-to-indeterminate movements are gone:
 endocrine, psychiatric, and cardiovascular parent mappings now expand through
@@ -87,32 +93,36 @@ large.
 
 ## Case Rollup Movement
 
-Nine case-level eligibility results changed:
+Thirteen case-level eligibility results changed:
 
 | Pair | Legacy | Compiled |
 |---|---:|---:|
+| `28db1c55__NCT06941441` | indeterminate | fail |
 | `2e555528__NCT06475781` | indeterminate | fail |
+| `2e555528__NCT06941441` | indeterminate | fail |
 | `3a364909__NCT07362459` | indeterminate | fail |
 | `407ef75b__NCT06941441` | indeterminate | fail |
+| `509f9a77__NCT06941441` | indeterminate | fail |
 | `56cfe6a5__NCT06475781` | indeterminate | fail |
 | `56cfe6a5__NCT06941441` | indeterminate | fail |
 | `83f922a9__NCT05967689` | indeterminate | pass_pending_review |
 | `9cbf47d8__NCT07362459` | indeterminate | fail |
 | `a06bce31__NCT06941441` | indeterminate | fail |
+| `c46a254d__NCT06941441` | indeterminate | fail |
 | `e7d52393__NCT06568471` | indeterminate | fail |
 
 Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
 `legacy_vs_compiled_movement_review.json` and `.md` are the focused review
-packet for these changes. They contain 65 decisive criterion movements and 297
+packet for these changes. They contain 72 decisive criterion movements and 290
 reason-code-only changes. The decisive movements include medication-exposure
 wins for RAAS blockers, stable lipid-lowering treatment, and reviewed class
 closure, plus GLP-1 member closure, SGLT/non-insulin antidiabetic class
 closure, diabetes/HF/pregnancy variants,
 measurement, trial-exposure, PH-ILD, cardiovascular event-list, congenital heart
-disease, HoFH, BP threshold movements, and sex-specific hemoglobin ULN
-translation. Closed-world absence-dependent
+disease, HoFH, BP threshold movements, sex-specific hemoglobin ULN translation,
+and full-pneumonectomy procedure-history predicates. Closed-world absence-dependent
 verdicts should still be reviewed as a group so the absence-as-negative
 decisions match the validation contract.
 
@@ -121,26 +131,26 @@ decisions match the validation contract.
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 336
-- unresolved compiler gaps: 312
+- checkable predicates: 343
+- unresolved compiler gaps: 299
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 1012 total, 417 blocking
+- validation findings: 998 total, 403 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 294 |
+| `implement_compiler_logic` | 281 |
 | `review_gap` | 10 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-312 raw rows to 174 distinct surface/action/policy work items:
+299 raw rows to 168 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 168 |
+| `implement_compiler_logic` | 162 |
 | `review_gap` | 1 |
 
 The current threshold gate passes only without `--require-compilation`, because
@@ -150,11 +160,11 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 312 \
+  --max-unresolved-gaps 299 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 417 \
+  --max-closed-world-blocking-findings 403 \
   --max-gap-kind unmapped_concept=0 \
-  --max-gap-kind unsupported_predicate=294 \
+  --max-gap-kind unsupported_predicate=281 \
   --max-gap-kind ambiguous_mapping=8 \
   --max-gap-kind insufficient_source=10
 ```
@@ -202,6 +212,11 @@ preserved the same case rollup. The C-peptide unit-conversion slice then
 reduced unresolved compiler gaps to 312, increased checkable predicates to 336,
 lowered blocking validation findings to 417, removed the last
 unit-normalization review group, and preserved the same case rollup.
+The procedure-history slice then reduced unresolved compiler gaps to 299,
+increased checkable predicates to 343, lowered blocking validation findings to
+403, and moved the case rollup to 40 fail / 5 indeterminate / 2
+pass_pending_review by executing reviewed full-pneumonectomy history as
+completed-procedure evidence.
 
 ## Patient-Evidence Calibration
 
@@ -211,7 +226,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `f77c112ef220` | 5/50 | 80.0% | 40.0% | 17 |
+| `a123e6b96d41` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

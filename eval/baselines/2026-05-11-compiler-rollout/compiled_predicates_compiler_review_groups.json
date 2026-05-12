@@ -345,65 +345,6 @@
     {
       "case_count": 7,
       "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of full pneumonectomy",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:18:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:18:condition:gap:reviewed-out_of_scope"
-        },
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of full pneumonectomy",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:18:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:18:condition:gap:reviewed-out_of_scope"
-        },
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of full pneumonectomy",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:18:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:18:condition:gap:reviewed-out_of_scope"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:a7e0da4e7041",
-      "message_examples": [
-        "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile."
-      ],
-      "normalized_surface": "history of full pneumonectomy",
-      "occurrence_count": 7,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "history of full pneumonectomy",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
         "free_text"
       ],
       "domain": "condition",
@@ -1292,54 +1233,6 @@
       "severity": "medium",
       "stage": "predicate_translation",
       "surface": "contraindication to RHC",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 2,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'cpcPH' is classified as composite_unhandled: cpcPH requires pulmonary hypertension plus RHC/hemodynamic subtype evidence; mapping it to broad pulmonary hypertension alone would over-match.",
-          "nct_id": "NCT07221513",
-          "pair_id": "509f9a77__NCT07221513",
-          "row_id": "509f9a77__NCT07221513:criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled"
-        },
-        {
-          "criterion_index": 2,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'cpcPH' is classified as composite_unhandled: cpcPH requires pulmonary hypertension plus RHC/hemodynamic subtype evidence; mapping it to broad pulmonary hypertension alone would over-match.",
-          "nct_id": "NCT07221513",
-          "pair_id": "a06bce31__NCT07221513",
-          "row_id": "a06bce31__NCT07221513:criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:8d2fa8fe3592",
-      "message_examples": [
-        "Reviewed condition surface 'cpcPH' is classified as composite_unhandled: cpcPH requires pulmonary hypertension plus RHC/hemodynamic subtype evidence; mapping it to broad pulmonary hypertension alone would over-match."
-      ],
-      "normalized_surface": "cpcph",
-      "occurrence_count": 2,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "cpcPH",
       "trial_count": 1
     },
     {
@@ -4750,43 +4643,6 @@
     {
       "case_count": 1,
       "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 10,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:10:free-text:condition:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'Asymptomatic brain metastases' is classified as out_of_scope: Brain metastasis symptom status is oncology/imaging evidence outside the current cardiometabolic patient profile.",
-          "nct_id": "NCT05713006",
-          "pair_id": "060e72d3__NCT05713006",
-          "row_id": "060e72d3__NCT05713006:criterion:10:free-text:condition:condition:gap:reviewed-out_of_scope"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:fea7f6641276",
-      "message_examples": [
-        "Reviewed condition surface 'Asymptomatic brain metastases' is classified as out_of_scope: Brain metastasis symptom status is oncology/imaging evidence outside the current cardiometabolic patient profile."
-      ],
-      "normalized_surface": "asymptomatic brain metastases",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "Asymptomatic brain metastases",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
         "condition_absent"
       ],
       "domain": "condition",
@@ -4861,43 +4717,6 @@
     {
       "case_count": 1,
       "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "t2dm-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 20,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "t2dm-industry",
-          "gap_id": "criterion:20:free-text:condition:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'chronic malabsorption syndrome' is classified as out_of_scope: Chronic malabsorption syndrome is not represented in the current synthetic patient condition vocabulary.",
-          "nct_id": "NCT04602754",
-          "pair_id": "9e84e569__NCT04602754",
-          "row_id": "9e84e569__NCT04602754:criterion:20:free-text:condition:condition:gap:reviewed-out_of_scope"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:b991c6aa297a",
-      "message_examples": [
-        "Reviewed condition surface 'chronic malabsorption syndrome' is classified as out_of_scope: Chronic malabsorption syndrome is not represented in the current synthetic patient condition vocabulary."
-      ],
-      "normalized_surface": "chronic malabsorption syndrome",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "chronic malabsorption syndrome",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
         "temporal_window"
       ],
       "domain": "condition",
@@ -4967,43 +4786,6 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "documented regimen of LDL-apheresis",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 13,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:13:free-text:condition:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'early-stage disease' is classified as out_of_scope: Early-stage disease is oncology staging context, not an atomic condition mapping in the current patient profile.",
-          "nct_id": "NCT05967689",
-          "pair_id": "83f922a9__NCT05967689",
-          "row_id": "83f922a9__NCT05967689:criterion:13:free-text:condition:condition:gap:reviewed-out_of_scope"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:dcc6e4fa27d8",
-      "message_examples": [
-        "Reviewed condition surface 'early-stage disease' is classified as out_of_scope: Early-stage disease is oncology staging context, not an atomic condition mapping in the current patient profile."
-      ],
-      "normalized_surface": "early-stage disease",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "early-stage disease",
       "trial_count": 1
     },
     {
@@ -6077,43 +5859,6 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "Stage IIIB - IV",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 9,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:9:free-text:condition:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'Symptomatic brain metastases' is classified as out_of_scope: Symptomatic brain metastases are oncology disease-state/imaging criteria outside the current cardiometabolic patient profile.",
-          "nct_id": "NCT05713006",
-          "pair_id": "060e72d3__NCT05713006",
-          "row_id": "060e72d3__NCT05713006:criterion:9:free-text:condition:condition:gap:reviewed-out_of_scope"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:4af8471004f4",
-      "message_examples": [
-        "Reviewed condition surface 'Symptomatic brain metastases' is classified as out_of_scope: Symptomatic brain metastases are oncology disease-state/imaging criteria outside the current cardiometabolic patient profile."
-      ],
-      "normalized_surface": "symptomatic brain metastases",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "Symptomatic brain metastases",
       "trial_count": 1
     },
     {

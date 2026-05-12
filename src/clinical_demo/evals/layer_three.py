@@ -22,7 +22,13 @@ from openai import OpenAI
 from openai.types.chat import ParsedChatCompletion
 from pydantic import BaseModel, Field
 
-from clinical_demo.domain.patient import ClinicalNote, LabObservation, Medication, Patient
+from clinical_demo.domain.patient import (
+    ClinicalNote,
+    LabObservation,
+    Medication,
+    Patient,
+    Procedure,
+)
 from clinical_demo.domain.trial import Trial
 from clinical_demo.evals.run import RunResult
 from clinical_demo.extractor.extractor import (
@@ -326,6 +332,7 @@ def build_source_context(
     max_conditions: int = 40,
     max_observations: int = 40,
     max_medications: int = 30,
+    max_procedures: int = 30,
     max_note_snippets: int = 30,
 ) -> LayerThreeSourceContext:
     """Build compact patient/trial source rows for calibration review.
@@ -353,6 +360,7 @@ def build_source_context(
             *_patient_condition_rows(patient, limit=max_conditions),
             *_patient_observation_rows(patient, limit=max_observations),
             *_patient_medication_rows(patient, limit=max_medications),
+            *_patient_procedure_rows(patient, limit=max_procedures),
             *_patient_note_rows(patient, limit=max_note_snippets),
         ],
         trial=[
@@ -458,6 +466,23 @@ def _patient_medication_rows(patient: Patient, *, limit: int) -> list[LayerThree
     ]
 
 
+def _patient_procedure_rows(patient: Patient, *, limit: int) -> list[LayerThreeSourceRecord]:
+    procedures = sorted(patient.procedures, key=_procedure_sort_key, reverse=True)
+    return [
+        LayerThreeSourceRecord(
+            source="patient",
+            kind="procedure",
+            label=procedure.concept.display or procedure.concept.code or "Procedure",
+            value=procedure.concept.display or procedure.concept.code or "",
+            date=procedure.performed_date.isoformat(),
+            code=procedure.concept.code or None,
+            system=procedure.concept.system or None,
+            status=procedure.status,
+        )
+        for procedure in procedures[:limit]
+    ]
+
+
 def _patient_note_rows(patient: Patient, *, limit: int) -> list[LayerThreeSourceRecord]:
     rows: list[LayerThreeSourceRecord] = []
     for note in sorted(patient.notes, key=_note_sort_key, reverse=True):
@@ -490,6 +515,13 @@ def _medication_sort_key(medication: Medication) -> tuple:
         medication.end_date is None,
         medication.start_date,
         medication.concept.display or medication.concept.code or "",
+    )
+
+
+def _procedure_sort_key(procedure: Procedure) -> tuple:
+    return (
+        procedure.performed_date,
+        procedure.concept.display or procedure.concept.code or "",
     )
 
 

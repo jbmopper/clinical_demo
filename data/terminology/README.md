@@ -41,6 +41,14 @@ LDL-apheresis, hospitalization, allergy/hypersensitivity, thyroid-control
 phrases, NSCLC/staging/metastasis, xeno-crossmatch, and genomic/procedure/event
 phrases now have committed non-opaque outcomes.
 
+Procedure rows are first-class reviewed decisions rather than condition aliases.
+Surfaces such as `history of full pneumonectomy` and `full pneumonectomy` map
+to reviewed SNOMED procedure code lists and compile to `procedure_history`
+predicates over parsed patient `Procedure` resources. This keeps
+surgical-history evidence out of diagnosis/Condition matching while still
+allowing closed-world execution when the patient file contains completed
+procedure rows.
+
 Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at
 load time so runtime resolver integration has a single deterministic answer.

@@ -10,6 +10,7 @@ from tests.matcher._fixtures import (
     crit_temporal_window,
     make_condition,
     make_lab,
+    make_procedure,
     make_profile,
     make_trial,
 )
@@ -93,6 +94,52 @@ def test_compiled_cardiovascular_event_phrase_executes_reviewed_promotion() -> N
     assert verdicts[0].verdict == "fail"
     assert verdicts[0].reason == "ok"
     assert verdicts[0].evidence[0].kind == "condition"
+
+
+def test_compiled_procedure_history_predicate_executes_reviewed_mapping() -> None:
+    criterion = crit_condition(text="history of full pneumonectomy")
+    profile = make_profile(procedures=[make_procedure(code="49795001")])
+
+    compilation = compile_extracted_criteria([criterion])
+    verdicts = match_compiled_criteria(compilation, profile, make_trial())
+
+    assert compilation.checkable_predicates[0].predicate_kind == "procedure_history"
+    assert verdicts[0].verdict == "pass"
+    assert verdicts[0].reason == "ok"
+    assert verdicts[0].evidence[0].kind == "procedure"
+
+
+def test_compiled_procedure_history_preserves_open_and_closed_world_absence() -> None:
+    criterion = crit_condition(text="history of full pneumonectomy")
+    compilation = compile_extracted_criteria([criterion])
+    profile = make_profile(procedures=[])
+
+    open_world = match_compiled_criteria(compilation, profile, make_trial())[0]
+    closed_world = match_compiled_criteria(
+        compilation,
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert open_world.verdict == "indeterminate"
+    assert open_world.reason == "no_data"
+    assert open_world.evidence_under_assumption is False
+    assert closed_world.verdict == "fail"
+    assert closed_world.reason == "ok"
+    assert closed_world.evidence_under_assumption is True
+
+
+def test_compiled_procedure_history_exclusion_fails_when_present() -> None:
+    criterion = crit_condition(text="history of full pneumonectomy", polarity="exclusion")
+    profile = make_profile(procedures=[make_procedure(code="232647000")])
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert verdict.verdict == "fail"
+    assert verdict.reason == "ok"
+    assert verdict.evidence[0].kind == "procedure"
 
 
 def test_compiled_measurement_predicate_executes_threshold() -> None:

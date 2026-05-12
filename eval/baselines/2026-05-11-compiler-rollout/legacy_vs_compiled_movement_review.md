@@ -3,23 +3,27 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `f77c112ef220`
-- changed cases: 9/49
+- comparison: `a123e6b96d41`
+- changed cases: 13/49
 - changed criteria: 362/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=64 / reason_changed=297
+- criterion directions: determinate_changed=1 / indeterminate_to_determinate=71 / reason_changed=290
 
 ## Case Movements
 
 | Pair | Slice | Baseline | Comparison |
 |---|---|---:|---:|
+| `28db1c55__NCT06941441` | hypertension-academic | indeterminate | fail |
 | `2e555528__NCT06475781` | hypertension-industry | indeterminate | fail |
+| `2e555528__NCT06941441` | hypertension-academic | indeterminate | fail |
 | `3a364909__NCT07362459` | nsclc | indeterminate | fail |
 | `407ef75b__NCT06941441` | hypertension-academic | indeterminate | fail |
+| `509f9a77__NCT06941441` | hypertension-academic | indeterminate | fail |
 | `56cfe6a5__NCT06475781` | hypertension-industry | indeterminate | fail |
 | `56cfe6a5__NCT06941441` | hypertension-academic | indeterminate | fail |
 | `83f922a9__NCT05967689` | nsclc | indeterminate | pass_pending_review |
 | `9cbf47d8__NCT07362459` | nsclc | indeterminate | fail |
 | `a06bce31__NCT06941441` | hypertension-academic | indeterminate | fail |
+| `c46a254d__NCT06941441` | hypertension-academic | indeterminate | fail |
 | `e7d52393__NCT06568471` | hyperlipidemia | indeterminate | fail |
 
 ## Criterion Movements
@@ -32,8 +36,8 @@ Public-Artifact-Safety: synthetic
 | `060e72d3__NCT05713006` | 5 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | ALK rearrangements tested by FDA-approved tests (IHQ or FISH) |
 | `060e72d3__NCT05713006` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Karnofsky PS scale ≥ 70% |
 | `060e72d3__NCT05713006` | 8 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Measurable disease as referred by RECIST version 1.1 |
-| `060e72d3__NCT05713006` | 9 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Symptomatic brain metastases could receive prior treatment with radiotherapy or surgery for at le... |
-| `060e72d3__NCT05713006` | 10 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Asymptomatic brain metastases could not receive local therapy before study inclusion. |
+| `060e72d3__NCT05713006` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Symptomatic brain metastases could receive prior treatment with radiotherapy or surgery for at le... |
+| `060e72d3__NCT05713006` | 10 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Asymptomatic brain metastases could not receive local therapy before study inclusion. |
 | `060e72d3__NCT05713006` | 11 | condition_absent | indeterminate->pass | indeterminate_to_determinate | condition_presence | Negative highly sensitive pregnancy test (serum or urine) within 72 days before first dose interv... |
 | `060e72d3__NCT05713006` | 14 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Adequate organ function (hematological, liver, and renal function) |
 | `060e72d3__NCT05713006` | 15 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Life expectancy of at least 12 weeks |
@@ -53,7 +57,7 @@ Public-Artifact-Safety: synthetic
 | `28db1c55__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `28db1c55__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `28db1c55__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
-| `28db1c55__NCT06941441` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of full pneumonectomy |
+| `28db1c55__NCT06941441` | 18 | condition_absent | indeterminate->fail | indeterminate_to_determinate | procedure_history | History of full pneumonectomy |
 | `28db1c55__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `28db1c55__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `28db1c55__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
@@ -83,7 +87,7 @@ Public-Artifact-Safety: synthetic
 | `2e555528__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `2e555528__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `2e555528__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
-| `2e555528__NCT06941441` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of full pneumonectomy |
+| `2e555528__NCT06941441` | 18 | condition_absent | indeterminate->fail | indeterminate_to_determinate | procedure_history | History of full pneumonectomy |
 | `2e555528__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `2e555528__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `2e555528__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
@@ -136,7 +140,7 @@ Public-Artifact-Safety: synthetic
 | `407ef75b__NCT06941441` | 13 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `407ef75b__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `407ef75b__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
-| `407ef75b__NCT06941441` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of full pneumonectomy |
+| `407ef75b__NCT06941441` | 18 | condition_absent | indeterminate->fail | indeterminate_to_determinate | procedure_history | History of full pneumonectomy |
 | `407ef75b__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `407ef75b__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `407ef75b__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
@@ -153,14 +157,14 @@ Public-Artifact-Safety: synthetic
 | `509f9a77__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `509f9a77__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `509f9a77__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
-| `509f9a77__NCT06941441` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of full pneumonectomy |
+| `509f9a77__NCT06941441` | 18 | condition_absent | indeterminate->fail | indeterminate_to_determinate | procedure_history | History of full pneumonectomy |
 | `509f9a77__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `509f9a77__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `509f9a77__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
 | `509f9a77__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `509f9a77__NCT07221513` | 0 | condition_present | indeterminate->indeterminate | reason_changed | compound | Participants with HF New York Heart Association Class II-III. |
 | `509f9a77__NCT07221513` | 1 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Participants will be classified as having HFrEF (LVEF ≤ 40%) or HFpEF (LVEF >40% and ≤70%). |
-| `509f9a77__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Right heart catheterization (RHC) based evidence of cpcPH: |
+| `509f9a77__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Right heart catheterization (RHC) based evidence of cpcPH: |
 | `509f9a77__NCT07221513` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindicated to RHC that can be left in place for approximately 6 hours. |
 | `509f9a77__NCT07221513` | 9 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Body mass index (BMI) >45 kg/m² at screening. |
 | `55c5b8d3__NCT06128278` | 3 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of HRT or has used HRT for <6 months prior to enrollment |
@@ -208,7 +212,7 @@ Public-Artifact-Safety: synthetic
 | `56cfe6a5__NCT06941441` | 13 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `56cfe6a5__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `56cfe6a5__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
-| `56cfe6a5__NCT06941441` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of full pneumonectomy |
+| `56cfe6a5__NCT06941441` | 18 | condition_absent | indeterminate->fail | indeterminate_to_determinate | procedure_history | History of full pneumonectomy |
 | `56cfe6a5__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `56cfe6a5__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `56cfe6a5__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
@@ -230,7 +234,7 @@ Public-Artifact-Safety: synthetic
 | `83f922a9__NCT05967689` | 3 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Cohort A participants: Documented EGFR ex20ins status, as determined by local testing performed a... |
 | `83f922a9__NCT05967689` | 7 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with brain metastasis must be neurologically stable. |
 | `83f922a9__NCT05967689` | 11 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Cohort B participants: Documented EGFR ex20ins status, as determined by local testing performed a... |
-| `83f922a9__NCT05967689` | 13 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Prior adjuvant/neoadjuvant treatment for early-stage disease must have been completed >6 months p... |
+| `83f922a9__NCT05967689` | 13 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Prior adjuvant/neoadjuvant treatment for early-stage disease must have been completed >6 months p... |
 | `83f922a9__NCT05967689` | 14 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with brain metastasis must be neurologically stable. |
 | `83f922a9__NCT05967689` | 20 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Cohort D participants: Documented other uncommon single or compound EGFR non-ex20ins status (excl... |
 | `83f922a9__NCT05967689` | 21 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with brain metastasis must be neurologically stable. |
@@ -257,7 +261,7 @@ Public-Artifact-Safety: synthetic
 | `9e84e569__NCT04602754` | 17 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Impaired hepatic function; |
 | `9e84e569__NCT04602754` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Medical history of pancreatic diseases that may suggest insulin deficiency; |
 | `9e84e569__NCT04602754` | 19 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Participants who had any cardiovascular event (acute myocardial infarction, acute coronary syndro... |
-| `9e84e569__NCT04602754` | 20 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Bariatric surgery in the last two years and/ or other gastrointestinal surgeries that can cause c... |
+| `9e84e569__NCT04602754` | 20 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Bariatric surgery in the last two years and/ or other gastrointestinal surgeries that can cause c... |
 | `9e84e569__NCT04602754` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with known uncontrolled hypothyroidism or TSH levels > 5 mIU/L; |
 | `9e84e569__NCT04602754` | 27 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Participants using medications that may interfere with triglyceride and cholesterol metabolism st... |
 | `9e84e569__NCT04602754` | 28 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Treatment with anti-obesity drugs for less than 2 months or with dose change in the last 2 months. |
@@ -277,14 +281,14 @@ Public-Artifact-Safety: synthetic
 | `a06bce31__NCT06941441` | 13 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `a06bce31__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `a06bce31__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
-| `a06bce31__NCT06941441` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of full pneumonectomy |
+| `a06bce31__NCT06941441` | 18 | condition_absent | indeterminate->fail | indeterminate_to_determinate | procedure_history | History of full pneumonectomy |
 | `a06bce31__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `a06bce31__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `a06bce31__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
 | `a06bce31__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `a06bce31__NCT07221513` | 0 | condition_present | indeterminate->indeterminate | reason_changed | compound | Participants with HF New York Heart Association Class II-III. |
 | `a06bce31__NCT07221513` | 1 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Participants will be classified as having HFrEF (LVEF ≤ 40%) or HFpEF (LVEF >40% and ≤70%). |
-| `a06bce31__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Right heart catheterization (RHC) based evidence of cpcPH: |
+| `a06bce31__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Right heart catheterization (RHC) based evidence of cpcPH: |
 | `a06bce31__NCT07221513` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindicated to RHC that can be left in place for approximately 6 hours. |
 | `a06bce31__NCT07221513` | 9 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Body mass index (BMI) >45 kg/m² at screening. |
 | `a9a2c4dd__NCT05998863` | 5 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | End-stage renal failure on dialysis |
@@ -328,7 +332,7 @@ Public-Artifact-Safety: synthetic
 | `c46a254d__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `c46a254d__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `c46a254d__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
-| `c46a254d__NCT06941441` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of full pneumonectomy |
+| `c46a254d__NCT06941441` | 18 | condition_absent | indeterminate->fail | indeterminate_to_determinate | procedure_history | History of full pneumonectomy |
 | `c46a254d__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `c46a254d__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `c46a254d__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |

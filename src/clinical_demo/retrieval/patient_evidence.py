@@ -14,7 +14,13 @@ from collections.abc import Iterable, Sequence
 
 from pydantic import BaseModel, Field
 
-from clinical_demo.domain.patient import ClinicalNote, LabObservation, Medication, Patient
+from clinical_demo.domain.patient import (
+    ClinicalNote,
+    LabObservation,
+    Medication,
+    Patient,
+    Procedure,
+)
 from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.composite import build_composite_criterion_groups
 from clinical_demo.extractor.schema import (
@@ -55,6 +61,7 @@ def structured_source_rows_for_pair(
     max_conditions: int = 40,
     max_observations: int = 40,
     max_medications: int = 30,
+    max_procedures: int = 30,
     max_note_snippets: int = 30,
 ) -> list[RetrievalSourceRow]:
     """Build compact patient/trial source rows with stable local IDs."""
@@ -83,6 +90,10 @@ def structured_source_rows_for_pair(
     medication_start = len(patient_rows)
     patient_rows.extend(
         _patient_medication_rows(patient, start_index=medication_start, limit=max_medications)
+    )
+    procedure_start = len(patient_rows)
+    patient_rows.extend(
+        _patient_procedure_rows(patient, start_index=procedure_start, limit=max_procedures)
     )
     note_start = len(patient_rows)
     patient_rows.extend(
@@ -482,14 +493,14 @@ def _criterion_terms(criterion: ExtractedCriterion) -> set[str]:
 
 def _preferred_patient_kinds(criterion: ExtractedCriterion) -> set[str]:
     if criterion.kind in {"condition_present", "condition_absent", "temporal_window"}:
-        return {"condition", "note"}
+        return {"condition", "procedure", "note"}
     if criterion.kind in {"medication_present", "medication_absent"}:
         return {"medication", "note"}
     if criterion.kind == "measurement_threshold":
         return {"observation", "note"}
     if criterion.kind in {"age", "sex"}:
         return {"demographics"}
-    return {"condition", "medication", "observation", "note"}
+    return {"condition", "medication", "observation", "procedure", "note"}
 
 
 def _anchored_codes(criterion: ExtractedCriterion) -> set[str]:
@@ -606,6 +617,29 @@ def _patient_medication_rows(
     ]
 
 
+def _patient_procedure_rows(
+    patient: Patient,
+    *,
+    start_index: int,
+    limit: int,
+) -> list[RetrievalSourceRow]:
+    procedures = sorted(patient.procedures, key=_procedure_sort_key, reverse=True)
+    return [
+        RetrievalSourceRow(
+            row_id=f"patient:{start_index + index:03d}",
+            source="patient",
+            kind="procedure",
+            label=procedure.concept.display or procedure.concept.code or "Procedure",
+            value=procedure.concept.display or procedure.concept.code or "",
+            date=procedure.performed_date.isoformat(),
+            code=procedure.concept.code or None,
+            system=procedure.concept.system or None,
+            status=procedure.status,
+        )
+        for index, procedure in enumerate(procedures[:limit])
+    ]
+
+
 def _patient_note_rows(
     patient: Patient,
     *,
@@ -645,6 +679,13 @@ def _medication_sort_key(medication: Medication) -> tuple:
         medication.end_date is None,
         medication.start_date,
         medication.concept.display or medication.concept.code or "",
+    )
+
+
+def _procedure_sort_key(procedure: Procedure) -> tuple:
+    return (
+        procedure.performed_date,
+        procedure.concept.display or procedure.concept.code or "",
     )
 
 

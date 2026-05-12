@@ -313,6 +313,38 @@ def test_condition_compiler_maps_reviewed_fracture_surface_after_variant_cleanup
     assert result.unresolved_gaps == []
 
 
+def test_condition_surface_reviewed_as_procedure_history_compiles_to_procedure_predicate() -> None:
+    result = compile_extracted_criteria([_condition("history of full pneumonectomy")])
+
+    compiled = result.criteria[0]
+
+    assert compiled.expansion.domain == "procedure"
+    assert compiled.expansion.status == "resolved"
+    assert compiled.predicate.predicate_kind == "procedure_history"
+    assert compiled.predicate.status == "resolved"
+    assert compiled.checkable_predicates[0].predicate_kind == "procedure_history"
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"49795001", "232647000"})
+    assert compiled.resolved_supports[0].domain == "procedure"
+
+
+def test_free_text_procedure_mention_promotes_to_procedure_history_predicate() -> None:
+    criterion = _free_text("History of full pneumonectomy").model_copy(
+        update={
+            "mentions": [
+                EntityMention(text="full pneumonectomy", type="Procedure"),
+            ]
+        }
+    )
+
+    result = compile_extracted_criteria([criterion])
+    compiled = result.criteria[0]
+
+    assert compiled.expansion.domain == "procedure"
+    assert compiled.predicate.predicate_kind == "procedure_history"
+    assert compiled.checkable_predicates[0].predicate_kind == "procedure_history"
+    assert compiled.diagnostics[0].code == "free_text.promoted.procedure"
+
+
 def test_condition_compiler_preserves_raw_hyphenated_lookup_surface() -> None:
     criterion = _condition("end-stage renal disease")
 

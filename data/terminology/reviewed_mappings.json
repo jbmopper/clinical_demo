@@ -24,6 +24,60 @@
             "expansion_policy": "reviewed_code_list"
         },
         {
+            "kind": "procedure",
+            "surface": "history of full pneumonectomy",
+            "normalized_surface": "history of full pneumonectomy",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:pneumonectomy",
+            "candidates": [
+                {
+                    "name": "Pneumonectomy reviewed procedure list",
+                    "concept_set": "reviewed:procedure:pneumonectomy",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "49795001",
+                        "232647000"
+                    ],
+                    "source": "SNOMED public terminology review",
+                    "reason": "Procedure-history execution should check completed Procedure rows for total pneumonectomy and reviewed pneumonectomy subclasses, not condition diagnosis rows."
+                }
+            ],
+            "reason": "Full pneumonectomy is surgical/procedure-history evidence and can be executed against parsed patient Procedure rows.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 compiler-review group: hypertension-academic procedure-history condition extraction.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
+            "kind": "procedure",
+            "surface": "full pneumonectomy",
+            "normalized_surface": "full pneumonectomy",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:pneumonectomy",
+            "candidates": [
+                {
+                    "name": "Pneumonectomy reviewed procedure list",
+                    "concept_set": "reviewed:procedure:pneumonectomy",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "49795001",
+                        "232647000"
+                    ],
+                    "source": "SNOMED public terminology review",
+                    "reason": "Procedure mention execution should check completed Procedure rows for total pneumonectomy and reviewed pneumonectomy subclasses."
+                }
+            ],
+            "reason": "Full pneumonectomy is surgical/procedure-history evidence and can be executed against parsed patient Procedure rows.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 compiler-review group: hypertension-academic procedure-history condition extraction.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
             "kind": "lab",
             "surface": "pulmonary vascular resistance (PVR)",
             "normalized_surface": "pulmonary vascular resistance (pvr",

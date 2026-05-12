@@ -171,6 +171,11 @@ Foundation status:
   the default path changes. Native composite groups now compile their subchecks
   into the parent and execute through the compiled-predicate matcher with the
   same any_of/all_of rollup semantics as the legacy matcher-input path.
+- The compiled matcher now also executes reviewed `procedure_history`
+  predicates. Synthea FHIR `Procedure` resources are parsed into patient
+  procedure-history rows, and reviewed procedure mappings such as full
+  pneumonectomy are checked against completed procedures instead of being
+  forced through condition mappings.
 - `CC-06` through `CC-09` have helper foundations for compound/time,
   measurement, and medication compilation. Temporal event lookup now tries
   conservative condition-event variants for diagnosis/history-shaped surfaces

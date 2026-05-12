@@ -12,6 +12,7 @@ from clinical_demo.domain.patient import (
     LabObservation,
     Medication,
     Patient,
+    Procedure,
     Sex,
 )
 from clinical_demo.domain.trial import Trial
@@ -23,6 +24,7 @@ __all__ = [
     "LabObservation",
     "Medication",
     "Patient",
+    "Procedure",
     "Sex",
     "Trial",
 ]

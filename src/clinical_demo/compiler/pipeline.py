@@ -92,7 +92,10 @@ class _BloodPressureThreshold:
     unit: str | None
 
 
-_PROMOTABLE_MENTION_TYPES = frozenset({"Condition", "Drug", "Measurement", "Observation"})
+_PROMOTABLE_MENTION_TYPES = frozenset(
+    {"Condition", "Drug", "Measurement", "Observation", "Procedure"}
+)
+_SNOMED = "http://snomed.info/sct"
 _NEGATION_CUE_RE = re.compile(
     r"\b(?:no|not|without|absence of|free of|negative for|denies|denied)\b",
     re.IGNORECASE,
@@ -161,6 +164,10 @@ _RELATIVE_WINDOW_RE = re.compile(
 )
 _WITHIN_WINDOW_RE = re.compile(
     r"\bwithin\s+(?P<num>\d+)\s+(?P<unit>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
+_PROCEDURE_HISTORY_PREFIX_RE = re.compile(
+    r"^(?:personal\s+)?(?:(?:past\s+)?medical\s+)?history\s+(?:of|for)\s+",
     re.IGNORECASE,
 )
 _PH_ILD_RE = re.compile(
@@ -405,17 +412,31 @@ def _compile_criterion(
             if phrase_promotion.expansion is not None:
                 expansion = phrase_promotion.expansion
         else:
-            condition = _compile_condition_resolution(
+            procedure = _compile_reviewed_procedure_history(
                 criterion,
                 source_criterion_id=source_id,
+                surface=surface,
                 context=context,
             )
-            expansion = condition.expansion
-            predicate = condition.predicate
-            predicates.extend(condition.predicates)
-            supports.extend(condition.supports)
-            gaps.extend(condition.gaps)
-            diagnostics.extend(condition.diagnostics)
+            if procedure is not None:
+                expansion = procedure.expansion
+                predicate = procedure.predicate
+                predicates.extend(procedure.predicates)
+                supports.extend(procedure.supports)
+                gaps.extend(procedure.gaps)
+                diagnostics.extend(procedure.diagnostics)
+            else:
+                condition = _compile_condition_resolution(
+                    criterion,
+                    source_criterion_id=source_id,
+                    context=context,
+                )
+                expansion = condition.expansion
+                predicate = condition.predicate
+                predicates.extend(condition.predicates)
+                supports.extend(condition.supports)
+                gaps.extend(condition.gaps)
+                diagnostics.extend(condition.diagnostics)
     elif criterion.kind == "measurement_threshold":
         if (
             aminotransferase_promotion := _compile_aminotransferase_reference_limit_promotion(
@@ -717,6 +738,27 @@ def _compile_free_text_promotion(
             measurement=measurement,
         )
         promotion_kind = "measurement"
+    elif mention.type == "Procedure":
+        procedure = _compile_reviewed_procedure_history(
+            criterion,
+            source_criterion_id=f"{source_criterion_id}:free-text:procedure",
+            surface=surface,
+            context=context,
+        )
+        if procedure is None:
+            return None
+        return _promoted_compilation(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            promotion_kind="procedure",
+            predicate=procedure.predicate,
+            predicates=procedure.predicates,
+            supports=procedure.supports,
+            gaps=procedure.gaps,
+            diagnostics=procedure.diagnostics,
+            expansion=procedure.expansion,
+        )
 
     if surrogate is None or promotion_kind is None:
         return None
@@ -1936,6 +1978,209 @@ class _FreeTextPromotionCompilation:
     compound_logic: CompoundLogicPlan | None = None
     expansion: ExpansionPlan | None = None
     unit_normalization: UnitNormalizationPlan | None = None
+
+
+def _compile_reviewed_procedure_history(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str | None,
+    context: _CompilerResolutionContext,
+) -> _ConditionCompilation | None:
+    if surface is None:
+        return None
+    reviewed = _reviewed_procedure_entry(surface, context=context)
+    if reviewed is None:
+        return None
+
+    entry, lookup_surface = reviewed
+    support_ids: list[str] = []
+    supports: list[ResolutionSupport] = []
+    gaps: list[ResolutionGap] = []
+    predicates: list[CheckablePredicate] = []
+    diagnostics: list[CompilerDiagnostic] = []
+    concept_set = _procedure_concept_set_from_reviewed_entry(entry)
+    status: ResolutionStatus = "resolved"
+
+    if entry.status != "mapped":
+        status = "ambiguous" if entry.status == "ambiguous" else "unsupported"
+        gap = _gap(
+            gap_id=f"{source_criterion_id}:procedure:gap:reviewed-{entry.status}",
+            stage="concept_resolution",
+            domain="procedure",
+            kind="ambiguous_mapping" if entry.status == "ambiguous" else "unsupported_predicate",
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            message=(
+                f"Reviewed procedure surface {lookup_surface!r} is classified as "
+                f"{entry.status}: {entry.reason}"
+            ),
+            resolver_policy=context.resolver_policy,
+        )
+        gaps.append(gap)
+        diagnostics.append(
+            _diagnostic(
+                severity="warning",
+                code=f"procedure.reviewed.{entry.status}",
+                message=gap.message,
+                stage="concept_resolution",
+                source_criterion_id=source_criterion_id,
+                facts=[
+                    ("surface", surface),
+                    ("lookup_surface", lookup_surface),
+                    ("reviewed_status", entry.status),
+                    ("gap_id", gap.gap_id),
+                ],
+            )
+        )
+    elif concept_set is None:
+        status = "unresolved"
+        gap = _gap(
+            gap_id=f"{source_criterion_id}:procedure:gap:missing-reviewed-codes",
+            stage="concept_resolution",
+            domain="procedure",
+            kind="insufficient_source",
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            message=(
+                f"Reviewed procedure surface {lookup_surface!r} is mapped but has no "
+                "candidate code list for predicate execution."
+            ),
+            resolver_policy=context.resolver_policy,
+        )
+        gaps.append(gap)
+        diagnostics.append(
+            _diagnostic(
+                severity="warning",
+                code="procedure.reviewed.missing_codes",
+                message=gap.message,
+                stage="concept_resolution",
+                source_criterion_id=source_criterion_id,
+                facts=[("lookup_surface", lookup_surface), ("gap_id", gap.gap_id)],
+            )
+        )
+    else:
+        support = _support(
+            support_id=f"{source_criterion_id}:procedure:support:reviewed-code-list",
+            stage="concept_resolution",
+            domain="procedure",
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            normalized_surface=lookup_surface,
+            target_system=concept_set.system,
+            target_id=_concept_set_target_id(concept_set),
+            target_label=concept_set.name,
+            resolver_policy=context.resolver_policy,
+        )
+        support_ids.append(support.support_id)
+        supports.append(support)
+        diagnostics.append(
+            _diagnostic(
+                severity="info",
+                code="procedure.reviewed.mapped",
+                message=(
+                    f"Mapped procedure-history surface {surface!r} through reviewed "
+                    f"procedure decision {lookup_surface!r}."
+                ),
+                stage="concept_resolution",
+                source_criterion_id=source_criterion_id,
+                facts=[
+                    ("lookup_surface", lookup_surface),
+                    ("code_count", str(len(concept_set.codes))),
+                ],
+            )
+        )
+        predicate = _checkable_predicate(
+            predicate_id=f"{source_criterion_id}:predicate:procedure",
+            predicate_kind="procedure_history",
+            source_criterion_id=source_criterion_id,
+            criterion=criterion,
+            surface=surface,
+            target_system=concept_set.system,
+            target_codes=concept_set.codes,
+            negated=_criterion_is_absence(criterion),
+            support_ids=support_ids,
+            gap_ids=[],
+        )
+        predicates.append(predicate)
+
+    gap_ids = [gap.gap_id for gap in gaps]
+    expansion = ExpansionPlan(
+        status=status,
+        domain="procedure",
+        source_surface=surface,
+        strategy=entry.expansion_policy,
+        support_ids=support_ids,
+        gap_ids=gap_ids,
+    )
+    predicate_plan = (
+        _resolved_predicate_plan(predicates[0], support_ids=support_ids)
+        if predicates and not gaps
+        else CheckablePredicatePlan(
+            status=status,
+            predicate_kind="procedure_history",
+            expression=None,
+            input_refs=[source_criterion_id],
+            support_ids=support_ids,
+            gap_ids=gap_ids,
+        )
+    )
+    return _ConditionCompilation(
+        expansion=expansion,
+        predicate=predicate_plan,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+    )
+
+
+def _reviewed_procedure_entry(
+    surface: str,
+    *,
+    context: _CompilerResolutionContext,
+) -> tuple[ReviewedMappingEntry, str] | None:
+    for lookup_surface in _procedure_lookup_variants(surface):
+        entry = context.reviewed_registry.lookup("procedure", lookup_surface)
+        if entry is not None:
+            return entry, lookup_surface
+    return None
+
+
+def _procedure_lookup_variants(surface: str) -> list[str]:
+    variants: list[str] = []
+    seen: set[str] = set()
+
+    def add(candidate: str) -> None:
+        normalized = " ".join(candidate.lower().split())
+        if not normalized or normalized in seen:
+            return
+        seen.add(normalized)
+        variants.append(candidate)
+
+    add(surface)
+    stripped = _PROCEDURE_HISTORY_PREFIX_RE.sub("", surface).strip()
+    add(stripped)
+    for variant in generate_query_variants(surface):
+        add(variant.variant)
+    for variant in generate_query_variants(stripped):
+        add(variant.variant)
+    return variants
+
+
+def _procedure_concept_set_from_reviewed_entry(
+    entry: ReviewedMappingEntry,
+) -> ConceptSet | None:
+    if entry.status != "mapped":
+        return None
+    candidate = next((candidate for candidate in entry.candidates if candidate.codes), None)
+    if candidate is None:
+        return None
+    return ConceptSet(
+        name=candidate.name or entry.concept_set or entry.surface,
+        system=candidate.system or _SNOMED,
+        codes=candidate.codes,
+    )
 
 
 def _compile_condition_resolution(

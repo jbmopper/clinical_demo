@@ -41,8 +41,8 @@
       "adjudicator_output_tokens": 0
     },
     {
-      "run_id": "f77c112ef220",
-      "notes": "compiled_predicates reviewed C-peptide unit conversion; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "run_id": "a123e6b96d41",
+      "notes": "compiled_predicates reviewed procedure history predicates; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
       "llm_use_level": "none",
       "matcher_assumption_mode": "closed_world_eval",
       "total_label_targets": 50,
@@ -59,8 +59,8 @@
       "retrieved_patient_row_counts": {},
       "cited_patient_row_counts": {},
       "eligibility_counts": {
-        "fail": 36,
-        "indeterminate": 9,
+        "fail": 40,
+        "indeterminate": 5,
         "pass_pending_review": 2
       },
       "adjudicator_calls": 0,
@@ -72,10 +72,10 @@
   "mode_deltas": [
     {
       "baseline_run_id": "e8efb7bcce35",
-      "comparison_run_id": "f77c112ef220",
-      "changed_cases": 9,
+      "comparison_run_id": "a123e6b96d41",
+      "changed_cases": 13,
       "movements": {
-        "indeterminate->fail": 8,
+        "indeterminate->fail": 12,
         "indeterminate->pass_pending_review": 1
       }
     }

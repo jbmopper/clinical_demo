@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import cast
 
-from clinical_demo.domain.patient import Condition, LabObservation, Medication
+from clinical_demo.domain.patient import Condition, LabObservation, Medication, Procedure
 from clinical_demo.domain.trial import Trial
 from clinical_demo.extractor.schema import ExtractedCriterion
 from clinical_demo.matcher import MATCHER_VERSION
@@ -25,6 +25,7 @@ from clinical_demo.matcher.verdict import (
     MatchVerdict,
     MedicationEvidence,
     MissingEvidence,
+    ProcedureEvidence,
     TrialFieldEvidence,
     Verdict,
     VerdictReason,
@@ -245,6 +246,8 @@ def _execute_predicate(
         return _execute_medication(predicate, profile, matcher_assumption_mode)
     if predicate.predicate_kind == "measurement_threshold":
         return _execute_measurement(predicate, profile)
+    if predicate.predicate_kind == "procedure_history":
+        return _execute_procedure(predicate, profile, matcher_assumption_mode)
     if predicate.predicate_kind == "temporal_event":
         return _execute_temporal(predicate, profile, matcher_assumption_mode)
     if predicate.predicate_kind == "trial_exposure":
@@ -438,6 +441,55 @@ def _execute_medication(
             "under open_world this is insufficient evidence, not absence."
         ),
         [MissingEvidence(looked_for=looked_for, note="no matching active medications on profile")],
+        False,
+    )
+
+
+def _execute_procedure(
+    predicate: CheckablePredicate,
+    profile: PatientProfile,
+    mode: MatcherAssumptionMode,
+) -> tuple[Verdict, VerdictReason, str, list[Evidence], bool]:
+    concept_set = _concept_set(predicate)
+    matches = profile.matching_completed_procedures(concept_set)
+    if matches:
+        return (
+            "pass",
+            "ok",
+            f"Patient has completed procedure matching compiled predicate {concept_set.name!r}.",
+            [_procedure_evidence(procedure) for procedure in matches],
+            False,
+        )
+
+    looked_for = f"completed procedure in {concept_set.name!r} ({len(concept_set.codes)} codes)"
+    if mode in _CLOSED_WORLD_MODES:
+        return (
+            "fail",
+            "ok",
+            (
+                f"Patient has no completed procedure matching {concept_set.name!r} "
+                "(closed-world: treating absence in the curated record as negative)."
+            ),
+            [
+                MissingEvidence(
+                    looked_for=looked_for,
+                    note=f"no matching completed procedures on profile; absence treated as negative under {mode}",
+                )
+            ],
+            True,
+        )
+    return (
+        "indeterminate",
+        "no_data",
+        (
+            f"Patient record has no completed procedure matching {concept_set.name!r}; "
+            "under open_world this is insufficient evidence, not absence."
+        ),
+        [
+            MissingEvidence(
+                looked_for=looked_for, note="no matching completed procedures on profile"
+            )
+        ],
         False,
     )
 
@@ -815,6 +867,18 @@ def _medication_evidence(medication: Medication, profile: PatientProfile) -> Med
         note=(
             f"{medication.concept.display or medication.concept.code} "
             f"(active as of {profile.as_of.isoformat()})"
+        ),
+    )
+
+
+def _procedure_evidence(procedure: Procedure) -> ProcedureEvidence:
+    return ProcedureEvidence(
+        concept=procedure.concept,
+        performed_date=procedure.performed_date,
+        status=procedure.status,
+        note=(
+            f"{procedure.concept.display or procedure.concept.code} "
+            f"performed on {procedure.performed_date.isoformat()}"
         ),
     )
 

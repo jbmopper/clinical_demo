@@ -71,6 +71,7 @@ EvidenceKind = Literal[
     "lab",
     "condition",
     "medication",
+    "procedure",
     "demographics",
     "trial_field",
     "missing",
@@ -115,6 +116,15 @@ class MedicationEvidence(_BaseEvidence):
     concept: CodedConcept
     start_date: Date
     end_date: Date | None
+
+
+class ProcedureEvidence(_BaseEvidence):
+    """A patient procedure record that informed the verdict."""
+
+    kind: Literal["procedure"] = "procedure"
+    concept: CodedConcept
+    performed_date: Date
+    status: str
 
 
 class DemographicsEvidence(_BaseEvidence):
@@ -174,6 +184,7 @@ Evidence = Annotated[
     LabEvidence
     | ConditionEvidence
     | MedicationEvidence
+    | ProcedureEvidence
     | DemographicsEvidence
     | TrialFieldEvidence
     | MissingEvidence
@@ -219,6 +230,7 @@ __all__ = [
     "MatchVerdict",
     "MedicationEvidence",
     "MissingEvidence",
+    "ProcedureEvidence",
     "RetrievedPatientRowEvidence",
     "TrialFieldEvidence",
     "Verdict",

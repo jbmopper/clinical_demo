@@ -14,7 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-ReviewedMappingKind = Literal["condition", "lab", "medication"]
+ReviewedMappingKind = Literal["condition", "lab", "medication", "procedure"]
 ReviewedMappingStatus = Literal[
     "mapped",
     "ambiguous",

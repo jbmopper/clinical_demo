@@ -20,6 +20,7 @@ from tests.matcher._fixtures import (
     crit_free_text,
     crit_measurement,
     make_patient,
+    make_procedure,
     make_trial,
 )
 
@@ -293,6 +294,28 @@ def test_note_snippets_are_citeable_patient_source_rows() -> None:
     assert note_rows[0].value == "Patient has uncontrolled hypertension despite therapy."
     assert note_rows[0].date == "2024-12-01"
     assert note_rows[0].status == "note_id=doc-support"
+
+
+def test_procedures_are_citeable_patient_source_rows() -> None:
+    patient = make_patient(
+        procedures=[
+            make_procedure(
+                code="49795001",
+                display="Total pneumonectomy",
+                performed=date(2021, 4, 5),
+            )
+        ]
+    )
+
+    rows = structured_source_rows_for_pair(patient, make_trial())
+
+    procedure_rows = [row for row in rows if row.kind == "procedure"]
+    assert len(procedure_rows) == 1
+    assert procedure_rows[0].source == "patient"
+    assert procedure_rows[0].label == "Total pneumonectomy"
+    assert procedure_rows[0].code == "49795001"
+    assert procedure_rows[0].date == "2021-04-05"
+    assert procedure_rows[0].status == "completed"
 
 
 @pytest.mark.parametrize(

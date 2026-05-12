@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `f77c112ef220` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `a123e6b96d41` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -38,21 +38,23 @@
   shorthand, including SBP/DBP abbreviation pairs, and reviewed ULN
   reference-limit translation for AST/ALT, total-bilirubin, and sex-specific
   hemoglobin multiplier criteria, plus reviewed SGLT/SGLT2 spelling-variant
-  and non-insulin antidiabetic medication-class closure and C-peptide
-  `nmol/L` to `ng/mL` conversion. It regenerates the compiler
+  and non-insulin antidiabetic medication-class closure, C-peptide
+  `nmol/L` to `ng/mL` conversion, and reviewed full-pneumonectomy
+  procedure-history execution against parsed patient `Procedure` rows. It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
   `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
-  with 64 indeterminate-to-determinate criterion movements, 1 determinate
-  movement, and 9 case-rollup movements. The path is still not default-ready:
-  diagnostics show 312 unresolved compiler gaps, 43 closed-world-blocking
-  cases, and 417 blocking validation findings. The deduped review packet has
-  174 groups (168 `implement_compiler_logic`, 5 `choose_candidate`, and 1
+  with 71 indeterminate-to-determinate criterion movements, 1 determinate
+  movement, and 13 case-rollup movements. The path is still not default-ready:
+  diagnostics show 299 unresolved compiler gaps, 43 closed-world-blocking
+  cases, and 403 blocking validation findings. The deduped review packet has
+  168 groups (162 `implement_compiler_logic`, 5 `choose_candidate`, and 1
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
   ULN buckets, SGLT/non-insulin antidiabetic medication-class buckets, and the
-  C-peptide unit-conversion bucket are closed. The first
+  C-peptide unit-conversion bucket are closed; the full-pneumonectomy
+  procedure-history bucket is now executable. The first
   cache-independent closure pass is complete for the
   warmed-cache delta: an empty-cache probe had regressed to 424 gaps / 156
   compiled `unmapped_concept`, then reviewed artifacts brought it back to the
@@ -62,10 +64,12 @@
   the reviewed medication-class slice turned more class-like medication surfaces
   into executable cache-independent predicates. The C-peptide unit slice removed
   the last unit-normalization bucket from the compiler-review groups. The
+  procedure-history slice introduced completed-procedure parsing and
+  `procedure_history` predicates for reviewed surgical-history surfaces. The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
-  168 grouped `implement_compiler_logic` items, tightening measurement
+  162 grouped `implement_compiler_logic` items, tightening measurement
   normal-range/provenance handling, and preparing a smaller human grading packet
   once the closed-world blockers are lower.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
@@ -1187,7 +1191,10 @@ acid, lisinopril, and losartan, and extends reviewed medication-class closure
 for lipid-lowering therapy, bisphosphonates, and RAAS blockers. A 2026-05-12
 CC-08 follow-on decomposes explicit systolic/diastolic blood-pressure clauses
 and generic or SBP/DBP pair shorthand into LOINC-bound systolic/diastolic
-threshold predicates. The `CC-10`, `CC-11`, and `CC-12`
+threshold predicates. A 2026-05-12 procedure-history follow-on parses Synthea
+FHIR `Procedure` resources into the patient model, adds reviewed procedure
+mapping rows for full pneumonectomy, and emits executable `procedure_history`
+predicates for reviewed surgical-history surfaces. The `CC-10`, `CC-11`, and `CC-12`
 reporting foundations now expose closed-world validation, reviewer gap queue,
 and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
 promotion remain follow-on work.
@@ -1708,33 +1715,35 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`f77c112ef220`) after the reviewed condition/event,
+  `compiled_predicates` (`a123e6b96d41`) after the reviewed condition/event,
   medication registry-closure, cache-independent terminology-closure, reviewed
   descendant-expansion, condition/event decomposition, and qualifier/top-gap
   review slices, followed by the opaque-unmapped registry pass for GLP-1
   member closure, amylin/calcitonin, diabetes/HF/pregnancy variants, and
   singleton oncology/genomic/procedure/status classifications, plus BP
   threshold decomposition, reviewed sex-specific ULN reference-limit translation,
-  reviewed antidiabetic medication-class closure, and C-peptide unit conversion.
+  reviewed antidiabetic medication-class closure, C-peptide unit conversion, and
+  reviewed full-pneumonectomy procedure-history execution.
   Both runs have
   the same 2 deceased-patient scoring refusals and the same Layer-1
   structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
   reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 0/1076
-  (0.0%); it adds 64 indeterminate-to-determinate criterion wins and changes 9
+  (0.0%); it adds 71 indeterminate-to-determinate criterion wins and changes 13
   case rollups (all away from indeterminate). It is still not default-ready:
-  compiler diagnostics show 312 unresolved gaps and 43 closed-world-blocking
-  compiled cases, with 417 blocking validation findings. The regenerated
-  compiler-review artifact now dedupes the 312 raw rows to 174
-  surface/action/policy groups (168 `implement_compiler_logic`, 5
+  compiler diagnostics show 299 unresolved gaps and 43 closed-world-blocking
+  compiled cases, with 403 blocking validation findings. The regenerated
+  compiler-review artifact now dedupes the 299 raw rows to 168
+  surface/action/policy groups (162 `implement_compiler_logic`, 5
   `choose_candidate`, and 1 `review_gap`). There are no remaining
   `review_mapping` groups; the generic blood-pressure ambiguity bucket is gone,
   and reviewed AST/ALT/bilirubin/hemoglobin ULN criteria now compile through
   normal reference-limit translation, while SGLT and non-insulin antidiabetic
   medication-class surfaces now compile through reviewed class expansion and
-  the C-peptide unit-conversion bucket is gone.
+  the C-peptide unit-conversion bucket is gone. The full-pneumonectomy
+  procedure-history bucket now compiles through parsed patient `Procedure` rows.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
-  eval seed policy, triaging decisive criterion movements / 9 case
+  eval seed policy, triaging decisive criterion movements / 13 case
   rollups, reducing the remaining grouped compiler-logic gaps, and using the
   deduped compiler-review packet for targeted reviewer/registry work.
 - Movement review artifact (2026-05-12 cache-independent refresh):
@@ -1742,15 +1751,16 @@ promotion remain follow-on work.
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `f77c112ef220`: 9 case movements, 65 decisive criterion
-  movements, and 297 reason-code-only changes. Decisive wins include reviewed
+  `e8efb7bcce35` -> `a123e6b96d41`: 13 case movements, 72 decisive criterion
+  movements, and 290 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
   lipid-lowering therapy, GLP-1 member closure, SGLT/non-insulin antidiabetic
   class closure, diabetes/HF/pregnancy variants,
   measurement predicates, trial-exposure movements, PH-ILD, cardiovascular
   event-list, congenital heart disease, HoFH, BP threshold movements, and
-  sex-specific hemoglobin ULN translation. Reason-only changes now also include
-  AST/ALT and bilirubin ULN translation.
+  sex-specific hemoglobin ULN translation, and full-pneumonectomy
+  procedure-history predicates. Reason-only changes now also include AST/ALT
+  and bilirubin ULN translation.
   Remaining
   reason-only changes are expected while reviewed unsupported/out-of-scope rows
   replace opaque terminology misses.
@@ -1781,8 +1791,11 @@ promotion remain follow-on work.
   then moved the snapshot to 314 unresolved compiler gaps with 334 checkable
   predicates. The C-peptide unit-conversion slice then moved the snapshot to
   312 unresolved compiler gaps with 336 checkable predicates and removed the
-  last unit-normalization group. The next CC-08/CC-10 targets are normal-range phrase execution,
-  modality/fasting provenance support, and moving reviewed unsupported
+  last unit-normalization group. The reviewed procedure-history slice then
+  moved the snapshot to 299 unresolved compiler gaps with 343 checkable
+  predicates by executing full-pneumonectomy history against completed
+  patient `Procedure` rows. The next CC-08/CC-10 targets are normal-range phrase execution,
+  modality/fasting provenance support, broader procedure/event windows, and moving reviewed unsupported
   measurement decisions into better compiler-specific gap kinds as the IR grows.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
@@ -2010,12 +2023,15 @@ bundles map 1:1 to our `Patient` domain object and the streaming benefit
 of ndjson is irrelevant at the 555-patient scale. The PLAN.md task
 description is updated accordingly.
 
-### D-11. Encounters/Procedures/Allergies/Immunizations excluded from v0
+### D-11. Encounters/Allergies/Immunizations excluded from v0; Procedures added on demand
 **Rejected:** parsing every FHIR resource type Synthea emits.
 **Why:** none of the cardiometabolic eligibility criteria we expect to
-encounter in Phase 1 require these. Add when an actual criterion needs
-them rather than building speculatively. Each new resource type costs
-a parser, tests, and a domain-model decision.
+encounter in Phase 1 require the remaining resource types. Procedures were
+added only after the compiler-review queue surfaced executable
+procedure-history criteria such as full pneumonectomy. Keep using that rule:
+add a resource type when an actual criterion needs it rather than building
+speculatively. Each new resource type costs a parser, tests, and a
+domain-model decision.
 
 ### D-12. `is_clinical` flag on Condition is necessary-but-not-sufficient
 **Rejected:** stronger upstream filtering at load time.

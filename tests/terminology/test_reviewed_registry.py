@@ -227,6 +227,22 @@ def test_committed_condition_long_tail_review_rows_load() -> None:
     assert measurable_disease.status == "out_of_scope"
 
 
+def test_committed_procedure_review_rows_load() -> None:
+    registry = load_reviewed_mapping_registry(
+        REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
+    )
+
+    history_pneumonectomy = registry.lookup("procedure", "history of full pneumonectomy")
+    full_pneumonectomy = registry.lookup("procedure", "full pneumonectomy")
+
+    assert history_pneumonectomy is not None
+    assert history_pneumonectomy.status == "mapped"
+    assert history_pneumonectomy.concept_set == "reviewed:procedure:pneumonectomy"
+    assert history_pneumonectomy.candidates[0].codes == frozenset({"49795001", "232647000"})
+    assert full_pneumonectomy is not None
+    assert full_pneumonectomy.status == "mapped"
+
+
 def test_committed_cardiovascular_decomposition_atoms_load() -> None:
     registry = load_reviewed_mapping_registry(
         REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
