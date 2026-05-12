@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from clinical_demo.extractor.schema import (
     CompositeCriterionGroup,
     CompositeCriterionSubcheck,
+    CompositeOperator,
     ConditionCriterion,
     CriterionKind,
     EntityMention,
@@ -83,6 +84,14 @@ class _CompilerResolutionContext:
     reviewed_registry: ReviewedMappingRegistry
 
 
+@dataclass(frozen=True)
+class _BloodPressureThreshold:
+    measurement_text: str
+    operator: ThresholdOperator
+    value: float
+    unit: str | None
+
+
 _PROMOTABLE_MENTION_TYPES = frozenset({"Condition", "Drug", "Measurement", "Observation"})
 _NEGATION_CUE_RE = re.compile(
     r"\b(?:no|not|without|absence of|free of|negative for|denies|denied)\b",
@@ -90,6 +99,27 @@ _NEGATION_CUE_RE = re.compile(
 )
 _SYMBOLIC_THRESHOLD_RE = re.compile(
     r"(?P<op>>=|<=|>|<|=)\s*(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>[A-Za-z%][A-Za-z0-9%/*.^{}_-]*)?",
+    re.IGNORECASE,
+)
+_THRESHOLD_OPERATOR_RE = r">=|<=|≥|≤|>|<|="
+_NUMERIC_THRESHOLD_RE = r"\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?"
+_BLOOD_PRESSURE_UNIT_RE = r"mm\s*\[?\s*hg\s*\]?|mmhg"
+_EXPLICIT_BLOOD_PRESSURE_THRESHOLD_RE = re.compile(
+    rf"\b(?P<measurement>systolic|diastolic|sbp|dbp)"
+    rf"(?:\s+(?:blood\s+pressure|bp))?\s*"
+    rf"(?:is|are|was|were|of|controlled\s+to)?\s*"
+    rf"(?P<op>{_THRESHOLD_OPERATOR_RE})\s*"
+    rf"(?P<value>{_NUMERIC_THRESHOLD_RE})\s*"
+    rf"(?P<unit>{_BLOOD_PRESSURE_UNIT_RE})?",
+    re.IGNORECASE,
+)
+_GENERIC_BLOOD_PRESSURE_PAIR_RE = re.compile(
+    rf"\b(?:blood\s+pressure|bp)\s*"
+    rf"(?:is|are|was|were|of|controlled\s+to)?\s*"
+    rf"(?P<op>{_THRESHOLD_OPERATOR_RE})\s*"
+    rf"(?P<systolic>{_NUMERIC_THRESHOLD_RE})\s*/\s*"
+    rf"(?P<diastolic>{_NUMERIC_THRESHOLD_RE})\s*"
+    rf"(?P<unit>{_BLOOD_PRESSURE_UNIT_RE})?",
     re.IGNORECASE,
 )
 _TRIAL_EXPOSURE_RE = re.compile(
@@ -375,22 +405,43 @@ def _compile_criterion(
             gaps.extend(condition.gaps)
             diagnostics.extend(condition.diagnostics)
     elif criterion.kind == "measurement_threshold":
-        measurement = compile_measurement_resolution(
-            criterion,
-            source_id,
-            resolver_policy=resolver_policy,
-            reviewed_registry=context.reviewed_registry,
-        )
-        unit_normalization = measurement.unit_normalization
-        supports.extend(measurement.resolved_supports)
-        gaps.extend(measurement.unresolved_gaps)
-        diagnostics.extend(measurement.diagnostics)
-        predicate, measurement_predicates = _measurement_predicate(
-            criterion,
-            source_criterion_id=source_id,
-            measurement=measurement,
-        )
-        predicates.extend(measurement_predicates)
+        if (
+            bp_promotion := _compile_blood_pressure_threshold_promotion(
+                criterion,
+                index=index,
+                source_criterion_id=source_id,
+                resolver_policy=resolver_policy,
+                context=context,
+                promotion_domain="measurement",
+                promotion_label="measurement",
+            )
+        ) is not None:
+            predicate = bp_promotion.predicate
+            predicates.extend(bp_promotion.predicates)
+            supports.extend(bp_promotion.supports)
+            gaps.extend(bp_promotion.gaps)
+            diagnostics.extend(bp_promotion.diagnostics)
+            if bp_promotion.compound_logic is not None:
+                compound_plan = bp_promotion.compound_logic
+            if bp_promotion.unit_normalization is not None:
+                unit_normalization = bp_promotion.unit_normalization
+        else:
+            measurement = compile_measurement_resolution(
+                criterion,
+                source_id,
+                resolver_policy=resolver_policy,
+                reviewed_registry=context.reviewed_registry,
+            )
+            unit_normalization = measurement.unit_normalization
+            supports.extend(measurement.resolved_supports)
+            gaps.extend(measurement.unresolved_gaps)
+            diagnostics.extend(measurement.diagnostics)
+            predicate, measurement_predicates = _measurement_predicate(
+                criterion,
+                source_criterion_id=source_id,
+                measurement=measurement,
+            )
+            predicates.extend(measurement_predicates)
     elif criterion.kind == "temporal_window":
         temporal = compile_temporal_window(
             criterion,
@@ -565,6 +616,19 @@ def _compile_free_text_promotion(
             context=context,
         )
 
+    if (
+        bp_promotion := _compile_blood_pressure_threshold_promotion(
+            criterion,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            resolver_policy=resolver_policy,
+            context=context,
+            promotion_domain="free_text",
+            promotion_label="free-text",
+        )
+    ) is not None:
+        return bp_promotion
+
     phrase_promotion = _compile_condition_phrase_promotion(
         criterion,
         index=index,
@@ -715,6 +779,117 @@ def _compile_free_text_medication_list(
         supports=supports,
         gaps=gaps,
         diagnostics=diagnostics,
+        compound_logic=compound_logic,
+    )
+
+
+def _compile_blood_pressure_threshold_promotion(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+) -> _FreeTextPromotionCompilation | None:
+    if ":blood-pressure:" in source_criterion_id:
+        return None
+    thresholds = _blood_pressure_thresholds_from_text(criterion.source_text)
+    if not thresholds:
+        return None
+    if criterion.kind == "measurement_threshold" and not _should_promote_bp_measurement(
+        criterion,
+        thresholds,
+    ):
+        return None
+
+    supports: list[ResolutionSupport] = []
+    gaps: list[ResolutionGap] = []
+    predicates: list[CheckablePredicate] = []
+    diagnostics: list[CompilerDiagnostic] = []
+    subcheck_ids: list[str] = []
+
+    for sub_index, threshold in enumerate(thresholds, start=1):
+        sub_id = f"{source_criterion_id}:blood-pressure:{sub_index:03d}"
+        subcheck_ids.append(sub_id)
+        surrogate = _criterion_like(
+            criterion,
+            kind="measurement_threshold",
+            measurement=MeasurementCriterion(
+                measurement_text=threshold.measurement_text,
+                operator=threshold.operator,
+                value=threshold.value,
+                value_low=None,
+                value_high=None,
+                unit=threshold.unit,
+            ),
+        )
+        compiled = _compile_criterion(
+            surrogate,
+            index=index,
+            resolver_policy=resolver_policy,
+            composite_groups=[],
+            context=context,
+            source_criterion_id_override=sub_id,
+        )
+        supports.extend(compiled.resolved_supports)
+        gaps.extend(compiled.unresolved_gaps)
+        predicates.extend(compiled.checkable_predicates)
+        diagnostics.extend(compiled.diagnostics)
+
+    if not predicates and not gaps:
+        return None
+
+    if len(subcheck_ids) == 1:
+        if predicates and not gaps:
+            predicate = _resolved_predicate_plan(predicates[0])
+        else:
+            predicate = CheckablePredicatePlan(
+                status="unresolved",
+                predicate_kind="measurement_threshold",
+                expression=None,
+                predicate_ids=[predicate.predicate_id for predicate in predicates],
+                input_refs=subcheck_ids,
+                support_ids=[
+                    support_id for predicate in predicates for support_id in predicate.support_ids
+                ],
+                gap_ids=[gap.gap_id for gap in gaps],
+            )
+        compound_logic = None
+    else:
+        operator = _blood_pressure_compound_operator(thresholds, criterion.source_text)
+        predicate = _compound_predicate_plan(
+            subcheck_ids,
+            predicates=predicates,
+            gaps=gaps,
+            operator=operator,
+        )
+        compound_logic = CompoundLogicPlan(
+            status="resolved" if predicates and not gaps else "unresolved",
+            operator=operator,
+            source_group_ids=[],
+            subcheck_ids=subcheck_ids,
+            gap_ids=[gap.gap_id for gap in gaps],
+        )
+
+    surface = ", ".join(
+        f"{threshold.measurement_text} {threshold.operator} {threshold.value:g}"
+        f"{' ' + threshold.unit if threshold.unit else ''}"
+        for threshold in thresholds
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind="blood-pressure-thresholds",
+        predicate=predicate,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
         compound_logic=compound_logic,
     )
 
@@ -1300,6 +1475,123 @@ def _free_text_measurement_threshold(
         value_high=None,
         unit=match.group("unit"),
     )
+
+
+def _should_promote_bp_measurement(
+    criterion: ExtractedCriterion,
+    thresholds: Sequence[_BloodPressureThreshold],
+) -> bool:
+    if criterion.measurement is None:
+        return bool(thresholds)
+    normalized_surface = _normalize_text(criterion.measurement.measurement_text)
+    if normalized_surface in {"blood pressure", "bp"}:
+        return True
+    if normalized_surface in {
+        "systolic blood pressure",
+        "systolic bp",
+        "sbp",
+        "diastolic blood pressure",
+        "diastolic bp",
+        "dbp",
+    }:
+        return len(thresholds) >= 2
+    return False
+
+
+def _blood_pressure_thresholds_from_text(source_text: str) -> list[_BloodPressureThreshold]:
+    thresholds: list[_BloodPressureThreshold] = []
+    seen: set[tuple[str, str, float, str | None]] = set()
+
+    for match in _GENERIC_BLOOD_PRESSURE_PAIR_RE.finditer(source_text):
+        operator = _normalize_threshold_operator(match.group("op"))
+        unit = _normalize_blood_pressure_unit(match.group("unit"))
+        for measurement_text, value_text in (
+            ("systolic blood pressure", match.group("systolic")),
+            ("diastolic blood pressure", match.group("diastolic")),
+        ):
+            _append_blood_pressure_threshold(
+                thresholds,
+                seen,
+                measurement_text=measurement_text,
+                operator=operator,
+                value_text=value_text,
+                unit=unit,
+            )
+
+    for match in _EXPLICIT_BLOOD_PRESSURE_THRESHOLD_RE.finditer(source_text):
+        measurement_kind = _normalize_text(match.group("measurement"))
+        measurement_text = _blood_pressure_measurement_text(measurement_kind)
+        _append_blood_pressure_threshold(
+            thresholds,
+            seen,
+            measurement_text=measurement_text,
+            operator=_normalize_threshold_operator(match.group("op")),
+            value_text=match.group("value"),
+            unit=_normalize_blood_pressure_unit(match.group("unit")),
+        )
+
+    return thresholds
+
+
+def _blood_pressure_measurement_text(measurement_kind: str) -> str:
+    if measurement_kind in {"systolic", "sbp"}:
+        return "systolic blood pressure"
+    return "diastolic blood pressure"
+
+
+def _append_blood_pressure_threshold(
+    thresholds: list[_BloodPressureThreshold],
+    seen: set[tuple[str, str, float, str | None]],
+    *,
+    measurement_text: str,
+    operator: ThresholdOperator,
+    value_text: str,
+    unit: str | None,
+) -> None:
+    value = float(value_text.replace(",", ""))
+    key = (measurement_text, operator, value, unit)
+    if key in seen:
+        return
+    seen.add(key)
+    thresholds.append(
+        _BloodPressureThreshold(
+            measurement_text=measurement_text,
+            operator=operator,
+            value=value,
+            unit=unit,
+        )
+    )
+
+
+def _normalize_threshold_operator(operator: str) -> ThresholdOperator:
+    if operator == "≥":
+        return ">="
+    if operator == "≤":
+        return "<="
+    return operator  # type: ignore[return-value]
+
+
+def _normalize_blood_pressure_unit(unit: str | None) -> str | None:
+    if unit is None:
+        return None
+    normalized = re.sub(r"[\s\[\]]+", "", unit).lower()
+    if normalized == "mmhg":
+        return "mmHg"
+    return unit
+
+
+def _blood_pressure_compound_operator(
+    thresholds: Sequence[_BloodPressureThreshold],
+    source_text: str,
+) -> CompositeOperator:
+    normalized = f" {_normalize_text(source_text)} "
+    if " or " in normalized or ";" in source_text:
+        return "any_of"
+    if any(threshold.operator in {">", ">="} for threshold in thresholds):
+        return "any_of"
+    if all(threshold.operator in {"<", "<="} for threshold in thresholds):
+        return "all_of"
+    return "any_of"
 
 
 def _looks_like_trial_exposure(text: str) -> bool:

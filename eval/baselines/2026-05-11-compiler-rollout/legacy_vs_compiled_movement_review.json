@@ -6,26 +6,28 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "533a61fdd7f7",
+  "comparison_run_id": "3d05a47d0af3",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "533a61fdd7f7",
+    "comparison_run_id": "3d05a47d0af3",
     "common_cases": 49,
-    "changed_cases": 6,
+    "changed_cases": 9,
     "compared_criteria": 1076,
-    "changed_criteria": 356,
+    "changed_criteria": 361,
     "by_case_movement": {
-      "indeterminate->fail": 5,
+      "indeterminate->fail": 8,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 13,
-      "indeterminate->indeterminate": 320,
-      "indeterminate->pass": 23
+      "indeterminate->fail": 20,
+      "indeterminate->indeterminate": 306,
+      "indeterminate->pass": 34,
+      "pass->fail": 1
     },
     "by_direction": {
-      "indeterminate_to_determinate": 36,
-      "reason_changed": 320
+      "determinate_changed": 1,
+      "indeterminate_to_determinate": 54,
+      "reason_changed": 306
     }
   },
   "case_movements": [
@@ -50,11 +52,31 @@
       "movement": "indeterminate->fail"
     },
     {
+      "row_id": "case:407ef75b__NCT06941441",
+      "pair_id": "407ef75b__NCT06941441",
+      "patient_id": "407ef75b-0a9c-ec23-60e5-c90ba86e27af",
+      "nct_id": "NCT06941441",
+      "eval_slice": "hypertension-academic",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
       "row_id": "case:56cfe6a5__NCT06475781",
       "pair_id": "56cfe6a5__NCT06475781",
       "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
       "nct_id": "NCT06475781",
       "eval_slice": "hypertension-industry",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
+      "row_id": "case:56cfe6a5__NCT06941441",
+      "pair_id": "56cfe6a5__NCT06941441",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06941441",
+      "eval_slice": "hypertension-academic",
       "baseline_eligibility": "indeterminate",
       "comparison_eligibility": "fail",
       "movement": "indeterminate->fail"
@@ -75,6 +97,16 @@
       "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
       "nct_id": "NCT07362459",
       "eval_slice": "nsclc",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
+      "row_id": "case:a06bce31__NCT06941441",
+      "pair_id": "a06bce31__NCT06941441",
+      "patient_id": "a06bce31-d0dc-f345-df41-777fb453afaf",
+      "nct_id": "NCT06941441",
+      "eval_slice": "hypertension-academic",
       "baseline_eligibility": "indeterminate",
       "comparison_eligibility": "fail",
       "movement": "indeterminate->fail"
@@ -795,20 +827,29 @@
       "criterion_source_text": "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; Baseline systolic BP < 90 mmHg at screening",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:13:blood-pressure:001:predicate:measurement",
+        "criterion:13:blood-pressure:002:predicate:measurement",
+        "criterion:13:blood-pressure:003:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:blood-pressure:001:measurement:loinc",
+        "criterion:13:blood-pressure:001:unit:normalization",
+        "criterion:13:blood-pressure:002:measurement:loinc",
+        "criterion:13:blood-pressure:002:unit:normalization",
+        "criterion:13:blood-pressure:003:measurement:loinc",
+        "criterion:13:blood-pressure:003:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:28db1c55__NCT06941441:14",
@@ -1370,17 +1411,25 @@
       "criterion_source_text": "Uncontrolled hypertension as evidenced by systolic blood pressure >160 mmHg or diastolic blood pressure >100 mmHg during the screening period.",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "extractor_invariant_violation",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "ambiguous_criterion",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:33",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:33:blood-pressure:001:predicate:measurement",
+        "criterion:33:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:33:blood-pressure:001:measurement:loinc",
+        "criterion:33:blood-pressure:001:unit:normalization",
+        "criterion:33:blood-pressure:002:measurement:loinc",
+        "criterion:33:blood-pressure:002:unit:normalization"
+      ],
       "comparison_gap_ids": []
     },
     {
@@ -1577,20 +1626,29 @@
       "criterion_source_text": "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; Baseline systolic BP < 90 mmHg at screening",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:13:blood-pressure:001:predicate:measurement",
+        "criterion:13:blood-pressure:002:predicate:measurement",
+        "criterion:13:blood-pressure:003:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:blood-pressure:001:measurement:loinc",
+        "criterion:13:blood-pressure:001:unit:normalization",
+        "criterion:13:blood-pressure:002:measurement:loinc",
+        "criterion:13:blood-pressure:002:unit:normalization",
+        "criterion:13:blood-pressure:003:measurement:loinc",
+        "criterion:13:blood-pressure:003:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:2e555528__NCT06941441:14",
@@ -1819,6 +1877,38 @@
         "criterion:5:medication:support:class-expansion",
         "criterion:5:medication:support:class-member-001",
         "criterion:5:medication:support:class-member-002"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:38f38890__NCT06217302:7",
+      "pair_id": "38f38890__NCT06217302",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 7,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "a. Blood pressure ≤155/95 mmHg at screening, or b. BP ≤155/95 mmHg at the end of the run-in period, or c. consistent BP ≤155/95 mmHg on home monitoring during the run-in period, as determined by study site investigator, despite BP values >155/95 mmHg in clinic.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:7:blood-pressure:001:predicate:measurement",
+        "criterion:7:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:7:blood-pressure:001:measurement:loinc",
+        "criterion:7:blood-pressure:001:unit:normalization",
+        "criterion:7:blood-pressure:002:measurement:loinc",
+        "criterion:7:blood-pressure:002:unit:normalization"
       ],
       "comparison_gap_ids": []
     },
@@ -2259,20 +2349,26 @@
       "criterion_source_text": "Uncontrolled hypertension at screening (blood pressure >160/100 mmHg).",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "ambiguous_criterion",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:22",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:22:measurement:gap:reviewed-ambiguous"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:22:blood-pressure:001:predicate:measurement",
+        "criterion:22:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:22:blood-pressure:001:measurement:loinc",
+        "criterion:22:blood-pressure:001:unit:normalization",
+        "criterion:22:blood-pressure:002:measurement:loinc",
+        "criterion:22:blood-pressure:002:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:3a364909__NCT06220266:0",
@@ -2299,6 +2395,38 @@
       "comparison_gap_ids": [
         "criterion:0:condition:gap:reviewed-out_of_scope"
       ]
+    },
+    {
+      "row_id": "criterion:3a364909__NCT06220266:6",
+      "pair_id": "3a364909__NCT06220266",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 6,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "have diabetes or uncontrolled high blood pressure, including HbA1c >9, Systolic blood pressure >180 or Diastolic blood pressure >110",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:6",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:6:blood-pressure:001:predicate:measurement",
+        "criterion:6:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:6:blood-pressure:001:measurement:loinc",
+        "criterion:6:blood-pressure:001:unit:normalization",
+        "criterion:6:blood-pressure:002:measurement:loinc",
+        "criterion:6:blood-pressure:002:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:3a364909__NCT06220266:8",
@@ -2952,20 +3080,29 @@
       "criterion_source_text": "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; Baseline systolic BP < 90 mmHg at screening",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:13:blood-pressure:001:predicate:measurement",
+        "criterion:13:blood-pressure:002:predicate:measurement",
+        "criterion:13:blood-pressure:003:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:blood-pressure:001:measurement:loinc",
+        "criterion:13:blood-pressure:001:unit:normalization",
+        "criterion:13:blood-pressure:002:measurement:loinc",
+        "criterion:13:blood-pressure:002:unit:normalization",
+        "criterion:13:blood-pressure:003:measurement:loinc",
+        "criterion:13:blood-pressure:003:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:407ef75b__NCT06941441:14",
@@ -3385,20 +3522,29 @@
       "criterion_source_text": "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; Baseline systolic BP < 90 mmHg at screening",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:13:blood-pressure:001:predicate:measurement",
+        "criterion:13:blood-pressure:002:predicate:measurement",
+        "criterion:13:blood-pressure:003:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:blood-pressure:001:measurement:loinc",
+        "criterion:13:blood-pressure:001:unit:normalization",
+        "criterion:13:blood-pressure:002:measurement:loinc",
+        "criterion:13:blood-pressure:002:unit:normalization",
+        "criterion:13:blood-pressure:003:measurement:loinc",
+        "criterion:13:blood-pressure:003:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:509f9a77__NCT06941441:14",
@@ -3903,20 +4049,26 @@
       "criterion_source_text": "Uncontrolled hypertension in CKD group (BP>140/90 mmHg)",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "ambiguous_criterion",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:11:measurement:gap:reviewed-ambiguous"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:11:blood-pressure:001:predicate:measurement",
+        "criterion:11:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:11:blood-pressure:001:measurement:loinc",
+        "criterion:11:blood-pressure:001:unit:normalization",
+        "criterion:11:blood-pressure:002:measurement:loinc",
+        "criterion:11:blood-pressure:002:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:55c5b8d3__NCT06128278:13",
@@ -4567,17 +4719,25 @@
       "criterion_source_text": "Uncontrolled hypertension as evidenced by systolic blood pressure >160 mmHg or diastolic blood pressure >100 mmHg during the screening period.",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "extractor_invariant_violation",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "ambiguous_criterion",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:33",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:33:blood-pressure:001:predicate:measurement",
+        "criterion:33:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:33:blood-pressure:001:measurement:loinc",
+        "criterion:33:blood-pressure:001:unit:normalization",
+        "criterion:33:blood-pressure:002:measurement:loinc",
+        "criterion:33:blood-pressure:002:unit:normalization"
+      ],
       "comparison_gap_ids": []
     },
     {
@@ -4774,20 +4934,29 @@
       "criterion_source_text": "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; Baseline systolic BP < 90 mmHg at screening",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:13:blood-pressure:001:predicate:measurement",
+        "criterion:13:blood-pressure:002:predicate:measurement",
+        "criterion:13:blood-pressure:003:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:blood-pressure:001:measurement:loinc",
+        "criterion:13:blood-pressure:001:unit:normalization",
+        "criterion:13:blood-pressure:002:measurement:loinc",
+        "criterion:13:blood-pressure:002:unit:normalization",
+        "criterion:13:blood-pressure:003:measurement:loinc",
+        "criterion:13:blood-pressure:003:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:56cfe6a5__NCT06941441:14",
@@ -4988,6 +5157,38 @@
       "comparison_gap_ids": [
         "criterion:0:condition:gap:reviewed-out_of_scope"
       ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT06220266:6",
+      "pair_id": "60b0873c__NCT06220266",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 6,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "have diabetes or uncontrolled high blood pressure, including HbA1c >9, Systolic blood pressure >180 or Diastolic blood pressure >110",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:6",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:6:blood-pressure:001:predicate:measurement",
+        "criterion:6:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:6:blood-pressure:001:measurement:loinc",
+        "criterion:6:blood-pressure:001:unit:normalization",
+        "criterion:6:blood-pressure:002:measurement:loinc",
+        "criterion:6:blood-pressure:002:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:60b0873c__NCT06220266:8",
@@ -6596,20 +6797,29 @@
       "criterion_source_text": "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; Baseline systolic BP < 90 mmHg at screening",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:13:blood-pressure:001:predicate:measurement",
+        "criterion:13:blood-pressure:002:predicate:measurement",
+        "criterion:13:blood-pressure:003:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:blood-pressure:001:measurement:loinc",
+        "criterion:13:blood-pressure:001:unit:normalization",
+        "criterion:13:blood-pressure:002:measurement:loinc",
+        "criterion:13:blood-pressure:002:unit:normalization",
+        "criterion:13:blood-pressure:003:measurement:loinc",
+        "criterion:13:blood-pressure:003:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:a06bce31__NCT06941441:14",
@@ -7240,6 +7450,38 @@
         "criterion:5:medication:support:class-expansion",
         "criterion:5:medication:support:class-member-001",
         "criterion:5:medication:support:class-member-002"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:c2786fee__NCT06217302:7",
+      "pair_id": "c2786fee__NCT06217302",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 7,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "a. Blood pressure ≤155/95 mmHg at screening, or b. BP ≤155/95 mmHg at the end of the run-in period, or c. consistent BP ≤155/95 mmHg on home monitoring during the run-in period, as determined by study site investigator, despite BP values >155/95 mmHg in clinic.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:7:blood-pressure:001:predicate:measurement",
+        "criterion:7:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:7:blood-pressure:001:measurement:loinc",
+        "criterion:7:blood-pressure:001:unit:normalization",
+        "criterion:7:blood-pressure:002:measurement:loinc",
+        "criterion:7:blood-pressure:002:unit:normalization"
       ],
       "comparison_gap_ids": []
     },
@@ -7912,20 +8154,29 @@
       "criterion_source_text": "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; Baseline systolic BP < 90 mmHg at screening",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:13:blood-pressure:001:predicate:measurement",
+        "criterion:13:blood-pressure:002:predicate:measurement",
+        "criterion:13:blood-pressure:003:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:blood-pressure:001:measurement:loinc",
+        "criterion:13:blood-pressure:001:unit:normalization",
+        "criterion:13:blood-pressure:002:measurement:loinc",
+        "criterion:13:blood-pressure:002:unit:normalization",
+        "criterion:13:blood-pressure:003:measurement:loinc",
+        "criterion:13:blood-pressure:003:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:c46a254d__NCT06941441:14",
@@ -8294,20 +8545,26 @@
       "criterion_source_text": "Uncontrolled hypertension in CKD group (BP>140/90 mmHg)",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "ambiguous_criterion",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:11:measurement:gap:reviewed-ambiguous"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:11:blood-pressure:001:predicate:measurement",
+        "criterion:11:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:11:blood-pressure:001:measurement:loinc",
+        "criterion:11:blood-pressure:001:unit:normalization",
+        "criterion:11:blood-pressure:002:measurement:loinc",
+        "criterion:11:blood-pressure:002:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:d02b2ca5__NCT06128278:13",
@@ -8434,20 +8691,26 @@
       "criterion_source_text": "Uncontrolled hypertension at screening (blood pressure >160/100 mmHg).",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "ambiguous_criterion",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:22",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:22:measurement:gap:reviewed-ambiguous"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:22:blood-pressure:001:predicate:measurement",
+        "criterion:22:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:22:blood-pressure:001:measurement:loinc",
+        "criterion:22:blood-pressure:001:unit:normalization",
+        "criterion:22:blood-pressure:002:measurement:loinc",
+        "criterion:22:blood-pressure:002:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:d362f4e5__NCT06564324:1",
@@ -8844,6 +9107,35 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:d57e867e__NCT06143566:1",
+      "pair_id": "d57e867e__NCT06143566",
+      "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
+      "nct_id": "NCT06143566",
+      "eval_slice": "t2dm-academic",
+      "criterion_index": 1,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "History of chronic kidney disease, defined as an estimated glomerular filtration rate (eGFR) of 25 to 90 per minute per 1.73 m2 of body-surface area (stage 2 to 4 CKD) with a urinary albumin-to-creatinine ratio (with albumin measured in milligrams and creatinine measured in grams) of less than 5000",
+      "baseline_verdict": "pass",
+      "baseline_reason": "ok",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "pass->fail",
+      "direction": "determinate_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:1",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:1:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:1:condition:support:concept-set",
+        "criterion:1:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:d57e867e__NCT06143566:5",
       "pair_id": "d57e867e__NCT06143566",
       "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
@@ -8906,20 +9198,26 @@
       "criterion_source_text": "Blood pressure controlled to <140/90 mmHg for the past 3 months",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "ambiguous_criterion",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:4",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:4:measurement:gap:reviewed-ambiguous"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:4:blood-pressure:001:predicate:measurement",
+        "criterion:4:blood-pressure:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:4:blood-pressure:001:measurement:loinc",
+        "criterion:4:blood-pressure:001:unit:normalization",
+        "criterion:4:blood-pressure:002:measurement:loinc",
+        "criterion:4:blood-pressure:002:unit:normalization"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:e7d52393__NCT04040959:7",

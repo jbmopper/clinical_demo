@@ -569,6 +569,119 @@ def test_free_text_composite_condition_mention_stays_human_review() -> None:
     assert result.unresolved_gaps == []
 
 
+def test_free_text_blood_pressure_thresholds_compile_to_measurement_compound() -> None:
+    criterion = _free_text(
+        "Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg "
+        "or sitting diastolic BP > 100 mmHg during screening visit after a period of rest; "
+        "Baseline systolic BP < 90 mmHg at screening"
+    ).model_copy(
+        update={
+            "mentions": [
+                EntityMention(text="Uncontrolled systemic hypertension", type="Condition"),
+                EntityMention(text="sitting systolic BP > 160 mmHg", type="Value"),
+                EntityMention(text="sitting diastolic BP > 100 mmHg", type="Value"),
+                EntityMention(text="Baseline systolic BP < 90 mmHg", type="Value"),
+            ]
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.criterion_kind == "free_text"
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.operator == "any_of"
+    assert compiled.unresolved_gaps == []
+    assert compiled.diagnostics[0].code == "free_text.promoted.blood-pressure-thresholds"
+    assert [
+        (predicate.surface, predicate.operator, predicate.value, predicate.unit)
+        for predicate in compiled.checkable_predicates
+    ] == [
+        ("systolic blood pressure", ">", 160.0, "mmHg"),
+        ("diastolic blood pressure", ">", 100.0, "mmHg"),
+        ("systolic blood pressure", "<", 90.0, "mmHg"),
+    ]
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"8480-6"})
+    assert compiled.checkable_predicates[1].target_codes == frozenset({"8462-4"})
+
+
+def test_generic_blood_pressure_pair_measurement_decomposes_to_systolic_diastolic() -> None:
+    criterion = _measurement_with_value(
+        "blood pressure",
+        operator=">",
+        value=160.0,
+        unit="mmHg",
+    ).model_copy(
+        update={
+            "source_text": "Uncontrolled hypertension at screening (blood pressure >160/100 mmHg)."
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.operator == "any_of"
+    assert compiled.unresolved_gaps == []
+    assert compiled.diagnostics[0].code == "measurement.promoted.blood-pressure-thresholds"
+    assert [
+        (predicate.surface, predicate.operator, predicate.value, predicate.unit)
+        for predicate in compiled.checkable_predicates
+    ] == [
+        ("systolic blood pressure", ">", 160.0, "mmHg"),
+        ("diastolic blood pressure", ">", 100.0, "mmHg"),
+    ]
+
+
+def test_sbp_dbp_pair_measurement_decomposes_to_systolic_diastolic() -> None:
+    criterion = _measurement_with_value(
+        "SBP",
+        operator=">=",
+        value=160.0,
+        unit="mmHg",
+    ).model_copy(
+        update={"source_text": "Poorly controlled hypertension (SBP≥160 mmHg or DBP≥100 mmHg)"}
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.operator == "any_of"
+    assert [
+        (predicate.surface, predicate.operator, predicate.value, predicate.unit)
+        for predicate in compiled.checkable_predicates
+    ] == [
+        ("systolic blood pressure", ">=", 160.0, "mmHg"),
+        ("diastolic blood pressure", ">=", 100.0, "mmHg"),
+    ]
+
+
+def test_controlled_blood_pressure_pair_uses_all_of_semantics() -> None:
+    criterion = _measurement_with_value(
+        "blood pressure",
+        operator="<",
+        value=140.0,
+        unit="mmHg",
+    ).model_copy(update={"source_text": "Blood pressure controlled to <140/90 mmHg at screening."})
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.compound_logic.operator == "all_of"
+    assert [
+        (predicate.surface, predicate.operator, predicate.value)
+        for predicate in compiled.checkable_predicates
+    ] == [
+        ("systolic blood pressure", "<", 140.0),
+        ("diastolic blood pressure", "<", 90.0),
+    ]
+
+
 def test_free_text_trial_exposure_compiles_to_internal_predicate() -> None:
     criterion = _free_text("Use of other investigational agents within 3 months").model_copy(
         update={

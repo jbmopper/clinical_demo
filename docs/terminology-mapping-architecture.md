@@ -60,7 +60,12 @@ unsupported data-model surfaces such as beta-hydroxybutyrate, QTc, creatine
 kinase, proteinuria, Karnofsky, creatinine clearance, and derived imaging or
 prognostic scores. The resolver writes compatible surface-resolution cache rows
 for repeated eval runs, while the compiler can consume the same reviewed
-decisions directly as typed gaps or mapped measurement predicates.
+decisions directly as typed gaps or mapped measurement predicates. The compiler
+also owns decomposition before lookup when the surface is intentionally generic:
+for example, explicit systolic/diastolic BP clauses, `SBP`/`DBP` pairs, and
+generic `BP X/Y` threshold shorthand compile into separate systolic and
+diastolic LOINC predicates instead of asking the reviewed registry to choose
+one generic `blood pressure` mapping.
 
 ---
 
@@ -172,7 +177,10 @@ Foundation status:
   unmapped concepts. Reviewed mapped lab surfaces resolve through the shared
   profile `ConceptSet` registry and unit registry, while missing threshold
   values remain blocking `predicate_translation` gaps instead of executable
-  predicates.
+  predicates. It also decomposes explicit systolic/diastolic blood-pressure
+  thresholds, SBP/DBP abbreviation pairs, and generic BP pair shorthand into
+  typed systolic/diastolic measurement compounds, which removes the generic
+  blood-pressure ambiguity bucket from the current compiler-review packet.
 - `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
   readiness over compiled criteria, and `ScorePairResult` exposes it to API and
   eval consumers.

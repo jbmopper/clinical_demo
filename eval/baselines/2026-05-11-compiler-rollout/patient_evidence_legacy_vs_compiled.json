@@ -41,8 +41,8 @@
       "adjudicator_output_tokens": 0
     },
     {
-      "run_id": "533a61fdd7f7",
-      "notes": "Last opaque unmapped terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "run_id": "3d05a47d0af3",
+      "notes": "compiled_predicates BP threshold decomposition; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
       "llm_use_level": "none",
       "matcher_assumption_mode": "closed_world_eval",
       "total_label_targets": 50,
@@ -59,8 +59,8 @@
       "retrieved_patient_row_counts": {},
       "cited_patient_row_counts": {},
       "eligibility_counts": {
-        "fail": 33,
-        "indeterminate": 12,
+        "fail": 36,
+        "indeterminate": 9,
         "pass_pending_review": 2
       },
       "adjudicator_calls": 0,
@@ -72,10 +72,10 @@
   "mode_deltas": [
     {
       "baseline_run_id": "e8efb7bcce35",
-      "comparison_run_id": "533a61fdd7f7",
-      "changed_cases": 6,
+      "comparison_run_id": "3d05a47d0af3",
+      "changed_cases": 9,
       "movements": {
-        "indeterminate->fail": 5,
+        "indeterminate->fail": 8,
         "indeterminate->pass_pending_review": 1
       }
     }

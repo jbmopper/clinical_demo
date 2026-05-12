@@ -7,66 +7,6 @@
   "artifact_type": "compiler-gap-review-groups",
   "groups": [
     {
-      "case_count": 5,
-      "criterion_kinds": [
-        "measurement_threshold"
-      ],
-      "domain": "measurement",
-      "eval_slices": [
-        "ckd",
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 22,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Uncontrolled hypertension at screening (blood pressure >160/100 mmHg).",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:22:measurement:gap:reviewed-ambiguous",
-          "message": "Reviewed lab surface classified as ambiguous: Generic blood pressure must be decomposed or specified as systolic/diastolic before predicate execution.",
-          "nct_id": "NCT07489209",
-          "pair_id": "38f38890__NCT07489209",
-          "row_id": "38f38890__NCT07489209:criterion:22:measurement:gap:reviewed-ambiguous"
-        },
-        {
-          "criterion_index": 11,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Uncontrolled hypertension in CKD group (BP>140/90 mmHg)",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:11:measurement:gap:reviewed-ambiguous",
-          "message": "Reviewed lab surface classified as ambiguous: Generic blood pressure must be decomposed or specified as systolic/diastolic before predicate execution.",
-          "nct_id": "NCT06128278",
-          "pair_id": "55c5b8d3__NCT06128278",
-          "row_id": "55c5b8d3__NCT06128278:criterion:11:measurement:gap:reviewed-ambiguous"
-        },
-        {
-          "criterion_index": 11,
-          "criterion_kind": "measurement_threshold",
-          "criterion_source_text": "Uncontrolled hypertension in CKD group (BP>140/90 mmHg)",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:11:measurement:gap:reviewed-ambiguous",
-          "message": "Reviewed lab surface classified as ambiguous: Generic blood pressure must be decomposed or specified as systolic/diastolic before predicate execution.",
-          "nct_id": "NCT06128278",
-          "pair_id": "d02b2ca5__NCT06128278",
-          "row_id": "d02b2ca5__NCT06128278:criterion:11:measurement:gap:reviewed-ambiguous"
-        }
-      ],
-      "gap_kind": "ambiguous_mapping",
-      "group_id": "compiler-gap-group:3fd692947370",
-      "message_examples": [
-        "Reviewed lab surface classified as ambiguous: Generic blood pressure must be decomposed or specified as systolic/diastolic before predicate execution."
-      ],
-      "normalized_surface": "blood pressure",
-      "occurrence_count": 5,
-      "priority": 30,
-      "recommended_action": "choose_candidate",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "blood pressure",
-      "trial_count": 3
-    },
-    {
       "case_count": 2,
       "criterion_kinds": [
         "free_text"
@@ -636,65 +576,6 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "structured exercise program",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 13,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:c9044bc8372f",
-      "message_examples": [
-        "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier."
-      ],
-      "normalized_surface": "uncontrolled systemic hypertension",
-      "occurrence_count": 7,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "Uncontrolled systemic hypertension",
       "trial_count": 1
     },
     {

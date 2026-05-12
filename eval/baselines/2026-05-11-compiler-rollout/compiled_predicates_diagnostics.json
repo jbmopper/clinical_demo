@@ -4,24 +4,24 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "533a61fdd7f7",
-  "notes": "Last opaque unmapped terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "3d05a47d0af3",
+  "notes": "compiled_predicates BP threshold decomposition; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 23812.157581211068,
-  "avg_scoring_latency_ms": 485.9623996165524,
+  "total_scoring_latency_ms": 22950.40412223898,
+  "avg_scoring_latency_ms": 468.37559433140774,
   "verdict_counts": {
-    "fail": 70,
-    "indeterminate": 858,
-    "pass": 148
+    "fail": 78,
+    "indeterminate": 840,
+    "pass": 158
   },
   "reason_counts": {
-    "ambiguous_criterion": 31,
-    "human_review_required": 607,
+    "ambiguous_criterion": 24,
+    "human_review_required": 596,
     "no_data": 5,
-    "ok": 218,
+    "ok": 236,
     "unsupported_kind": 197,
     "unsupported_mood": 18
   },
@@ -38,8 +38,8 @@
   },
   "unmapped_count": 0,
   "unmapped_rate": 0.0,
-  "indeterminate_count": 858,
-  "indeterminate_rate": 0.7973977695167286,
+  "indeterminate_count": 840,
+  "indeterminate_rate": 0.7806691449814126,
   "binding_registered_total": 27,
   "binding_registered_resolved": 27,
   "binding_registered_unmapped": 0,
@@ -58,28 +58,28 @@
   "compiler_compilation_present_cases": 47,
   "compiler_compilation_missing_cases": 2,
   "compiler_compiled_criteria_total": 1076,
-  "compiler_checkable_predicates_total": 266,
-  "compiler_unresolved_gaps_total": 354,
+  "compiler_checkable_predicates_total": 311,
+  "compiler_unresolved_gaps_total": 342,
   "compiler_unresolved_gaps_by_kind": {
-    "ambiguous_mapping": 13,
+    "ambiguous_mapping": 8,
     "insufficient_source": 22,
-    "unsupported_predicate": 319
+    "unsupported_predicate": 312
   },
   "compiler_unresolved_gaps_by_stage": {
-    "concept_resolution": 259,
+    "concept_resolution": 247,
     "predicate_translation": 84,
     "unit_normalization": 11
   },
   "compiler_unresolved_gaps_by_domain": {
-    "condition": 195,
+    "condition": 188,
     "free_text": 34,
-    "measurement": 69,
+    "measurement": 64,
     "medication": 44,
     "temporal": 1,
     "unit": 11
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,
-  "compiler_closed_world_findings_total": 1069,
-  "compiler_closed_world_blocking_findings_total": 461
+  "compiler_closed_world_findings_total": 1046,
+  "compiler_closed_world_blocking_findings_total": 449
 }

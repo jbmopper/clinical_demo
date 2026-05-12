@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `533a61fdd7f7` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `3d05a47d0af3` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -33,24 +33,28 @@
   rows, qualifier-aware condition phrase gaps, a final opaque-unmapped review
   pass (GLP-1/semaglutide, amylin, calcitonin, diabetes/HF/pregnancy variants,
   and singleton oncology/genomic/procedure/status classifications), and
-  regenerated compiler review/movement artifacts under
+  compiler-side blood-pressure threshold decomposition for explicit
+  systolic/diastolic phrases plus generic `BP >160/100` / `BP <140/90`
+  shorthand, including SBP/DBP abbreviation pairs. It regenerates the compiler
+  review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
   `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
-  with 36 indeterminate-to-determinate criterion movements and 6 case-rollup
-  movements. The path is still not default-ready: diagnostics show 354
-  unresolved compiler gaps, 43 closed-world-blocking cases, and 461 blocking
-  validation findings. The deduped review packet has 186 groups (176
-  `implement_compiler_logic`, 6 `choose_candidate`, and 4 `review_gap`);
-  there are no remaining `review_mapping` groups. The first cache-independent
-  closure pass is complete for the
+  with 54 indeterminate-to-determinate criterion movements, 1 determinate
+  movement, and 9 case-rollup movements. The path is still not default-ready:
+  diagnostics show 342 unresolved compiler gaps, 43 closed-world-blocking
+  cases, and 449 blocking validation findings. The deduped review packet has
+  184 groups (175 `implement_compiler_logic`, 5 `choose_candidate`, and 4
+  `review_gap`); there are no remaining `review_mapping` groups, and the
+  generic blood-pressure ambiguity group is closed. The first
+  cache-independent closure pass is complete for the
   warmed-cache delta: an empty-cache probe had regressed to 424 gaps / 156
   compiled `unmapped_concept`, then reviewed artifacts brought it back to the
   warmed snapshot; decomposition and opaque-gap review then eliminated the
   remaining opaque `unmapped_concept` rows. The remaining compiler-gap count is
   intentional: formerly opaque rows are now typed unsupported/composite work.
-  Remaining next work is reviewing the 36 decisive movement rows, reducing the
-  176 grouped `implement_compiler_logic` items, tightening measurement
+  Remaining next work is reviewing the decisive movement rows, reducing the
+  175 grouped `implement_compiler_logic` items, tightening measurement
   normal-range/provenance handling, and preparing a smaller human grading packet
   once the closed-world blockers are lower.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
@@ -1169,8 +1173,10 @@ measurement, and medication compilation. A 2026-05-12 CC-09 follow-on makes
 reviewed medication mappings executable from committed registry data, adds
 patient-vocabulary RxNorm anchors for metformin, insulin, statins, alendronic
 acid, lisinopril, and losartan, and extends reviewed medication-class closure
-for lipid-lowering therapy, bisphosphonates, and RAAS blockers. The `CC-10`,
-`CC-11`, and `CC-12`
+for lipid-lowering therapy, bisphosphonates, and RAAS blockers. A 2026-05-12
+CC-08 follow-on decomposes explicit systolic/diastolic blood-pressure clauses
+and generic or SBP/DBP pair shorthand into LOINC-bound systolic/diastolic
+threshold predicates. The `CC-10`, `CC-11`, and `CC-12`
 reporting foundations now expose closed-world validation, reviewer gap queue,
 and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
 promotion remain follow-on work.
@@ -1473,7 +1479,13 @@ promotion remain follow-on work.
     provenance-sensitive or unsupported surfaces such as plasma-glucose timing,
     beta-hydroxybutyrate, creatinine clearance, QTc, CK, proteinuria,
     Karnofsky, and imaging/prognostic scores as explicit compiler gaps instead
-    of executable mappings.
+    of executable mappings. A 2026-05-12 threshold-decomposition pass now turns
+    free-text clauses such as "sitting systolic BP >160 or sitting diastolic BP
+    >100" and generic pair shorthand such as `blood pressure >160/100 mmHg` or
+    `blood pressure controlled to <140/90 mmHg`, plus `SBP`/`DBP` pairs, into
+    systolic/diastolic measurement predicate compounds, removing the
+    high-frequency uncontrolled systemic hypertension and generic
+    blood-pressure ambiguity groups from the compiler-review queue.
 
 - id: CC-09
   title: Medication and class compiler
@@ -1670,26 +1682,28 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`533a61fdd7f7`) after the reviewed condition/event,
+  `compiled_predicates` (`3d05a47d0af3`) after the reviewed condition/event,
   medication registry-closure, cache-independent terminology-closure, reviewed
   descendant-expansion, condition/event decomposition, and qualifier/top-gap
   review slices, followed by the opaque-unmapped registry pass for GLP-1
   member closure, amylin/calcitonin, diabetes/HF/pregnancy variants, and
-  singleton oncology/genomic/procedure/status classifications. Both runs have
+  singleton oncology/genomic/procedure/status classifications, plus BP
+  threshold decomposition. Both runs have
   the same 2 deceased-patient scoring refusals and the same Layer-1
   structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
   reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 0/1076
-  (0.0%); it adds 36 indeterminate-to-determinate criterion wins and changes 6
+  (0.0%); it adds 54 indeterminate-to-determinate criterion wins and changes 9
   case rollups (all away from indeterminate). It is still not default-ready:
-  compiler diagnostics show 354 unresolved gaps and 43 closed-world-blocking
-  compiled cases, with 461 blocking validation findings. The regenerated
-  compiler-review artifact now dedupes the 354 raw rows to 186
-  surface/action/policy groups (176 `implement_compiler_logic`, 6
+  compiler diagnostics show 342 unresolved gaps and 43 closed-world-blocking
+  compiled cases, with 449 blocking validation findings. The regenerated
+  compiler-review artifact now dedupes the 342 raw rows to 184
+  surface/action/policy groups (175 `implement_compiler_logic`, 5
   `choose_candidate`, and 4 `review_gap`). There are no remaining
-  `review_mapping` groups.
+  `review_mapping` groups and the generic blood-pressure ambiguity bucket is
+  gone.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
-  eval seed policy, triaging the 31 decisive criterion movements / 6 case
+  eval seed policy, triaging decisive criterion movements / 9 case
   rollups, reducing the remaining grouped compiler-logic gaps, and using the
   deduped compiler-review packet for targeted reviewer/registry work.
 - Movement review artifact (2026-05-12 cache-independent refresh):
@@ -1697,12 +1711,13 @@ promotion remain follow-on work.
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `533a61fdd7f7`: 6 case movements, 36 decisive criterion
-  movements, and 320 reason-code-only changes. Decisive wins include reviewed
+  `e8efb7bcce35` -> `3d05a47d0af3`: 9 case movements, 55 decisive criterion
+  movements, and 306 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
   lipid-lowering therapy, GLP-1 member closure, diabetes/HF/pregnancy variants,
   measurement predicates, trial-exposure movements, PH-ILD, cardiovascular
-  event-list, congenital heart disease, and HoFH movements. Remaining
+  event-list, congenital heart disease, HoFH, and BP threshold movements.
+  Remaining
   reason-only changes are expected while reviewed unsupported/out-of-scope rows
   replace opaque terminology misses.
 - Reviewed measurement decisions (2026-05-11): the measurement compiler now
