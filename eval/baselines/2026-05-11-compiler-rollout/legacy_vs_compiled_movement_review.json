@@ -6,28 +6,28 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "3d05a47d0af3",
+  "comparison_run_id": "51f5b0eb86e9",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "3d05a47d0af3",
+    "comparison_run_id": "51f5b0eb86e9",
     "common_cases": 49,
     "changed_cases": 9,
     "compared_criteria": 1076,
-    "changed_criteria": 361,
+    "changed_criteria": 364,
     "by_case_movement": {
       "indeterminate->fail": 8,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
       "indeterminate->fail": 20,
-      "indeterminate->indeterminate": 306,
-      "indeterminate->pass": 34,
+      "indeterminate->indeterminate": 302,
+      "indeterminate->pass": 41,
       "pass->fail": 1
     },
     "by_direction": {
       "determinate_changed": 1,
-      "indeterminate_to_determinate": 54,
-      "reason_changed": 306
+      "indeterminate_to_determinate": 61,
+      "reason_changed": 302
     }
   },
   "case_movements": [
@@ -798,23 +798,24 @@
       "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:11:measurement:loinc"
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:11:unit:gap:unsupported_conversion",
-        "criterion:11:measurement:gap:threshold_value"
-      ]
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:male:reference-limit:upper",
+        "criterion:11:female:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:28db1c55__NCT06941441:13",
@@ -1597,23 +1598,24 @@
       "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:11:measurement:loinc"
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:11:unit:gap:unsupported_conversion",
-        "criterion:11:measurement:gap:threshold_value"
-      ]
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:male:reference-limit:upper",
+        "criterion:11:female:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:2e555528__NCT06941441:13",
@@ -2919,50 +2921,25 @@
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
       "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
+      "comparison_reason": "human_review_required",
       "movement": "indeterminate->indeterminate",
       "direction": "reason_changed",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:14",
-      "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:14:measurement:loinc"
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:14:aminotransferase-reference-limit:001:predicate:measurement",
+        "criterion:14:aminotransferase-reference-limit:002:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:14:unit:gap:unsupported_conversion",
-        "criterion:14:measurement:gap:threshold_value"
-      ]
-    },
-    {
-      "row_id": "criterion:3beee40e__NCT07394114:15",
-      "pair_id": "3beee40e__NCT07394114",
-      "patient_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
-      "nct_id": "NCT07394114",
-      "eval_slice": "t2dm-industry",
-      "criterion_index": 15,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "Total bilirubin >1.5× ULN.",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "no_data",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:15",
-      "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
       "comparison_support_ids": [
-        "criterion:15:measurement:loinc"
+        "criterion:14:aminotransferase-reference-limit:001:measurement:loinc",
+        "criterion:14:aminotransferase-reference-limit:001:reference-limit:upper",
+        "criterion:14:aminotransferase-reference-limit:002:measurement:loinc",
+        "criterion:14:aminotransferase-reference-limit:002:reference-limit:upper"
       ],
-      "comparison_gap_ids": [
-        "criterion:15:unit:gap:unsupported_conversion"
-      ]
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:407ef75b__NCT06941441:3",
@@ -3051,23 +3028,24 @@
       "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:11:measurement:loinc"
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:11:unit:gap:unsupported_conversion",
-        "criterion:11:measurement:gap:threshold_value"
-      ]
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:male:reference-limit:upper",
+        "criterion:11:female:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:407ef75b__NCT06941441:13",
@@ -3493,23 +3471,24 @@
       "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:11:measurement:loinc"
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:11:unit:gap:unsupported_conversion",
-        "criterion:11:measurement:gap:threshold_value"
-      ]
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:male:reference-limit:upper",
+        "criterion:11:female:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:509f9a77__NCT06941441:13",
@@ -4199,6 +4178,67 @@
       "comparison_gap_ids": [
         "criterion:6:measurement:gap:reviewed-extractor_bug"
       ]
+    },
+    {
+      "row_id": "criterion:55c5b8d3__NCT06564324:8",
+      "pair_id": "55c5b8d3__NCT06564324",
+      "patient_id": "55c5b8d3-99d0-58ad-8444-e42bb81bd5c7",
+      "nct_id": "NCT06564324",
+      "eval_slice": "nsclc",
+      "criterion_index": 8,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): ≤3.0 × upper limit of normal (ULN) (or ≤5.0 × ULN, for participants with concurrent liver metastases).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "ambiguous_criterion",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "human_review_required",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:8",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:8:aminotransferase-reference-limit:001:predicate:measurement",
+        "criterion:8:aminotransferase-reference-limit:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:8:aminotransferase-reference-limit:001:measurement:loinc",
+        "criterion:8:aminotransferase-reference-limit:001:reference-limit:upper",
+        "criterion:8:aminotransferase-reference-limit:002:measurement:loinc",
+        "criterion:8:aminotransferase-reference-limit:002:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:55c5b8d3__NCT06564324:9",
+      "pair_id": "55c5b8d3__NCT06564324",
+      "patient_id": "55c5b8d3-99d0-58ad-8444-e42bb81bd5c7",
+      "nct_id": "NCT06564324",
+      "eval_slice": "nsclc",
+      "criterion_index": 9,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Serum total bilirubin: ≤1.5 × ULN (≤3.0 × ULN for participants with Gilbert syndrome).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "ambiguous_criterion",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "no_data",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:9:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:9:measurement:loinc",
+        "criterion:9:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:55c5b8d3__NCT06564324:13",
@@ -4905,23 +4945,24 @@
       "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:11:measurement:loinc"
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:11:unit:gap:unsupported_conversion",
-        "criterion:11:measurement:gap:threshold_value"
-      ]
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:male:reference-limit:upper",
+        "criterion:11:female:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:56cfe6a5__NCT06941441:13",
@@ -6768,23 +6809,24 @@
       "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:11:measurement:loinc"
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:11:unit:gap:unsupported_conversion",
-        "criterion:11:measurement:gap:threshold_value"
-      ]
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:male:reference-limit:upper",
+        "criterion:11:female:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:a06bce31__NCT06941441:13",
@@ -8125,23 +8167,24 @@
       "criterion_source_text": "Hemoglobin at screening above gender-specific ULN",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:11",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:11:measurement:loinc"
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:measurement"
       ],
-      "comparison_gap_ids": [
-        "criterion:11:unit:gap:unsupported_conversion",
-        "criterion:11:measurement:gap:threshold_value"
-      ]
+      "comparison_support_ids": [
+        "criterion:11:measurement:loinc",
+        "criterion:11:male:reference-limit:upper",
+        "criterion:11:female:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:c46a254d__NCT06941441:13",
@@ -8815,6 +8858,67 @@
       "comparison_gap_ids": [
         "criterion:6:measurement:gap:reviewed-extractor_bug"
       ]
+    },
+    {
+      "row_id": "criterion:d362f4e5__NCT06564324:8",
+      "pair_id": "d362f4e5__NCT06564324",
+      "patient_id": "d362f4e5-244f-cf80-f2d5-25bcd2c97785",
+      "nct_id": "NCT06564324",
+      "eval_slice": "nsclc",
+      "criterion_index": 8,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): ≤3.0 × upper limit of normal (ULN) (or ≤5.0 × ULN, for participants with concurrent liver metastases).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "ambiguous_criterion",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "human_review_required",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:8",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:8:aminotransferase-reference-limit:001:predicate:measurement",
+        "criterion:8:aminotransferase-reference-limit:002:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:8:aminotransferase-reference-limit:001:measurement:loinc",
+        "criterion:8:aminotransferase-reference-limit:001:reference-limit:upper",
+        "criterion:8:aminotransferase-reference-limit:002:measurement:loinc",
+        "criterion:8:aminotransferase-reference-limit:002:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:d362f4e5__NCT06564324:9",
+      "pair_id": "d362f4e5__NCT06564324",
+      "patient_id": "d362f4e5-244f-cf80-f2d5-25bcd2c97785",
+      "nct_id": "NCT06564324",
+      "eval_slice": "nsclc",
+      "criterion_index": 9,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Serum total bilirubin: ≤1.5 × ULN (≤3.0 × ULN for participants with Gilbert syndrome).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "ambiguous_criterion",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "no_data",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:9:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:9:measurement:loinc",
+        "criterion:9:reference-limit:upper"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:d362f4e5__NCT06564324:13",

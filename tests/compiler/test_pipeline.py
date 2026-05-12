@@ -682,6 +682,71 @@ def test_controlled_blood_pressure_pair_uses_all_of_semantics() -> None:
     ]
 
 
+def test_ast_alt_uln_pair_compiles_to_reference_limit_compound() -> None:
+    criterion = _measurement_with_value(
+        "aspartate aminotransferase",
+        operator="<=",
+        value=3.0,
+        unit="x upper limit of normal (ULN)",
+    ).model_copy(
+        update={
+            "source_text": (
+                "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): "
+                "<=3.0 x upper limit of normal (ULN)."
+            )
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.operator == "all_of"
+    assert compiled.unresolved_gaps == []
+    assert [
+        (predicate.surface, predicate.operator, predicate.value, predicate.unit)
+        for predicate in compiled.checkable_predicates
+    ] == [
+        ("aspartate aminotransferase", "<=", 120.0, "U/L"),
+        ("alanine aminotransferase", "<=", 120.0, "U/L"),
+    ]
+    assert [predicate.target_codes for predicate in compiled.checkable_predicates] == [
+        frozenset({"1920-8"}),
+        frozenset({"1742-6"}),
+    ]
+
+
+def test_ast_alt_uln_exclusion_pair_uses_any_of_semantics() -> None:
+    criterion = _measurement_with_value(
+        "aspartate aminotransferase",
+        operator=">",
+        value=3.0,
+        unit="ULN",
+    ).model_copy(
+        update={
+            "source_text": (
+                "Aspartate aminotransferase (AST) >3x upper limit of normal (ULN) "
+                "and/or alanine aminotransferase (ALT) >3x ULN."
+            ),
+            "polarity": "exclusion",
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.compound_logic.operator == "any_of"
+    assert [
+        (predicate.surface, predicate.operator, predicate.value, predicate.unit)
+        for predicate in compiled.checkable_predicates
+    ] == [
+        ("aspartate aminotransferase", ">", 120.0, "U/L"),
+        ("alanine aminotransferase", ">", 120.0, "U/L"),
+    ]
+
+
 def test_free_text_trial_exposure_compiles_to_internal_predicate() -> None:
     criterion = _free_text("Use of other investigational agents within 3 months").model_copy(
         update={

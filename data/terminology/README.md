@@ -1,7 +1,8 @@
 # Reviewed Terminology Registry
 
-`reviewed_mappings.json`, `reviewed_medication_classes.json`, and
-`reviewed_expansions.json` are committed project data, not resolver caches.
+`reviewed_mappings.json`, `reviewed_medication_classes.json`,
+`reviewed_expansions.json`, and `reviewed_reference_limits.json` are committed
+project data, not resolver caches.
 
 Use this registry for terminology decisions that a reviewer has explicitly
 accepted, rejected, or classified as requiring non-atomic compiler handling.
@@ -74,6 +75,17 @@ warmed terminology cache. These closures are deliberately narrower than full
 SNOMED transitive hierarchy dumps: each included code has committed reviewer
 provenance, and a missing closure still produces a typed expansion gap rather
 than silently executing the parent alone.
+
+Reviewed reference-limit entries are loaded by
+`clinical_demo.units.reference_limits`. They let the compiler translate
+project-reviewed ULN/LLN multiplier criteria such as AST/ALT `<=3 x ULN` and
+bilirubin `<=1.5 x ULN` into conventional-unit thresholds when patient
+observations do not carry local reference ranges. Sex-specific entries, such as
+reviewed male/female hemoglobin ULNs, compile to patient-sex-aware measurement
+thresholds when both limits are available. These rows are demo reference-limit
+decisions, not a substitute for institution/lab-provided reference intervals;
+missing reference limits still produce typed compiler gaps instead of
+executable predicates.
 
 Expansion policies:
 

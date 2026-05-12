@@ -12,7 +12,13 @@ from clinical_demo.terminology.reviewed_registry import (
     ReviewedMappingEntry,
     ReviewedMappingRegistry,
 )
-from clinical_demo.units import MeasurementUnitRegistry, UnitSpec
+from clinical_demo.units import (
+    REVIEWED_REFERENCE_LIMIT_REGISTRY_VERSION,
+    MeasurementUnitRegistry,
+    ReviewedReferenceLimitEntry,
+    ReviewedReferenceLimitRegistry,
+    UnitSpec,
+)
 
 
 def _measurement(
@@ -249,6 +255,118 @@ def test_missing_threshold_value_emits_predicate_translation_gap() -> None:
     assert "measurement.threshold_value_missing" in {
         diagnostic.code for diagnostic in result.diagnostics
     }
+
+
+def test_uln_threshold_translates_through_reviewed_reference_limit() -> None:
+    result = compile_measurement_resolution(
+        _measurement(
+            "aspartate aminotransferase",
+            operator="<=",
+            value=3.0,
+            unit="x upper limit of normal (ULN)",
+        ),
+        "c:uln",
+    )
+
+    assert result.selected_loinc_code == "1920-8"
+    assert result.unit_normalization.status == "resolved"
+    assert result.unit_normalization.source_unit == "x upper limit of normal (ULN)"
+    assert result.unit_normalization.conventional_unit == "U/L"
+    assert result.normalized_operator == "<="
+    assert result.normalized_value == 120.0
+    assert result.unresolved_gaps == []
+    assert "measurement.reference_limit.translated" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
+
+
+def test_uln_multiplier_defaults_to_one_when_source_says_above_uln() -> None:
+    result = compile_measurement_resolution(
+        _measurement(
+            "total bilirubin",
+            operator=">",
+            value=None,
+            unit="ULN",
+        ).model_copy(update={"source_text": "Total bilirubin above ULN"}),
+        "c:uln-default",
+    )
+
+    assert result.selected_loinc_code == "1975-2"
+    assert result.unit_normalization.status == "resolved"
+    assert result.normalized_value == 1.2
+    assert result.unresolved_gaps == []
+
+
+def test_sex_specific_uln_translates_to_patient_sex_thresholds() -> None:
+    result = compile_measurement_resolution(
+        _measurement(
+            "hemoglobin",
+            operator=">",
+            value=None,
+            unit="gender-specific ULN",
+        ).model_copy(update={"source_text": "Hemoglobin at screening above gender-specific ULN"}),
+        "c:sex-specific-uln",
+    )
+
+    assert result.selected_loinc_code == "718-7"
+    assert result.unit_normalization.status == "resolved"
+    assert result.unit_normalization.conventional_unit == "g/dL"
+    assert result.normalized_value is None
+    assert result.normalized_value_by_sex == {"FEMALE": 15.5, "MALE": 17.5}
+    assert result.unresolved_gaps == []
+    assert "measurement.reference_limit.sex_specific_translated" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
+
+
+def test_missing_reviewed_reference_limit_emits_structured_gap() -> None:
+    result = compile_measurement_resolution(
+        _measurement(
+            "aspartate aminotransferase",
+            operator="<=",
+            value=3.0,
+            unit="ULN",
+        ),
+        "c:missing-uln",
+        reference_limit_registry=ReviewedReferenceLimitRegistry([]),
+    )
+
+    assert result.selected_loinc_code == "1920-8"
+    assert result.unit_normalization.status == "unsupported"
+    assert result.normalized_value is None
+    assert [gap.kind for gap in result.unresolved_gaps] == ["unsupported_predicate"]
+    assert "No reviewed upper reference limit" in result.unresolved_gaps[0].message
+    assert "measurement.reference_limit.missing_reviewed_limit" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
+
+
+def test_reference_limit_registry_can_be_injected() -> None:
+    result = compile_measurement_resolution(
+        _measurement("total bilirubin", operator="<=", value=2.0, unit="ULN"),
+        "c:custom-uln",
+        reference_limit_registry=ReviewedReferenceLimitRegistry(
+            [
+                ReviewedReferenceLimitEntry(
+                    loinc_code="1975-2",
+                    loinc_display="Total bilirubin",
+                    limit_kind="upper",
+                    applies_to="any",
+                    value=1.0,
+                    unit="mg/dL",
+                    reason="unit test",
+                    source="unit test",
+                    provenance="unit test",
+                    reviewer="tests",
+                    reviewed_at="2026-05-12",
+                    resolver_version=REVIEWED_REFERENCE_LIMIT_REGISTRY_VERSION,
+                )
+            ]
+        ),
+    )
+
+    assert result.normalized_value == 2.0
+    assert result.unit_normalization.conventional_unit == "mg/dL"
 
 
 def test_missing_unit_unknown_measurement_emits_unit_gap_too() -> None:

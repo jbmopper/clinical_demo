@@ -122,6 +122,18 @@ _GENERIC_BLOOD_PRESSURE_PAIR_RE = re.compile(
     rf"(?P<unit>{_BLOOD_PRESSURE_UNIT_RE})?",
     re.IGNORECASE,
 )
+_AMINOTRANSFERASE_REFERENCE_LIMIT_PAIR_RE = re.compile(
+    r"\b(?:aspartate\s+aminotransferase|ast)\b.*"
+    r"\b(?:alanine\s+aminotransferase|alt)\b|"
+    r"\b(?:alanine\s+aminotransferase|alt)\b.*"
+    r"\b(?:aspartate\s+aminotransferase|ast)\b",
+    re.IGNORECASE,
+)
+_REFERENCE_LIMIT_CUE_RE = re.compile(
+    r"\b(?:u\.?\s*l\.?\s*n|upper\s+limit\s+of\s+normal|"
+    r"l\.?\s*l\.?\s*n|lower\s+limit\s+of\s+normal)\b",
+    re.IGNORECASE,
+)
 _TRIAL_EXPOSURE_RE = re.compile(
     r"\b(?:"
     r"investigational\s+(?:agents?|drugs?|products?)|"
@@ -406,6 +418,24 @@ def _compile_criterion(
             diagnostics.extend(condition.diagnostics)
     elif criterion.kind == "measurement_threshold":
         if (
+            aminotransferase_promotion := _compile_aminotransferase_reference_limit_promotion(
+                criterion,
+                index=index,
+                source_criterion_id=source_id,
+                resolver_policy=resolver_policy,
+                context=context,
+            )
+        ) is not None:
+            predicate = aminotransferase_promotion.predicate
+            predicates.extend(aminotransferase_promotion.predicates)
+            supports.extend(aminotransferase_promotion.supports)
+            gaps.extend(aminotransferase_promotion.gaps)
+            diagnostics.extend(aminotransferase_promotion.diagnostics)
+            if aminotransferase_promotion.compound_logic is not None:
+                compound_plan = aminotransferase_promotion.compound_logic
+            if aminotransferase_promotion.unit_normalization is not None:
+                unit_normalization = aminotransferase_promotion.unit_normalization
+        elif (
             bp_promotion := _compile_blood_pressure_threshold_promotion(
                 criterion,
                 index=index,
@@ -779,6 +809,101 @@ def _compile_free_text_medication_list(
         supports=supports,
         gaps=gaps,
         diagnostics=diagnostics,
+        compound_logic=compound_logic,
+    )
+
+
+def _compile_aminotransferase_reference_limit_promotion(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+) -> _FreeTextPromotionCompilation | None:
+    if ":aminotransferase-reference-limit:" in source_criterion_id:
+        return None
+    if criterion.kind != "measurement_threshold" or criterion.measurement is None:
+        return None
+    if _REFERENCE_LIMIT_CUE_RE.search(criterion.source_text) is None:
+        return None
+    if _AMINOTRANSFERASE_REFERENCE_LIMIT_PAIR_RE.search(criterion.source_text) is None:
+        return None
+    normalized_surface = _normalize_text(criterion.measurement.measurement_text)
+    if normalized_surface not in {
+        "aspartate aminotransferase",
+        "ast",
+        "alanine aminotransferase",
+        "alt",
+    }:
+        return None
+
+    supports: list[ResolutionSupport] = []
+    gaps: list[ResolutionGap] = []
+    predicates: list[CheckablePredicate] = []
+    diagnostics: list[CompilerDiagnostic] = []
+    subcheck_ids: list[str] = []
+
+    for sub_index, surface in enumerate(
+        ("aspartate aminotransferase", "alanine aminotransferase"),
+        start=1,
+    ):
+        sub_id = f"{source_criterion_id}:aminotransferase-reference-limit:{sub_index:03d}"
+        subcheck_ids.append(sub_id)
+        surrogate = _criterion_like(
+            criterion,
+            kind="measurement_threshold",
+            measurement=MeasurementCriterion(
+                measurement_text=surface,
+                operator=criterion.measurement.operator,
+                value=criterion.measurement.value,
+                value_low=criterion.measurement.value_low,
+                value_high=criterion.measurement.value_high,
+                unit=criterion.measurement.unit,
+            ),
+        )
+        compiled = _compile_criterion(
+            surrogate,
+            index=index,
+            resolver_policy=resolver_policy,
+            composite_groups=[],
+            context=context,
+            source_criterion_id_override=sub_id,
+        )
+        supports.extend(compiled.resolved_supports)
+        gaps.extend(compiled.unresolved_gaps)
+        predicates.extend(compiled.checkable_predicates)
+        diagnostics.extend(compiled.diagnostics)
+
+    if not predicates and not gaps:
+        return None
+
+    operator = _aminotransferase_compound_operator(criterion)
+    predicate = _compound_predicate_plan(
+        subcheck_ids,
+        predicates=predicates,
+        gaps=gaps,
+        operator=operator,
+    )
+    compound_logic = CompoundLogicPlan(
+        status="resolved" if predicates and not gaps else "unresolved",
+        operator=operator,
+        source_group_ids=[],
+        subcheck_ids=subcheck_ids,
+        gap_ids=[gap.gap_id for gap in gaps],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface="aspartate aminotransferase, alanine aminotransferase",
+        promotion_kind="aminotransferase-reference-limit",
+        predicate=predicate,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        promotion_domain="measurement",
+        promotion_label="measurement",
         compound_logic=compound_logic,
     )
 
@@ -1594,6 +1719,15 @@ def _blood_pressure_compound_operator(
     return "any_of"
 
 
+def _aminotransferase_compound_operator(criterion: ExtractedCriterion) -> CompositeOperator:
+    normalized = f" {_normalize_text(criterion.source_text)} "
+    if " and/or " in normalized or " or " in normalized:
+        return "any_of"
+    if criterion.measurement is not None and criterion.measurement.operator in {">", ">="}:
+        return "any_of"
+    return "all_of"
+
+
 def _looks_like_trial_exposure(text: str) -> bool:
     return bool(_TRIAL_EXPOSURE_RE.search(text))
 
@@ -2347,6 +2481,7 @@ def _measurement_predicate(
         target_codes=frozenset(measurement.loinc_codes),
         operator=measurement.normalized_operator,
         value=measurement.normalized_value,
+        value_by_sex=measurement.normalized_value_by_sex,
         value_low=measurement.normalized_value_low,
         value_high=measurement.normalized_value_high,
         unit=measurement.unit_normalization.conventional_unit,
@@ -2436,6 +2571,7 @@ def _checkable_predicate(
     negated: bool | None = None,
     operator: ThresholdOperator | None = None,
     value: float | None = None,
+    value_by_sex: dict[str, float] | None = None,
     value_low: float | None = None,
     value_high: float | None = None,
     unit: str | None = None,
@@ -2454,6 +2590,7 @@ def _checkable_predicate(
         target_codes=target_codes,
         operator=operator,
         value=value,
+        value_by_sex=value_by_sex or {},
         value_low=value_low,
         value_high=value_high,
         unit=unit,

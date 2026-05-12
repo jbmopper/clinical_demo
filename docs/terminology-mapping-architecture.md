@@ -67,6 +67,14 @@ generic `BP X/Y` threshold shorthand compile into separate systolic and
 diastolic LOINC predicates instead of asking the reviewed registry to choose
 one generic `blood pressure` mapping.
 
+Measurement compilation also has a reviewed normal-reference registry for
+ULN/LLN-style thresholds. Those rows are separate from terminology mappings:
+they say how to translate a multiplier such as `3 x ULN` into a conventional
+unit threshold for a specific LOINC when no patient-observation reference range
+is available. The first committed slice covers reviewed demo ULNs for AST, ALT,
+total bilirubin, and sex-specific hemoglobin. Patient-sex-aware measurement
+predicates choose the male/female reviewed threshold at execution time.
+
 ---
 
 ## 5. Work queue: from eval diagnostics to classified surfaces
@@ -181,6 +189,10 @@ Foundation status:
   thresholds, SBP/DBP abbreviation pairs, and generic BP pair shorthand into
   typed systolic/diastolic measurement compounds, which removes the generic
   blood-pressure ambiguity bucket from the current compiler-review packet.
+  Reviewed ULN reference-limit translation now converts AST/ALT, total
+  bilirubin, and gender-specific hemoglobin multiplier criteria into
+  conventional-unit measurement predicates when reviewed reference limits
+  exist.
 - `CC-10` now has `ClosedWorldValidationResult` reporting for closed-world
   readiness over compiled criteria, and `ScorePairResult` exposes it to API and
   eval consumers.

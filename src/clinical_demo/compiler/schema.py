@@ -220,6 +220,10 @@ class CheckablePredicate(BaseModel):
         description="Numeric threshold operator for measurement predicates."
     )
     value: float | None = Field(description="Single threshold value, when applicable.")
+    value_by_sex: dict[str, float] = Field(
+        default_factory=dict,
+        description="Single threshold values keyed by profile sex, when reference limits are sex-specific.",
+    )
     value_low: float | None = Field(description="Inclusive lower bound, when applicable.")
     value_high: float | None = Field(description="Inclusive upper bound, when applicable.")
     unit: str | None = Field(description="Canonical/conventional unit used for comparison.")

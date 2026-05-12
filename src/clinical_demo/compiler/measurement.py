@@ -10,6 +10,7 @@ cached-only eval runs.
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +24,14 @@ from clinical_demo.terminology.reviewed_registry import (
     ReviewedMappingRegistry,
     load_reviewed_mapping_registry,
 )
-from clinical_demo.units import DEFAULT_REGISTRY, MeasurementUnitRegistry
+from clinical_demo.units import (
+    DEFAULT_REGISTRY,
+    MeasurementUnitRegistry,
+    ReferenceLimitKind,
+    ReviewedReferenceLimitEntry,
+    ReviewedReferenceLimitRegistry,
+    get_reviewed_reference_limit_registry,
+)
 
 from .schema import (
     CompilerDiagnostic,
@@ -40,6 +48,36 @@ from .schema import (
 
 LOINC_SYSTEM = "http://loinc.org"
 _PARENTHETICAL_RE = re.compile(r"\(([^()]*)\)")
+_UPPER_REFERENCE_RE = re.compile(r"\b(?:u\.?\s*l\.?\s*n|upper\s+limit\s+of\s+normal)\b", re.I)
+_LOWER_REFERENCE_RE = re.compile(r"\b(?:l\.?\s*l\.?\s*n|lower\s+limit\s+of\s+normal)\b", re.I)
+_NORMAL_RANGE_RE = re.compile(r"\b(?:normal\s+ranges?|normal\s+limits?)\b", re.I)
+_SEX_SPECIFIC_REFERENCE_RE = re.compile(r"\b(?:sex|gender)[-\s]*specific\b", re.I)
+_REFERENCE_MULTIPLIER_RE = re.compile(
+    r"(?P<value>\d+(?:\.\d+)?)\s*(?:x|\u00d7|\*)?\s*"
+    r"(?:u\.?\s*l\.?\s*n|upper\s+limit\s+of\s+normal|"
+    r"l\.?\s*l\.?\s*n|lower\s+limit\s+of\s+normal)",
+    re.I,
+)
+_REFERENCE_DIRECTION_OPERATOR_RE = re.compile(
+    r"\b(?P<word>above|greater\s+than|more\s+than|exceeds?|below|less\s+than|under)\b",
+    re.I,
+)
+
+
+@dataclass(frozen=True)
+class _ReferenceLimitRequest:
+    limit_kind: ReferenceLimitKind
+    operator: ThresholdOperator
+    multiplier: float
+    sex_specific: bool
+
+
+@dataclass(frozen=True)
+class _ConvertedReferenceLimit:
+    canonical_unit: str
+    conventional_unit: str
+    conversion_factor: float
+    normalized_value: float
 
 
 class MeasurementResolutionResult(BaseModel):
@@ -62,6 +100,10 @@ class MeasurementResolutionResult(BaseModel):
     normalized_value: float | None = Field(
         description="Single threshold converted into the conventional unit, if available."
     )
+    normalized_value_by_sex: dict[str, float] = Field(
+        default_factory=dict,
+        description="Sex-specific thresholds converted into the conventional unit, if available.",
+    )
     normalized_value_low: float | None = Field(
         description="Range lower bound converted into the conventional unit, if available."
     )
@@ -80,6 +122,7 @@ def compile_measurement_resolution(
     resolver_policy: ResolverExecutionPolicy = "cached_only",
     unit_registry: MeasurementUnitRegistry | None = None,
     reviewed_registry: ReviewedMappingRegistry | None = None,
+    reference_limit_registry: ReviewedReferenceLimitRegistry | None = None,
 ) -> MeasurementResolutionResult:
     """Resolve a measurement threshold surface and normalize its threshold unit.
 
@@ -91,6 +134,7 @@ def compile_measurement_resolution(
 
     registry = unit_registry or DEFAULT_REGISTRY
     mappings = reviewed_registry or load_reviewed_mapping_registry()
+    reference_limits = reference_limit_registry or get_reviewed_reference_limit_registry()
     measurement = criterion.measurement
     if criterion.kind != "measurement_threshold" or measurement is None:
         return _skipped_result(
@@ -158,6 +202,24 @@ def compile_measurement_resolution(
                 facts=[("gap_id", gap.gap_id)],
             )
         )
+
+    reference_limit_result = _reference_limit_result(
+        criterion=criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        source_unit=source_unit,
+        selected_loinc_code=selected_loinc_code,
+        loinc_codes=loinc_codes,
+        concept_set=concept_set,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        unit_registry=registry,
+        reference_limit_registry=reference_limits,
+        resolver_policy=resolver_policy,
+    )
+    if reference_limit_result is not None:
+        return reference_limit_result
 
     canonical_unit: str | None = None
     conventional_unit: str | None = None
@@ -313,6 +375,502 @@ def compile_measurement_resolution(
         resolved_supports=supports,
         unresolved_gaps=gaps,
         diagnostics=diagnostics,
+    )
+
+
+def _reference_limit_result(
+    *,
+    criterion: ExtractedCriterion,
+    source_criterion_id: str,
+    surface: str,
+    source_unit: str | None,
+    selected_loinc_code: str | None,
+    loinc_codes: list[str],
+    concept_set: ConceptSet | None,
+    supports: list[ResolutionSupport],
+    gaps: list[ResolutionGap],
+    diagnostics: list[CompilerDiagnostic],
+    unit_registry: MeasurementUnitRegistry,
+    reference_limit_registry: ReviewedReferenceLimitRegistry,
+    resolver_policy: ResolverExecutionPolicy,
+) -> MeasurementResolutionResult | None:
+    request = _reference_limit_request(criterion)
+    if request is None:
+        return None
+
+    local_gaps = list(gaps)
+    local_diagnostics = list(diagnostics)
+    local_supports = list(supports)
+
+    if selected_loinc_code is None:
+        gap = _reference_limit_gap(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            kind="ambiguous_mapping" if loinc_codes else "unmapped_concept",
+            message=(
+                f"Cannot translate reference-limit threshold for measurement '{surface}' "
+                "because it did not resolve to exactly one LOINC code."
+            ),
+            resolver_policy=resolver_policy,
+        )
+        local_gaps.append(gap)
+        local_diagnostics.append(
+            _diagnostic(
+                severity="warning",
+                code="measurement.reference_limit.unresolved_loinc",
+                message=gap.message,
+                source_criterion_id=source_criterion_id,
+                facts=[("gap_id", gap.gap_id)],
+            )
+        )
+        return _reference_limit_unresolved_result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            concept_set=concept_set,
+            loinc_codes=loinc_codes,
+            selected_loinc_code=selected_loinc_code,
+            supports=local_supports,
+            gaps=local_gaps,
+            diagnostics=local_diagnostics,
+            status="unresolved",
+        )
+
+    if request.sex_specific:
+        sex_limits = reference_limit_registry.lookup_sex_specific(
+            selected_loinc_code,
+            request.limit_kind,
+        )
+        if set(sex_limits) == {"FEMALE", "MALE"}:
+            converted_by_sex: dict[str, _ConvertedReferenceLimit] = {}
+            for sex, sex_limit in sex_limits.items():
+                converted = _converted_reference_limit(
+                    source_criterion_id=source_criterion_id,
+                    surface=surface,
+                    limit=sex_limit,
+                    multiplier=request.multiplier,
+                    unit_registry=unit_registry,
+                    resolver_policy=resolver_policy,
+                    gaps=local_gaps,
+                    diagnostics=local_diagnostics,
+                )
+                if converted is None:
+                    return _reference_limit_unresolved_result(
+                        source_criterion_id=source_criterion_id,
+                        surface=surface,
+                        source_unit=source_unit,
+                        concept_set=concept_set,
+                        loinc_codes=loinc_codes,
+                        selected_loinc_code=selected_loinc_code,
+                        supports=local_supports,
+                        gaps=local_gaps,
+                        diagnostics=local_diagnostics,
+                        status="unsupported",
+                    )
+                converted_by_sex[sex] = converted
+                local_supports.append(
+                    _reference_limit_support(
+                        source_criterion_id=f"{source_criterion_id}:{sex.lower()}",
+                        source_unit=source_unit,
+                        loinc_code=selected_loinc_code,
+                        limit=sex_limit,
+                        multiplier=request.multiplier,
+                        normalized_value=converted.normalized_value,
+                        conventional_unit=converted.conventional_unit,
+                        resolver_policy=resolver_policy,
+                    )
+                )
+            first = converted_by_sex["MALE"]
+            local_diagnostics.append(
+                _diagnostic(
+                    severity="info",
+                    code="measurement.reference_limit.sex_specific_translated",
+                    message=(
+                        f"Translated sex-specific {request.limit_kind} reference limits "
+                        f"for measurement '{surface}' into patient-sex-aware thresholds."
+                    ),
+                    source_criterion_id=source_criterion_id,
+                    facts=[
+                        ("loinc_code", selected_loinc_code),
+                        ("male_value", f"{converted_by_sex['MALE'].normalized_value:g}"),
+                        ("female_value", f"{converted_by_sex['FEMALE'].normalized_value:g}"),
+                        ("unit", first.conventional_unit),
+                    ],
+                )
+            )
+            return MeasurementResolutionResult(
+                source_criterion_id=source_criterion_id,
+                measurement_surface=surface,
+                concept_set=concept_set,
+                loinc_codes=loinc_codes,
+                selected_loinc_code=selected_loinc_code,
+                unit_normalization=UnitNormalizationPlan(
+                    status="resolved",
+                    measurement_surface=surface,
+                    source_unit=source_unit,
+                    canonical_unit=first.canonical_unit,
+                    conventional_unit=first.conventional_unit,
+                    conversion_factor=first.conversion_factor,
+                    gap_ids=[],
+                ),
+                normalized_operator=request.operator,
+                normalized_value=None,
+                normalized_value_by_sex={
+                    sex: converted.normalized_value for sex, converted in converted_by_sex.items()
+                },
+                normalized_value_low=None,
+                normalized_value_high=None,
+                resolved_supports=local_supports,
+                unresolved_gaps=local_gaps,
+                diagnostics=local_diagnostics,
+            )
+
+        gap = _reference_limit_gap(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            kind="unsupported_predicate",
+            message=(
+                f"Measurement '{surface}' uses a sex-specific reference limit, but reviewed "
+                "male and female reference limits are not both registered."
+            ),
+            resolver_policy=resolver_policy,
+        )
+        local_gaps.append(gap)
+        local_diagnostics.append(
+            _diagnostic(
+                severity="warning",
+                code="measurement.reference_limit.sex_specific_unsupported",
+                message=gap.message,
+                source_criterion_id=source_criterion_id,
+                facts=[("gap_id", gap.gap_id), ("loinc_code", selected_loinc_code)],
+            )
+        )
+        return _reference_limit_unresolved_result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            concept_set=concept_set,
+            loinc_codes=loinc_codes,
+            selected_loinc_code=selected_loinc_code,
+            supports=local_supports,
+            gaps=local_gaps,
+            diagnostics=local_diagnostics,
+            status="unsupported",
+        )
+
+    single_limit = reference_limit_registry.lookup(selected_loinc_code, request.limit_kind)
+    if single_limit is None:
+        gap = _reference_limit_gap(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            kind="unsupported_predicate",
+            message=(
+                f"No reviewed {request.limit_kind} reference limit is registered for "
+                f"measurement '{surface}' ({selected_loinc_code})."
+            ),
+            resolver_policy=resolver_policy,
+        )
+        local_gaps.append(gap)
+        local_diagnostics.append(
+            _diagnostic(
+                severity="warning",
+                code="measurement.reference_limit.missing_reviewed_limit",
+                message=gap.message,
+                source_criterion_id=source_criterion_id,
+                facts=[("gap_id", gap.gap_id), ("loinc_code", selected_loinc_code)],
+            )
+        )
+        return _reference_limit_unresolved_result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            concept_set=concept_set,
+            loinc_codes=loinc_codes,
+            selected_loinc_code=selected_loinc_code,
+            supports=local_supports,
+            gaps=local_gaps,
+            diagnostics=local_diagnostics,
+            status="unsupported",
+        )
+
+    canonical_unit = unit_registry.canonical_unit(selected_loinc_code, single_limit.unit)
+    conventional_unit = unit_registry.conventional_unit(selected_loinc_code)
+    conversion_factor = unit_registry.conversion_factor(
+        selected_loinc_code,
+        canonical_unit,
+        conventional_unit,
+    )
+    if canonical_unit is None or conventional_unit is None or conversion_factor is None:
+        gap = _unsupported_conversion_gap(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=single_limit.unit,
+            canonical_unit=canonical_unit,
+            conventional_unit=conventional_unit,
+            resolver_policy=resolver_policy,
+        )
+        local_gaps.append(gap)
+        local_diagnostics.append(
+            _unsupported_conversion_diagnostic(
+                gap=gap,
+                source_criterion_id=source_criterion_id,
+                source_unit=single_limit.unit,
+                canonical_unit=canonical_unit,
+                conventional_unit=conventional_unit,
+            )
+        )
+        return _reference_limit_unresolved_result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=source_unit,
+            concept_set=concept_set,
+            loinc_codes=loinc_codes,
+            selected_loinc_code=selected_loinc_code,
+            supports=local_supports,
+            gaps=local_gaps,
+            diagnostics=local_diagnostics,
+            status="unsupported",
+        )
+
+    normalized_value = single_limit.value * request.multiplier * conversion_factor
+    local_supports.append(
+        _reference_limit_support(
+            source_criterion_id=source_criterion_id,
+            source_unit=source_unit,
+            loinc_code=selected_loinc_code,
+            limit=single_limit,
+            multiplier=request.multiplier,
+            normalized_value=normalized_value,
+            conventional_unit=conventional_unit,
+            resolver_policy=resolver_policy,
+        )
+    )
+    local_diagnostics.append(
+        _diagnostic(
+            severity="info",
+            code="measurement.reference_limit.translated",
+            message=(
+                f"Translated {request.multiplier:g} x {request.limit_kind} reference limit "
+                f"for measurement '{surface}' into {normalized_value:g} {conventional_unit}."
+            ),
+            source_criterion_id=source_criterion_id,
+            facts=[
+                ("loinc_code", selected_loinc_code),
+                ("limit_kind", request.limit_kind),
+                ("reference_value", f"{single_limit.value:g}"),
+                ("reference_unit", single_limit.unit),
+                ("multiplier", f"{request.multiplier:g}"),
+            ],
+        )
+    )
+
+    return MeasurementResolutionResult(
+        source_criterion_id=source_criterion_id,
+        measurement_surface=surface,
+        concept_set=concept_set,
+        loinc_codes=loinc_codes,
+        selected_loinc_code=selected_loinc_code,
+        unit_normalization=UnitNormalizationPlan(
+            status="resolved",
+            measurement_surface=surface,
+            source_unit=source_unit,
+            canonical_unit=canonical_unit,
+            conventional_unit=conventional_unit,
+            conversion_factor=conversion_factor,
+            gap_ids=[],
+        ),
+        normalized_operator=request.operator,
+        normalized_value=normalized_value,
+        normalized_value_low=None,
+        normalized_value_high=None,
+        resolved_supports=local_supports,
+        unresolved_gaps=local_gaps,
+        diagnostics=local_diagnostics,
+    )
+
+
+def _converted_reference_limit(
+    *,
+    source_criterion_id: str,
+    surface: str,
+    limit: ReviewedReferenceLimitEntry,
+    multiplier: float,
+    unit_registry: MeasurementUnitRegistry,
+    resolver_policy: ResolverExecutionPolicy,
+    gaps: list[ResolutionGap],
+    diagnostics: list[CompilerDiagnostic],
+) -> _ConvertedReferenceLimit | None:
+    canonical_unit = unit_registry.canonical_unit(limit.loinc_code, limit.unit)
+    conventional_unit = unit_registry.conventional_unit(limit.loinc_code)
+    conversion_factor = unit_registry.conversion_factor(
+        limit.loinc_code,
+        canonical_unit,
+        conventional_unit,
+    )
+    if canonical_unit is None or conventional_unit is None or conversion_factor is None:
+        gap = _unsupported_conversion_gap(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            source_unit=limit.unit,
+            canonical_unit=canonical_unit,
+            conventional_unit=conventional_unit,
+            resolver_policy=resolver_policy,
+        )
+        gaps.append(gap)
+        diagnostics.append(
+            _unsupported_conversion_diagnostic(
+                gap=gap,
+                source_criterion_id=source_criterion_id,
+                source_unit=limit.unit,
+                canonical_unit=canonical_unit,
+                conventional_unit=conventional_unit,
+            )
+        )
+        return None
+    return _ConvertedReferenceLimit(
+        canonical_unit=canonical_unit,
+        conventional_unit=conventional_unit,
+        conversion_factor=conversion_factor,
+        normalized_value=limit.value * multiplier * conversion_factor,
+    )
+
+
+def _reference_limit_request(criterion: ExtractedCriterion) -> _ReferenceLimitRequest | None:
+    measurement = criterion.measurement
+    if measurement is None:
+        return None
+    reference_text = " ".join(
+        part for part in (criterion.source_text, measurement.unit) if part is not None
+    )
+    if not reference_text.strip():
+        return None
+    has_upper = _UPPER_REFERENCE_RE.search(reference_text) is not None
+    has_lower = _LOWER_REFERENCE_RE.search(reference_text) is not None
+    if not has_upper and not has_lower and _NORMAL_RANGE_RE.search(reference_text) is None:
+        return None
+    if not has_upper and not has_lower:
+        return None
+
+    operator = _reference_limit_operator(measurement.operator, reference_text)
+    if operator is None:
+        return None
+
+    return _ReferenceLimitRequest(
+        limit_kind="upper" if has_upper else "lower",
+        operator=operator,
+        multiplier=_reference_limit_multiplier(measurement.value, reference_text),
+        sex_specific=_SEX_SPECIFIC_REFERENCE_RE.search(reference_text) is not None,
+    )
+
+
+def _reference_limit_operator(
+    operator: ThresholdOperator,
+    reference_text: str,
+) -> ThresholdOperator | None:
+    if operator in {"<", "<=", "=", ">=", ">"}:
+        return operator
+    match = _REFERENCE_DIRECTION_OPERATOR_RE.search(reference_text)
+    if match is None:
+        return None
+    direction = " ".join(match.group("word").lower().split())
+    if direction in {"above", "greater than", "more than", "exceed", "exceeds"}:
+        return ">"
+    return "<"
+
+
+def _reference_limit_multiplier(value: float | None, reference_text: str) -> float:
+    if value is not None:
+        return value
+    match = _REFERENCE_MULTIPLIER_RE.search(reference_text)
+    if match is not None:
+        return float(match.group("value"))
+    return 1.0
+
+
+def _reference_limit_unresolved_result(
+    *,
+    source_criterion_id: str,
+    surface: str,
+    source_unit: str | None,
+    concept_set: ConceptSet | None,
+    loinc_codes: list[str],
+    selected_loinc_code: str | None,
+    supports: list[ResolutionSupport],
+    gaps: list[ResolutionGap],
+    diagnostics: list[CompilerDiagnostic],
+    status: ResolutionStatus,
+) -> MeasurementResolutionResult:
+    return MeasurementResolutionResult(
+        source_criterion_id=source_criterion_id,
+        measurement_surface=surface,
+        concept_set=concept_set,
+        loinc_codes=loinc_codes,
+        selected_loinc_code=selected_loinc_code,
+        unit_normalization=UnitNormalizationPlan(
+            status=status,
+            measurement_surface=surface,
+            source_unit=source_unit,
+            canonical_unit=None,
+            conventional_unit=None,
+            conversion_factor=None,
+            gap_ids=[gap.gap_id for gap in gaps],
+        ),
+        normalized_operator=None,
+        normalized_value=None,
+        normalized_value_low=None,
+        normalized_value_high=None,
+        resolved_supports=supports,
+        unresolved_gaps=gaps,
+        diagnostics=diagnostics,
+    )
+
+
+def _reference_limit_gap(
+    *,
+    source_criterion_id: str,
+    surface: str,
+    source_unit: str | None,
+    kind: ResolutionGapKind,
+    message: str,
+    resolver_policy: ResolverExecutionPolicy,
+) -> ResolutionGap:
+    return _gap(
+        gap_id=f"{source_criterion_id}:reference-limit:gap",
+        stage="unit_normalization",
+        domain="measurement",
+        kind=kind,
+        source_criterion_id=source_criterion_id,
+        surface=source_unit or surface,
+        message=message,
+        resolver_policy=resolver_policy,
+    )
+
+
+def _reference_limit_support(
+    *,
+    source_criterion_id: str,
+    source_unit: str | None,
+    loinc_code: str,
+    limit: ReviewedReferenceLimitEntry,
+    multiplier: float,
+    normalized_value: float,
+    conventional_unit: str,
+    resolver_policy: ResolverExecutionPolicy,
+) -> ResolutionSupport:
+    return _support(
+        support_id=f"{source_criterion_id}:reference-limit:{limit.limit_kind}",
+        stage="unit_normalization",
+        domain="unit",
+        source_criterion_id=source_criterion_id,
+        surface=source_unit,
+        normalized_surface=f"{multiplier:g} x {limit.limit_kind} reference limit",
+        target_system="reviewed_reference_limits",
+        target_id=f"{loinc_code}:{limit.limit_kind}:{limit.applies_to}",
+        target_label=f"{normalized_value:g} {conventional_unit}",
+        resolver_policy=resolver_policy,
     )
 
 

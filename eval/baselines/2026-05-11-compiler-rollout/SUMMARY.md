@@ -5,8 +5,8 @@ Public-Artifact-Safety: synthetic
 Updated 2026-05-12 after the reviewed condition/event, medication
 registry-closure, cache-independent terminology-closure, reviewed
 descendant-expansion, condition/event decomposition, qualifier/top-gap review,
-final opaque-unmapped registry slices, and blood-pressure threshold
-decomposition.
+final opaque-unmapped registry slices, blood-pressure threshold decomposition,
+and reviewed sex-specific ULN reference-limit translation.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -45,24 +45,32 @@ measurement, and medication hardening slices landed.
   compiler-review queue no longer has `review_mapping` groups. The BP
   threshold pass decomposes explicit systolic/diastolic phrases and generic
   `BP >160/100` / `BP <140/90` shorthand, including `SBP`/`DBP` pairs, into
-  systolic and diastolic LOINC-backed measurement predicates.
+  systolic and diastolic LOINC-backed measurement predicates. The reviewed ULN
+  pass adds `reviewed_reference_limits.json`, treats `x ULN` as a
+  reference-limit multiplier rather than a unit, decomposes AST/ALT paired ULN
+  criteria, translates AST/ALT/total-bilirubin ULN thresholds into
+  conventional units when a reviewed reference limit exists, and compiles
+  gender-specific hemoglobin ULN criteria to patient-sex-aware thresholds when
+  reviewed male/female limits exist.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `3d05a47d0af3` | 36 fail / 9 indeterminate / 0 pass / 2 pass_pending_review | 78 fail / 840 indeterminate / 158 pass | 0 (0.0%) | 23.0s |
+| `compiled_predicates` | `51f5b0eb86e9` | 36 fail / 9 indeterminate / 0 pass / 2 pass_pending_review | 78 fail / 833 indeterminate / 165 pass | 0 (0.0%) | 22.6s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
 compiled snapshot from 37 to 0 `unmapped_concept` rows versus the previous
-qualifier/top-gap snapshot. It adds 54 indeterminate-to-determinate
+qualifier/top-gap snapshot. It adds 61 indeterminate-to-determinate
 criterion wins from more explicit compiler execution of mapped condition,
 measurement, trial-exposure, medication exposure, PH-ILD, HoFH, congenital heart
 disease, cardiovascular event-list promotions, GLP-1 class closure, and
 diabetes/HF/pregnancy variant mapping, plus blood-pressure threshold
-decomposition. The prior broad-parent
+decomposition and sex-specific hemoglobin ULN translation. The final movement
+packet has 61 indeterminate-to-determinate criterion wins plus 1
+determinate-to-determinate movement. The prior broad-parent
 determinate-to-indeterminate movements are gone:
 endocrine, psychiatric, and cardiovascular parent mappings now expand through
 committed reviewed closures instead of warmed-cache exact-code behavior. This is
@@ -90,12 +98,13 @@ Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
 `legacy_vs_compiled_movement_review.json` and `.md` are the focused review
-packet for these changes. They contain 55 decisive criterion movements and 306
+packet for these changes. They contain 62 decisive criterion movements and 302
 reason-code-only changes. The decisive movements include medication-exposure
 wins for RAAS blockers, stable lipid-lowering treatment, and reviewed class
 closure, plus GLP-1 member closure, diabetes/HF/pregnancy variants,
 measurement, trial-exposure, PH-ILD, cardiovascular event-list, congenital heart
-disease, HoFH, and BP threshold movements. Closed-world absence-dependent
+disease, HoFH, BP threshold movements, and sex-specific hemoglobin ULN
+translation. Closed-world absence-dependent
 verdicts should still be reviewed as a group so the absence-as-negative
 decisions match the validation contract.
 
@@ -104,27 +113,27 @@ decisions match the validation contract.
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 311
-- unresolved compiler gaps: 342
+- checkable predicates: 327
+- unresolved compiler gaps: 321
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 1046 total, 449 blocking
+- validation findings: 1020 total, 423 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 312 |
-| `review_gap` | 22 |
+| `implement_compiler_logic` | 303 |
+| `review_gap` | 10 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-342 raw rows to 184 distinct surface/action/policy work items:
+321 raw rows to 179 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 175 |
-| `review_gap` | 4 |
+| `implement_compiler_logic` | 173 |
+| `review_gap` | 1 |
 
 The current threshold gate passes only without `--require-compilation`, because
 the 2 deceased-patient scorer refusals mean compilation is missing for those
@@ -133,13 +142,13 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 342 \
+  --max-unresolved-gaps 321 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 449 \
+  --max-closed-world-blocking-findings 423 \
   --max-gap-kind unmapped_concept=0 \
-  --max-gap-kind unsupported_predicate=312 \
+  --max-gap-kind unsupported_predicate=303 \
   --max-gap-kind ambiguous_mapping=8 \
-  --max-gap-kind insufficient_source=22
+  --max-gap-kind insufficient_source=10
 ```
 
 There are no remaining `review_mapping` groups. The remaining queue is compiler
@@ -173,7 +182,12 @@ work with no `review_mapping` groups. The BP threshold-decomposition slice then
 moved explicit/generic BP clauses into executable measurement compounds,
 reduced unresolved compiler gaps to 342, increased checkable predicates to 311,
 and moved the case rollup to 36 fail / 9 indeterminate / 2
-pass_pending_review.
+pass_pending_review. The reviewed ULN reference-limit slice then reduced
+unresolved compiler gaps to 328, increased checkable predicates to 320, lowered
+blocking validation findings to 437, and preserved the same case rollup. The
+sex-specific hemoglobin ULN slice then reduced unresolved compiler gaps to 321,
+increased checkable predicates to 327, lowered blocking validation findings to
+423, and preserved the same case rollup.
 
 ## Patient-Evidence Calibration
 
@@ -183,7 +197,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `3d05a47d0af3` | 5/50 | 80.0% | 40.0% | 17 |
+| `51f5b0eb86e9` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

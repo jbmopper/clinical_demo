@@ -141,6 +141,30 @@
         },
         {
             "kind": "lab",
+            "surface": "alanine aminotransferase",
+            "normalized_surface": "alanine aminotransferase",
+            "status": "mapped",
+            "concept_set": "ALANINE_AMINOTRANSFERASE",
+            "candidates": [
+                {
+                    "name": "Alanine aminotransferase",
+                    "concept_set": "ALANINE_AMINOTRANSFERASE",
+                    "system": "http://loinc.org",
+                    "codes": ["1742-6"],
+                    "source": "patient vocabulary review",
+                    "reason": "Synthea carries ALT as LOINC 1742-6 in serum/plasma observations."
+                }
+            ],
+            "reason": "Reviewed ALT measurement surface maps to the project ALT ConceptSet. ULN multiplier semantics remain unit/normal-range compiler logic.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 CC-08 AST/ALT ULN compound compiler slice.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "lab",
             "surface": "absolute neutrophil count",
             "normalized_surface": "absolute neutrophil count",
             "status": "mapped",

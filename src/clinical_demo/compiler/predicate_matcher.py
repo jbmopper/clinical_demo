@@ -479,7 +479,8 @@ def _execute_measurement(
         )
     if predicate.operator in {"in_range", "out_of_range"}:
         return _execute_measurement_range(predicate, profile, obs)
-    if predicate.operator not in {"<", "<=", "=", ">=", ">"} or predicate.value is None:
+    threshold_value = _measurement_threshold_value(predicate, profile)
+    if predicate.operator not in {"<", "<=", "=", ">=", ">"} or threshold_value is None:
         return (
             "indeterminate",
             "ambiguous_criterion",
@@ -491,10 +492,21 @@ def _execute_measurement(
     result = profile.meets_threshold(
         obs.concept.code,
         _profile_op(predicate.operator),
-        predicate.value,
+        threshold_value,
         predicate.unit,
     )
     return _threshold_to_verdict(result, predicate, obs, profile)
+
+
+def _measurement_threshold_value(
+    predicate: CheckablePredicate,
+    profile: PatientProfile,
+) -> float | None:
+    if predicate.value is not None:
+        return predicate.value
+    if not predicate.value_by_sex:
+        return None
+    return predicate.value_by_sex.get(profile.sex.upper())
 
 
 def _execute_measurement_range(

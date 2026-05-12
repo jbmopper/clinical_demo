@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `3d05a47d0af3`
+- comparison: `51f5b0eb86e9`
 - changed cases: 9/49
-- changed criteria: 361/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=54 / reason_changed=306
+- changed criteria: 364/1076
+- criterion directions: determinate_changed=1 / indeterminate_to_determinate=61 / reason_changed=302
 
 ## Case Movements
 
@@ -50,7 +50,7 @@ Public-Artifact-Safety: synthetic
 | `28db1c55__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `28db1c55__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `28db1c55__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
-| `28db1c55__NCT06941441` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
+| `28db1c55__NCT06941441` | 11 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
 | `28db1c55__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `28db1c55__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `28db1c55__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
@@ -80,7 +80,7 @@ Public-Artifact-Safety: synthetic
 | `2e555528__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `2e555528__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `2e555528__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
-| `2e555528__NCT06941441` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
+| `2e555528__NCT06941441` | 11 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
 | `2e555528__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `2e555528__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `2e555528__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
@@ -129,12 +129,11 @@ Public-Artifact-Safety: synthetic
 | `3beee40e__NCT07394114` | 7 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History or family history of medullary thyroid carcinoma (MTC), thyroid C-cell hyperplasia, or mu... |
 | `3beee40e__NCT07394114` | 9 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Investigator determines that the subject has a condition or disease affecting gastric emptying or... |
 | `3beee40e__NCT07394114` | 10 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of any antidiabetic medications within 12 weeks prior to signing the ICF; excluding short-ter... |
-| `3beee40e__NCT07394114` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Aspartate aminotransferase (AST) >3× upper limit of normal (ULN) and/or alanine aminotransferase... |
-| `3beee40e__NCT07394114` | 15 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Total bilirubin >1.5× ULN. |
+| `3beee40e__NCT07394114` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | compound | Aspartate aminotransferase (AST) >3× upper limit of normal (ULN) and/or alanine aminotransferase... |
 | `407ef75b__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `407ef75b__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `407ef75b__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
-| `407ef75b__NCT06941441` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
+| `407ef75b__NCT06941441` | 11 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
 | `407ef75b__NCT06941441` | 13 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `407ef75b__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `407ef75b__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
@@ -151,7 +150,7 @@ Public-Artifact-Safety: synthetic
 | `509f9a77__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `509f9a77__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `509f9a77__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
-| `509f9a77__NCT06941441` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
+| `509f9a77__NCT06941441` | 11 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
 | `509f9a77__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `509f9a77__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `509f9a77__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
@@ -178,6 +177,8 @@ Public-Artifact-Safety: synthetic
 | `55c5b8d3__NCT06564324` | 2 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Have at least 1 measurable (i.e., target) lesion by Investigator assessment per RECIST v1.1. |
 | `55c5b8d3__NCT06564324` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Eastern Cooperative Oncology Group (ECOG) performance status zero (0) to 1. |
 | `55c5b8d3__NCT06564324` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Minimum life expectancy of 3 months or more. |
+| `55c5b8d3__NCT06564324` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | compound | Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): ≤3.0 × upper limit of normal... |
+| `55c5b8d3__NCT06564324` | 9 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Serum total bilirubin: ≤1.5 × ULN (≤3.0 × ULN for participants with Gilbert syndrome). |
 | `55c5b8d3__NCT06564324` | 13 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated creatinine clearance (CLcr) ≥45 mL/min as calculated using the method standard for the... |
 | `55c5b8d3__NCT06564324` | 14 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | All toxicities from prior anticancer therapy have resolved to ≤ Grade 1 according to the National... |
 | `55c5b8d3__NCT06564324` | 16 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Previously received an investigational antineoplastic agent for NSCLC. |
@@ -204,7 +205,7 @@ Public-Artifact-Safety: synthetic
 | `56cfe6a5__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `56cfe6a5__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `56cfe6a5__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
-| `56cfe6a5__NCT06941441` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
+| `56cfe6a5__NCT06941441` | 11 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
 | `56cfe6a5__NCT06941441` | 13 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `56cfe6a5__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `56cfe6a5__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
@@ -274,7 +275,7 @@ Public-Artifact-Safety: synthetic
 | `a06bce31__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `a06bce31__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `a06bce31__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
-| `a06bce31__NCT06941441` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
+| `a06bce31__NCT06941441` | 11 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
 | `a06bce31__NCT06941441` | 13 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `a06bce31__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `a06bce31__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
@@ -325,7 +326,7 @@ Public-Artifact-Safety: synthetic
 | `c46a254d__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `c46a254d__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `c46a254d__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
-| `c46a254d__NCT06941441` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
+| `c46a254d__NCT06941441` | 11 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Hemoglobin at screening above gender-specific ULN |
 | `c46a254d__NCT06941441` | 13 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled systemic hypertension as evidenced by sitting systolic BP > 160 mmHg or sitting dias... |
 | `c46a254d__NCT06941441` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Pregnant or breastfeeding females |
 | `c46a254d__NCT06941441` | 16 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Currently enrolled in or have completed any other investigational product study within 30 days fo... |
@@ -351,6 +352,8 @@ Public-Artifact-Safety: synthetic
 | `d362f4e5__NCT06564324` | 2 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Have at least 1 measurable (i.e., target) lesion by Investigator assessment per RECIST v1.1. |
 | `d362f4e5__NCT06564324` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Eastern Cooperative Oncology Group (ECOG) performance status zero (0) to 1. |
 | `d362f4e5__NCT06564324` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Minimum life expectancy of 3 months or more. |
+| `d362f4e5__NCT06564324` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | compound | Aspartate aminotransferase (AST) and alanine aminotransferase (ALT): ≤3.0 × upper limit of normal... |
+| `d362f4e5__NCT06564324` | 9 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Serum total bilirubin: ≤1.5 × ULN (≤3.0 × ULN for participants with Gilbert syndrome). |
 | `d362f4e5__NCT06564324` | 13 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated creatinine clearance (CLcr) ≥45 mL/min as calculated using the method standard for the... |
 | `d362f4e5__NCT06564324` | 14 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | All toxicities from prior anticancer therapy have resolved to ≤ Grade 1 according to the National... |
 | `d362f4e5__NCT06564324` | 16 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Previously received an investigational antineoplastic agent for NSCLC. |

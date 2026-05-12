@@ -108,6 +108,34 @@ def test_compiled_measurement_predicate_executes_threshold() -> None:
     assert verdicts[0].evidence[0].kind == "lab"
 
 
+def test_compiled_sex_specific_uln_measurement_uses_patient_sex_threshold() -> None:
+    criterion = crit_measurement(
+        text="hemoglobin",
+        operator=">",
+        value=None,
+        unit="gender-specific ULN",
+        polarity="exclusion",
+    ).model_copy(update={"source_text": "Hemoglobin at screening above gender-specific ULN"})
+    female_profile = make_profile(
+        sex="female",
+        observations=[make_lab(loinc="718-7", value=16.0, unit="g/dL")],
+    )
+    male_profile = make_profile(
+        sex="male",
+        observations=[make_lab(loinc="718-7", value=16.0, unit="g/dL")],
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    female_verdict = match_compiled_criteria(compilation, female_profile, make_trial())[0]
+    male_verdict = match_compiled_criteria(compilation, male_profile, make_trial())[0]
+
+    assert compilation.checkable_predicates[0].value_by_sex == {"FEMALE": 15.5, "MALE": 17.5}
+    assert female_verdict.verdict == "fail"
+    assert female_verdict.reason == "ok"
+    assert male_verdict.verdict == "pass"
+    assert male_verdict.reason == "ok"
+
+
 def test_compiled_condition_predicate_preserves_open_and_closed_world_absence() -> None:
     criterion = crit_condition(text="type 2 diabetes")
     compilation = compile_extracted_criteria([criterion])

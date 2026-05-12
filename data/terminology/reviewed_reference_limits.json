@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "reference_limits": [
+    {
+      "loinc_code": "1920-8",
+      "loinc_display": "Aspartate aminotransferase",
+      "limit_kind": "upper",
+      "applies_to": "any",
+      "value": 40.0,
+      "unit": "U/L",
+      "reason": "Reviewed demo reference ULN for AST multiplier criteria when trial text gives a threshold relative to ULN and patient observations do not carry reference ranges.",
+      "source": "compiler normal-range review",
+      "provenance": "2026-05-12 CC-08 ULN compiler slice; demo reference limit pending lab-provided reference-range ingestion.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-reference-limit-registry-v1"
+    },
+    {
+      "loinc_code": "1742-6",
+      "loinc_display": "Alanine aminotransferase",
+      "limit_kind": "upper",
+      "applies_to": "any",
+      "value": 40.0,
+      "unit": "U/L",
+      "reason": "Reviewed demo reference ULN for ALT multiplier criteria when trial text gives a threshold relative to ULN and patient observations do not carry reference ranges.",
+      "source": "compiler normal-range review",
+      "provenance": "2026-05-12 CC-08 ULN compiler slice; demo reference limit pending lab-provided reference-range ingestion.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-reference-limit-registry-v1"
+    },
+    {
+      "loinc_code": "1975-2",
+      "loinc_display": "Total bilirubin",
+      "limit_kind": "upper",
+      "applies_to": "any",
+      "value": 1.2,
+      "unit": "mg/dL",
+      "reason": "Reviewed demo reference ULN for total-bilirubin multiplier criteria when trial text gives a threshold relative to ULN and patient observations do not carry reference ranges.",
+      "source": "compiler normal-range review",
+      "provenance": "2026-05-12 CC-08 ULN compiler slice; demo reference limit pending lab-provided reference-range ingestion.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-reference-limit-registry-v1"
+    },
+    {
+      "loinc_code": "718-7",
+      "loinc_display": "Hemoglobin",
+      "limit_kind": "upper",
+      "applies_to": "male",
+      "value": 17.5,
+      "unit": "g/dL",
+      "reason": "Reviewed demo male hemoglobin ULN for gender-specific hemoglobin criteria when trial text uses ULN and patient observations do not carry reference ranges.",
+      "source": "compiler normal-range review",
+      "provenance": "2026-05-12 CC-08 gender-specific ULN compiler slice; demo reference limit pending lab-provided reference-range ingestion.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-reference-limit-registry-v1"
+    },
+    {
+      "loinc_code": "718-7",
+      "loinc_display": "Hemoglobin",
+      "limit_kind": "upper",
+      "applies_to": "female",
+      "value": 15.5,
+      "unit": "g/dL",
+      "reason": "Reviewed demo female hemoglobin ULN for gender-specific hemoglobin criteria when trial text uses ULN and patient observations do not carry reference ranges.",
+      "source": "compiler normal-range review",
+      "provenance": "2026-05-12 CC-08 gender-specific ULN compiler slice; demo reference limit pending lab-provided reference-range ingestion.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-reference-limit-registry-v1"
+    }
+  ]
+}
