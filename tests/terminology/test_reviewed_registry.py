@@ -93,3 +93,19 @@ def test_committed_bone_fractures_mapping_loads() -> None:
     assert entry.expansion_policy == "reviewed_code_list"
     assert entry.resolver_version == REVIEWED_REGISTRY_VERSION
     assert entry.candidates[0].concept_set == "FRACTURE"
+
+
+def test_committed_medication_mappings_load() -> None:
+    registry = load_reviewed_mapping_registry(
+        REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
+    )
+
+    metformin = registry.lookup("medication", "metformin")
+    marijuana = registry.lookup("medication", "marijuana")
+
+    assert metformin is not None
+    assert metformin.status == "mapped"
+    assert metformin.concept_set == "METFORMIN"
+    assert metformin.expansion_policy == "patient_vocabulary_closure"
+    assert marijuana is not None
+    assert marijuana.status == "out_of_scope"

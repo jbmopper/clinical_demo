@@ -148,10 +148,10 @@ _LAB_ALIASES: dict[str, ConceptSet] = {
     "c peptide concentrations": C_PEPTIDE,
 }
 
-# Medications are intentionally NOT mapped in v0. The Synthea cohort
-# has very limited medication coverage and our SNOMED/RxNorm mapping
-# work hasn't been done; honest "unmapped_concept" is better than
-# pretending. See PLAN.md decision log.
+# Medication aliases remain empty by design: resolver-first mode reads
+# committed reviewed medication mappings and warmed RxNorm cache rows; alias
+# mode is the legacy backup path and should not silently grow a second
+# medication vocabulary.
 _MEDICATION_ALIASES: dict[str, ConceptSet] = {}
 
 
@@ -214,9 +214,9 @@ def lookup_medication(
 ) -> ConceptSet | None:
     """Return the ConceptSet for a medication surface form, or None.
 
-    The alias table is intentionally empty in v0 (Synthea med
-    coverage is thin); under `two_pass` the RxNorm-backed resolver
-    is the only path that can return a non-`None` result here."""
+    The alias table is intentionally empty; under `two_pass` the
+    reviewed/RxNorm-backed resolver is the only path that can return
+    a non-`None` result here."""
     if get_settings().binding_strategy == "two_pass":
         r = resolver or get_resolver()
         bound = r.resolve_medication(surface)

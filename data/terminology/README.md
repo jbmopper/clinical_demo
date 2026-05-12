@@ -23,11 +23,14 @@ Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at
 load time so runtime resolver integration has a single deterministic answer.
 
-Medication-class entries are loaded by
+Medication entries now also cover the first committed patient-vocabulary
+RxNorm anchors (`metformin`, `insulin`, statins, alendronic acid, and RAAS
+representatives). Medication-class entries are loaded by
 `clinical_demo.terminology.medication_classes`. They key one or more reviewed
-class surfaces such as `statins` to member medication surfaces such as
+class surfaces such as `statins`, `lipid-lowering treatment`,
+`bisphosphonate treatment`, or `RASB` to member medication surfaces such as
 `atorvastatin` and `simvastatin`. The compiler still resolves every member
-through cached/reviewed RxNorm lookup before creating an executable class
+through reviewed/cache-only RxNorm lookup before creating an executable class
 predicate; missing members remain compiler gaps rather than partial matches.
 
 Expansion policies:

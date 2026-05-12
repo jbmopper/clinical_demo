@@ -1,8 +1,16 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from clinical_demo.compiler import compile_medication_resolution
 from clinical_demo.extractor.schema import ExtractedCriterion, MedicationCriterion
 from clinical_demo.profile import ConceptSet
+from clinical_demo.terminology import TerminologyCache, TerminologyResolver
+from clinical_demo.terminology.reviewed_registry import (
+    REVIEWED_REGISTRY_VERSION,
+    ReviewedMappingEntry,
+    ReviewedMappingRegistry,
+)
 
 METFORMIN = ConceptSet(
     name="metformin",
@@ -185,6 +193,45 @@ def test_reviewed_medication_class_expands_to_member_code_union() -> None:
     assert result.gaps == []
 
 
+def test_committed_lipid_lowering_class_expands_without_rxnorm_cache(tmp_path: Path) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("lipid-lowering oral drugs"),
+        source_criterion_id="criterion:lipid",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == "Lipid-lowering therapy (current patient vocabulary)"
+    assert result.concept_set.codes == frozenset({"259255", "314231", "312961"})
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "lipid-lowering oral drugs",
+        "atorvastatin",
+        "simvastatin",
+    ]
+
+
+def test_reviewed_class_surface_can_override_list_like_text() -> None:
+    resolver = StubMedicationResolver({"atorvastatin": ATORVASTATIN, "simvastatin": SIMVASTATIN})
+
+    result = compile_medication_resolution(
+        _criterion("low or moderate-intensity statins"),
+        source_criterion_id="criterion:list-like-class",
+        resolver=resolver,
+    )
+
+    assert resolver.calls == ["atorvastatin", "simvastatin"]
+    assert result.medication_class.status == "resolved"
+    assert result.predicate.status == "resolved"
+    assert result.gaps == []
+
+
 def test_reviewed_medication_class_requires_every_member_to_resolve() -> None:
     resolver = StubMedicationResolver({"atorvastatin": ATORVASTATIN, "simvastatin": None})
 
@@ -201,6 +248,42 @@ def test_reviewed_medication_class_requires_every_member_to_resolve() -> None:
     assert result.medication_class.status == "unresolved"
     assert result.predicate.status == "unresolved"
     assert result.diagnostics[0].code == "medication.class_member_unmapped"
+
+
+def test_reviewed_nonmapped_medication_emits_typed_gap_without_resolving() -> None:
+    resolver = StubMedicationResolver({"marijuana": METFORMIN})
+    registry = ReviewedMappingRegistry(
+        [
+            ReviewedMappingEntry.model_validate(
+                {
+                    "kind": "medication",
+                    "surface": "marijuana",
+                    "status": "out_of_scope",
+                    "concept_set": None,
+                    "reason": "substance-use history is not structured medication evidence",
+                    "source": "unit test",
+                    "provenance": "unit test",
+                    "reviewer": "unit-test",
+                    "reviewed_at": "2026-05-12",
+                    "resolver_version": REVIEWED_REGISTRY_VERSION,
+                    "expansion_policy": "exact_code",
+                }
+            )
+        ]
+    )
+
+    result = compile_medication_resolution(
+        _criterion("marijuana"),
+        source_criterion_id="criterion:reviewed-med-gap",
+        resolver=resolver,
+        reviewed_registry=registry,
+    )
+
+    assert resolver.calls == []
+    assert result.gaps[0].kind == "unsupported_predicate"
+    assert result.predicate.status == "unsupported"
+    assert result.ingredient.status == "unsupported"
+    assert result.diagnostics[0].code == "medication.reviewed.out_of_scope"
 
 
 def test_unreviewed_class_like_medication_emits_unsupported_gap_without_false_mapping() -> None:

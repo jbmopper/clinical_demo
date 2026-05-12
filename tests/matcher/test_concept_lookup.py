@@ -1,12 +1,14 @@
 """Concept-lookup tests.
 
-The lookup tables drive the matcher's recall: a missed alias means a
-verdict drops to `indeterminate (unmapped_concept)` even when the
-patient data would otherwise resolve it. These tests pin the major
-condition / lab aliases we rely on; the medication table is
-deliberately empty in v0 (see concept_lookup.py docstring)."""
+The lookup tables and reviewed terminology registry drive the matcher's
+recall: a missed mapping means a verdict drops to
+`indeterminate (unmapped_concept)` even when the patient data would otherwise
+resolve it. These tests pin the major condition / lab aliases and the first
+committed medication surfaces we rely on."""
 
 from __future__ import annotations
+
+from pathlib import Path
 
 import pytest
 
@@ -22,11 +24,14 @@ from clinical_demo.profile.concept_sets import (
     HBA1C,
     HYPERLIPIDEMIA,
     HYPERTENSION,
+    INSULIN,
     LDL_CHOLESTEROL,
+    METFORMIN,
     PREDIABETES,
     SYSTOLIC_BP,
     T2DM,
 )
+from clinical_demo.terminology import TerminologyCache, TerminologyResolver
 
 
 @pytest.mark.parametrize(
@@ -85,10 +90,22 @@ def test_lookup_lab_unknown_returns_none() -> None:
     assert lookup_lab("BNP") is None
 
 
-def test_lookup_medication_v0_returns_none_for_everything() -> None:
-    """v0's medication table is intentionally empty; pin that
-    behaviour so we notice when it changes."""
-    for s in ("metformin", "insulin", "statins", "aspirin"):
+@pytest.mark.parametrize(
+    "surface,expected",
+    [
+        ("metformin", METFORMIN),
+        ("insulin", INSULIN),
+    ],
+)
+def test_lookup_medication_reviewed_surfaces(
+    surface: str, expected: object, two_pass_settings: None, tmp_path: Path
+) -> None:
+    resolver = TerminologyResolver(TerminologyCache(tmp_path), execution_policy="cached_only")
+    assert lookup_medication(surface, resolver=resolver) == expected
+
+
+def test_lookup_medication_unknown_returns_none() -> None:
+    for s in ("statins", "aspirin"):
         assert lookup_medication(s) is None
 
 

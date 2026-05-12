@@ -1036,6 +1036,256 @@
             "reviewed_at": "2026-05-12",
             "resolver_version": "reviewed-registry-v1",
             "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "metformin",
+            "normalized_surface": "metformin",
+            "status": "mapped",
+            "concept_set": "METFORMIN",
+            "candidates": [
+                {
+                    "name": "Metformin",
+                    "concept_set": "METFORMIN",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["860975"],
+                    "source": "clinical_demo.profile.concept_sets",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries metformin as RxNorm 860975."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary metformin ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication compiler rollout: promote high-frequency diabetes medication surfaces out of cache-dependent RxNorm lookup.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "insulin",
+            "normalized_surface": "insulin",
+            "status": "mapped",
+            "concept_set": "INSULIN",
+            "candidates": [
+                {
+                    "name": "Insulin",
+                    "concept_set": "INSULIN",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["106892"],
+                    "source": "clinical_demo.profile.concept_sets",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries insulin as RxNorm 106892."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary insulin ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication compiler rollout: promote high-frequency diabetes medication surfaces out of cache-dependent RxNorm lookup.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "atorvastatin",
+            "normalized_surface": "atorvastatin",
+            "status": "mapped",
+            "concept_set": "ATORVASTATIN",
+            "candidates": [
+                {
+                    "name": "Atorvastatin",
+                    "concept_set": "ATORVASTATIN",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["259255"],
+                    "source": "clinical_demo.profile.concept_sets",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries atorvastatin as RxNorm 259255."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary atorvastatin ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: statin class expansion members must resolve without relying on gitignored RxNorm cache rows.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "simvastatin",
+            "normalized_surface": "simvastatin",
+            "status": "mapped",
+            "concept_set": "SIMVASTATIN",
+            "candidates": [
+                {
+                    "name": "Simvastatin",
+                    "concept_set": "SIMVASTATIN",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["314231", "312961"],
+                    "source": "clinical_demo.profile.concept_sets",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries simvastatin as RxNorm 314231 and 312961."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary simvastatin ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: statin class expansion members must resolve without relying on gitignored RxNorm cache rows.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "alendronic acid",
+            "normalized_surface": "alendronic acid",
+            "status": "mapped",
+            "concept_set": "ALENDRONIC_ACID",
+            "candidates": [
+                {
+                    "name": "Alendronic acid",
+                    "concept_set": "ALENDRONIC_ACID",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["904419"],
+                    "source": "clinical_demo.profile.concept_sets",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries alendronic acid as RxNorm 904419."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary alendronic-acid ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: bisphosphonate-treatment criteria can be compiled against the current patient medication vocabulary.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "lisinopril",
+            "normalized_surface": "lisinopril",
+            "status": "mapped",
+            "concept_set": "LISINOPRIL",
+            "candidates": [
+                {
+                    "name": "Lisinopril",
+                    "concept_set": "LISINOPRIL",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["314076", "314077"],
+                    "source": "clinical_demo.profile.concept_sets",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries lisinopril as RxNorm 314076 and 314077."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary lisinopril ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: RAAS-blocker criteria can be compiled against the current patient medication vocabulary.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "losartan",
+            "normalized_surface": "losartan",
+            "status": "mapped",
+            "concept_set": "LOSARTAN",
+            "candidates": [
+                {
+                    "name": "Losartan",
+                    "concept_set": "LOSARTAN",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["979492"],
+                    "source": "clinical_demo.profile.concept_sets",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries losartan as RxNorm 979492."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary losartan ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: RAAS-blocker criteria can be compiled against the current patient medication vocabulary.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "marijuana",
+            "normalized_surface": "marijuana",
+            "status": "out_of_scope",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Cannabis/marijuana exposure is substance-use history, not a structured RxNorm medication exposure in the current Synthea patient profile.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication compiler review group: marijuana surfaced as a medication gap in trial exclusions.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "glucocorticoids",
+            "normalized_surface": "glucocorticoids",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Glucocorticoid criteria need systemic/topical route and class expansion semantics before they can be checked safely.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication compiler review group: broad steroid class surface.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "immunosuppressants",
+            "normalized_surface": "immunosuppressants",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Immunosuppressant criteria require reviewed class expansion and oncology/route context; a single RxNorm surface would under-specify the criterion.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication compiler review group: broad immunosuppressant class surface.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "sulfonylurea",
+            "normalized_surface": "sulfonylurea",
+            "status": "out_of_scope",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Sulfonylurea class exposure is not represented by the current committed patient medication vocabulary.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication compiler review group: diabetes medication class with no current patient-vocabulary member.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "selective estrogen receptor modulator",
+            "normalized_surface": "selective estrogen receptor modulator",
+            "status": "out_of_scope",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "SERM exposure is not represented by the current committed patient medication vocabulary.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication compiler review group: osteoporosis medication class with no current patient-vocabulary member.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
         }
     ]
 }

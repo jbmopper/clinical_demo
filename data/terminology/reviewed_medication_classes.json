@@ -7,7 +7,8 @@
       "surfaces": [
         "statin",
         "statins",
-        "statin therapy"
+        "statin therapy",
+        "low or moderate-intensity statins"
       ],
       "member_surfaces": [
         "atorvastatin",
@@ -19,6 +20,72 @@
       "provenance": "High-frequency CHIA medication class surfaces include statin/statins; current Synthea cardiometabolic cohort carries atorvastatin and simvastatin as active medication codes.",
       "reviewer": "codex-assisted review",
       "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
+      "class_id": "reviewed-medication-class:lipid-lowering-current-vocab",
+      "display": "Lipid-lowering therapy (current patient vocabulary)",
+      "surfaces": [
+        "lipid-lowering treatment",
+        "lipid-lowering therapy",
+        "lipid-lowering therapies",
+        "lipid-lowering oral drug",
+        "lipid-lowering oral drugs"
+      ],
+      "member_surfaces": [
+        "atorvastatin",
+        "simvastatin"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed broad lipid-lowering therapy expansion closed over the committed Synthea patient vocabulary, which currently carries atorvastatin and simvastatin representatives.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced lipid-lowering treatment/oral-drug criteria as medication-class gaps.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
+      "class_id": "reviewed-medication-class:bisphosphonates-current-vocab",
+      "display": "Bisphosphonates (current patient vocabulary)",
+      "surfaces": [
+        "bisphosphonate treatment",
+        "bisphosphonate therapy",
+        "bisphosphonates"
+      ],
+      "member_surfaces": [
+        "alendronic acid"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed bisphosphonate expansion closed over the committed Synthea patient vocabulary, which currently carries alendronic acid.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced bisphosphonate treatment as a medication-class gap.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
+      "class_id": "reviewed-medication-class:raas-blockers-current-vocab",
+      "display": "RAAS blockers (current patient vocabulary)",
+      "surfaces": [
+        "raas inhibitor",
+        "raas inhibitors",
+        "raas inhibitor therapy",
+        "renin angiotensin system blockers",
+        "renin angiotensin system blockers (RASB)",
+        "RASB",
+        "ras blockers",
+        "renin angiotensin system blocker"
+      ],
+      "member_surfaces": [
+        "lisinopril",
+        "losartan"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed RAAS-blocker expansion closed over the committed Synthea patient vocabulary, which currently carries lisinopril and losartan representatives.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced RAAS/RASB medication-class criteria as unresolved class surfaces.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
       "resolver_version": "reviewed-medication-class-registry-v1"
     },
     {

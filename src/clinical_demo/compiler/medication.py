@@ -23,6 +23,11 @@ from clinical_demo.terminology.medication_classes import (
     get_reviewed_medication_class_registry,
 )
 from clinical_demo.terminology.resolver import get_resolver
+from clinical_demo.terminology.reviewed_registry import (
+    ReviewedMappingEntry,
+    ReviewedMappingRegistry,
+    load_reviewed_mapping_registry,
+)
 
 from .schema import (
     CheckablePredicatePlan,
@@ -45,13 +50,15 @@ _CLASS_PATTERNS: tuple[re.Pattern[str], ...] = tuple(
         r"\bsglt-?2\b",
         r"\bdpp-?4\b",
         r"\bpcsk9\b",
+        r"\b(?:raas|rasb)\b",
+        r"\bbisphosphonates?\b",
         r"\b(?:receptor\s+)?agonists?\b",
         r"\bantagonists?\b",
         r"\binhibitors?\b",
         r"\bblockers?\b",
         r"\bstatins?\b",
         r"\b(?:drug|medication|therapy|therapeutic)\s+class(?:es)?\b",
-        r"\b(?:agents?|drugs?|medications?|therap(?:y|ies))\b",
+        r"\b(?:agents?|drugs?|medications?|therap(?:y|ies)|treatments?)\b",
     )
 )
 _ROUTE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
@@ -118,6 +125,7 @@ def compile_medication_resolution(
     source_criterion_id: str,
     resolver_policy: ResolverExecutionPolicy = "cached_only",
     resolver: MedicationResolver | None = None,
+    reviewed_registry: ReviewedMappingRegistry | None = None,
 ) -> MedicationCompilationResult:
     """Compile medication concept resolution for one criterion.
 
@@ -127,6 +135,7 @@ def compile_medication_resolution(
     or reports `execution_policy == "cached_only"`.
     """
 
+    mappings = reviewed_registry or load_reviewed_mapping_registry()
     surface, required_presence = _criterion_surface_and_presence(criterion)
     normalized = normalize_medication_surface(surface) if surface is not None else None
     route_plan = _route_plan(surface)
@@ -174,22 +183,41 @@ def compile_medication_resolution(
             gaps=[gap],
         )
 
-    composite_reason = _class_or_composite_reason(surface)
-    if composite_reason == "medication_class":
-        class_entry = get_reviewed_medication_class_registry().lookup(surface)
-        if class_entry is not None:
-            return _compile_reviewed_medication_class(
-                source_criterion_id=source_criterion_id,
-                surface=surface,
-                normalized_surface=normalized,
-                required_presence=required_presence,
-                route_plan=route_plan,
-                ingredient_plan=ingredient_plan,
-                class_entry=class_entry,
-                resolver_policy=resolver_policy,
-                resolver=resolver,
-            )
+    reviewed_nonmapped = _reviewed_nonmapped_medication_entry(
+        mappings,
+        surface=surface,
+        ingredient_surface=ingredient_surface,
+    )
+    if reviewed_nonmapped is not None:
+        entry, lookup_surface = reviewed_nonmapped
+        return _reviewed_nonmapped_medication_result(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            normalized_surface=normalized,
+            lookup_surface=lookup_surface,
+            required_presence=required_presence,
+            route_plan=route_plan,
+            ingredient_plan=ingredient_plan,
+            class_plan=class_plan,
+            entry=entry,
+            resolver_policy=resolver_policy,
+        )
 
+    class_entry = get_reviewed_medication_class_registry().lookup(surface)
+    if class_entry is not None:
+        return _compile_reviewed_medication_class(
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            normalized_surface=normalized,
+            required_presence=required_presence,
+            route_plan=route_plan,
+            ingredient_plan=ingredient_plan,
+            class_entry=class_entry,
+            resolver_policy=resolver_policy,
+            resolver=resolver,
+        )
+
+    composite_reason = _class_or_composite_reason(surface)
     if composite_reason is not None:
         gap_kind: ResolutionGapKind = (
             "ambiguous_mapping"
@@ -620,6 +648,101 @@ def _compile_reviewed_medication_class(
         ),
         supports=all_supports,
         diagnostics=diagnostics,
+    )
+
+
+def _reviewed_nonmapped_medication_entry(
+    registry: ReviewedMappingRegistry,
+    *,
+    surface: str,
+    ingredient_surface: str | None,
+) -> tuple[ReviewedMappingEntry, str] | None:
+    lookup_surfaces = (ingredient_surface, surface)
+    seen: set[str] = set()
+    for lookup_surface in lookup_surfaces:
+        if lookup_surface is None:
+            continue
+        normalized = normalize_medication_surface(lookup_surface)
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        entry = registry.lookup("medication", lookup_surface)
+        if entry is not None and entry.status != "mapped":
+            return entry, lookup_surface
+    return None
+
+
+def _reviewed_nonmapped_medication_result(
+    *,
+    source_criterion_id: str,
+    surface: str,
+    normalized_surface: str | None,
+    lookup_surface: str,
+    required_presence: MedicationPresence,
+    route_plan: MedicationAspectPlan,
+    ingredient_plan: MedicationAspectPlan,
+    class_plan: MedicationAspectPlan,
+    entry: ReviewedMappingEntry,
+    resolver_policy: ResolverExecutionPolicy,
+) -> MedicationCompilationResult:
+    gap_kind: ResolutionGapKind = (
+        "ambiguous_mapping" if entry.status == "ambiguous" else "unsupported_predicate"
+    )
+    status: ResolutionStatus = "ambiguous" if gap_kind == "ambiguous_mapping" else "unsupported"
+    gap = _gap(
+        source_criterion_id,
+        surface=lookup_surface,
+        kind=gap_kind,
+        message=f"Reviewed medication surface classified as {entry.status}: {entry.reason}",
+        resolver_policy=resolver_policy,
+        suffix=f"reviewed-{entry.status}",
+    )
+    is_class_like = _class_or_composite_reason(surface) == "medication_class"
+    return _result(
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        normalized_surface=normalized_surface,
+        required_presence=required_presence,
+        concept_set=None,
+        route=route_plan,
+        ingredient=ingredient_plan.model_copy(
+            update={
+                "status": "skipped" if is_class_like else status,
+                "gap_ids": [] if is_class_like else [gap.gap_id],
+            }
+        ),
+        medication_class=(
+            MedicationAspectPlan(
+                aspect="medication_class",
+                status=status,
+                surface=surface,
+                normalized_surface=normalized_surface,
+                gap_ids=[gap.gap_id],
+            )
+            if is_class_like
+            else class_plan
+        ),
+        predicate=_predicate_plan(
+            source_criterion_id,
+            required_presence=required_presence,
+            status=status,
+            gap_ids=[gap.gap_id],
+        ),
+        gaps=[gap],
+        diagnostics=[
+            _diagnostic(
+                source_criterion_id,
+                code=f"medication.reviewed.{entry.status}",
+                message=gap.message,
+                severity="warning",
+                facts=[
+                    DiagnosticFact(key="gap_id", value=gap.gap_id),
+                    DiagnosticFact(key="status", value=entry.status),
+                    DiagnosticFact(key="reviewer", value=entry.reviewer),
+                    DiagnosticFact(key="provenance", value=entry.provenance),
+                ],
+            )
+        ],
     )
 
 

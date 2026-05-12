@@ -23,6 +23,7 @@ from clinical_demo.profile.profile import ConceptSet
 
 SNOMED = "http://snomed.info/sct"
 LOINC = "http://loinc.org"
+RXNORM = "http://www.nlm.nih.gov/research/umls/rxnorm"
 
 # ---- conditions (SNOMED) ----
 
@@ -213,10 +214,75 @@ DIASTOLIC_BP = ConceptSet(
     codes=frozenset({"8462-4"}),
 )
 
+# ---- medications (RxNorm) ----
+#
+# These sets are intentionally closed over the current committed Synthea
+# patient vocabulary. Broader ingredient/class expansion belongs in the
+# terminology compiler layer; these constants are the executable code anchors
+# for reviewed medication surfaces and class members.
+
+METFORMIN = ConceptSet(
+    name="Metformin",
+    system=RXNORM,
+    codes=frozenset({"860975"}),  # 24 HR Metformin hydrochloride 500 MG ER Oral Tablet
+)
+
+INSULIN = ConceptSet(
+    name="Insulin",
+    system=RXNORM,
+    codes=frozenset(
+        {
+            "106892",  # Humulin 70/30 Synthea representative
+        }
+    ),
+)
+
+ATORVASTATIN = ConceptSet(
+    name="Atorvastatin",
+    system=RXNORM,
+    codes=frozenset({"259255"}),  # Atorvastatin 80 MG Oral Tablet
+)
+
+SIMVASTATIN = ConceptSet(
+    name="Simvastatin",
+    system=RXNORM,
+    codes=frozenset(
+        {
+            "314231",  # Simvastatin 10 MG Oral Tablet
+            "312961",  # Simvastatin 20 MG Oral Tablet
+        }
+    ),
+)
+
+ALENDRONIC_ACID = ConceptSet(
+    name="Alendronic acid",
+    system=RXNORM,
+    codes=frozenset({"904419"}),  # Alendronic acid 10 MG Oral Tablet
+)
+
+LISINOPRIL = ConceptSet(
+    name="Lisinopril",
+    system=RXNORM,
+    codes=frozenset(
+        {
+            "314076",  # Lisinopril 10 MG Oral Tablet
+            "314077",  # Lisinopril 20 MG Oral Tablet
+        }
+    ),
+)
+
+LOSARTAN = ConceptSet(
+    name="Losartan",
+    system=RXNORM,
+    codes=frozenset({"979492"}),  # Losartan potassium 50 MG Oral Tablet
+)
+
 CONCEPT_SETS_BY_ID: dict[str, ConceptSet] = {
     "ABSOLUTE_NEUTROPHIL_COUNT": ABSOLUTE_NEUTROPHIL_COUNT,
+    "ALENDRONIC_ACID": ALENDRONIC_ACID,
     "ALANINE_AMINOTRANSFERASE": ALANINE_AMINOTRANSFERASE,
     "ASPARTATE_AMINOTRANSFERASE": ASPARTATE_AMINOTRANSFERASE,
+    "ATORVASTATIN": ATORVASTATIN,
     "BMI": BMI,
     "CHRONIC_KIDNEY_DISEASE": CHRONIC_KIDNEY_DISEASE,
     "CKD_STAGE_3_OR_4": CKD_STAGE_3_OR_4,
@@ -229,10 +295,15 @@ CONCEPT_SETS_BY_ID: dict[str, ConceptSet] = {
     "HEMOGLOBIN": HEMOGLOBIN,
     "HYPERLIPIDEMIA": HYPERLIPIDEMIA,
     "HYPERTENSION": HYPERTENSION,
+    "INSULIN": INSULIN,
     "LDL_CHOLESTEROL": LDL_CHOLESTEROL,
+    "LISINOPRIL": LISINOPRIL,
+    "LOSARTAN": LOSARTAN,
+    "METFORMIN": METFORMIN,
     "PLATELET_COUNT": PLATELET_COUNT,
     "PREDIABETES": PREDIABETES,
     "SERUM_CREATININE": SERUM_CREATININE,
+    "SIMVASTATIN": SIMVASTATIN,
     "SYSTOLIC_BP": SYSTOLIC_BP,
     "T1DM": T1DM,
     "T2DM": T2DM,
@@ -252,7 +323,9 @@ def concept_set_by_id(concept_set_id: str | None) -> ConceptSet | None:
 __all__ = [
     "ABSOLUTE_NEUTROPHIL_COUNT",
     "ALANINE_AMINOTRANSFERASE",
+    "ALENDRONIC_ACID",
     "ASPARTATE_AMINOTRANSFERASE",
+    "ATORVASTATIN",
     "BMI",
     "CHRONIC_KIDNEY_DISEASE",
     "CKD_STAGE_3_OR_4",
@@ -266,10 +339,16 @@ __all__ = [
     "HEMOGLOBIN",
     "HYPERLIPIDEMIA",
     "HYPERTENSION",
+    "INSULIN",
     "LDL_CHOLESTEROL",
+    "LISINOPRIL",
+    "LOSARTAN",
+    "METFORMIN",
     "PLATELET_COUNT",
     "PREDIABETES",
+    "RXNORM",
     "SERUM_CREATININE",
+    "SIMVASTATIN",
     "SYSTOLIC_BP",
     "T1DM",
     "T2DM",

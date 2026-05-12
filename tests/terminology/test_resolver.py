@@ -21,7 +21,7 @@ from pathlib import Path
 import httpx
 
 from clinical_demo.profile import ConceptSet
-from clinical_demo.profile.concept_sets import FRACTURE
+from clinical_demo.profile.concept_sets import FRACTURE, METFORMIN
 from clinical_demo.terminology import (
     ECQM_DIABETES_OID,
     REVIEWED_REGISTRY_VERSION,
@@ -539,18 +539,28 @@ def test_resolve_lab_ambiguous_surface_is_cached_as_nonresolved(tmp_path: Path) 
     }
 
 
-def test_resolve_medication_soft_fails_when_cache_empty_and_no_client(
+def test_resolve_medication_reviewed_mapping_wins_without_cache_or_client(
     tmp_path: Path,
 ) -> None:
-    """Registry hits ('metformin' is now in MEDICATION_BINDINGS),
-    but the cache is empty and no `rxnorm_client` is configured ->
-    soft-fail to `None`. The matcher's caller falls back to the
-    alias table (which is empty for meds today, so the verdict is
-    `unmapped_concept`); a fresh checkout without pre-warmed cache
-    rows reproduces the alias-only baseline behaviour exactly."""
     cache = TerminologyCache(tmp_path)
     resolver = TerminologyResolver(cache, rxnorm_client=None)
-    assert resolver.resolve_medication("metformin") is None
+
+    out = resolver.resolve_medication("metformin")
+
+    assert out == METFORMIN
+    cached = cache.get_surface_resolution("medication", "metformin")
+    assert cached is not None
+    assert cached.status == "mapped"
+    assert cached.concept_set == METFORMIN
+
+
+def test_resolve_medication_unknown_surface_soft_fails_without_client(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, rxnorm_client=None)
+
+    assert resolver.resolve_medication("unknown-drug") is None
 
 
 def test_resolve_medication_open_rxnorm_searches_any_surface_and_caches(

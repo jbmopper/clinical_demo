@@ -13,6 +13,9 @@ interactions are smoke-tested at the top-level dispatcher in
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
+
+import pytest
 
 from clinical_demo.extractor.schema import EntityMention
 from clinical_demo.matcher import MATCHER_VERSION, match_criterion
@@ -217,14 +220,38 @@ def test_condition_absent_closed_world_passes_after_polarity() -> None:
 # ---------- medication ----------
 
 
-def test_medication_always_indeterminate_in_v0() -> None:
-    """Med lookup table is intentionally empty; this is the design
-    contract. If you start populating that table, this test should
-    fail and you should rewrite it deliberately."""
+def _force_two_pass_lookup(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from clinical_demo.settings import Settings, get_settings
+    from clinical_demo.terminology.resolver import get_resolver
+
+    monkeypatch.setitem(Settings.model_config, "env_file", None)
+    monkeypatch.setattr(
+        "clinical_demo.matcher.concept_lookup.get_settings",
+        lambda: Settings(binding_strategy="two_pass", terminology_cache_dir=tmp_path),
+    )
+    get_settings.cache_clear()
+    get_resolver.cache_clear()
+
+
+def test_reviewed_medication_present_passes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _force_two_pass_lookup(monkeypatch, tmp_path)
+    profile = make_profile(medications=[make_medication(code="860975")])
+    v = match_criterion(crit_medication(text="metformin"), profile, make_trial())
+    assert v.verdict == "pass"
+    assert v.reason == "ok"
+    assert any(e.kind == "medication" for e in v.evidence)
+
+
+def test_reviewed_medication_open_world_no_match_indeterminate(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _force_two_pass_lookup(monkeypatch, tmp_path)
     profile = make_profile()
     v = match_criterion(crit_medication(text="metformin"), profile, make_trial())
     assert v.verdict == "indeterminate"
-    assert v.reason == "unmapped_concept"
+    assert v.reason == "no_data"
 
 
 # ---------- measurement_threshold ----------

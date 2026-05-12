@@ -76,6 +76,9 @@ def test_committed_reviewed_medication_classes_load() -> None:
     )
 
     statins = registry.lookup("statins")
+    lipid_lowering = registry.lookup("lipid-lowering oral drugs")
+    bisphosphonates = registry.lookup("bisphosphonate treatment")
+    raas = registry.lookup("RASB")
     glp1 = registry.lookup("GLP-1 RA")
     sglt2 = registry.lookup("sglt-2 inhibitors")
 
@@ -83,6 +86,13 @@ def test_committed_reviewed_medication_classes_load() -> None:
     assert statins.member_surfaces == ("atorvastatin", "simvastatin")
     assert statins.expansion_policy == "patient_vocabulary_closure"
     assert statins.resolver_version == REVIEWED_MEDICATION_CLASS_REGISTRY_VERSION
+    assert registry.lookup("low or moderate-intensity statins") is statins
+    assert lipid_lowering is not None
+    assert lipid_lowering.member_surfaces == ("atorvastatin", "simvastatin")
+    assert bisphosphonates is not None
+    assert bisphosphonates.member_surfaces == ("alendronic acid",)
+    assert raas is not None
+    assert raas.member_surfaces == ("lisinopril", "losartan")
     assert glp1 is not None
     assert glp1.member_surfaces == ("semaglutide",)
     assert sglt2 is not None
