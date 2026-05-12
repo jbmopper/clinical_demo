@@ -5,40 +5,33 @@
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
   "artifact_type": "run-movement-review",
-  "baseline_run_id": "6a88853d0199",
-  "comparison_run_id": "697521739b59",
+  "baseline_run_id": "e8efb7bcce35",
+  "comparison_run_id": "752bd67507c6",
   "summary": {
-    "baseline_run_id": "6a88853d0199",
-    "comparison_run_id": "697521739b59",
+    "baseline_run_id": "e8efb7bcce35",
+    "comparison_run_id": "752bd67507c6",
     "common_cases": 49,
-    "changed_cases": 5,
+    "changed_cases": 3,
     "compared_criteria": 1076,
-    "changed_criteria": 243,
+    "changed_criteria": 242,
     "by_case_movement": {
-      "indeterminate->fail": 4,
+      "indeterminate->fail": 2,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 8,
-      "indeterminate->indeterminate": 224,
-      "indeterminate->pass": 11
+      "fail->indeterminate": 1,
+      "indeterminate->fail": 4,
+      "indeterminate->indeterminate": 225,
+      "indeterminate->pass": 8,
+      "pass->indeterminate": 4
     },
     "by_direction": {
-      "indeterminate_to_determinate": 19,
-      "reason_changed": 224
+      "determinate_to_indeterminate": 5,
+      "indeterminate_to_determinate": 12,
+      "reason_changed": 225
     }
   },
   "case_movements": [
-    {
-      "row_id": "case:060e72d3__NCT05713006",
-      "pair_id": "060e72d3__NCT05713006",
-      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
-      "nct_id": "NCT05713006",
-      "eval_slice": "nsclc",
-      "baseline_eligibility": "indeterminate",
-      "comparison_eligibility": "fail",
-      "movement": "indeterminate->fail"
-    },
     {
       "row_id": "case:3a364909__NCT07362459",
       "pair_id": "3a364909__NCT07362459",
@@ -65,16 +58,6 @@
       "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
       "nct_id": "NCT07362459",
       "eval_slice": "nsclc",
-      "baseline_eligibility": "indeterminate",
-      "comparison_eligibility": "fail",
-      "movement": "indeterminate->fail"
-    },
-    {
-      "row_id": "case:e7d52393__NCT04040959",
-      "pair_id": "e7d52393__NCT04040959",
-      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
-      "nct_id": "NCT04040959",
-      "eval_slice": "ckd",
       "baseline_eligibility": "indeterminate",
       "comparison_eligibility": "fail",
       "movement": "indeterminate->fail"
@@ -236,35 +219,6 @@
       "comparison_gap_ids": [
         "criterion:15:measurement:gap:reviewed-extractor_bug"
       ]
-    },
-    {
-      "row_id": "criterion:060e72d3__NCT05713006:17",
-      "pair_id": "060e72d3__NCT05713006",
-      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
-      "nct_id": "NCT05713006",
-      "eval_slice": "nsclc",
-      "criterion_index": 17,
-      "criterion_kind": "condition_absent",
-      "criterion_source_text": "Previous malignancies except for any carcinoma in-situ",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "fail",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->fail",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": true,
-      "comparison_compiled_id": "compiled:criterion:17",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [
-        "criterion:17:predicate:condition"
-      ],
-      "comparison_support_ids": [
-        "criterion:17:condition:support:concept-set",
-        "criterion:17:condition:support:expansion"
-      ],
-      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:1293efbb__NCT06524960:5",
@@ -441,35 +395,6 @@
       "comparison_gap_ids": [
         "criterion:4:measurement:gap:reviewed-out_of_scope"
       ]
-    },
-    {
-      "row_id": "criterion:1293efbb__NCT06964087:10",
-      "pair_id": "1293efbb__NCT06964087",
-      "patient_id": "1293efbb-72dc-8b15-3bd6-916f96ed54f4",
-      "nct_id": "NCT06964087",
-      "eval_slice": "t2dm-industry",
-      "criterion_index": 10,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "Has chronic kidney disease of Stage 2 or higher with eGFR of <90 mL/min/1.73m2.",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "no_data",
-      "comparison_verdict": "pass",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->pass",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:10",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [
-        "criterion:10:predicate:measurement"
-      ],
-      "comparison_support_ids": [
-        "criterion:10:measurement:loinc",
-        "criterion:10:unit:normalization"
-      ],
-      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:28db1c55__NCT06941441:3",
@@ -1310,35 +1235,6 @@
       ]
     },
     {
-      "row_id": "criterion:38f38890__NCT06217302:2",
-      "pair_id": "38f38890__NCT06217302",
-      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
-      "nct_id": "NCT06217302",
-      "eval_slice": "ckd",
-      "criterion_index": 2,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "eGFR based on serum creatinine and cystatin c (2021 serum creatinine-cystatin C CKD-EPI equation) between 20 and 60 ml/min/1.73 m2 at screening",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "no_data",
-      "comparison_verdict": "fail",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->fail",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:2",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [
-        "criterion:2:predicate:measurement"
-      ],
-      "comparison_support_ids": [
-        "criterion:2:measurement:loinc",
-        "criterion:2:unit:normalization"
-      ],
-      "comparison_gap_ids": []
-    },
-    {
       "row_id": "criterion:38f38890__NCT06217302:5",
       "pair_id": "38f38890__NCT06217302",
       "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
@@ -1633,6 +1529,62 @@
       ]
     },
     {
+      "row_id": "criterion:3a364909__NCT06220266:7",
+      "pair_id": "3a364909__NCT06220266",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 7,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Endocrine system disease such as thyroid",
+      "baseline_verdict": "pass",
+      "baseline_reason": "ok",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "pass->indeterminate",
+      "direction": "determinate_to_indeterminate",
+      "baseline_evidence_under_assumption": true,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [
+        "criterion:7:condition:support:concept-set"
+      ],
+      "comparison_gap_ids": [
+        "criterion:7:condition:gap:expansion"
+      ]
+    },
+    {
+      "row_id": "criterion:3a364909__NCT06220266:10",
+      "pair_id": "3a364909__NCT06220266",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 10,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "has a psychiatric disorder",
+      "baseline_verdict": "pass",
+      "baseline_reason": "ok",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "pass->indeterminate",
+      "direction": "determinate_to_indeterminate",
+      "baseline_evidence_under_assumption": true,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:10",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [
+        "criterion:10:condition:support:concept-set"
+      ],
+      "comparison_gap_ids": [
+        "criterion:10:condition:gap:expansion"
+      ]
+    },
+    {
       "row_id": "criterion:3a364909__NCT07362459:2",
       "pair_id": "3a364909__NCT07362459",
       "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
@@ -1735,35 +1687,6 @@
       ],
       "comparison_support_ids": [
         "criterion:32:free-text:support:trial-exposure"
-      ],
-      "comparison_gap_ids": []
-    },
-    {
-      "row_id": "criterion:3beee40e__NCT06143566:3",
-      "pair_id": "3beee40e__NCT06143566",
-      "patient_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
-      "nct_id": "NCT06143566",
-      "eval_slice": "t2dm-academic",
-      "criterion_index": 3,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "eGFR < 25",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "pass",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->pass",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:3",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [
-        "criterion:3:predicate:measurement"
-      ],
-      "comparison_support_ids": [
-        "criterion:3:measurement:loinc",
-        "criterion:3:unit:normalization"
       ],
       "comparison_gap_ids": []
     },
@@ -2719,6 +2642,35 @@
       ]
     },
     {
+      "row_id": "criterion:509f9a77__NCT07221513:9",
+      "pair_id": "509f9a77__NCT07221513",
+      "patient_id": "509f9a77-2a22-f98b-c539-9a44057efb51",
+      "nct_id": "NCT07221513",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 9,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Body mass index (BMI) >45 kg/m² at screening.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:9:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:9:measurement:loinc",
+        "criterion:9:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:55c5b8d3__NCT06128278:3",
       "pair_id": "55c5b8d3__NCT06128278",
       "patient_id": "55c5b8d3-99d0-58ad-8444-e42bb81bd5c7",
@@ -3457,6 +3409,62 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT06220266:7",
+      "pair_id": "60b0873c__NCT06220266",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 7,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Endocrine system disease such as thyroid",
+      "baseline_verdict": "pass",
+      "baseline_reason": "ok",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "pass->indeterminate",
+      "direction": "determinate_to_indeterminate",
+      "baseline_evidence_under_assumption": true,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [
+        "criterion:7:condition:support:concept-set"
+      ],
+      "comparison_gap_ids": [
+        "criterion:7:condition:gap:expansion"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT06220266:10",
+      "pair_id": "60b0873c__NCT06220266",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 10,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "has a psychiatric disorder",
+      "baseline_verdict": "pass",
+      "baseline_reason": "ok",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "pass->indeterminate",
+      "direction": "determinate_to_indeterminate",
+      "baseline_evidence_under_assumption": true,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:10",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [
+        "criterion:10:condition:support:concept-set"
+      ],
+      "comparison_gap_ids": [
+        "criterion:10:condition:gap:expansion"
       ]
     },
     {
@@ -4844,6 +4852,63 @@
       ]
     },
     {
+      "row_id": "criterion:a06bce31__NCT07221513:9",
+      "pair_id": "a06bce31__NCT07221513",
+      "patient_id": "a06bce31-d0dc-f345-df41-777fb453afaf",
+      "nct_id": "NCT07221513",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 9,
+      "criterion_kind": "measurement_threshold",
+      "criterion_source_text": "Body mass index (BMI) >45 kg/m² at screening.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "measurement_threshold",
+      "comparison_predicate_ids": [
+        "criterion:9:predicate:measurement"
+      ],
+      "comparison_support_ids": [
+        "criterion:9:measurement:loinc",
+        "criterion:9:unit:normalization"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:aa01ba4c__NCT07064473:5",
+      "pair_id": "aa01ba4c__NCT07064473",
+      "patient_id": "aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f",
+      "nct_id": "NCT07064473",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 5,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Established cardiovascular (CV) disease and on active pharmacological treatment",
+      "baseline_verdict": "fail",
+      "baseline_reason": "ok",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "fail->indeterminate",
+      "direction": "determinate_to_indeterminate",
+      "baseline_evidence_under_assumption": true,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:5",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [
+        "criterion:5:condition:support:concept-set"
+      ],
+      "comparison_gap_ids": [
+        "criterion:5:condition:gap:expansion"
+      ]
+    },
+    {
       "row_id": "criterion:aa01ba4c__NCT07064473:6",
       "pair_id": "aa01ba4c__NCT07064473",
       "patient_id": "aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f",
@@ -5024,35 +5089,6 @@
       "comparison_gap_ids": [
         "criterion:1:measurement:gap:reviewed-extractor_bug"
       ]
-    },
-    {
-      "row_id": "criterion:c2786fee__NCT06217302:2",
-      "pair_id": "c2786fee__NCT06217302",
-      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
-      "nct_id": "NCT06217302",
-      "eval_slice": "ckd",
-      "criterion_index": 2,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "eGFR based on serum creatinine and cystatin c (2021 serum creatinine-cystatin C CKD-EPI equation) between 20 and 60 ml/min/1.73 m2 at screening",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "no_data",
-      "comparison_verdict": "fail",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->fail",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:2",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [
-        "criterion:2:predicate:measurement"
-      ],
-      "comparison_support_ids": [
-        "criterion:2:measurement:loinc",
-        "criterion:2:unit:normalization"
-      ],
-      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:c2786fee__NCT06217302:5",
@@ -5359,23 +5395,20 @@
       "criterion_source_text": "Active liver disease defined as any known current infectious, neoplastic, or metabolic pathology of the liver or unexplained alanine aminotransferase (ALT), aspartate aminotransferase (AST) elevation >3x ULN, or total bilirubin elevation >2x ULN (except patients with Gilbert's syndrome)",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "pass",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->pass",
-      "direction": "indeterminate_to_determinate",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": true,
+      "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "resolved",
+      "comparison_predicate_status": "unresolved",
       "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [
-        "criterion:13:predicate:condition"
-      ],
-      "comparison_support_ids": [
-        "criterion:13:condition:support:concept-set",
-        "criterion:13:condition:support:expansion"
-      ],
-      "comparison_gap_ids": []
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:13:condition:gap:reviewed-composite_unhandled"
+      ]
     },
     {
       "row_id": "criterion:c46a254d__NCT06941441:3",
@@ -6049,35 +6082,6 @@
       "comparison_gap_ids": []
     },
     {
-      "row_id": "criterion:d57e867e__NCT06143566:3",
-      "pair_id": "d57e867e__NCT06143566",
-      "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
-      "nct_id": "NCT06143566",
-      "eval_slice": "t2dm-academic",
-      "criterion_index": 3,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "eGFR < 25",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "ambiguous_criterion",
-      "comparison_verdict": "pass",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->pass",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:3",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [
-        "criterion:3:predicate:measurement"
-      ],
-      "comparison_support_ids": [
-        "criterion:3:measurement:loinc",
-        "criterion:3:unit:normalization"
-      ],
-      "comparison_gap_ids": []
-    },
-    {
       "row_id": "criterion:d57e867e__NCT06143566:5",
       "pair_id": "d57e867e__NCT06143566",
       "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
@@ -6156,35 +6160,6 @@
       ]
     },
     {
-      "row_id": "criterion:e7d52393__NCT04040959:13",
-      "pair_id": "e7d52393__NCT04040959",
-      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
-      "nct_id": "NCT04040959",
-      "eval_slice": "ckd",
-      "criterion_index": 13,
-      "criterion_kind": "condition_absent",
-      "criterion_source_text": "Known malignancy",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "fail",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->fail",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": true,
-      "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [
-        "criterion:13:predicate:condition"
-      ],
-      "comparison_support_ids": [
-        "criterion:13:condition:support:concept-set",
-        "criterion:13:condition:support:expansion"
-      ],
-      "comparison_gap_ids": []
-    },
-    {
       "row_id": "criterion:e7d52393__NCT06568471:3",
       "pair_id": "e7d52393__NCT06568471",
       "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
@@ -6211,35 +6186,6 @@
         "criterion:3:medication:support:class-expansion",
         "criterion:3:medication:support:class-member-001",
         "criterion:3:medication:support:class-member-002"
-      ],
-      "comparison_gap_ids": []
-    },
-    {
-      "row_id": "criterion:e7d52393__NCT06568471:8",
-      "pair_id": "e7d52393__NCT06568471",
-      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
-      "nct_id": "NCT06568471",
-      "eval_slice": "hyperlipidemia",
-      "criterion_index": 8,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "Estimated glomerular filtration rate (eGFR)<30 mL/min/1.73m2;",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "no_data",
-      "comparison_verdict": "pass",
-      "comparison_reason": "ok",
-      "movement": "indeterminate->pass",
-      "direction": "indeterminate_to_determinate",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:8",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [
-        "criterion:8:predicate:measurement"
-      ],
-      "comparison_support_ids": [
-        "criterion:8:measurement:loinc",
-        "criterion:8:unit:normalization"
       ],
       "comparison_gap_ids": []
     },

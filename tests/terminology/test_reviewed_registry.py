@@ -109,3 +109,28 @@ def test_committed_medication_mappings_load() -> None:
     assert metformin.expansion_policy == "patient_vocabulary_closure"
     assert marijuana is not None
     assert marijuana.status == "out_of_scope"
+
+
+def test_committed_cache_independent_closure_mappings_load() -> None:
+    registry = load_reviewed_mapping_registry(
+        REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
+    )
+
+    pregnancy = registry.lookup("condition", "pregnancy")
+    ph = registry.lookup("condition", "PH")
+    sotatercept = registry.lookup("medication", "Sotatercept")
+    active_liver_disease = registry.lookup("condition", "active liver disease")
+
+    assert pregnancy is not None
+    assert pregnancy.status == "mapped"
+    assert pregnancy.concept_set == "reviewed:condition:pregnancy"
+    assert pregnancy.candidates[0].codes == frozenset({"289908002", "77386006"})
+    assert ph is not None
+    assert ph.status == "mapped"
+    assert ph.concept_set == "reviewed:condition:pulmonary-hypertension"
+    assert ph.candidates[0].codes == frozenset({"70995007"})
+    assert sotatercept is not None
+    assert sotatercept.status == "mapped"
+    assert len(sotatercept.candidates[0].codes) == 8
+    assert active_liver_disease is not None
+    assert active_liver_disease.status == "composite_unhandled"

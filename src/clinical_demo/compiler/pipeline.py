@@ -1147,6 +1147,27 @@ def _condition_candidates(
 ) -> tuple[list[TerminologyCandidate], dict[tuple[str, str], ConceptSet]]:
     candidates: list[TerminologyCandidate] = []
     concept_sets: dict[tuple[str, str], ConceptSet] = {}
+
+    exact_reviewed_entry = context.reviewed_registry.lookup("condition", surface)
+    if (
+        exact_reviewed_entry is not None
+        and exact_reviewed_entry.status == "mapped"
+        and context.resolver_policy != "disabled"
+    ):
+        concept_set = context.resolver.resolve_condition(surface)
+        if concept_set is not None:
+            candidate = TerminologyCandidate(
+                source=CandidateSource(kind="reviewed_registry", name="reviewed_registry"),
+                matched_surface=surface,
+                matched_variant=surface,
+                code=_concept_set_target_id(concept_set),
+                system=concept_set.system,
+                name=concept_set.name,
+                score=1.0,
+                confidence_bucket=bucket_for_score(1.0),
+            )
+            return [candidate], {candidate.target_key: concept_set}
+
     lookup_variants: list[tuple[str, int]] = []
     seen_lookup_variants: set[str] = set()
 

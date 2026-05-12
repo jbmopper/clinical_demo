@@ -148,6 +148,34 @@ def _reviewed_lab_mapping(surface: str, concept_set: str) -> ReviewedMappingEntr
     )
 
 
+def _reviewed_inline_condition_mapping(surface: str) -> ReviewedMappingEntry:
+    return ReviewedMappingEntry.model_validate(
+        {
+            "kind": "condition",
+            "surface": surface,
+            "status": "mapped",
+            "concept_set": "reviewed:condition:asthma-inline",
+            "candidates": [
+                {
+                    "name": "Asthma",
+                    "system": SNOMED,
+                    "codes": ["195967001"],
+                    "source": "unit test inline reviewed code set",
+                    "score": 1.0,
+                    "reason": "Inline reviewed code set should not require a Python ConceptSet.",
+                }
+            ],
+            "reason": "unit-test reviewed inline condition decision",
+            "source": "unit test",
+            "provenance": "unit test",
+            "reviewer": "unit-test",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": REVIEWED_REGISTRY_VERSION,
+            "expansion_policy": "exact_code",
+        }
+    )
+
+
 def _vsac_client_with_body(body: bytes) -> tuple[VSACClient, list[httpx.Request]]:
     captured: list[httpx.Request] = []
 
@@ -826,6 +854,28 @@ def test_reviewed_registry_lab_mapping_uses_shared_concept_registry(tmp_path: Pa
     cached = cache.get_surface_resolution("lab", "fasting serum LDL-C")
     assert cached is not None
     assert cached.status == "mapped"
+    assert cached.candidates[0].source == "reviewed_registry"
+
+
+def test_reviewed_registry_inline_code_set_maps_without_python_concept_set(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(
+        cache,
+        reviewed_registry=_reviewed_registry([_reviewed_inline_condition_mapping("asthma")]),
+    )
+
+    out = resolver.resolve_condition("asthma")
+
+    assert out is not None
+    assert out.name == "asthma"
+    assert out.system == SNOMED
+    assert out.codes == frozenset({"195967001"})
+    cached = cache.get_surface_resolution("condition", "asthma")
+    assert cached is not None
+    assert cached.status == "mapped"
+    assert cached.concept_set == out
     assert cached.candidates[0].source == "reviewed_registry"
 
 

@@ -1038,6 +1038,1054 @@
             "expansion_policy": "exact_code"
         },
         {
+            "kind": "condition",
+            "surface": "pregnancy",
+            "normalized_surface": "pregnancy",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:pregnancy",
+            "candidates": [
+                {
+                    "name": "Pregnancy",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "289908002",
+                        "77386006"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for pregnancy criteria."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for pregnancy criteria.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "acute pulmonary embolism",
+            "normalized_surface": "acute pulmonary embolism",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:acute-pulmonary-embolism",
+            "candidates": [
+                {
+                    "name": "Acute pulmonary embolism",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "706870000"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for acute pulmonary embolism."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for acute pulmonary embolism.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "atrial fibrillation",
+            "normalized_surface": "atrial fibrillation",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:atrial-fibrillation",
+            "candidates": [
+                {
+                    "name": "Atrial fibrillation",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "49436004"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for atrial fibrillation."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for atrial fibrillation.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "congestive heart failure",
+            "normalized_surface": "congestive heart failure",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:congestive-heart-failure",
+            "candidates": [
+                {
+                    "name": "Congestive heart failure",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "42343007"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for congestive heart failure."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for congestive heart failure.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "endocrine system disease",
+            "normalized_surface": "endocrine system disease",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:endocrine-system-disease",
+            "candidates": [
+                {
+                    "name": "Disorder of endocrine system",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "362969004"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed parent SNOMED mapping; descendant expansion is required before this broad disease class can execute safely."
+                }
+            ],
+            "reason": "Reviewed parent SNOMED mapping; descendant expansion is required before this broad disease class can execute safely.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "descendants"
+        },
+        {
+            "kind": "condition",
+            "surface": "history of cancer",
+            "normalized_surface": "history of cancer",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:history-of-cancer",
+            "candidates": [
+                {
+                    "name": "History of malignant neoplasm",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "266987004"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for history of cancer."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for history of cancer.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "malignancy",
+            "normalized_surface": "malignancy",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:malignancy",
+            "candidates": [
+                {
+                    "name": "Malignant neoplasm",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "1240414004"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for malignancy."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for malignancy.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "orthostatic hypotension",
+            "normalized_surface": "orthostatic hypotension",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:orthostatic-hypotension",
+            "candidates": [
+                {
+                    "name": "Orthostatic hypotension",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "28651003"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for orthostatic hypotension."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for orthostatic hypotension.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "PH",
+            "normalized_surface": "ph",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:pulmonary-hypertension",
+            "candidates": [
+                {
+                    "name": "Pulmonary hypertension",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "70995007"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed trial-context abbreviation mapping for PH as pulmonary hypertension; this intentionally overrides the unsafe warmed-cache pH finding hit."
+                }
+            ],
+            "reason": "Reviewed trial-context abbreviation mapping for PH as pulmonary hypertension; this intentionally overrides the unsafe warmed-cache pH finding hit.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "pregnancy test positive",
+            "normalized_surface": "pregnancy test positive",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:pregnancy-test-positive",
+            "candidates": [
+                {
+                    "name": "Pregnancy test positive",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "250423000"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for positive pregnancy test."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for positive pregnancy test.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "psychiatric disorder",
+            "normalized_surface": "psychiatric disorder",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:psychiatric-disorder",
+            "candidates": [
+                {
+                    "name": "Mental disorder",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "74732009"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed parent SNOMED mapping; descendant expansion is required before this broad psychiatric class can execute safely."
+                }
+            ],
+            "reason": "Reviewed parent SNOMED mapping; descendant expansion is required before this broad psychiatric class can execute safely.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "descendants"
+        },
+        {
+            "kind": "condition",
+            "surface": "secondary hypertension",
+            "normalized_surface": "secondary hypertension",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:secondary-hypertension",
+            "candidates": [
+                {
+                    "name": "Secondary hypertension",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "31992008"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for secondary hypertension."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for secondary hypertension.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "active liver disease",
+            "normalized_surface": "active liver disease",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Active liver disease combines broad hepatic disease with activity/status context; it needs condition-status or descendant logic before safe execution.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "carcinomatous meningitis",
+            "normalized_surface": "carcinomatous meningitis",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:carcinomatous-meningitis",
+            "candidates": [
+                {
+                    "name": "Malignant meningitis",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "230156002"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for carcinomatous meningitis."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for carcinomatous meningitis.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "cardiovascular disease",
+            "normalized_surface": "cardiovascular disease",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:cardiovascular-disease",
+            "candidates": [
+                {
+                    "name": "Disorder of cardiovascular system",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "49601007"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed parent SNOMED mapping; descendant expansion is required before this broad cardiovascular class can execute safely."
+                }
+            ],
+            "reason": "Reviewed parent SNOMED mapping; descendant expansion is required before this broad cardiovascular class can execute safely.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "descendants"
+        },
+        {
+            "kind": "condition",
+            "surface": "dysphagia",
+            "normalized_surface": "dysphagia",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:dysphagia",
+            "candidates": [
+                {
+                    "name": "Dysphagia",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "40739000"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for dysphagia."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for dysphagia.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "end-stage renal disease",
+            "normalized_surface": "end-stage renal disease",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:end-stage-renal-disease",
+            "candidates": [
+                {
+                    "name": "End-stage renal disease",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "46177005"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for end-stage renal disease."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for end-stage renal disease.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "heart failure",
+            "normalized_surface": "heart failure",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:heart-failure",
+            "candidates": [
+                {
+                    "name": "Heart failure",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "84114007"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for heart failure."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for heart failure.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "hypercalcemia",
+            "normalized_surface": "hypercalcemia",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:hypercalcemia",
+            "candidates": [
+                {
+                    "name": "Hypercalcemia",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "66931009"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for hypercalcemia."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for hypercalcemia.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "hypophosphatemia",
+            "normalized_surface": "hypophosphatemia",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:hypophosphatemia",
+            "candidates": [
+                {
+                    "name": "Hypophosphatemia",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "4996001"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for hypophosphatemia."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for hypophosphatemia.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "known malignancy",
+            "normalized_surface": "known malignancy",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:known-malignancy",
+            "candidates": [
+                {
+                    "name": "Malignant neoplasm",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "1240414004"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed mapping for known malignancy to malignant neoplasm; knowledge/provenance is not separately represented."
+                }
+            ],
+            "reason": "Reviewed mapping for known malignancy to malignant neoplasm; knowledge/provenance is not separately represented.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "medullary thyroid carcinoma",
+            "normalized_surface": "medullary thyroid carcinoma",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:medullary-thyroid-carcinoma",
+            "candidates": [
+                {
+                    "name": "Medullary thyroid carcinoma",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "1332275004",
+                        "255032005"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for medullary thyroid carcinoma."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for medullary thyroid carcinoma.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "nephrotic syndrome",
+            "normalized_surface": "nephrotic syndrome",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:nephrotic-syndrome",
+            "candidates": [
+                {
+                    "name": "Nephrotic syndrome",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "52254009"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for nephrotic syndrome."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for nephrotic syndrome.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "previous malignancies",
+            "normalized_surface": "previous malignancies",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:previous-malignancies",
+            "candidates": [
+                {
+                    "name": "History of malignant neoplasm",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "266987004"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed mapping for previous malignancies to history of malignant neoplasm; exception clauses remain criterion logic."
+                }
+            ],
+            "reason": "Reviewed mapping for previous malignancies to history of malignant neoplasm; exception clauses remain criterion logic.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "proliferative diabetic retinopathy",
+            "normalized_surface": "proliferative diabetic retinopathy",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:proliferative-diabetic-retinopathy",
+            "candidates": [
+                {
+                    "name": "Proliferative retinopathy due to diabetes mellitus",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "59276001"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for proliferative diabetic retinopathy."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for proliferative diabetic retinopathy.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "secondary hypercholesterolemia",
+            "normalized_surface": "secondary hypercholesterolemia",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:secondary-hypercholesterolemia",
+            "candidates": [
+                {
+                    "name": "Secondary hypercholesterolemia",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "238082007"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for secondary hypercholesterolemia."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for secondary hypercholesterolemia.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "type II diabetes mellitus",
+            "normalized_surface": "type ii diabetes mellitus",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:type-ii-diabetes-mellitus",
+            "candidates": [
+                {
+                    "name": "Type 2 diabetes mellitus",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "44054006"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for type II diabetes mellitus."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for type II diabetes mellitus.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "unstable angina",
+            "normalized_surface": "unstable angina",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:unstable-angina",
+            "candidates": [
+                {
+                    "name": "Preinfarction syndrome",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "4557003"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for unstable angina."
+                }
+            ],
+            "reason": "Reviewed exact SNOMED mapping for unstable angina.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "Sotatercept",
+            "normalized_surface": "sotatercept",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:sotatercept",
+            "candidates": [
+                {
+                    "name": "Sotatercept",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "2678937",
+                        "2678943",
+                        "2678945",
+                        "2678947",
+                        "2678948",
+                        "2678949",
+                        "2678950",
+                        "2678951"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm mapping promoted from warmed cache for Sotatercept."
+                }
+            ],
+            "reason": "Reviewed RxNorm mapping promoted from warmed cache for Sotatercept.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "abaloparatide",
+            "normalized_surface": "abaloparatide",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:abaloparatide",
+            "candidates": [
+                {
+                    "name": "abaloparatide",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "1921075",
+                        "1921081"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm mapping promoted from warmed cache for abaloparatide."
+                }
+            ],
+            "reason": "Reviewed RxNorm mapping promoted from warmed cache for abaloparatide.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "sodium fluoride",
+            "normalized_surface": "sodium fluoride",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:sodium-fluoride",
+            "candidates": [
+                {
+                    "name": "sodium fluoride",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "1006439",
+                        "1006558",
+                        "1038800",
+                        "1038841",
+                        "1038904",
+                        "1038929",
+                        "1044540",
+                        "1044547",
+                        "1046867",
+                        "1086243",
+                        "1090579",
+                        "1093170",
+                        "1099038",
+                        "1101877",
+                        "1101881",
+                        "1101938",
+                        "1191716",
+                        "1193240",
+                        "1233862",
+                        "1234482",
+                        "1235389",
+                        "1235783",
+                        "1297381",
+                        "1302368",
+                        "1302475",
+                        "1304254",
+                        "1363558",
+                        "1364854",
+                        "1364855",
+                        "1365980",
+                        "1365984",
+                        "141988",
+                        "1428828",
+                        "1435514",
+                        "1484805",
+                        "1486338",
+                        "1486534",
+                        "1486566",
+                        "1488074",
+                        "1489127",
+                        "1535362",
+                        "1546240",
+                        "1596005",
+                        "1596938",
+                        "1600786",
+                        "1658137",
+                        "1720009",
+                        "1721964",
+                        "1798474",
+                        "198215",
+                        "198864",
+                        "198865",
+                        "210248",
+                        "210249",
+                        "2105864",
+                        "2105866",
+                        "211275",
+                        "2121950",
+                        "2265639",
+                        "240698",
+                        "243997",
+                        "244333",
+                        "245593",
+                        "245598",
+                        "248389",
+                        "249277",
+                        "251960",
+                        "2585483",
+                        "2597250",
+                        "2602147",
+                        "2603764",
+                        "2603773",
+                        "2682752",
+                        "2682817",
+                        "2699486",
+                        "2701521",
+                        "2713755",
+                        "2722931",
+                        "2740863",
+                        "2741131",
+                        "312982",
+                        "313029",
+                        "313036",
+                        "313038",
+                        "313043",
+                        "315102",
+                        "315213",
+                        "317156",
+                        "328162",
+                        "346975",
+                        "347061",
+                        "352349",
+                        "388516",
+                        "389123",
+                        "392038",
+                        "392046",
+                        "392069",
+                        "392144",
+                        "416783",
+                        "430340",
+                        "539886",
+                        "540263",
+                        "562510",
+                        "617624",
+                        "630176",
+                        "630194",
+                        "630196",
+                        "636724",
+                        "637365",
+                        "656809",
+                        "656838",
+                        "688393",
+                        "688397",
+                        "831719",
+                        "831838",
+                        "831877",
+                        "847014",
+                        "851204",
+                        "861724",
+                        "861728",
+                        "891775",
+                        "901280",
+                        "901288",
+                        "901296",
+                        "991007",
+                        "999476",
+                        "999479",
+                        "999494",
+                        "999717"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm mapping promoted from warmed cache for sodium fluoride."
+                }
+            ],
+            "reason": "Reviewed RxNorm mapping promoted from warmed cache for sodium fluoride.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "strontium",
+            "normalized_surface": "strontium",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:strontium",
+            "candidates": [
+                {
+                    "name": "strontium",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "2598245",
+                        "847063"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm mapping promoted from warmed cache for strontium."
+                }
+            ],
+            "reason": "Reviewed RxNorm mapping promoted from warmed cache for strontium.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "Symlin",
+            "normalized_surface": "symlin",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:symlin",
+            "candidates": [
+                {
+                    "name": "Symlin",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "861043",
+                        "861045"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm mapping promoted from warmed cache for Symlin."
+                }
+            ],
+            "reason": "Reviewed RxNorm mapping promoted from warmed cache for Symlin.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "teriparatide",
+            "normalized_surface": "teriparatide",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:teriparatide",
+            "candidates": [
+                {
+                    "name": "teriparatide",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "1435115",
+                        "1435117",
+                        "2693637",
+                        "2693643",
+                        "2693645",
+                        "2693646",
+                        "2693647",
+                        "2693648",
+                        "2716408"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm mapping promoted from warmed cache for teriparatide."
+                }
+            ],
+            "reason": "Reviewed RxNorm mapping promoted from warmed cache for teriparatide.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
+            "surface": "mipomersen",
+            "normalized_surface": "mipomersen",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:mipomersen",
+            "candidates": [
+                {
+                    "name": "mipomersen",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "1367843",
+                        "1367848"
+                    ],
+                    "source": "cache-independent closure review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm mapping promoted from warmed cache for mipomersen."
+                }
+            ],
+            "reason": "Reviewed RxNorm mapping promoted from warmed cache for mipomersen.",
+            "source": "compiler cache-independent closure review",
+            "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
             "kind": "medication",
             "surface": "metformin",
             "normalized_surface": "metformin",

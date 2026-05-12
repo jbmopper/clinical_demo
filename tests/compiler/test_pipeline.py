@@ -177,6 +177,17 @@ def test_pipeline_assigns_stable_ids() -> None:
     ]
 
 
+def test_exact_reviewed_condition_mapping_wins_over_generated_variants() -> None:
+    criterion = _condition("previous malignancies")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.unresolved_gaps == []
+    assert compiled.predicate.status == "resolved"
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"266987004"})
+
+
 def test_empty_input_compiles_to_empty_result() -> None:
     result = compile_extracted_criteria(
         ExtractedCriteria(criteria=[], metadata=ExtractionMetadata(notes="empty"))

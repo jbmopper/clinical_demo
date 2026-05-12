@@ -22,10 +22,20 @@ hoc compiler aliases.
 Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at
 load time so runtime resolver integration has a single deterministic answer.
+Mapped entries may point at a shared Python `ConceptSet` id, or they may carry
+an inline reviewed code set in `candidates[]` when the surface is too specific
+to deserve a new source constant. Inline reviewed rows are still committed
+review decisions, not cache rows; they are the mechanism used to make the
+2026-05-12 fresh-cache compiler run independent of warmed UMLS/RxNorm surface
+cache files. The cache-independent tranche also records an intentional safety
+correction: `PH` maps to pulmonary hypertension in the trial context, overriding
+an unsafe warmed-cache pH-finding hit.
 
 Medication entries now also cover the first committed patient-vocabulary
 RxNorm anchors (`metformin`, `insulin`, statins, alendronic acid, and RAAS
-representatives). Medication-class entries are loaded by
+representatives) plus cache-independent reviewed RxNorm code sets for trial-only
+surfaces such as `Sotatercept`, `abaloparatide`, `Symlin`, and `teriparatide`.
+Medication-class entries are loaded by
 `clinical_demo.terminology.medication_classes`. They key one or more reviewed
 class surfaces such as `statins`, `lipid-lowering treatment`,
 `bisphosphonate treatment`, or `RASB` to member medication surfaces such as

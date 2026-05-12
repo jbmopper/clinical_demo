@@ -5228,6 +5228,54 @@
     {
       "case_count": 2,
       "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 7,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Endocrine system disease such as thyroid",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:7:condition:gap:expansion",
+          "message": "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation.",
+          "nct_id": "NCT06220266",
+          "pair_id": "3a364909__NCT06220266",
+          "row_id": "3a364909__NCT06220266:criterion:7:condition:gap:expansion"
+        },
+        {
+          "criterion_index": 7,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Endocrine system disease such as thyroid",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:7:condition:gap:expansion",
+          "message": "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation.",
+          "nct_id": "NCT06220266",
+          "pair_id": "60b0873c__NCT06220266",
+          "row_id": "60b0873c__NCT06220266:criterion:7:condition:gap:expansion"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:94cc68655fd5",
+      "message_examples": [
+        "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation."
+      ],
+      "normalized_surface": "endocrine system disease",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "expansion",
+      "surface": "endocrine system disease",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
         "temporal_window"
       ],
       "domain": "condition",
@@ -5271,6 +5319,54 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "medication affecting blood pressure",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 10,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "has a psychiatric disorder",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:10:condition:gap:expansion",
+          "message": "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation.",
+          "nct_id": "NCT06220266",
+          "pair_id": "3a364909__NCT06220266",
+          "row_id": "3a364909__NCT06220266:criterion:10:condition:gap:expansion"
+        },
+        {
+          "criterion_index": 10,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "has a psychiatric disorder",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:10:condition:gap:expansion",
+          "message": "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation.",
+          "nct_id": "NCT06220266",
+          "pair_id": "60b0873c__NCT06220266",
+          "row_id": "60b0873c__NCT06220266:criterion:10:condition:gap:expansion"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:66b990db434f",
+      "message_examples": [
+        "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation."
+      ],
+      "normalized_surface": "psychiatric disorder",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "expansion",
+      "surface": "psychiatric disorder",
       "trial_count": 1
     },
     {
@@ -7144,6 +7240,80 @@
       "severity": "medium",
       "stage": "unit_normalization",
       "surface": "ULN",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 13,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Active liver disease defined as any known current infectious, neoplastic, or metabolic pathology of the liver or unexplained alanine aminotransferase (ALT), aspartate aminotransferase (AST) elevation >3x ULN, or total bilirubin elevation >2x ULN (except patients with Gilbert's syndrome)",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:13:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'active liver disease' is classified as composite_unhandled: Active liver disease combines broad hepatic disease with activity/status context; it needs condition-status or descendant logic before safe execution.",
+          "nct_id": "NCT06597006",
+          "pair_id": "c2786fee__NCT06597006",
+          "row_id": "c2786fee__NCT06597006:criterion:13:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:a258082db3f5",
+      "message_examples": [
+        "Reviewed condition surface 'active liver disease' is classified as composite_unhandled: Active liver disease combines broad hepatic disease with activity/status context; it needs condition-status or descendant logic before safe execution."
+      ],
+      "normalized_surface": "active liver disease",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "active liver disease",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "t2dm-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 5,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Established cardiovascular (CV) disease and on active pharmacological treatment",
+          "eval_slice": "t2dm-industry",
+          "gap_id": "criterion:5:condition:gap:expansion",
+          "message": "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation.",
+          "nct_id": "NCT07064473",
+          "pair_id": "aa01ba4c__NCT07064473",
+          "row_id": "aa01ba4c__NCT07064473:criterion:5:condition:gap:expansion"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:759b097ed592",
+      "message_examples": [
+        "SNOMED descendant expansion requires a terminology graph and is not implemented in the offline foundation."
+      ],
+      "normalized_surface": "cardiovascular disease",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "expansion",
+      "surface": "cardiovascular disease",
       "trial_count": 1
     },
     {

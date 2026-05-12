@@ -242,7 +242,24 @@ def get_reviewed_mapping_registry() -> ReviewedMappingRegistry:
 def _concept_set_for_reviewed_entry(entry: ReviewedMappingEntry) -> ConceptSet | None:
     if entry.concept_set is None:
         return None
-    return CONCEPT_SETS_BY_ID.get(entry.concept_set)
+    concept_set = CONCEPT_SETS_BY_ID.get(entry.concept_set)
+    if concept_set is not None:
+        return concept_set
+
+    candidates = _reviewed_candidates(entry)
+    if not candidates:
+        return None
+    systems = {candidate.system for candidate in candidates}
+    if len(systems) != 1:
+        return None
+    codes = frozenset(code for candidate in candidates for code in candidate.codes)
+    if not codes:
+        return None
+    return ConceptSet(
+        name=entry.surface,
+        system=systems.pop(),
+        codes=codes,
+    )
 
 
 def _reviewed_candidates(entry: ReviewedMappingEntry) -> list[SurfaceResolutionCandidate]:
