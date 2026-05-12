@@ -33,6 +33,12 @@ abbreviation and classifies cpcPH, kidney transplant history, EGFR/ROS1
 biomarkers, measurable-lesion criteria, CNS/spinal metastasis phrases, prior
 anti-tumor/TKI exposure, recent major surgery, and oncology toxicity phrases so
 the compiler can report why they are not executable condition mappings.
+The final opaque-gap pass adds reviewed diabetes/HF/pregnancy surface variants
+and classifies the singleton long tail: active hepatitis/HIV/TB infection,
+breastfeeding, advanced CKD with dialysis, anticoagulation therapy,
+LDL-apheresis, hospitalization, allergy/hypersensitivity, thyroid-control
+phrases, NSCLC/staging/metastasis, xeno-crossmatch, and genomic/procedure/event
+phrases now have committed non-opaque outcomes.
 
 Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at
@@ -49,14 +55,16 @@ an unsafe warmed-cache pH-finding hit.
 Medication entries now also cover the first committed patient-vocabulary
 RxNorm anchors (`metformin`, `insulin`, statins, alendronic acid, and RAAS
 representatives) plus cache-independent reviewed RxNorm code sets for trial-only
-surfaces such as `Sotatercept`, `abaloparatide`, `Symlin`, and `teriparatide`.
+surfaces such as `Sotatercept`, `abaloparatide`, `Symlin`, `teriparatide`,
+`semaglutide`, `amylin`/pramlintide, and `calcitonin`/salmon-calcitonin.
 Medication-class entries are loaded by
 `clinical_demo.terminology.medication_classes`. They key one or more reviewed
 class surfaces such as `statins`, `lipid-lowering treatment`,
-`bisphosphonate treatment`, or `RASB` to member medication surfaces such as
-`atorvastatin` and `simvastatin`. The compiler still resolves every member
-through reviewed/cache-only RxNorm lookup before creating an executable class
-predicate; missing members remain compiler gaps rather than partial matches.
+`bisphosphonate treatment`, `GLP-1 agonists`, or `RASB` to member medication
+surfaces such as `atorvastatin`, `simvastatin`, and `semaglutide`. The compiler
+still resolves every member through reviewed/cache-only RxNorm lookup before
+creating an executable class predicate; missing members remain compiler gaps
+rather than partial matches.
 
 Reviewed expansion entries are loaded by
 `clinical_demo.terminology.reviewed_expansions`. They turn reviewed broad

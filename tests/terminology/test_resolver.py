@@ -584,6 +584,24 @@ def test_resolve_medication_reviewed_mapping_wins_without_cache_or_client(
     assert cached.concept_set == METFORMIN
 
 
+def test_resolve_reviewed_semaglutide_mapping_without_cache_or_client(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(cache, rxnorm_client=None)
+
+    out = resolver.resolve_medication("semaglutide")
+
+    assert out is not None
+    assert out.system == RXNORM_SYSTEM_URI
+    assert len(out.codes) == 40
+    assert "1991306" in out.codes
+    cached = cache.get_surface_resolution("medication", "semaglutide")
+    assert cached is not None
+    assert cached.status == "mapped"
+    assert cached.concept_set == out
+
+
 def test_resolve_medication_unknown_surface_soft_fails_without_client(
     tmp_path: Path,
 ) -> None:
@@ -899,6 +917,12 @@ def test_committed_long_tail_reviewed_condition_rows_resolve_and_cache(
     cpcph = resolver.resolve_condition("cpcPH")
     kidney_transplant = resolver.resolve_condition("history of kidney transplant")
     ild = resolver.resolve_condition("interstitial lung disease")
+    t1dm = resolver.resolve_condition("T1DM")
+    hf = resolver.resolve_condition("HF")
+    pregnancy_test = resolver.resolve_condition("positive pregnancy test")
+    major_psych = resolver.resolve_condition("major psychiatric disorders")
+    active_hiv = resolver.resolve_condition("active HIV infection")
+    anticoagulation = resolver.resolve_condition("chronic anticoagulation therapy")
 
     assert hofh is not None
     assert hofh.system == SNOMED
@@ -912,6 +936,14 @@ def test_committed_long_tail_reviewed_condition_rows_resolve_and_cache(
     assert ild is not None
     assert ild.system == SNOMED
     assert ild.codes == frozenset({"233703007"})
+    assert t1dm is not None
+    assert t1dm.codes == frozenset({"46635009"})
+    assert hf is not None
+    assert hf.codes == frozenset({"84114007"})
+    assert pregnancy_test is not None
+    assert pregnancy_test.codes == frozenset({"250423000"})
+    assert major_psych is not None
+    assert major_psych.codes == frozenset({"74732009"})
     assert arrhythmia is None
     cached = cache.get_surface_resolution("condition", "uncontrolled severe arrhythmia")
     assert cached is not None
@@ -926,6 +958,16 @@ def test_committed_long_tail_reviewed_condition_rows_resolve_and_cache(
     transplant_cached = cache.get_surface_resolution("condition", "history of kidney transplant")
     assert transplant_cached is not None
     assert transplant_cached.status == "out_of_scope"
+    assert active_hiv is None
+    active_hiv_cached = cache.get_surface_resolution("condition", "active HIV infection")
+    assert active_hiv_cached is not None
+    assert active_hiv_cached.status == "out_of_scope"
+    assert anticoagulation is None
+    anticoagulation_cached = cache.get_surface_resolution(
+        "condition", "chronic anticoagulation therapy"
+    )
+    assert anticoagulation_cached is not None
+    assert anticoagulation_cached.status == "extractor_bug"
 
 
 def test_disabled_policy_bypasses_reviewed_registry(tmp_path: Path) -> None:

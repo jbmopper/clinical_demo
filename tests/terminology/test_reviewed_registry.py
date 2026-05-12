@@ -102,6 +102,9 @@ def test_committed_medication_mappings_load() -> None:
 
     metformin = registry.lookup("medication", "metformin")
     marijuana = registry.lookup("medication", "marijuana")
+    semaglutide = registry.lookup("medication", "semaglutide")
+    amylin = registry.lookup("medication", "amylin")
+    calcitonin = registry.lookup("medication", "calcitonin")
 
     assert metformin is not None
     assert metformin.status == "mapped"
@@ -109,6 +112,18 @@ def test_committed_medication_mappings_load() -> None:
     assert metformin.expansion_policy == "patient_vocabulary_closure"
     assert marijuana is not None
     assert marijuana.status == "out_of_scope"
+    assert semaglutide is not None
+    assert semaglutide.status == "mapped"
+    assert semaglutide.concept_set == "reviewed:medication:semaglutide"
+    assert len(semaglutide.candidates[0].codes) == 40
+    assert amylin is not None
+    assert amylin.status == "mapped"
+    assert amylin.candidates[0].codes == frozenset({"861042", "861043", "861044", "861045"})
+    assert calcitonin is not None
+    assert calcitonin.status == "mapped"
+    assert calcitonin.candidates[0].codes == frozenset(
+        {"213570", "248087", "248088", "308866", "313919"}
+    )
 
 
 def test_committed_cache_independent_closure_mappings_load() -> None:
@@ -151,6 +166,14 @@ def test_committed_condition_long_tail_review_rows_load() -> None:
     hypoglycemia = registry.lookup("condition", "\u22653 severe hypoglycemic events")
     renal_glycosuria = registry.lookup("condition", "primary renal glycosuria")
     organ_transplant = registry.lookup("condition", "organ transplant")
+    diabetes_type_ii = registry.lookup("condition", "diabetes Type II")
+    t1dm = registry.lookup("condition", "T1DM")
+    hf = registry.lookup("condition", "HF")
+    pregnancy_test = registry.lookup("condition", "positive pregnancy test")
+    major_psych = registry.lookup("condition", "major psychiatric disorders")
+    active_hiv = registry.lookup("condition", "active HIV infection")
+    anticoagulation = registry.lookup("condition", "chronic anticoagulation therapy")
+    measurable_disease = registry.lookup("condition", "measurable disease")
 
     assert type_2_dm is not None
     assert type_2_dm.status == "mapped"
@@ -180,6 +203,28 @@ def test_committed_condition_long_tail_review_rows_load() -> None:
     assert renal_glycosuria.status == "true_miss"
     assert organ_transplant is not None
     assert organ_transplant.status == "out_of_scope"
+    assert diabetes_type_ii is not None
+    assert diabetes_type_ii.status == "mapped"
+    assert diabetes_type_ii.concept_set == "T2DM"
+    assert t1dm is not None
+    assert t1dm.status == "mapped"
+    assert t1dm.concept_set == "T1DM"
+    assert hf is not None
+    assert hf.status == "mapped"
+    assert hf.candidates[0].codes == frozenset({"84114007"})
+    assert pregnancy_test is not None
+    assert pregnancy_test.status == "mapped"
+    assert pregnancy_test.candidates[0].codes == frozenset({"250423000"})
+    assert major_psych is not None
+    assert major_psych.status == "mapped"
+    assert major_psych.expansion_policy == "descendants"
+    assert active_hiv is not None
+    assert active_hiv.status == "out_of_scope"
+    assert anticoagulation is not None
+    assert anticoagulation.status == "extractor_bug"
+    assert measurable_disease is not None
+    assert measurable_disease.kind == "condition"
+    assert measurable_disease.status == "out_of_scope"
 
 
 def test_committed_cardiovascular_decomposition_atoms_load() -> None:

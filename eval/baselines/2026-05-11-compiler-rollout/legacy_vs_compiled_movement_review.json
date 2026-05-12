@@ -6,26 +6,26 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "51bcb8d34974",
+  "comparison_run_id": "533a61fdd7f7",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "51bcb8d34974",
+    "comparison_run_id": "533a61fdd7f7",
     "common_cases": 49,
     "changed_cases": 6,
     "compared_criteria": 1076,
-    "changed_criteria": 320,
+    "changed_criteria": 356,
     "by_case_movement": {
       "indeterminate->fail": 5,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 10,
-      "indeterminate->indeterminate": 289,
-      "indeterminate->pass": 21
+      "indeterminate->fail": 13,
+      "indeterminate->indeterminate": 320,
+      "indeterminate->pass": 23
     },
     "by_direction": {
-      "indeterminate_to_determinate": 31,
-      "reason_changed": 289
+      "indeterminate_to_determinate": 36,
+      "reason_changed": 320
     }
   },
   "case_movements": [
@@ -92,6 +92,32 @@
   ],
   "criterion_movements": [
     {
+      "row_id": "criterion:060e72d3__NCT05713006:2",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 2,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Pathologically confirmed diagnosis of NSCLC",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:2",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:2:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
       "row_id": "criterion:060e72d3__NCT05713006:3",
       "pair_id": "060e72d3__NCT05713006",
       "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
@@ -114,7 +140,59 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:3:free-text:condition:condition:gap:no_candidates"
+        "criterion:3:free-text:condition:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:060e72d3__NCT05713006:4",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 4,
+      "criterion_kind": "temporal_window",
+      "criterion_source_text": "Recurrent disease (at least 180 days from curative intent treatment)",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:4",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "temporal_event",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "gap:criterion:4:temporal:reviewed_extractor_bug"
+      ]
+    },
+    {
+      "row_id": "criterion:060e72d3__NCT05713006:5",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 5,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "ALK rearrangements tested by FDA-approved tests (IHQ or FISH)",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:5",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:5:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -144,6 +222,32 @@
       ]
     },
     {
+      "row_id": "criterion:060e72d3__NCT05713006:8",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 8,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Measurable disease as referred by RECIST version 1.1",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:8",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:8:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
       "row_id": "criterion:060e72d3__NCT05713006:9",
       "pair_id": "060e72d3__NCT05713006",
       "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
@@ -166,7 +270,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:9:free-text:condition:condition:gap:no_candidates"
+        "criterion:9:free-text:condition:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -192,8 +296,37 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:10:free-text:condition:condition:gap:no_candidates"
+        "criterion:10:free-text:condition:condition:gap:reviewed-out_of_scope"
       ]
+    },
+    {
+      "row_id": "criterion:060e72d3__NCT05713006:11",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 11,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Negative highly sensitive pregnancy test (serum or urine) within 72 days before first dose intervention.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:11",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:11:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:11:condition:support:concept-set",
+        "criterion:11:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:060e72d3__NCT05713006:14",
@@ -218,7 +351,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:14:free-text:condition:condition:gap:no_candidates"
+        "criterion:14:free-text:condition:condition:gap:reviewed-extractor_bug"
       ]
     },
     {
@@ -245,6 +378,84 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:15:measurement:gap:reviewed-extractor_bug"
+      ]
+    },
+    {
+      "row_id": "criterion:060e72d3__NCT05713006:21",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 21,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Active hepatitis virus infection (any serotype) or chronic infection with a potential risk of reactivation evaluated through a serological panel.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:21",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:21:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:060e72d3__NCT05713006:22",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 22,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Active HIV infection.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:22",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:22:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:060e72d3__NCT05713006:23",
+      "pair_id": "060e72d3__NCT05713006",
+      "patient_id": "060e72d3-912e-55cd-0c92-5faa6cb7a6db",
+      "nct_id": "NCT05713006",
+      "eval_slice": "nsclc",
+      "criterion_index": 23,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Breastfeeding.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:23",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:23:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -348,6 +559,7 @@
       "comparison_predicate_status": "unresolved",
       "comparison_predicate_kind": "compound",
       "comparison_predicate_ids": [
+        "criterion:16:free-text:medication-list:004:predicate:medication",
         "criterion:16:free-text:medication-list:006:predicate:medication",
         "criterion:16:free-text:medication-list:007:predicate:medication",
         "criterion:16:free-text:medication-list:008:predicate:medication",
@@ -355,6 +567,7 @@
         "criterion:16:free-text:medication-list:011:predicate:medication"
       ],
       "comparison_support_ids": [
+        "criterion:16:free-text:medication-list:004:medication:support:concept-set",
         "criterion:16:free-text:medication-list:006:medication:support:concept-set",
         "criterion:16:free-text:medication-list:007:medication:support:concept-set",
         "criterion:16:free-text:medication-list:008:medication:support:concept-set",
@@ -366,7 +579,6 @@
         "criterion:16:free-text:medication-list:001:medication:gap:reviewed-composite_unhandled",
         "criterion:16:free-text:medication-list:002:medication:gap:medication_class",
         "criterion:16:free-text:medication-list:003:medication:gap:medication_list",
-        "criterion:16:free-text:medication-list:004:medication:gap:unmapped",
         "criterion:16:free-text:medication-list:005:medication:gap:reviewed-out_of_scope",
         "criterion:16:free-text:medication-list:010:medication:gap:medication_class"
       ]
@@ -382,20 +594,23 @@
       "criterion_source_text": "Diagnosis of T1DM within the last 20 years for Part A, within 1 to 10 years [N=15 at >5 to 10, N=12 at 1 to 5 yrs] for Part B, within less than or equal to 1 year for Part C.",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:3",
-      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:3:free-text:condition:condition:gap:no_candidates"
-      ]
+      "comparison_predicate_ids": [
+        "criterion:3:free-text:condition:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:3:free-text:condition:condition:support:concept-set",
+        "criterion:3:free-text:condition:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:1293efbb__NCT06964087:4",
@@ -2406,6 +2621,32 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:6:condition-phrase:gap:unsupported"
+      ]
+    },
+    {
+      "row_id": "criterion:3beee40e__NCT07394114:4",
+      "pair_id": "3beee40e__NCT07394114",
+      "patient_id": "3beee40e-512b-420f-38a3-28e56cddbc9b",
+      "nct_id": "NCT07394114",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 4,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Other types of diabetes besides T2DM.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:4",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:4:condition:gap:reviewed-composite_unhandled"
       ]
     },
     {
@@ -4838,7 +5079,7 @@
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unsupported_mood",
       "comparison_verdict": "indeterminate",
-      "comparison_reason": "unmapped_concept",
+      "comparison_reason": "unsupported_kind",
       "movement": "indeterminate->indeterminate",
       "direction": "reason_changed",
       "baseline_evidence_under_assumption": false,
@@ -4849,8 +5090,34 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "gap:criterion:5:temporal:event_unmapped",
+        "gap:criterion:5:temporal:reviewed_out_of_scope",
         "gap:criterion:5:temporal:unsupported_direction"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT07224763:7",
+      "pair_id": "60b0873c__NCT07224763",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT07224763",
+      "eval_slice": "ckd",
+      "criterion_index": 7,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Negative xeno-crossmatch at Screening and pre-transplant.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:7:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -4877,6 +5144,165 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:8:measurement:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT07224763:20",
+      "pair_id": "60b0873c__NCT07224763",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT07224763",
+      "eval_slice": "ckd",
+      "criterion_index": 20,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Non-renal cause of hematological disorders associated with anemia (eg, thalassemia and sickle disease).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:20",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:20:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT07224763:21",
+      "pair_id": "60b0873c__NCT07224763",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT07224763",
+      "eval_slice": "ckd",
+      "criterion_index": 21,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Cannot discontinue chronic anticoagulation therapy (low-dose daily aspirin is permissible).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:21",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:21:condition:gap:reviewed-extractor_bug"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT07224763:22",
+      "pair_id": "60b0873c__NCT07224763",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT07224763",
+      "eval_slice": "ckd",
+      "criterion_index": 22,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "History of major psychiatric disorders with psychiatric hospitalization and/or suicidal ideation within 5 years of informed consent.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:22",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:22:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:22:condition:support:concept-set",
+        "criterion:22:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT07224763:23",
+      "pair_id": "60b0873c__NCT07224763",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT07224763",
+      "eval_slice": "ckd",
+      "criterion_index": 23,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Being treated for active tuberculosis (TB), have received prophylaxis for positive FDA-approved interferon-gamma release assay, or test positive for TB by FDA-approved interferon-gamma release assay test during Screening.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:23",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:23:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT07224763:25",
+      "pair_id": "60b0873c__NCT07224763",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT07224763",
+      "eval_slice": "ckd",
+      "criterion_index": 25,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Not able to independently perform activities of daily life.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:25",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:25:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT07224763:26",
+      "pair_id": "60b0873c__NCT07224763",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT07224763",
+      "eval_slice": "ckd",
+      "criterion_index": 26,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Have a history of medical noncompliance that may preclude adherence to the demands and requirements of xenotransplantation (eg, history of substance use disorder [SUD] within 1 year of informed consent, lack of social support, untreated psychological conditions).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:26",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:26:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -4980,7 +5406,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:13:free-text:condition:condition:gap:no_candidates"
+        "criterion:13:free-text:condition:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -5103,12 +5529,12 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:37",
-      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_status": "unsupported",
       "comparison_predicate_kind": "medication_exposure",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:37:free-text:medication:medication:gap:unmapped"
+        "criterion:37:free-text:medication:medication:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -5129,12 +5555,12 @@
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:39",
-      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_status": "unsupported",
       "comparison_predicate_kind": "medication_exposure",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:39:free-text:medication:medication:gap:unmapped"
+        "criterion:39:free-text:medication:medication:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -5160,7 +5586,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:40:free-text:condition:condition:gap:no_candidates"
+        "criterion:40:free-text:condition:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -5210,7 +5636,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:45:free-text:condition:condition:gap:no_candidates"
+        "criterion:45:free-text:condition:condition:gap:reviewed-composite_unhandled"
       ]
     },
     {
@@ -5310,7 +5736,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:55:free-text:condition:condition:gap:no_candidates"
+        "criterion:55:free-text:condition:condition:gap:reviewed-composite_unhandled"
       ]
     },
     {
@@ -5336,7 +5762,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:56:free-text:condition:condition:gap:no_candidates"
+        "criterion:56:free-text:condition:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -5530,6 +5956,32 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:9e84e569__NCT04602754:10",
+      "pair_id": "9e84e569__NCT04602754",
+      "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
+      "nct_id": "NCT04602754",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 10,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Known hypersensitivity to the formula components used during the clinical trial;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:10",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:10:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
       "row_id": "criterion:9e84e569__NCT04602754:14",
       "pair_id": "9e84e569__NCT04602754",
       "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
@@ -5552,6 +6004,58 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:9e84e569__NCT04602754:17",
+      "pair_id": "9e84e569__NCT04602754",
+      "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
+      "nct_id": "NCT04602754",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 17,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Impaired hepatic function;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:17",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:17:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:9e84e569__NCT04602754:18",
+      "pair_id": "9e84e569__NCT04602754",
+      "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
+      "nct_id": "NCT04602754",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 18,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Medical history of pancreatic diseases that may suggest insulin deficiency;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:18",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:18:condition:gap:reviewed-composite_unhandled"
+      ]
     },
     {
       "row_id": "criterion:9e84e569__NCT04602754:19",
@@ -5614,7 +6118,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:20:free-text:condition:condition:gap:no_candidates"
+        "criterion:20:free-text:condition:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -5640,7 +6144,7 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:23:free-text:condition:condition:gap:no_candidates"
+        "criterion:23:free-text:condition:condition:gap:reviewed-composite_unhandled"
       ]
     },
     {
@@ -5796,6 +6300,7 @@
       "comparison_predicate_status": "unresolved",
       "comparison_predicate_kind": "compound",
       "comparison_predicate_ids": [
+        "criterion:16:free-text:medication-list:004:predicate:medication",
         "criterion:16:free-text:medication-list:006:predicate:medication",
         "criterion:16:free-text:medication-list:007:predicate:medication",
         "criterion:16:free-text:medication-list:008:predicate:medication",
@@ -5803,6 +6308,7 @@
         "criterion:16:free-text:medication-list:011:predicate:medication"
       ],
       "comparison_support_ids": [
+        "criterion:16:free-text:medication-list:004:medication:support:concept-set",
         "criterion:16:free-text:medication-list:006:medication:support:concept-set",
         "criterion:16:free-text:medication-list:007:medication:support:concept-set",
         "criterion:16:free-text:medication-list:008:medication:support:concept-set",
@@ -5814,9 +6320,34 @@
         "criterion:16:free-text:medication-list:001:medication:gap:reviewed-composite_unhandled",
         "criterion:16:free-text:medication-list:002:medication:gap:medication_class",
         "criterion:16:free-text:medication-list:003:medication:gap:medication_list",
-        "criterion:16:free-text:medication-list:004:medication:gap:unmapped",
         "criterion:16:free-text:medication-list:005:medication:gap:reviewed-out_of_scope",
         "criterion:16:free-text:medication-list:010:medication:gap:medication_class"
+      ]
+    },
+    {
+      "row_id": "criterion:9ef4db86__NCT07082114:7",
+      "pair_id": "9ef4db86__NCT07082114",
+      "patient_id": "9ef4db86-c427-ddfe-a607-737f08ffb0c1",
+      "nct_id": "NCT07082114",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 7,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Evidence of acute complications of diabetes (e.g., diabetic ketoacidosis, diabetic lactosidosis, or hyperosmolar nonketotic coma) within 6 months prior to signing the informed consent form (ICF).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:7:condition:gap:reviewed-composite_unhandled"
       ]
     },
     {
@@ -6391,6 +6922,87 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:a9a2c4dd__NCT05998863:5",
+      "pair_id": "a9a2c4dd__NCT05998863",
+      "patient_id": "a9a2c4dd-a0c9-97d4-8983-c4dbe2a76ca2",
+      "nct_id": "NCT05998863",
+      "eval_slice": "ckd",
+      "criterion_index": 5,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "End-stage renal failure on dialysis",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:5",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:5:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
+      "row_id": "criterion:a9a2c4dd__NCT05998863:9",
+      "pair_id": "a9a2c4dd__NCT05998863",
+      "patient_id": "a9a2c4dd-a0c9-97d4-8983-c4dbe2a76ca2",
+      "nct_id": "NCT05998863",
+      "eval_slice": "ckd",
+      "criterion_index": 9,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Diabetes Type II with HbA1C ≥ 7%",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:9:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:9:condition:support:concept-set",
+        "criterion:9:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:a9a2c4dd__NCT05998863:11",
+      "pair_id": "a9a2c4dd__NCT05998863",
+      "patient_id": "a9a2c4dd-a0c9-97d4-8983-c4dbe2a76ca2",
+      "nct_id": "NCT05998863",
+      "eval_slice": "ckd",
+      "criterion_index": 11,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Required to take calcium",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:11",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:11:condition:gap:reviewed-extractor_bug"
+      ]
+    },
+    {
       "row_id": "criterion:aa01ba4c__NCT07064473:6",
       "pair_id": "aa01ba4c__NCT07064473",
       "patient_id": "aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f",
@@ -6413,8 +7025,37 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:6:free-text:condition:condition:gap:no_candidates"
+        "criterion:6:free-text:condition:condition:gap:reviewed-out_of_scope"
       ]
+    },
+    {
+      "row_id": "criterion:aa01ba4c__NCT07064473:7",
+      "pair_id": "aa01ba4c__NCT07064473",
+      "patient_id": "aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f",
+      "nct_id": "NCT07064473",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 7,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of HF or hospitalization for HF or treatment of HF",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:7:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:7:condition:support:concept-set",
+        "criterion:7:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:aa01ba4c__NCT07064473:10",
@@ -7000,6 +7641,32 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:c2786fee__NCT06597006:4",
+      "pair_id": "c2786fee__NCT06597006",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06597006",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 4,
+      "criterion_kind": "temporal_window",
+      "criterion_source_text": "Participants on lipid-lowering therapies (such as e.g. statins, ezetimibe) must be on a stable dose for ≥30 days before screening with no planned medication or dose changes during study participation",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:4",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "temporal_event",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "gap:criterion:4:temporal:reviewed_extractor_bug"
+      ]
+    },
+    {
       "row_id": "criterion:c2786fee__NCT06597006:5",
       "pair_id": "c2786fee__NCT06597006",
       "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
@@ -7022,7 +7689,85 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:5:free-text:condition:condition:gap:no_candidates"
+        "criterion:5:free-text:condition:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:c2786fee__NCT06597006:6",
+      "pair_id": "c2786fee__NCT06597006",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06597006",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 6,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Documented evidence of a null (negative) mutation in both LDLR alleles",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:6",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:6:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:c2786fee__NCT06597006:7",
+      "pair_id": "c2786fee__NCT06597006",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06597006",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 7,
+      "criterion_kind": "temporal_window",
+      "criterion_source_text": "Previous treatment (within 90 days of screening) with monoclonal antibodies directed towards PCSK9",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "temporal_event",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "gap:criterion:7:temporal:reviewed_extractor_bug"
+      ]
+    },
+    {
+      "row_id": "criterion:c2786fee__NCT06597006:11",
+      "pair_id": "c2786fee__NCT06597006",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06597006",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 11,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Heterozygous familial hypercholesterolemia (HeFH)",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:11",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:11:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -8177,6 +8922,32 @@
       ]
     },
     {
+      "row_id": "criterion:e7d52393__NCT04040959:7",
+      "pair_id": "e7d52393__NCT04040959",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT04040959",
+      "eval_slice": "ckd",
+      "criterion_index": 7,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Patients with advanced CKD requiring chronic dialysis",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:7:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
       "row_id": "criterion:e7d52393__NCT04040959:8",
       "pair_id": "e7d52393__NCT04040959",
       "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
@@ -8203,6 +8974,58 @@
       ]
     },
     {
+      "row_id": "criterion:e7d52393__NCT04040959:9",
+      "pair_id": "e7d52393__NCT04040959",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT04040959",
+      "eval_slice": "ckd",
+      "criterion_index": 9,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of severe congestive heart failure (i.e., ejection fraction < 35%)",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:9:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
+      "row_id": "criterion:e7d52393__NCT04040959:10",
+      "pair_id": "e7d52393__NCT04040959",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT04040959",
+      "eval_slice": "ckd",
+      "criterion_index": 10,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Hospitalization in the past month",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:10",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:10:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
       "row_id": "criterion:e7d52393__NCT04040959:11",
       "pair_id": "e7d52393__NCT04040959",
       "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
@@ -8226,6 +9049,32 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:11:measurement:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:e7d52393__NCT04040959:12",
+      "pair_id": "e7d52393__NCT04040959",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT04040959",
+      "eval_slice": "ckd",
+      "criterion_index": 12,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Immunosuppressant agents such as cyclosporine, tacrolimus, azathioprine, etanercept, infliximab, adalimumab, anakinra or long-term oral glucocorticoids taken in past 12 months",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:12",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:12:condition:gap:reviewed-extractor_bug"
       ]
     },
     {
@@ -8259,6 +9108,32 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:e7d52393__NCT06568471:5",
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT06568471",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 5,
+      "criterion_kind": "temporal_window",
+      "criterion_source_text": "Patients on a PCSK9 mAb at a dose of 75 mg, 140 mg, or 150 mg Q2W must undergo a washout period of ≥6 weeks after the last dose; for those on 300 mg or 420 mg Q4W, the washout period is ≥10 weeks following last dose;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:5",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "temporal_event",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "gap:criterion:5:temporal:reviewed_extractor_bug"
+      ]
+    },
+    {
       "row_id": "criterion:e7d52393__NCT06568471:7",
       "pair_id": "e7d52393__NCT06568471",
       "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
@@ -8286,6 +9161,32 @@
         "criterion:7:condition:support:expansion"
       ],
       "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:e7d52393__NCT06568471:10",
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT06568471",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 10,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Poorly controlled thyroid disorder including hypothyroidism or hyperthyroidism;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:10",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:10:condition:gap:reviewed-composite_unhandled"
+      ]
     },
     {
       "row_id": "criterion:e7d52393__NCT06568471:12",
@@ -8378,6 +9279,32 @@
       ]
     },
     {
+      "row_id": "criterion:e7d52393__NCT06568471:21",
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT06568471",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 21,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of any major drug allergy, including allergy to protein biologics;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:21",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:21:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
       "row_id": "criterion:fa2d28b1__NCT06090266:8",
       "pair_id": "fa2d28b1__NCT06090266",
       "patient_id": "fa2d28b1-de84-ac96-ee04-a20dc54832c1",
@@ -8427,6 +9354,32 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:10:measurement:gap:reviewed-extractor_bug"
+      ]
+    },
+    {
+      "row_id": "criterion:fa2d28b1__NCT06090266:11",
+      "pair_id": "fa2d28b1__NCT06090266",
+      "patient_id": "fa2d28b1-de84-ac96-ee04-a20dc54832c1",
+      "nct_id": "NCT06090266",
+      "eval_slice": "nsclc",
+      "criterion_index": 11,
+      "criterion_kind": "temporal_window",
+      "criterion_source_text": "Minimum of 2 weeks since the last dose of other hormone therapy and 3 weeks since the last dose of other systemic cancer therapy or radiotherapy (> 4 weeks in case of nitrosoureas or radio-immuno conjugate therapy). Adjuvant hormonal therapy (e.g., tamoxifen) is allowed provided the original tumor diagnosis was more than 3 years before the first dose of study medication. Subjects with prostate cancer on stable doses of anti-hormone treatment may remain on therapy for this trial.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:11",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "temporal_event",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "gap:criterion:11:temporal:reviewed_extractor_bug"
       ]
     },
     {

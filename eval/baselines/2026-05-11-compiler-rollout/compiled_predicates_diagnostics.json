@@ -4,26 +4,25 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "51bcb8d34974",
-  "notes": "Condition qualifier and top-gap terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "533a61fdd7f7",
+  "notes": "Last opaque unmapped terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 20031.93933831062,
-  "avg_scoring_latency_ms": 408.81508853695146,
+  "total_scoring_latency_ms": 23812.157581211068,
+  "avg_scoring_latency_ms": 485.9623996165524,
   "verdict_counts": {
-    "fail": 67,
-    "indeterminate": 863,
-    "pass": 146
+    "fail": 70,
+    "indeterminate": 858,
+    "pass": 148
   },
   "reason_counts": {
     "ambiguous_criterion": 31,
-    "human_review_required": 608,
+    "human_review_required": 607,
     "no_data": 5,
-    "ok": 213,
-    "unmapped_concept": 37,
-    "unsupported_kind": 164,
+    "ok": 218,
+    "unsupported_kind": 197,
     "unsupported_mood": 18
   },
   "kind_counts": {
@@ -37,10 +36,10 @@
     "sex": 6,
     "temporal_window": 15
   },
-  "unmapped_count": 37,
-  "unmapped_rate": 0.03438661710037175,
-  "indeterminate_count": 863,
-  "indeterminate_rate": 0.8020446096654275,
+  "unmapped_count": 0,
+  "unmapped_rate": 0.0,
+  "indeterminate_count": 858,
+  "indeterminate_rate": 0.7973977695167286,
   "binding_registered_total": 27,
   "binding_registered_resolved": 27,
   "binding_registered_unmapped": 0,
@@ -55,134 +54,32 @@
       "mapped": 1
     }
   },
-  "top_unmapped_surfaces": [
-    {
-      "surface": "nsclc",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "curative intent treatment",
-      "kind": "temporal_window",
-      "count": 1
-    },
-    {
-      "surface": "alk rearrangements",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "measurable disease",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "positive pregnancy test",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "active hepatitis virus infection",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "active hiv infection",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "breastfeeding",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "other types of diabetes",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "travel time to xenotransplant center",
-      "kind": "temporal_window",
-      "count": 1
-    },
-    {
-      "surface": "xeno-crossmatch positive",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "non-renal cause of hematological disorders associated with anemia",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "chronic anticoagulation therapy",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "major psychiatric disorders",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "active tuberculosis",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "inability to perform activities of daily life",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "history of medical noncompliance",
-      "kind": "condition_present",
-      "count": 1
-    },
-    {
-      "surface": "hypersensitivity to formula components",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "impaired hepatic function",
-      "kind": "condition_absent",
-      "count": 1
-    },
-    {
-      "surface": "pancreatic diseases suggesting insulin deficiency",
-      "kind": "condition_absent",
-      "count": 1
-    }
-  ],
+  "top_unmapped_surfaces": [],
   "compiler_compilation_present_cases": 47,
   "compiler_compilation_missing_cases": 2,
   "compiler_compiled_criteria_total": 1076,
-  "compiler_checkable_predicates_total": 255,
-  "compiler_unresolved_gaps_total": 365,
+  "compiler_checkable_predicates_total": 266,
+  "compiler_unresolved_gaps_total": 354,
   "compiler_unresolved_gaps_by_kind": {
     "ambiguous_mapping": 13,
     "insufficient_source": 22,
-    "unmapped_concept": 59,
-    "unsupported_predicate": 271
+    "unsupported_predicate": 319
   },
   "compiler_unresolved_gaps_by_stage": {
-    "concept_resolution": 270,
+    "concept_resolution": 259,
     "predicate_translation": 84,
     "unit_normalization": 11
   },
   "compiler_unresolved_gaps_by_domain": {
-    "condition": 200,
+    "condition": 195,
     "free_text": 34,
     "measurement": 69,
-    "medication": 50,
+    "medication": 44,
     "temporal": 1,
     "unit": 11
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,
-  "compiler_closed_world_findings_total": 1078,
-  "compiler_closed_world_blocking_findings_total": 469
+  "compiler_closed_world_findings_total": 1069,
+  "compiler_closed_world_blocking_findings_total": 461
 }

@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `51bcb8d34974`
+- comparison: `533a61fdd7f7`
 - changed cases: 6/49
-- changed criteria: 320/1076
-- criterion directions: indeterminate_to_determinate=31 / reason_changed=289
+- changed criteria: 356/1076
+- criterion directions: indeterminate_to_determinate=36 / reason_changed=320
 
 ## Case Movements
 
@@ -23,17 +23,25 @@ Public-Artifact-Safety: synthetic
 
 | Pair | # | Kind | Movement | Direction | Compiled predicate | Source |
 |---|---:|---|---|---|---|---|
+| `060e72d3__NCT05713006` | 2 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Pathologically confirmed diagnosis of NSCLC |
 | `060e72d3__NCT05713006` | 3 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Stage IIIB - IV by the American Joint Committee of Cancer Version 8. |
+| `060e72d3__NCT05713006` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Recurrent disease (at least 180 days from curative intent treatment) |
+| `060e72d3__NCT05713006` | 5 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | ALK rearrangements tested by FDA-approved tests (IHQ or FISH) |
 | `060e72d3__NCT05713006` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Karnofsky PS scale ≥ 70% |
+| `060e72d3__NCT05713006` | 8 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Measurable disease as referred by RECIST version 1.1 |
 | `060e72d3__NCT05713006` | 9 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Symptomatic brain metastases could receive prior treatment with radiotherapy or surgery for at le... |
 | `060e72d3__NCT05713006` | 10 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Asymptomatic brain metastases could not receive local therapy before study inclusion. |
+| `060e72d3__NCT05713006` | 11 | condition_absent | indeterminate->pass | indeterminate_to_determinate | condition_presence | Negative highly sensitive pregnancy test (serum or urine) within 72 days before first dose interv... |
 | `060e72d3__NCT05713006` | 14 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Adequate organ function (hematological, liver, and renal function) |
 | `060e72d3__NCT05713006` | 15 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Life expectancy of at least 12 weeks |
+| `060e72d3__NCT05713006` | 21 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Active hepatitis virus infection (any serotype) or chronic infection with a potential risk of rea... |
+| `060e72d3__NCT05713006` | 22 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Active HIV infection. |
+| `060e72d3__NCT05713006` | 23 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Breastfeeding. |
 | `1293efbb__NCT06524960` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Non-fasting C-peptide concentrations of at least 0.2 nmol/L (0.6 ng/ml) at pre-screening and conf... |
 | `1293efbb__NCT06524960` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Serum calcium (corrected for albumin) within normal limits per site's local lab |
 | `1293efbb__NCT06524960` | 10 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Vitamin D3 deficiency (< 30 ng/ml) |
 | `1293efbb__NCT06524960` | 16 | free_text | indeterminate->indeterminate | reason_changed | compound | Treatment with any of the following drugs in past year: immunosuppressants, anticonvulsant therap... |
-| `1293efbb__NCT06964087` | 3 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Diagnosis of T1DM within the last 20 years for Part A, within 1 to 10 years [N=15 at >5 to 10, N=... |
+| `1293efbb__NCT06964087` | 3 | free_text | indeterminate->fail | indeterminate_to_determinate | condition_presence | Diagnosis of T1DM within the last 20 years for Part A, within 1 to 10 years [N=15 at >5 to 10, N=... |
 | `1293efbb__NCT06964087` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | For Parts B and C only, T-cell phenotype Th40 level greater than or equal to 35% of CD3+ leukocyt... |
 | `1293efbb__NCT06964087` | 12 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Patients with a history of venous and arterial thromboembolic events including, but not limited t... |
 | `28db1c55__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
@@ -110,6 +118,7 @@ Public-Artifact-Safety: synthetic
 | `3beee40e__NCT06143566` | 0 | condition_present | indeterminate->pass | indeterminate_to_determinate | condition_presence | Patients with Type 2 DM |
 | `3beee40e__NCT06143566` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hyperkalemia > 5.0 |
 | `3beee40e__NCT06143566` | 6 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindication to any component of polypill |
+| `3beee40e__NCT07394114` | 4 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Other types of diabetes besides T2DM. |
 | `3beee40e__NCT07394114` | 5 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Acute complications of diabetes (such as diabetic ketoacidosis, diabetic lactic acidosis, or hype... |
 | `3beee40e__NCT07394114` | 6 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History of a level 3 hypoglycemic episode or a history of asymptomatic hypoglycemic episodes with... |
 | `3beee40e__NCT07394114` | 7 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History or family history of medullary thyroid carcinoma (MTC), thyroid C-cell hyperplasia, or mu... |
@@ -204,7 +213,14 @@ Public-Artifact-Safety: synthetic
 | `60b0873c__NCT06220266` | 11 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | have other serious medical conditions that require close monitoring |
 | `60b0873c__NCT07224763` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Evidence of thymic involution on chest computed tomography (CT) scan with a thymic region of inte... |
 | `60b0873c__NCT07224763` | 5 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Live within 3 hours travel time of the xenotransplant center. |
+| `60b0873c__NCT07224763` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Negative xeno-crossmatch at Screening and pre-transplant. |
 | `60b0873c__NCT07224763` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated Post Transplant Survival Calculator score >20%. |
+| `60b0873c__NCT07224763` | 20 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Non-renal cause of hematological disorders associated with anemia (eg, thalassemia and sickle dis... |
+| `60b0873c__NCT07224763` | 21 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Cannot discontinue chronic anticoagulation therapy (low-dose daily aspirin is permissible). |
+| `60b0873c__NCT07224763` | 22 | condition_present | indeterminate->pass | indeterminate_to_determinate | condition_presence | History of major psychiatric disorders with psychiatric hospitalization and/or suicidal ideation... |
+| `60b0873c__NCT07224763` | 23 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Being treated for active tuberculosis (TB), have received prophylaxis for positive FDA-approved i... |
+| `60b0873c__NCT07224763` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Not able to independently perform activities of daily life. |
+| `60b0873c__NCT07224763` | 26 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Have a history of medical noncompliance that may preclude adherence to the demands and requiremen... |
 | `83f922a9__NCT05967689` | 3 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Cohort A participants: Documented EGFR ex20ins status, as determined by local testing performed a... |
 | `83f922a9__NCT05967689` | 7 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with brain metastasis must be neurologically stable. |
 | `83f922a9__NCT05967689` | 11 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Cohort B participants: Documented EGFR ex20ins status, as determined by local testing performed a... |
@@ -230,7 +246,10 @@ Public-Artifact-Safety: synthetic
 | `9cbf47d8__NCT07362459` | 18 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | A history of arterial thrombosis, deep vein thrombosis, cerebral infarction, transient ischemic a... |
 | `9cbf47d8__NCT07362459` | 23 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | The presence of other malignant tumors. |
 | `9cbf47d8__NCT07362459` | 32 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Current participation in another clinical trial, with the exception of observational (non-interve... |
+| `9e84e569__NCT04602754` | 10 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Known hypersensitivity to the formula components used during the clinical trial; |
 | `9e84e569__NCT04602754` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Participants with total cholesterol > 500 mg/dL or triglycerides > 500 mg/dL; |
+| `9e84e569__NCT04602754` | 17 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Impaired hepatic function; |
+| `9e84e569__NCT04602754` | 18 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Medical history of pancreatic diseases that may suggest insulin deficiency; |
 | `9e84e569__NCT04602754` | 19 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Participants who had any cardiovascular event (acute myocardial infarction, acute coronary syndro... |
 | `9e84e569__NCT04602754` | 20 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Bariatric surgery in the last two years and/ or other gastrointestinal surgeries that can cause c... |
 | `9e84e569__NCT04602754` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with known uncontrolled hypothyroidism or TSH levels > 5 mIU/L; |
@@ -240,6 +259,7 @@ Public-Artifact-Safety: synthetic
 | `9e84e569__NCT06524960` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Serum calcium (corrected for albumin) within normal limits per site's local lab |
 | `9e84e569__NCT06524960` | 10 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Vitamin D3 deficiency (< 30 ng/ml) |
 | `9e84e569__NCT06524960` | 16 | free_text | indeterminate->indeterminate | reason_changed | compound | Treatment with any of the following drugs in past year: immunosuppressants, anticonvulsant therap... |
+| `9ef4db86__NCT07082114` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Evidence of acute complications of diabetes (e.g., diabetic ketoacidosis, diabetic lactosidosis,... |
 | `9ef4db86__NCT07082114` | 14 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Used strong CYP3A4 or P-gp inhibitors within 14 days prior to randomization or 5 half-lives (whic... |
 | `9ef4db86__NCT07082114` | 15 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Use of any glucose-lowering medication within 4 weeks prior to signing the ICF, including but not... |
 | `9ef4db86__NCT07082114` | 17 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Pregnancy or lactation. |
@@ -262,7 +282,11 @@ Public-Artifact-Safety: synthetic
 | `a06bce31__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Right heart catheterization (RHC) based evidence of cpcPH: |
 | `a06bce31__NCT07221513` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindicated to RHC that can be left in place for approximately 6 hours. |
 | `a06bce31__NCT07221513` | 9 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Body mass index (BMI) >45 kg/m² at screening. |
+| `a9a2c4dd__NCT05998863` | 5 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | End-stage renal failure on dialysis |
+| `a9a2c4dd__NCT05998863` | 9 | condition_absent | indeterminate->fail | indeterminate_to_determinate | condition_presence | Diabetes Type II with HbA1C ≥ 7% |
+| `a9a2c4dd__NCT05998863` | 11 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Required to take calcium |
 | `aa01ba4c__NCT07064473` | 6 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | At least one additional risk factor for developing heart failure (HF) |
+| `aa01ba4c__NCT07064473` | 7 | condition_absent | indeterminate->fail | indeterminate_to_determinate | condition_presence | History of HF or hospitalization for HF or treatment of HF |
 | `aa01ba4c__NCT07064473` | 10 | medication_present | indeterminate->indeterminate | reason_changed | medication_exposure | Treatment with an Mineralocorticoid receptor antagonist (MRA) |
 | `aa01ba4c__NCT07064473` | 13 | medication_present | indeterminate->indeterminate | reason_changed | medication_exposure | A direct renin inhibitor (e.g. aliskiren) |
 | `aa01ba4c__NCT07064473` | 15 | medication_present | indeterminate->indeterminate | reason_changed | medication_exposure | Other aldosterone synthase inhibitors (e.g. baxdrostat) |
@@ -285,7 +309,11 @@ Public-Artifact-Safety: synthetic
 | `c2786fee__NCT06217302` | 30 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Any condition that may render the patient unable to comply with study requirements and/or complet... |
 | `c2786fee__NCT06597006` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | HoFH diagnosed by genetic confirmation |
 | `c2786fee__NCT06597006` | 3 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | On an optimal dose of statin (investigator's discretion), unless statin intolerant, with or witho... |
+| `c2786fee__NCT06597006` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Participants on lipid-lowering therapies (such as e.g. statins, ezetimibe) must be on a stable do... |
 | `c2786fee__NCT06597006` | 5 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants on a documented regimen of LDL-apheresis for ≥ 3 months before screening will be all... |
+| `c2786fee__NCT06597006` | 6 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Documented evidence of a null (negative) mutation in both LDLR alleles |
+| `c2786fee__NCT06597006` | 7 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Previous treatment (within 90 days of screening) with monoclonal antibodies directed towards PCSK9 |
+| `c2786fee__NCT06597006` | 11 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Heterozygous familial hypercholesterolemia (HeFH) |
 | `c2786fee__NCT06597006` | 13 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Active liver disease defined as any known current infectious, neoplastic, or metabolic pathology... |
 | `c46a254d__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `c46a254d__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
@@ -330,15 +358,23 @@ Public-Artifact-Safety: synthetic
 | `d57e867e__NCT06143566` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hyperkalemia > 5.0 |
 | `d57e867e__NCT06143566` | 6 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindication to any component of polypill |
 | `e7d52393__NCT04040959` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Blood pressure controlled to <140/90 mmHg for the past 3 months |
+| `e7d52393__NCT04040959` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Patients with advanced CKD requiring chronic dialysis |
 | `e7d52393__NCT04040959` | 8 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Significant co-morbid conditions that lead the investigator to conclude that life expectancy < 1... |
+| `e7d52393__NCT04040959` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of severe congestive heart failure (i.e., ejection fraction < 35%) |
+| `e7d52393__NCT04040959` | 10 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Hospitalization in the past month |
 | `e7d52393__NCT04040959` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Proteinuria > 5 g/day |
+| `e7d52393__NCT04040959` | 12 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Immunosuppressant agents such as cyclosporine, tacrolimus, azathioprine, etanercept, infliximab,... |
 | `e7d52393__NCT06568471` | 3 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | On a stable diet and lipid-lowering oral drugs (such as statins, ezetimibe or Hybutimibe, omega-3... |
+| `e7d52393__NCT06568471` | 5 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Patients on a PCSK9 mAb at a dose of 75 mg, 140 mg, or 150 mg Q2W must undergo a washout period o... |
 | `e7d52393__NCT06568471` | 7 | condition_absent | indeterminate->fail | indeterminate_to_determinate | condition_presence | Documented history of homozygous familial hypercholesterolemia (HoFH); |
+| `e7d52393__NCT06568471` | 10 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Poorly controlled thyroid disorder including hypothyroidism or hyperthyroidism; |
 | `e7d52393__NCT06568471` | 12 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Serious arrhythmia, MI, unstable angina pectoris, PCI, CABG, implantable cardioverter defibrillat... |
 | `e7d52393__NCT06568471` | 14 | condition_absent | indeterminate->indeterminate | reason_changed | compound | New York Heart Association (NYHA) Class III-IV heart failure; |
 | `e7d52393__NCT06568471` | 17 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Unexplained creatine kinase (CK) > 5 x ULN (retested once is needed if suspected to be related to... |
+| `e7d52393__NCT06568471` | 21 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of any major drug allergy, including allergy to protein biologics; |
 | `fa2d28b1__NCT06090266` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have measurable disease per RECIST v1.1. |
 | `fa2d28b1__NCT06090266` | 10 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Resolution of prior clinically significant therapy-related AEs (excluding alopecia and ≤ Grade 2... |
+| `fa2d28b1__NCT06090266` | 11 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Minimum of 2 weeks since the last dose of other hormone therapy and 3 weeks since the last dose o... |
 | `fa2d28b1__NCT06090266` | 19 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Life expectancy < 12 weeks. |
 | `fa2d28b1__NCT06090266` | 20 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subject has an Eastern Cooperative Oncology Group (ECOG) Performance Status (PS) > 2. |
 | `fa2d28b1__NCT06090266` | 27 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Recent or ongoing serious infection including the following: Any uncontrolled Grade 3 or higher (... |

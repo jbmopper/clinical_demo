@@ -217,6 +217,31 @@ def test_committed_lipid_lowering_class_expands_without_rxnorm_cache(tmp_path: P
     ]
 
 
+def test_committed_glp1_class_expands_without_rxnorm_cache(tmp_path: Path) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("GLP-1 agonists"),
+        source_criterion_id="criterion:glp1",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == "GLP-1 receptor agonists"
+    assert len(result.concept_set.codes) == 40
+    assert "1991306" in result.concept_set.codes
+    assert "2739771" in result.concept_set.codes
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "GLP-1 agonists",
+        "semaglutide",
+    ]
+
+
 def test_reviewed_class_surface_can_override_list_like_text() -> None:
     resolver = StubMedicationResolver({"atorvastatin": ATORVASTATIN, "simvastatin": SIMVASTATIN})
 

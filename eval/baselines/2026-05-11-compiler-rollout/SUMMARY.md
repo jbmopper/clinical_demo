@@ -4,8 +4,8 @@ Public-Artifact-Safety: synthetic
 
 Updated 2026-05-12 after the reviewed condition/event, medication
 registry-closure, cache-independent terminology-closure, reviewed
-descendant-expansion, condition/event decomposition, and qualifier/top-gap
-review slices.
+descendant-expansion, condition/event decomposition, qualifier/top-gap review,
+and final opaque-unmapped registry slices.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -38,23 +38,27 @@ measurement, and medication hardening slices landed.
   The qualifier/top-gap pass adds generic typed gaps for contraindication,
   life-expectancy, study-compliance, qualified arrhythmia, and NYHA functional
   class phrases, plus reviewed rows for type 2 DM and high-frequency procedure,
-  genomic, oncology, and cpcPH non-atomic surfaces.
+  genomic, oncology, and cpcPH non-atomic surfaces. The final opaque-gap pass
+  adds GLP-1/semaglutide, amylin, calcitonin, diabetes/HF/pregnancy variants,
+  and singleton oncology/genomic/procedure/status classifications so the
+  compiler-review queue no longer has `review_mapping` groups.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `51bcb8d34974` | 33 fail / 12 indeterminate / 0 pass / 2 pass_pending_review | 67 fail / 863 indeterminate / 146 pass | 37 (3.4%) | 20.0s |
+| `compiled_predicates` | `533a61fdd7f7` | 33 fail / 12 indeterminate / 0 pass / 2 pass_pending_review | 70 fail / 858 indeterminate / 148 pass | 0 (0.0%) | 23.8s |
 
-The compiled path reduces criterion-level `unmapped_concept` by 280 rows
-(-26.1 percentage points) against the same-run legacy path and moves the
-compiled snapshot from 79 to 37 `unmapped_concept` rows versus the previous
-condition/event decomposition snapshot. It adds 31 indeterminate-to-determinate
+The compiled path reduces criterion-level `unmapped_concept` by 317 rows
+(-29.5 percentage points) against the same-run legacy path and moves the
+compiled snapshot from 37 to 0 `unmapped_concept` rows versus the previous
+qualifier/top-gap snapshot. It adds 36 indeterminate-to-determinate
 criterion wins from more explicit compiler execution of mapped condition,
 measurement, trial-exposure, medication exposure, PH-ILD, HoFH, congenital heart
-disease, cardiovascular event-list promotions, and type 2 DM abbreviation
-mapping. The prior broad-parent determinate-to-indeterminate movements are gone:
+disease, cardiovascular event-list promotions, GLP-1 class closure, and
+diabetes/HF/pregnancy variant mapping. The prior broad-parent
+determinate-to-indeterminate movements are gone:
 endocrine, psychiatric, and cardiovascular parent mappings now expand through
 committed reviewed closures instead of warmed-cache exact-code behavior. This is
 progress, but the compiled path is still not default-ready because closed-world
@@ -78,42 +82,41 @@ Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
 `legacy_vs_compiled_movement_review.json` and `.md` are the focused review
-packet for these changes. They contain 31 decisive criterion movements and 249
+packet for these changes. They contain 36 decisive criterion movements and 320
 reason-code-only changes. The decisive movements include medication-exposure
 wins for RAAS blockers, stable lipid-lowering treatment, and reviewed class
-closure, plus measurement, trial-exposure, PH-ILD, cardiovascular event-list,
-congenital heart disease, and HoFH movements. Closed-world absence-dependent
-verdicts should still be reviewed as a group so the absence-as-negative
-decisions match the validation contract.
+closure, plus GLP-1 member closure, diabetes/HF/pregnancy variants,
+measurement, trial-exposure, PH-ILD, cardiovascular event-list, congenital heart
+disease, and HoFH movements. Closed-world absence-dependent verdicts should
+still be reviewed as a group so the absence-as-negative decisions match the
+validation contract.
 
 ## Compiler Readiness
 
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 255
-- unresolved compiler gaps: 365
+- checkable predicates: 266
+- unresolved compiler gaps: 354
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 1078 total, 469 blocking
+- validation findings: 1069 total, 461 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 13 |
-| `implement_compiler_logic` | 271 |
+| `implement_compiler_logic` | 319 |
 | `review_gap` | 22 |
-| `review_mapping` | 59 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-365 raw rows to 194 distinct surface/action/policy work items:
+354 raw rows to 186 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 6 |
-| `implement_compiler_logic` | 128 |
+| `implement_compiler_logic` | 176 |
 | `review_gap` | 4 |
-| `review_mapping` | 56 |
 
 The current threshold gate passes only without `--require-compilation`, because
 the 2 deceased-patient scorer refusals mean compilation is missing for those
@@ -122,26 +125,24 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 365 \
+  --max-unresolved-gaps 354 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 469 \
-  --max-gap-kind unmapped_concept=59 \
-  --max-gap-kind unsupported_predicate=271 \
+  --max-closed-world-blocking-findings 461 \
+  --max-gap-kind unmapped_concept=0 \
+  --max-gap-kind unsupported_predicate=319 \
   --max-gap-kind ambiguous_mapping=13 \
   --max-gap-kind insufficient_source=22
 ```
 
-Top remaining unmapped surfaces are now all singleton opaque concepts: NSCLC,
-curative-intent treatment, ALK rearrangements, measurable disease, positive
-pregnancy test, active hepatitis/HIV/TB infection, breastfeeding, other diabetes
-types, xenotransplant logistics/crossmatch phrases, chronic anticoagulation
-therapy, major psychiatric disorders, impaired hepatic function, pancreatic
-diseases suggesting insulin deficiency, and similar long-tail surfaces. The
-reviewed lab, condition/event, medication, decomposition, and qualifier/top-gap
-tranches removed the previous frequency-2 opaque buckets by either mapping them
-or classifying them as explicit compiler gaps. The raw compiler-gap count rises
-in this slice because opaque mapping gaps become auditable
-`unsupported_predicate` work items.
+There are no remaining `review_mapping` groups. The remaining queue is compiler
+work: unsupported predicate translation, ambiguous candidate choice, and
+insufficient-source review. Formerly opaque singleton concepts (NSCLC,
+curative-intent treatment, ALK rearrangements, measurable disease, pregnancy
+test variants, active hepatitis/HIV/TB infection, breastfeeding, other diabetes
+types, xenotransplant logistics/crossmatch phrases, anticoagulation therapy,
+psychiatric disorder variants, hepatic function, pancreatic disease/insulin
+deficiency, and similar long-tail surfaces) now map or emit explicit
+`unsupported_predicate` classifications.
 
 A pre-fix fresh-cache probe on 2026-05-12 regressed to 424 unresolved compiler
 gaps and 156 compiled `unmapped_concept` rows. After promoting the 35
@@ -157,7 +158,10 @@ gaps, and a 33 fail / 12 indeterminate / 2 pass_pending_review case rollup. The
 qualifier/top-gap slice then moved opaque `unmapped_concept` to 37 rows while
 preserving the same case rollup; unresolved compiler gaps are now 365 because
 more rows are explicitly typed as unsupported compiler work instead of unknown
-terminology.
+terminology. The final opaque-gap registry pass then moved
+`unmapped_concept` to 0, reduced unresolved compiler gaps to 354, preserved the
+same case rollup, and converted the deduped queue to compiler implementation
+work with no `review_mapping` groups.
 
 ## Patient-Evidence Calibration
 
@@ -167,12 +171,12 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `51bcb8d34974` | 5/50 | 80.0% | 40.0% | 17 |
+| `533a61fdd7f7` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human
-pass should grade the 194-group deduped packet, not the raw 365-row compiler
-review export.
+pass should grade targeted decisive movements plus the highest-priority
+compiler-logic groups, not a raw terminology-mapping packet.
 
 ## Files
 
