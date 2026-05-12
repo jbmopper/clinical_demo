@@ -4,25 +4,25 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "51f5b0eb86e9",
-  "notes": "compiled_predicates reviewed sex-specific ULN reference-limit translation; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "e4171d158a02",
+  "notes": "compiled_predicates reviewed antidiabetic medication-class closure; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 22577.183126821183,
-  "avg_scoring_latency_ms": 460.7588393228813,
+  "total_scoring_latency_ms": 17253.32283694297,
+  "avg_scoring_latency_ms": 352.10862932536673,
   "verdict_counts": {
     "fail": 78,
-    "indeterminate": 833,
-    "pass": 165
+    "indeterminate": 830,
+    "pass": 168
   },
   "reason_counts": {
     "ambiguous_criterion": 20,
-    "human_review_required": 599,
+    "human_review_required": 597,
     "no_data": 8,
-    "ok": 243,
-    "unsupported_kind": 188,
+    "ok": 246,
+    "unsupported_kind": 187,
     "unsupported_mood": 18
   },
   "kind_counts": {
@@ -38,8 +38,8 @@
   },
   "unmapped_count": 0,
   "unmapped_rate": 0.0,
-  "indeterminate_count": 833,
-  "indeterminate_rate": 0.7741635687732342,
+  "indeterminate_count": 830,
+  "indeterminate_rate": 0.7713754646840149,
   "binding_registered_total": 27,
   "binding_registered_resolved": 27,
   "binding_registered_unmapped": 0,
@@ -58,15 +58,15 @@
   "compiler_compilation_present_cases": 47,
   "compiler_compilation_missing_cases": 2,
   "compiler_compiled_criteria_total": 1076,
-  "compiler_checkable_predicates_total": 327,
-  "compiler_unresolved_gaps_total": 321,
+  "compiler_checkable_predicates_total": 334,
+  "compiler_unresolved_gaps_total": 314,
   "compiler_unresolved_gaps_by_kind": {
     "ambiguous_mapping": 8,
     "insufficient_source": 10,
-    "unsupported_predicate": 303
+    "unsupported_predicate": 296
   },
   "compiler_unresolved_gaps_by_stage": {
-    "concept_resolution": 247,
+    "concept_resolution": 240,
     "predicate_translation": 72,
     "unit_normalization": 2
   },
@@ -74,12 +74,12 @@
     "condition": 188,
     "free_text": 34,
     "measurement": 52,
-    "medication": 44,
+    "medication": 37,
     "temporal": 1,
     "unit": 2
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,
-  "compiler_closed_world_findings_total": 1020,
-  "compiler_closed_world_blocking_findings_total": 423
+  "compiler_closed_world_findings_total": 1016,
+  "compiler_closed_world_blocking_findings_total": 421
 }

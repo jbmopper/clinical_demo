@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `51f5b0eb86e9`
+- comparison: `e4171d158a02`
 - changed cases: 9/49
 - changed criteria: 364/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=61 / reason_changed=302
+- criterion directions: determinate_changed=1 / indeterminate_to_determinate=64 / reason_changed=299
 
 ## Case Movements
 
@@ -92,7 +92,7 @@ Public-Artifact-Safety: synthetic
 | `38f38890__NCT06217302` | 1 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Duration of T1D ≥ 8 years; |
 | `38f38890__NCT06217302` | 5 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving standard of care, including renin angiotensin system blockers (RASB) at a clinically ap... |
 | `38f38890__NCT06217302` | 7 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | a. Blood pressure ≤155/95 mmHg at screening, or b. BP ≤155/95 mmHg at the end of the run-in perio... |
-| `38f38890__NCT06217302` | 10 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of any SGLT inhibitor in the previous 2 months; |
+| `38f38890__NCT06217302` | 10 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Use of any SGLT inhibitor in the previous 2 months; |
 | `38f38890__NCT06217302` | 13 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of anti tumor necrosis factor (TNF) alpha biologic medications at screening; |
 | `38f38890__NCT06217302` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Known allergies, hypersensitivity, or intolerance to SOTA; |
 | `38f38890__NCT06217302` | 15 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of ≥3 severe hypoglycemic events (requiring third-party assistance for correction) within... |
@@ -128,7 +128,7 @@ Public-Artifact-Safety: synthetic
 | `3beee40e__NCT07394114` | 6 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History of a level 3 hypoglycemic episode or a history of asymptomatic hypoglycemic episodes with... |
 | `3beee40e__NCT07394114` | 7 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History or family history of medullary thyroid carcinoma (MTC), thyroid C-cell hyperplasia, or mu... |
 | `3beee40e__NCT07394114` | 9 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Investigator determines that the subject has a condition or disease affecting gastric emptying or... |
-| `3beee40e__NCT07394114` | 10 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of any antidiabetic medications within 12 weeks prior to signing the ICF; excluding short-ter... |
+| `3beee40e__NCT07394114` | 10 | medication_absent | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Use of any antidiabetic medications within 12 weeks prior to signing the ICF; excluding short-ter... |
 | `3beee40e__NCT07394114` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | compound | Aspartate aminotransferase (AST) >3× upper limit of normal (ULN) and/or alanine aminotransferase... |
 | `407ef75b__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `407ef75b__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
@@ -302,7 +302,7 @@ Public-Artifact-Safety: synthetic
 | `c2786fee__NCT06217302` | 1 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Duration of T1D ≥ 8 years; |
 | `c2786fee__NCT06217302` | 5 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving standard of care, including renin angiotensin system blockers (RASB) at a clinically ap... |
 | `c2786fee__NCT06217302` | 7 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | a. Blood pressure ≤155/95 mmHg at screening, or b. BP ≤155/95 mmHg at the end of the run-in perio... |
-| `c2786fee__NCT06217302` | 10 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of any SGLT inhibitor in the previous 2 months; |
+| `c2786fee__NCT06217302` | 10 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Use of any SGLT inhibitor in the previous 2 months; |
 | `c2786fee__NCT06217302` | 13 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of anti tumor necrosis factor (TNF) alpha biologic medications at screening; |
 | `c2786fee__NCT06217302` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Known allergies, hypersensitivity, or intolerance to SOTA; |
 | `c2786fee__NCT06217302` | 15 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of ≥3 severe hypoglycemic events (requiring third-party assistance for correction) within... |

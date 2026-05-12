@@ -177,8 +177,9 @@ Foundation status:
   resolution while preserving the route aspect in compiler provenance. It also reads
   `data/terminology/reviewed_medication_classes.json` for reviewed
   patient-vocabulary-closure class expansions such as statins, GLP-1 receptor
-  agonists, and SGLT2 inhibitors; class predicates are emitted only when every
-  member surface resolves through cached/reviewed RxNorm lookup.
+  agonists, SGLT/SGLT2 spelling variants, and non-insulin antidiabetic
+  medication surfaces; class predicates are emitted only when every member
+  surface resolves through cached/reviewed RxNorm lookup.
 - `CC-08` now checks reviewed lab decisions before local measurement alias
   lookup, so known out-of-scope, extractor-bug, and ambiguous measurement
   surfaces become explicit compiler gaps with provenance instead of opaque

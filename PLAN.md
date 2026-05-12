@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `51f5b0eb86e9` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `e4171d158a02` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -37,29 +37,32 @@
   systolic/diastolic phrases plus generic `BP >160/100` / `BP <140/90`
   shorthand, including SBP/DBP abbreviation pairs, and reviewed ULN
   reference-limit translation for AST/ALT, total-bilirubin, and sex-specific
-  hemoglobin multiplier criteria. It regenerates the compiler
+  hemoglobin multiplier criteria, plus reviewed SGLT/SGLT2 spelling-variant
+  and non-insulin antidiabetic medication-class closure. It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
   `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
-  with 61 indeterminate-to-determinate criterion movements, 1 determinate
+  with 64 indeterminate-to-determinate criterion movements, 1 determinate
   movement, and 9 case-rollup movements. The path is still not default-ready:
-  diagnostics show 321 unresolved compiler gaps, 43 closed-world-blocking
-  cases, and 423 blocking validation findings. The deduped review packet has
-  179 groups (173 `implement_compiler_logic`, 5 `choose_candidate`, and 1
+  diagnostics show 314 unresolved compiler gaps, 43 closed-world-blocking
+  cases, and 421 blocking validation findings. The deduped review packet has
+  175 groups (169 `implement_compiler_logic`, 5 `choose_candidate`, and 1
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
-  ULN buckets are closed. The first
+  ULN buckets and SGLT/non-insulin antidiabetic medication-class buckets are closed. The first
   cache-independent closure pass is complete for the
   warmed-cache delta: an empty-cache probe had regressed to 424 gaps / 156
   compiled `unmapped_concept`, then reviewed artifacts brought it back to the
   warmed snapshot; decomposition and opaque-gap review then eliminated the
   remaining opaque `unmapped_concept` rows. BP and reviewed ULN slices then
-  turned more typed measurement compiler work into executable predicates. The
+  turned more typed measurement compiler work into executable predicates, and
+  the reviewed medication-class slice turned more class-like medication surfaces
+  into executable cache-independent predicates. The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
-  173 grouped `implement_compiler_logic` items, tightening measurement
+  169 grouped `implement_compiler_logic` items, tightening measurement
   normal-range/provenance handling, and preparing a smaller human grading packet
   once the closed-world blockers are lower.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
@@ -1541,7 +1544,12 @@ promotion remain follow-on work.
     and list-like reviewed statin phrases before generic list handling; and
     reviewed non-mapped medication decisions such as marijuana, broad
     glucocorticoids, immunosuppressants, sulfonylurea, and SERM surfaces become
-    typed compiler gaps instead of generic `unmapped_concept`.
+    typed compiler gaps instead of generic `unmapped_concept`. A follow-on
+    reviewed class slice landed 2026-05-12: `dapagliflozin` has a committed
+    RxNorm SCD/SBD code union, SGLT/SGLT2 spelling variants resolve through
+    the SGLT2 current-vocabulary class, and non-insulin antidiabetic surfaces
+    resolve through metformin, semaglutide, and dapagliflozin while explicitly
+    excluding insulin.
 
 - id: CC-10
   title: Compiler validation gates
@@ -1695,26 +1703,28 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`51f5b0eb86e9`) after the reviewed condition/event,
+  `compiled_predicates` (`e4171d158a02`) after the reviewed condition/event,
   medication registry-closure, cache-independent terminology-closure, reviewed
   descendant-expansion, condition/event decomposition, and qualifier/top-gap
   review slices, followed by the opaque-unmapped registry pass for GLP-1
   member closure, amylin/calcitonin, diabetes/HF/pregnancy variants, and
   singleton oncology/genomic/procedure/status classifications, plus BP
-  threshold decomposition and reviewed sex-specific ULN reference-limit translation. Both runs have
+  threshold decomposition, reviewed sex-specific ULN reference-limit translation,
+  and reviewed antidiabetic medication-class closure. Both runs have
   the same 2 deceased-patient scoring refusals and the same Layer-1
   structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
   reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 0/1076
-  (0.0%); it adds 61 indeterminate-to-determinate criterion wins and changes 9
+  (0.0%); it adds 64 indeterminate-to-determinate criterion wins and changes 9
   case rollups (all away from indeterminate). It is still not default-ready:
-  compiler diagnostics show 321 unresolved gaps and 43 closed-world-blocking
-  compiled cases, with 423 blocking validation findings. The regenerated
-  compiler-review artifact now dedupes the 321 raw rows to 179
-  surface/action/policy groups (173 `implement_compiler_logic`, 5
+  compiler diagnostics show 314 unresolved gaps and 43 closed-world-blocking
+  compiled cases, with 421 blocking validation findings. The regenerated
+  compiler-review artifact now dedupes the 314 raw rows to 175
+  surface/action/policy groups (169 `implement_compiler_logic`, 5
   `choose_candidate`, and 1 `review_gap`). There are no remaining
   `review_mapping` groups; the generic blood-pressure ambiguity bucket is gone,
   and reviewed AST/ALT/bilirubin/hemoglobin ULN criteria now compile through
-  normal reference-limit translation.
+  normal reference-limit translation, while SGLT and non-insulin antidiabetic
+  medication-class surfaces now compile through reviewed class expansion.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 9 case
@@ -1725,10 +1735,11 @@ promotion remain follow-on work.
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `51f5b0eb86e9`: 9 case movements, 62 decisive criterion
-  movements, and 302 reason-code-only changes. Decisive wins include reviewed
+  `e8efb7bcce35` -> `e4171d158a02`: 9 case movements, 65 decisive criterion
+  movements, and 299 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
-  lipid-lowering therapy, GLP-1 member closure, diabetes/HF/pregnancy variants,
+  lipid-lowering therapy, GLP-1 member closure, SGLT/non-insulin antidiabetic
+  class closure, diabetes/HF/pregnancy variants,
   measurement predicates, trial-exposure movements, PH-ILD, cardiovascular
   event-list, congenital heart disease, HoFH, BP threshold movements, and
   sex-specific hemoglobin ULN translation. Reason-only changes now also include
@@ -1759,6 +1770,8 @@ promotion remain follow-on work.
   then 373 unresolved compiler gaps. BP decomposition, reviewed ULN
   reference-limit translation, and sex-specific hemoglobin ULN handling then
   moved the snapshot to 321 unresolved compiler gaps with 327 checkable
+  predicates. The reviewed SGLT/non-insulin antidiabetic medication-class slice
+  then moved the snapshot to 314 unresolved compiler gaps with 334 checkable
   predicates. The next CC-08/CC-10 targets are normal-range phrase execution,
   modality/fasting provenance support, and moving reviewed unsupported
   measurement decisions into better compiler-specific gap kinds as the IR grows.

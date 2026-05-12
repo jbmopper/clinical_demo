@@ -6,10 +6,10 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "51f5b0eb86e9",
+  "comparison_run_id": "e4171d158a02",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "51f5b0eb86e9",
+    "comparison_run_id": "e4171d158a02",
     "common_cases": 49,
     "changed_cases": 9,
     "compared_criteria": 1076,
@@ -20,14 +20,14 @@
     },
     "by_criterion_movement": {
       "indeterminate->fail": 20,
-      "indeterminate->indeterminate": 302,
-      "indeterminate->pass": 41,
+      "indeterminate->indeterminate": 299,
+      "indeterminate->pass": 44,
       "pass->fail": 1
     },
     "by_direction": {
       "determinate_changed": 1,
-      "indeterminate_to_determinate": 61,
-      "reason_changed": 302
+      "indeterminate_to_determinate": 64,
+      "reason_changed": 299
     }
   },
   "case_movements": [
@@ -1925,20 +1925,23 @@
       "criterion_source_text": "Use of any SGLT inhibitor in the previous 2 months;",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:10",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "medication_exposure",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:10:free-text:medication:medication:gap:medication_class"
-      ]
+      "comparison_predicate_ids": [
+        "criterion:10:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:10:free-text:medication:medication:support:class-expansion",
+        "criterion:10:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:38f38890__NCT06217302:13",
@@ -2894,20 +2897,25 @@
       "criterion_source_text": "Use of any antidiabetic medications within 12 weeks prior to signing the ICF; excluding short-term insulin use (cumulative duration ≤7 days) for concomitant illness, stress, or perioperative periods.",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:10",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "medication_exposure",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:10:medication:gap:medication_class"
-      ]
+      "comparison_predicate_ids": [
+        "criterion:10:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:10:medication:support:class-expansion",
+        "criterion:10:medication:support:class-member-001",
+        "criterion:10:medication:support:class-member-002",
+        "criterion:10:medication:support:class-member-003"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:3beee40e__NCT07394114:14",
@@ -7538,20 +7546,23 @@
       "criterion_source_text": "Use of any SGLT inhibitor in the previous 2 months;",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:10",
-      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_status": "resolved",
       "comparison_predicate_kind": "medication_exposure",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:10:free-text:medication:medication:gap:medication_class"
-      ]
+      "comparison_predicate_ids": [
+        "criterion:10:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:10:free-text:medication:medication:support:class-expansion",
+        "criterion:10:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:c2786fee__NCT06217302:13",

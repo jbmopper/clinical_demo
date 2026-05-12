@@ -3222,6 +3222,49 @@
         },
         {
             "kind": "medication",
+            "surface": "dapagliflozin",
+            "normalized_surface": "dapagliflozin",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:dapagliflozin",
+            "candidates": [
+                {
+                    "name": "dapagliflozin",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": [
+                        "1486977",
+                        "1486981",
+                        "1488569",
+                        "1488574",
+                        "1593058",
+                        "1593068",
+                        "1593070",
+                        "1593072",
+                        "1593775",
+                        "1593831",
+                        "1593833",
+                        "1593835",
+                        "1925498",
+                        "1925504",
+                        "1940496",
+                        "1940498",
+                        "2169274",
+                        "2169276"
+                    ],
+                    "source": "RxNav drugs.json review",
+                    "score": 1.0,
+                    "reason": "Reviewed RxNorm SCD/SBD product-code union for dapagliflozin so SGLT2 and non-insulin antidiabetic class expansion is cache independent."
+                }
+            ],
+            "reason": "Dapagliflozin is the reviewed SGLT2 inhibitor member used by the medication-class registry; commit the RxNorm code union so fresh cached-only runs can compile the class.",
+            "source": "compiler CC-09 review",
+            "provenance": "2026-05-12 compiler-review group: SGLT/SGLT2 and non-insulin antidiabetic class surfaces.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "medication",
             "surface": "amylin",
             "normalized_surface": "amylin",
             "status": "mapped",

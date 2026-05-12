@@ -81,6 +81,8 @@ def test_committed_reviewed_medication_classes_load() -> None:
     raas = registry.lookup("RASB")
     glp1 = registry.lookup("GLP-1 RA")
     sglt2 = registry.lookup("sglt-2 inhibitors")
+    sglt_variant = registry.lookup("SGLT inhibitor")
+    non_insulin_antidiabetic = registry.lookup("diabetes medications other than insulin")
 
     assert statins is not None
     assert statins.member_surfaces == ("atorvastatin", "simvastatin")
@@ -97,3 +99,12 @@ def test_committed_reviewed_medication_classes_load() -> None:
     assert glp1.member_surfaces == ("semaglutide",)
     assert sglt2 is not None
     assert sglt2.member_surfaces == ("dapagliflozin",)
+    assert registry.lookup("SGLT2-inhibitors") is sglt2
+    assert sglt_variant is sglt2
+    assert non_insulin_antidiabetic is not None
+    assert non_insulin_antidiabetic.member_surfaces == (
+        "metformin",
+        "semaglutide",
+        "dapagliflozin",
+    )
+    assert registry.lookup("other non-insulin glucose-lowering agents") is non_insulin_antidiabetic

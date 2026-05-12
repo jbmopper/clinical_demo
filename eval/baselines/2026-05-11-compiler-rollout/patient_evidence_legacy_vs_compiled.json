@@ -41,8 +41,8 @@
       "adjudicator_output_tokens": 0
     },
     {
-      "run_id": "51f5b0eb86e9",
-      "notes": "compiled_predicates reviewed sex-specific ULN reference-limit translation; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "run_id": "e4171d158a02",
+      "notes": "compiled_predicates reviewed antidiabetic medication-class closure; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
       "llm_use_level": "none",
       "matcher_assumption_mode": "closed_world_eval",
       "total_label_targets": 50,
@@ -72,7 +72,7 @@
   "mode_deltas": [
     {
       "baseline_run_id": "e8efb7bcce35",
-      "comparison_run_id": "51f5b0eb86e9",
+      "comparison_run_id": "e4171d158a02",
       "changed_cases": 9,
       "movements": {
         "indeterminate->fail": 8,

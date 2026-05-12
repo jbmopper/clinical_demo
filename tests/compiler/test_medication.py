@@ -242,6 +242,64 @@ def test_committed_glp1_class_expands_without_rxnorm_cache(tmp_path: Path) -> No
     ]
 
 
+def test_committed_sglt_variant_class_expands_without_rxnorm_cache(tmp_path: Path) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("SGLT inhibitor"),
+        source_criterion_id="criterion:sglt",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == "SGLT2 inhibitors"
+    assert len(result.concept_set.codes) == 18
+    assert "1486977" in result.concept_set.codes
+    assert "2169276" in result.concept_set.codes
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "SGLT inhibitor",
+        "dapagliflozin",
+    ]
+
+
+def test_committed_non_insulin_antidiabetic_class_expands_without_rxnorm_cache(
+    tmp_path: Path,
+) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("diabetes medications other than insulin"),
+        source_criterion_id="criterion:non-insulin-antidiabetic",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert (
+        result.concept_set.name
+        == "Non-insulin antidiabetic medications (current patient vocabulary)"
+    )
+    assert "860975" in result.concept_set.codes
+    assert "1991306" in result.concept_set.codes
+    assert "1486977" in result.concept_set.codes
+    assert "106892" not in result.concept_set.codes
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "diabetes medications other than insulin",
+        "metformin",
+        "semaglutide",
+        "dapagliflozin",
+    ]
+
+
 def test_reviewed_class_surface_can_override_list_like_text() -> None:
     resolver = StubMedicationResolver({"atorvastatin": ATORVASTATIN, "simvastatin": SIMVASTATIN})
 

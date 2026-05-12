@@ -117,8 +117,11 @@
       "surfaces": [
         "sglt2",
         "sglt-2",
+        "sglt inhibitor",
+        "sglt inhibitors",
         "sglt2 inhibitor",
         "sglt2 inhibitors",
+        "SGLT2-inhibitors",
         "sglt-2 inhibitor",
         "sglt-2 inhibitors"
       ],
@@ -131,6 +134,28 @@
       "provenance": "High-frequency diabetes trial surfaces mention SGLT2 class exposure; dapagliflozin is the current reviewed representative in the project medication bindings.",
       "reviewer": "codex-assisted review",
       "reviewed_at": "2026-05-11",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
+      "class_id": "reviewed-medication-class:non-insulin-antidiabetic-current-vocab",
+      "display": "Non-insulin antidiabetic medications (current patient vocabulary)",
+      "surfaces": [
+        "antidiabetic medications",
+        "diabetes medications other than insulin",
+        "non-insulin glucose-lowering agents",
+        "other non-insulin glucose-lowering agents"
+      ],
+      "member_surfaces": [
+        "metformin",
+        "semaglutide",
+        "dapagliflozin"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed non-insulin antidiabetic expansion closed over the committed demo medication vocabulary; insulin is intentionally excluded for criteria that say other than insulin.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced antidiabetic/non-insulin glucose-lowering medication-class criteria as unresolved class surfaces.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
       "resolver_version": "reviewed-medication-class-registry-v1"
     }
   ]
