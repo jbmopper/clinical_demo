@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `e4171d158a02`
+- comparison: `f77c112ef220`
 - changed cases: 9/49
-- changed criteria: 364/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=64 / reason_changed=299
+- changed criteria: 362/1076
+- criterion directions: determinate_changed=1 / indeterminate_to_determinate=64 / reason_changed=297
 
 ## Case Movements
 
@@ -40,7 +40,6 @@ Public-Artifact-Safety: synthetic
 | `060e72d3__NCT05713006` | 21 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Active hepatitis virus infection (any serotype) or chronic infection with a potential risk of rea... |
 | `060e72d3__NCT05713006` | 22 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Active HIV infection. |
 | `060e72d3__NCT05713006` | 23 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Breastfeeding. |
-| `1293efbb__NCT06524960` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Non-fasting C-peptide concentrations of at least 0.2 nmol/L (0.6 ng/ml) at pre-screening and conf... |
 | `1293efbb__NCT06524960` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Serum calcium (corrected for albumin) within normal limits per site's local lab |
 | `1293efbb__NCT06524960` | 10 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Vitamin D3 deficiency (< 30 ng/ml) |
 | `1293efbb__NCT06524960` | 16 | free_text | indeterminate->indeterminate | reason_changed | compound | Treatment with any of the following drugs in past year: immunosuppressants, anticonvulsant therap... |
@@ -262,7 +261,6 @@ Public-Artifact-Safety: synthetic
 | `9e84e569__NCT04602754` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with known uncontrolled hypothyroidism or TSH levels > 5 mIU/L; |
 | `9e84e569__NCT04602754` | 27 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Participants using medications that may interfere with triglyceride and cholesterol metabolism st... |
 | `9e84e569__NCT04602754` | 28 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Treatment with anti-obesity drugs for less than 2 months or with dose change in the last 2 months. |
-| `9e84e569__NCT06524960` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Non-fasting C-peptide concentrations of at least 0.2 nmol/L (0.6 ng/ml) at pre-screening and conf... |
 | `9e84e569__NCT06524960` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Serum calcium (corrected for albumin) within normal limits per site's local lab |
 | `9e84e569__NCT06524960` | 10 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Vitamin D3 deficiency (< 30 ng/ml) |
 | `9e84e569__NCT06524960` | 16 | free_text | indeterminate->indeterminate | reason_changed | compound | Treatment with any of the following drugs in past year: immunosuppressants, anticonvulsant therap... |

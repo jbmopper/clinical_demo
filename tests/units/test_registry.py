@@ -74,6 +74,8 @@ def test_new_reviewed_measurement_conversion_factors() -> None:
     assert conversion_factor("751-8", "μL", "10*3/uL") == 0.001
     assert conversion_factor("2339-0", "mmol/L", "mg/dL") == 18.018
     assert conversion_factor("2571-8", "mmol/L", "mg/dL") == 88.57
+    assert conversion_factor("1986-9", "nmol/L", "ng/mL") == 3.0
+    assert conversion_factor("1986-9", "ng/mL", "nmol/L") == pytest.approx(1 / 3.0)
 
 
 @pytest.mark.parametrize(
@@ -113,6 +115,7 @@ def test_identical_canonical_units_have_identity_conversion() -> None:
         ("1975-2", "mg/dL"),
         ("2339-0", "mg/dL"),
         ("2571-8", "mg/dL"),
+        ("1986-9", "ng/mL"),
         ("99999-9", None),
     ],
 )

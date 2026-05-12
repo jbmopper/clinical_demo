@@ -89,6 +89,11 @@ decisions, not a substitute for institution/lab-provided reference intervals;
 missing reference limits still produce typed compiler gaps instead of
 executable predicates.
 
+The ordinary unit registry in `clinical_demo.units.registry` remains
+LOINC-scoped. For example, C-peptide accepts `nmol/L` trial thresholds and
+converts them into the `ng/mL` convention used by the committed Synthea
+observations; this is not a global `nmol/L` conversion for unrelated analytes.
+
 Expansion policies:
 
 - `exact_code`: the entry names one exact code or exact concept.

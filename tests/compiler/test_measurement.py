@@ -84,6 +84,20 @@ def test_ldl_mmol_l_threshold_converts_to_conventional_mg_dl() -> None:
     assert result.normalized_value == pytest.approx(100.542)
 
 
+def test_c_peptide_nmol_l_threshold_converts_to_ng_ml() -> None:
+    result = compile_measurement_resolution(
+        _measurement("C-peptide", value=0.2, unit="nmol/L"),
+        "c:c-peptide",
+    )
+
+    assert result.selected_loinc_code == "1986-9"
+    assert result.unit_normalization.status == "resolved"
+    assert result.unit_normalization.canonical_unit == "nmol/L"
+    assert result.unit_normalization.conventional_unit == "ng/mL"
+    assert result.unit_normalization.conversion_factor == 3.0
+    assert result.normalized_value == pytest.approx(0.6)
+
+
 @pytest.mark.parametrize(
     ("surface", "unit", "expected_canonical", "expected_conventional", "expected_factor"),
     [
@@ -91,6 +105,7 @@ def test_ldl_mmol_l_threshold_converts_to_conventional_mg_dl() -> None:
         ("HbA1c", " percent ", "%", "%", 1.0),
         ("BMI", "kg / m^2", "kg/m2", "kg/m2", 1.0),
         ("eGFR", "mL / min / 1.73 m^2", "mL/min/1.73m2", "mL/min/1.73m2", 1.0),
+        ("C-peptide", "nmol / L", "nmol/L", "ng/mL", 3.0),
     ],
 )
 def test_measurement_resolution_accepts_normalized_unit_variants(

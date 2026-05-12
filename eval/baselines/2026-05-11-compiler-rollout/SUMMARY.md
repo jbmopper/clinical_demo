@@ -7,7 +7,7 @@ registry-closure, cache-independent terminology-closure, reviewed
 descendant-expansion, condition/event decomposition, qualifier/top-gap review,
 final opaque-unmapped registry slices, blood-pressure threshold decomposition,
 reviewed sex-specific ULN reference-limit translation, and reviewed
-antidiabetic medication-class closure.
+antidiabetic medication-class closure, and C-peptide unit conversion.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -55,14 +55,16 @@ measurement, and medication hardening slices landed.
   reviewed male/female limits exist. The reviewed antidiabetic class pass adds
   a cache-independent dapagliflozin RxNorm code union, SGLT/SGLT2 spelling
   variants, and non-insulin antidiabetic current-vocabulary closure over
-  metformin, semaglutide, and dapagliflozin.
+  metformin, semaglutide, and dapagliflozin. The C-peptide unit pass adds a
+  LOINC-scoped `nmol/L` to `ng/mL` conversion using the trial-provided
+  0.2 nmol/L = 0.6 ng/mL equivalence.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `e4171d158a02` | 36 fail / 9 indeterminate / 0 pass / 2 pass_pending_review | 78 fail / 830 indeterminate / 168 pass | 0 (0.0%) | 17.3s |
+| `compiled_predicates` | `f77c112ef220` | 36 fail / 9 indeterminate / 0 pass / 2 pass_pending_review | 78 fail / 830 indeterminate / 168 pass | 0 (0.0%) | 17.0s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
@@ -72,8 +74,8 @@ criterion wins from more explicit compiler execution of mapped condition,
 measurement, trial-exposure, medication exposure, PH-ILD, HoFH, congenital heart
 disease, cardiovascular event-list promotions, GLP-1 class closure, and
 diabetes/HF/pregnancy variant mapping, plus blood-pressure threshold
-decomposition, sex-specific hemoglobin ULN translation, and antidiabetic
-medication-class closure. The final movement
+decomposition, sex-specific hemoglobin ULN translation, antidiabetic
+medication-class closure, and C-peptide unit conversion. The final movement
 packet has 64 indeterminate-to-determinate criterion wins plus 1
 determinate-to-determinate movement. The prior broad-parent
 determinate-to-indeterminate movements are gone:
@@ -103,7 +105,7 @@ Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
 `legacy_vs_compiled_movement_review.json` and `.md` are the focused review
-packet for these changes. They contain 65 decisive criterion movements and 299
+packet for these changes. They contain 65 decisive criterion movements and 297
 reason-code-only changes. The decisive movements include medication-exposure
 wins for RAAS blockers, stable lipid-lowering treatment, and reviewed class
 closure, plus GLP-1 member closure, SGLT/non-insulin antidiabetic class
@@ -119,26 +121,26 @@ decisions match the validation contract.
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 334
-- unresolved compiler gaps: 314
+- checkable predicates: 336
+- unresolved compiler gaps: 312
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 1016 total, 421 blocking
+- validation findings: 1012 total, 417 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 296 |
+| `implement_compiler_logic` | 294 |
 | `review_gap` | 10 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-314 raw rows to 175 distinct surface/action/policy work items:
+312 raw rows to 174 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 169 |
+| `implement_compiler_logic` | 168 |
 | `review_gap` | 1 |
 
 The current threshold gate passes only without `--require-compilation`, because
@@ -148,11 +150,11 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 314 \
+  --max-unresolved-gaps 312 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 421 \
+  --max-closed-world-blocking-findings 417 \
   --max-gap-kind unmapped_concept=0 \
-  --max-gap-kind unsupported_predicate=296 \
+  --max-gap-kind unsupported_predicate=294 \
   --max-gap-kind ambiguous_mapping=8 \
   --max-gap-kind insufficient_source=10
 ```
@@ -196,7 +198,10 @@ increased checkable predicates to 327, lowered blocking validation findings to
 423, and preserved the same case rollup. The reviewed antidiabetic
 medication-class slice then reduced unresolved compiler gaps to 314, increased
 checkable predicates to 334, lowered blocking validation findings to 421, and
-preserved the same case rollup.
+preserved the same case rollup. The C-peptide unit-conversion slice then
+reduced unresolved compiler gaps to 312, increased checkable predicates to 336,
+lowered blocking validation findings to 417, removed the last
+unit-normalization review group, and preserved the same case rollup.
 
 ## Patient-Evidence Calibration
 
@@ -206,7 +211,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `e4171d158a02` | 5/50 | 80.0% | 40.0% | 17 |
+| `f77c112ef220` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

@@ -6,28 +6,28 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "e4171d158a02",
+  "comparison_run_id": "f77c112ef220",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "e4171d158a02",
+    "comparison_run_id": "f77c112ef220",
     "common_cases": 49,
     "changed_cases": 9,
     "compared_criteria": 1076,
-    "changed_criteria": 364,
+    "changed_criteria": 362,
     "by_case_movement": {
       "indeterminate->fail": 8,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
       "indeterminate->fail": 20,
-      "indeterminate->indeterminate": 299,
+      "indeterminate->indeterminate": 297,
       "indeterminate->pass": 44,
       "pass->fail": 1
     },
     "by_direction": {
       "determinate_changed": 1,
       "indeterminate_to_determinate": 64,
-      "reason_changed": 299
+      "reason_changed": 297
     }
   },
   "case_movements": [
@@ -488,34 +488,6 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:23:condition:gap:reviewed-out_of_scope"
-      ]
-    },
-    {
-      "row_id": "criterion:1293efbb__NCT06524960:5",
-      "pair_id": "1293efbb__NCT06524960",
-      "patient_id": "1293efbb-72dc-8b15-3bd6-916f96ed54f4",
-      "nct_id": "NCT06524960",
-      "eval_slice": "t2dm-academic",
-      "criterion_index": 5,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "Non-fasting C-peptide concentrations of at least 0.2 nmol/L (0.6 ng/ml) at pre-screening and confirmed during a MMTT done at screening visit",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "no_data",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:5",
-      "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:5:measurement:loinc"
-      ],
-      "comparison_gap_ids": [
-        "criterion:5:unit:gap:unsupported_conversion"
       ]
     },
     {
@@ -6447,34 +6419,6 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:28:free-text:medication:medication:gap:medication_class"
-      ]
-    },
-    {
-      "row_id": "criterion:9e84e569__NCT06524960:5",
-      "pair_id": "9e84e569__NCT06524960",
-      "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
-      "nct_id": "NCT06524960",
-      "eval_slice": "t2dm-academic",
-      "criterion_index": 5,
-      "criterion_kind": "measurement_threshold",
-      "criterion_source_text": "Non-fasting C-peptide concentrations of at least 0.2 nmol/L (0.6 ng/ml) at pre-screening and confirmed during a MMTT done at screening visit",
-      "baseline_verdict": "indeterminate",
-      "baseline_reason": "no_data",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:5",
-      "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "measurement_threshold",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:5:measurement:loinc"
-      ],
-      "comparison_gap_ids": [
-        "criterion:5:unit:gap:unsupported_conversion"
       ]
     },
     {

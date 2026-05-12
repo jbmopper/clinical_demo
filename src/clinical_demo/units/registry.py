@@ -307,6 +307,21 @@ DEFAULT_UNIT_SPECS: tuple[UnitSpec, ...] = (
             ("mg/dL", "mmol/L"): 1 / 88.57,
         },
     ),
+    UnitSpec(
+        loinc_code="1986-9",
+        name="C-peptide",
+        conventional_unit="ng/mL",
+        aliases={
+            "ng/mL": "ng/mL",
+            "ng/ml": "ng/mL",
+            "nmol/L": "nmol/L",
+            "nmol/l": "nmol/L",
+        },
+        conversion_factors={
+            ("nmol/L", "ng/mL"): 3.0,
+            ("ng/mL", "nmol/L"): 1 / 3.0,
+        },
+    ),
 )
 
 DEFAULT_REGISTRY = MeasurementUnitRegistry.default()

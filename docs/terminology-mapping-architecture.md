@@ -162,7 +162,10 @@ Foundation status:
 - `CC-04` now has a unit registry shared by the compiler-facing code and
   `PatientProfile` threshold checks. It accepts conservative spelling, casing,
   spacing, slash, and micro-symbol variants while dropping ambiguous normalized
-  aliases so unknown units still fail closed.
+  aliases so unknown units still fail closed. Unit conversions remain
+  LOINC-scoped; the current registry includes C-peptide `nmol/L` to `ng/mL`
+  because the trial text provides the paired threshold and Synthea observations
+  use `ng/mL`.
 - `CC-05` now has an opt-in compiled-predicate matcher, so eval can compare
   legacy matcher-input execution against compiled-predicate execution before
   the default path changes. Native composite groups now compile their subchecks
