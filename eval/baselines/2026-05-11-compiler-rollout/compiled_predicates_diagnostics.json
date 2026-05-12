@@ -4,14 +4,14 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "c4ccb713a2d5",
-  "notes": "Condition event decomposition and long-tail terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "51bcb8d34974",
+  "notes": "Condition qualifier and top-gap terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 18934.123580576852,
-  "avg_scoring_latency_ms": 386.41068531789495,
+  "total_scoring_latency_ms": 20031.93933831062,
+  "avg_scoring_latency_ms": 408.81508853695146,
   "verdict_counts": {
     "fail": 67,
     "indeterminate": 863,
@@ -19,11 +19,11 @@
   },
   "reason_counts": {
     "ambiguous_criterion": 31,
-    "human_review_required": 606,
+    "human_review_required": 608,
     "no_data": 5,
     "ok": 213,
-    "unmapped_concept": 79,
-    "unsupported_kind": 124,
+    "unmapped_concept": 37,
+    "unsupported_kind": 164,
     "unsupported_mood": 18
   },
   "kind_counts": {
@@ -37,8 +37,8 @@
     "sex": 6,
     "temporal_window": 15
   },
-  "unmapped_count": 79,
-  "unmapped_rate": 0.07342007434944238,
+  "unmapped_count": 37,
+  "unmapped_rate": 0.03438661710037175,
   "indeterminate_count": 863,
   "indeterminate_rate": 0.8020446096654275,
   "binding_registered_total": 27,
@@ -57,124 +57,124 @@
   },
   "top_unmapped_surfaces": [
     {
-      "surface": "other diseases requiring RAAS inhibitor therapy",
-      "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "concomitant disease with life expectancy <6 months",
-      "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "condition that may render the patient unable to comply with study requirements",
-      "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "other serious medical conditions",
+      "surface": "nsclc",
       "kind": "condition_present",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "prior systemic anti-tumor therapy for the studied disease",
-      "kind": "condition_absent",
-      "count": 2
+      "surface": "curative intent treatment",
+      "kind": "temporal_window",
+      "count": 1
     },
     {
-      "surface": "other malignant tumors",
-      "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "type 2 dm",
+      "surface": "alk rearrangements",
       "kind": "condition_present",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "contraindication to any component of polypill",
-      "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "HF New York Heart Association Class II-III",
+      "surface": "measurable disease",
       "kind": "condition_present",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "contraindication to RHC",
+      "surface": "positive pregnancy test",
       "kind": "condition_absent",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "history of kidney transplant",
+      "surface": "active hepatitis virus infection",
       "kind": "condition_present",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "ros1 rearrangement",
+      "surface": "active hiv infection",
       "kind": "condition_present",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "measurable lesion",
+      "surface": "breastfeeding",
+      "kind": "condition_absent",
+      "count": 1
+    },
+    {
+      "surface": "other types of diabetes",
+      "kind": "condition_absent",
+      "count": 1
+    },
+    {
+      "surface": "travel time to xenotransplant center",
+      "kind": "temporal_window",
+      "count": 1
+    },
+    {
+      "surface": "xeno-crossmatch positive",
+      "kind": "condition_absent",
+      "count": 1
+    },
+    {
+      "surface": "non-renal cause of hematological disorders associated with anemia",
       "kind": "condition_present",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "toxicities from prior anticancer therapy",
+      "surface": "chronic anticoagulation therapy",
       "kind": "condition_absent",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "investigational antineoplastic agent for nsclc",
-      "kind": "condition_absent",
-      "count": 2
+      "surface": "major psychiatric disorders",
+      "kind": "condition_present",
+      "count": 1
     },
     {
-      "surface": "prior TKI including ros1-targeted TKIs",
-      "kind": "condition_absent",
-      "count": 2
+      "surface": "active tuberculosis",
+      "kind": "condition_present",
+      "count": 1
     },
     {
-      "surface": "major surgery within 28 days prior to randomization",
+      "surface": "inability to perform activities of daily life",
       "kind": "condition_absent",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "symptomatic CNS metastases",
-      "kind": "condition_absent",
-      "count": 2
+      "surface": "history of medical noncompliance",
+      "kind": "condition_present",
+      "count": 1
     },
     {
-      "surface": "current spinal cord compression",
+      "surface": "hypersensitivity to formula components",
       "kind": "condition_absent",
-      "count": 2
+      "count": 1
     },
     {
-      "surface": "ongoing cardiac dysrhythmias",
+      "surface": "impaired hepatic function",
       "kind": "condition_absent",
-      "count": 2
+      "count": 1
+    },
+    {
+      "surface": "pancreatic diseases suggesting insulin deficiency",
+      "kind": "condition_absent",
+      "count": 1
     }
   ],
   "compiler_compilation_present_cases": 47,
   "compiler_compilation_missing_cases": 2,
   "compiler_compiled_criteria_total": 1076,
-  "compiler_checkable_predicates_total": 257,
-  "compiler_unresolved_gaps_total": 354,
+  "compiler_checkable_predicates_total": 255,
+  "compiler_unresolved_gaps_total": 365,
   "compiler_unresolved_gaps_by_kind": {
     "ambiguous_mapping": 13,
     "insufficient_source": 22,
-    "unmapped_concept": 105,
-    "unsupported_predicate": 214
+    "unmapped_concept": 59,
+    "unsupported_predicate": 271
   },
   "compiler_unresolved_gaps_by_stage": {
-    "concept_resolution": 292,
-    "predicate_translation": 51,
+    "concept_resolution": 270,
+    "predicate_translation": 84,
     "unit_normalization": 11
   },
   "compiler_unresolved_gaps_by_domain": {
-    "condition": 189,
+    "condition": 200,
     "free_text": 34,
     "measurement": 69,
     "medication": 50,
@@ -183,6 +183,6 @@
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,
-  "compiler_closed_world_findings_total": 1080,
-  "compiler_closed_world_blocking_findings_total": 473
+  "compiler_closed_world_findings_total": 1078,
+  "compiler_closed_world_blocking_findings_total": 469
 }

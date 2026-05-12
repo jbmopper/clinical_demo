@@ -483,6 +483,56 @@ def test_single_nested_cardiovascular_event_atom_does_not_decompose_recursively(
     ]
 
 
+def test_nyha_heart_failure_compiles_heart_failure_with_unsupported_qualifier() -> None:
+    criterion = _condition("HF New York Heart Association Class II-III")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.status == "unresolved"
+    assert compiled.compound_logic.operator == "all_of"
+    assert compiled.checkable_predicates == []
+    assert compiled.resolved_supports[0].surface == "heart failure"
+    assert compiled.unresolved_gaps[-1].kind == "unsupported_predicate"
+    assert compiled.diagnostics[-1].code == "condition_phrase.unsupported_qualifier"
+
+
+def test_condition_contraindication_phrase_emits_typed_gap() -> None:
+    criterion = _condition("contraindication to RHC")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.checkable_predicates == []
+    assert compiled.unresolved_gaps[0].kind == "unsupported_predicate"
+    assert compiled.diagnostics[1].code == "condition_phrase.unsupported"
+
+
+def test_prognostic_life_expectancy_condition_phrase_emits_typed_gap() -> None:
+    criterion = _condition("concomitant disease with life expectancy <6 months")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.unresolved_gaps[0].kind == "unsupported_predicate"
+    assert "Life-expectancy criteria" in compiled.unresolved_gaps[0].message
+
+
+def test_qualified_arrhythmia_phrase_emits_typed_gap() -> None:
+    criterion = _condition("ongoing cardiac dysrhythmias")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.unresolved_gaps[0].kind == "unsupported_predicate"
+    assert "Qualified arrhythmia" in compiled.unresolved_gaps[0].message
+
+
 def test_free_text_condition_mention_compiles_to_condition_predicate() -> None:
     criterion = _free_text("Bone fractures within the past 12 months").model_copy(
         update={

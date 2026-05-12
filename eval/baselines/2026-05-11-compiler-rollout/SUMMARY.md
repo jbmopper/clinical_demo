@@ -4,7 +4,8 @@ Public-Artifact-Safety: synthetic
 
 Updated 2026-05-12 after the reviewed condition/event, medication
 registry-closure, cache-independent terminology-closure, reviewed
-descendant-expansion, and condition/event decomposition slices.
+descendant-expansion, condition/event decomposition, and qualifier/top-gap
+review slices.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -34,26 +35,31 @@ measurement, and medication hardening slices landed.
   cardiovascular parent concepts expand without warmed-cache exact parent hits.
   The condition/event decomposition pass adds PH-ILD, cardiovascular event-list,
   congenital heart disease, HoFH, and long-tail reviewed non-mapping decisions.
+  The qualifier/top-gap pass adds generic typed gaps for contraindication,
+  life-expectancy, study-compliance, qualified arrhythmia, and NYHA functional
+  class phrases, plus reviewed rows for type 2 DM and high-frequency procedure,
+  genomic, oncology, and cpcPH non-atomic surfaces.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `c4ccb713a2d5` | 33 fail / 12 indeterminate / 0 pass / 2 pass_pending_review | 67 fail / 863 indeterminate / 146 pass | 79 (7.3%) | 18.9s |
+| `compiled_predicates` | `51bcb8d34974` | 33 fail / 12 indeterminate / 0 pass / 2 pass_pending_review | 67 fail / 863 indeterminate / 146 pass | 37 (3.4%) | 20.0s |
 
-The compiled path reduces criterion-level `unmapped_concept` by 238 rows
-(-22.1 percentage points) against the same-run legacy path and moves the
-compiled snapshot from 115 to 79 `unmapped_concept` rows versus the previous
-reviewed descendant-expansion snapshot. It adds 31 indeterminate-to-determinate
+The compiled path reduces criterion-level `unmapped_concept` by 280 rows
+(-26.1 percentage points) against the same-run legacy path and moves the
+compiled snapshot from 79 to 37 `unmapped_concept` rows versus the previous
+condition/event decomposition snapshot. It adds 31 indeterminate-to-determinate
 criterion wins from more explicit compiler execution of mapped condition,
 measurement, trial-exposure, medication exposure, PH-ILD, HoFH, congenital heart
-disease, and cardiovascular event-list promotions. The prior broad-parent
-determinate-to-indeterminate movements are gone: endocrine, psychiatric, and
-cardiovascular parent mappings now expand through committed reviewed closures
-instead of warmed-cache exact-code behavior. This is progress, but the compiled
-path is still not default-ready because closed-world validation still blocks 43
-cases and the deduped compiler-review queue is still large.
+disease, cardiovascular event-list promotions, and type 2 DM abbreviation
+mapping. The prior broad-parent determinate-to-indeterminate movements are gone:
+endocrine, psychiatric, and cardiovascular parent mappings now expand through
+committed reviewed closures instead of warmed-cache exact-code behavior. This is
+progress, but the compiled path is still not default-ready because closed-world
+validation still blocks 43 cases and the deduped compiler-review queue is still
+large.
 
 ## Case Rollup Movement
 
@@ -85,29 +91,29 @@ decisions match the validation contract.
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 257
-- unresolved compiler gaps: 354
+- checkable predicates: 255
+- unresolved compiler gaps: 365
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 1080 total, 473 blocking
+- validation findings: 1078 total, 469 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 13 |
-| `implement_compiler_logic` | 214 |
+| `implement_compiler_logic` | 271 |
 | `review_gap` | 22 |
-| `review_mapping` | 105 |
+| `review_mapping` | 59 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-354 raw rows to 190 distinct surface/action/policy work items:
+365 raw rows to 194 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 6 |
-| `implement_compiler_logic` | 100 |
+| `implement_compiler_logic` | 128 |
 | `review_gap` | 4 |
-| `review_mapping` | 80 |
+| `review_mapping` | 56 |
 
 The current threshold gate passes only without `--require-compilation`, because
 the 2 deceased-patient scorer refusals mean compilation is missing for those
@@ -116,28 +122,26 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 354 \
+  --max-unresolved-gaps 365 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 473 \
-  --max-gap-kind unmapped_concept=105 \
-  --max-gap-kind unsupported_predicate=214 \
+  --max-closed-world-blocking-findings 469 \
+  --max-gap-kind unmapped_concept=59 \
+  --max-gap-kind unsupported_predicate=271 \
   --max-gap-kind ambiguous_mapping=13 \
   --max-gap-kind insufficient_source=22
 ```
 
-Top remaining unmapped surfaces are now a thinner condition/event/medication
-tail with frequency 2 at the top: other diseases requiring RAAS inhibitor
-therapy, concomitant disease with life expectancy under 6 months, conditions
-that may prevent study compliance, other serious medical conditions, prior
-systemic anti-tumor therapy, other malignant tumors, type 2 DM, polypill/RHC
-contraindications, HF NYHA class II-III, kidney transplant history, ROS1
-rearrangement, measurable lesion / RECIST-style oncology phrases, toxicities
-from prior anticancer therapy, investigational antineoplastic agents, prior
-TKIs, major surgery, symptomatic CNS metastases, spinal cord compression, and
-ongoing cardiac dysrhythmias. The reviewed lab,
-condition/event, medication, and decomposition tranches removed the previous
-higher-frequency opaque buckets by either mapping them or classifying them as
-explicit compiler gaps.
+Top remaining unmapped surfaces are now all singleton opaque concepts: NSCLC,
+curative-intent treatment, ALK rearrangements, measurable disease, positive
+pregnancy test, active hepatitis/HIV/TB infection, breastfeeding, other diabetes
+types, xenotransplant logistics/crossmatch phrases, chronic anticoagulation
+therapy, major psychiatric disorders, impaired hepatic function, pancreatic
+diseases suggesting insulin deficiency, and similar long-tail surfaces. The
+reviewed lab, condition/event, medication, decomposition, and qualifier/top-gap
+tranches removed the previous frequency-2 opaque buckets by either mapping them
+or classifying them as explicit compiler gaps. The raw compiler-gap count rises
+in this slice because opaque mapping gaps become auditable
+`unsupported_predicate` work items.
 
 A pre-fix fresh-cache probe on 2026-05-12 regressed to 424 unresolved compiler
 gaps and 156 compiled `unmapped_concept` rows. After promoting the 35
@@ -149,7 +153,11 @@ five explicit broad-parent expansion gaps for endocrine, psychiatric, and
 cardiovascular disease while preserving the same case rollup. The
 condition/event decomposition and long-tail terminology slice then moved the
 compiled snapshot to 79 opaque `unmapped_concept` rows, 354 unresolved compiler
-gaps, and a 33 fail / 12 indeterminate / 2 pass_pending_review case rollup.
+gaps, and a 33 fail / 12 indeterminate / 2 pass_pending_review case rollup. The
+qualifier/top-gap slice then moved opaque `unmapped_concept` to 37 rows while
+preserving the same case rollup; unresolved compiler gaps are now 365 because
+more rows are explicitly typed as unsupported compiler work instead of unknown
+terminology.
 
 ## Patient-Evidence Calibration
 
@@ -159,11 +167,11 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `c4ccb713a2d5` | 5/50 | 80.0% | 40.0% | 17 |
+| `51bcb8d34974` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human
-pass should grade the 190-group deduped packet, not the raw 354-row compiler
+pass should grade the 194-group deduped packet, not the raw 365-row compiler
 review export.
 
 ## Files

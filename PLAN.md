@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `c4ccb713a2d5` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `51bcb8d34974` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -30,23 +30,26 @@
   cache-independent condition/medication closure, exact-reviewed precedence in
   candidate ranking, reviewed descendant expansions, PH-ILD decomposition,
   cardiovascular event-list decomposition, long-tail condition terminology
-  rows, and regenerated compiler review/movement artifacts under
+  rows, qualifier-aware condition phrase gaps, and regenerated compiler
+  review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
-  `unmapped_concept` is down from 317/1076 (29.5%) to 79/1076 (7.3%),
+  `unmapped_concept` is down from 317/1076 (29.5%) to 37/1076 (3.4%),
   with 31 indeterminate-to-determinate criterion movements and 6 case-rollup
-  movements. The path is still not default-ready: diagnostics show 354
-  unresolved compiler gaps, 43 closed-world-blocking cases, and 473 blocking
-  validation findings. The deduped review packet has 190 groups (80
-  `review_mapping`, 100 `implement_compiler_logic`, 6 `choose_candidate`, and 4
+  movements. The path is still not default-ready: diagnostics show 365
+  unresolved compiler gaps, 43 closed-world-blocking cases, and 469 blocking
+  validation findings. The deduped review packet has 194 groups (56
+  `review_mapping`, 128 `implement_compiler_logic`, 6 `choose_candidate`, and 4
   `review_gap`). The first cache-independent closure pass is complete for the
   warmed-cache delta: an empty-cache probe had regressed to 424 gaps / 156
   compiled `unmapped_concept`, then reviewed artifacts brought it back to the
   warmed snapshot, and the decomposition slice now cuts opaque
-  `unmapped_concept` further to 79. Remaining next work is reviewing the 31
-  decisive movement rows, reducing the 100 grouped `implement_compiler_logic`
-  items, tightening measurement normal-range/provenance handling, and preparing
-  a smaller human grading packet once the closed-world blockers are lower.
+  `unmapped_concept` further to 37. The increased compiler-gap count is
+  intentional: formerly opaque rows are now typed unsupported/composite work.
+  Remaining next work is reviewing the 31 decisive movement rows, reducing the
+  128 grouped `implement_compiler_logic` items, tightening measurement
+  normal-range/provenance handling, and preparing a smaller human grading packet
+  once the closed-world blockers are lower.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
   `matcher_assumption_mode` change behavior, not just metadata, and
   fixes the silent-flip bug in v0.1. Before: `_match_condition` /
@@ -1420,7 +1423,12 @@ promotion remain follow-on work.
     event subchecks, single nested atoms such as congestive heart failure and
     acute pulmonary embolism avoid recursive decomposition, and left-sided heart
     disease stays an explicit unsupported compiler gap until ventricular,
-    valvular, or hemodynamic decomposition is implemented.
+    valvular, or hemodynamic decomposition is implemented. Qualifier/top-gap
+    continuation landed 2026-05-12: NYHA heart-failure phrases keep reviewed
+    heart-failure support but do not emit executable predicates until functional
+    class evidence is supported; contraindication, life-expectancy,
+    study-compliance, qualified arrhythmia, and generic "other medical
+    condition" phrases become explicit unsupported compiler gaps.
 
 - id: CC-08
   title: Measurement criterion compiler
@@ -1659,18 +1667,19 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`c4ccb713a2d5`) after the reviewed condition/event,
+  `compiled_predicates` (`51bcb8d34974`) after the reviewed condition/event,
   medication registry-closure, cache-independent terminology-closure, reviewed
-  descendant-expansion, and condition/event decomposition slices. Both runs have
-  the same 2 deceased-patient scoring refusals and the same Layer-1
-  structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
-  reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 79/1076
-  (7.3%); it adds 31 indeterminate-to-determinate criterion wins and changes 6
+  descendant-expansion, condition/event decomposition, and qualifier/top-gap
+  review slices. Both runs have the same 2 deceased-patient scoring refusals and
+  the same Layer-1 structured-field metrics (89.0% agreement, 98.6% coverage).
+  The compiled path reduces criterion-level `unmapped_concept` from 317/1076
+  (29.5%) to 37/1076 (3.4%); it adds 31 indeterminate-to-determinate criterion
+  wins and changes 6
   case rollups (all away from indeterminate). It is still not default-ready:
-  compiler diagnostics show 354 unresolved gaps and 43 closed-world-blocking
-  compiled cases, with 473 blocking validation findings. The regenerated
-  compiler-review artifact now dedupes the 354 raw rows to 190
-  surface/action/policy groups (80 `review_mapping`, 100
+  compiler diagnostics show 365 unresolved gaps and 43 closed-world-blocking
+  compiled cases, with 469 blocking validation findings. The regenerated
+  compiler-review artifact now dedupes the 365 raw rows to 194
+  surface/action/policy groups (56 `review_mapping`, 128
   `implement_compiler_logic`, 6 `choose_candidate`, and 4 `review_gap`).
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient

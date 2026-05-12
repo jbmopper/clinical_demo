@@ -41,8 +41,8 @@
       "adjudicator_output_tokens": 0
     },
     {
-      "run_id": "c4ccb713a2d5",
-      "notes": "Condition event decomposition and long-tail terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "run_id": "51bcb8d34974",
+      "notes": "Condition qualifier and top-gap terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
       "llm_use_level": "none",
       "matcher_assumption_mode": "closed_world_eval",
       "total_label_targets": 50,
@@ -72,7 +72,7 @@
   "mode_deltas": [
     {
       "baseline_run_id": "e8efb7bcce35",
-      "comparison_run_id": "c4ccb713a2d5",
+      "comparison_run_id": "51bcb8d34974",
       "changed_cases": 6,
       "movements": {
         "indeterminate->fail": 5,

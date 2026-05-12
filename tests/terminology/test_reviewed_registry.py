@@ -141,6 +141,10 @@ def test_committed_condition_long_tail_review_rows_load() -> None:
         REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
     )
 
+    type_2_dm = registry.lookup("condition", "type 2 dm")
+    cpcph = registry.lookup("condition", "cpcPH")
+    kidney_transplant = registry.lookup("condition", "history of kidney transplant")
+    egfr = registry.lookup("condition", "EGFR ex20ins status")
     hofh = registry.lookup("condition", "HoFH")
     congenital = registry.lookup("condition", "history of congenital heart disease")
     arrhythmia = registry.lookup("condition", "uncontrolled severe arrhythmia")
@@ -148,6 +152,16 @@ def test_committed_condition_long_tail_review_rows_load() -> None:
     renal_glycosuria = registry.lookup("condition", "primary renal glycosuria")
     organ_transplant = registry.lookup("condition", "organ transplant")
 
+    assert type_2_dm is not None
+    assert type_2_dm.status == "mapped"
+    assert type_2_dm.concept_set == "T2DM"
+    assert cpcph is not None
+    assert cpcph.status == "composite_unhandled"
+    assert cpcph.candidates[0].codes == frozenset({"70995007"})
+    assert kidney_transplant is not None
+    assert kidney_transplant.status == "out_of_scope"
+    assert egfr is not None
+    assert egfr.status == "out_of_scope"
     assert hofh is not None
     assert hofh.status == "mapped"
     assert hofh.concept_set == "reviewed:condition:homozygous-familial-hypercholesterolemia"

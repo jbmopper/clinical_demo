@@ -893,13 +893,19 @@ def test_committed_long_tail_reviewed_condition_rows_resolve_and_cache(
     )
 
     hofh = resolver.resolve_condition("HoFH")
+    type_2_dm = resolver.resolve_condition("type 2 dm")
     congenital = resolver.resolve_condition("history of congenital heart disease")
     arrhythmia = resolver.resolve_condition("uncontrolled severe arrhythmia")
+    cpcph = resolver.resolve_condition("cpcPH")
+    kidney_transplant = resolver.resolve_condition("history of kidney transplant")
     ild = resolver.resolve_condition("interstitial lung disease")
 
     assert hofh is not None
     assert hofh.system == SNOMED
     assert hofh.codes == frozenset({"238078005"})
+    assert type_2_dm is not None
+    assert type_2_dm.system == SNOMED
+    assert type_2_dm.codes == frozenset({"44054006", "73211009"})
     assert congenital is not None
     assert congenital.system == SNOMED
     assert congenital.codes == frozenset({"13213009"})
@@ -911,6 +917,15 @@ def test_committed_long_tail_reviewed_condition_rows_resolve_and_cache(
     assert cached is not None
     assert cached.status == "composite_unhandled"
     assert cached.candidates[0].codes == frozenset({"698247007"})
+    assert cpcph is None
+    cpcph_cached = cache.get_surface_resolution("condition", "cpcPH")
+    assert cpcph_cached is not None
+    assert cpcph_cached.status == "composite_unhandled"
+    assert cpcph_cached.candidates[0].codes == frozenset({"70995007"})
+    assert kidney_transplant is None
+    transplant_cached = cache.get_surface_resolution("condition", "history of kidney transplant")
+    assert transplant_cached is not None
+    assert transplant_cached.status == "out_of_scope"
 
 
 def test_disabled_policy_bypasses_reviewed_registry(tmp_path: Path) -> None:

@@ -9,1062 +9,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 34,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Concomitant disease that confers a life expectancy of <6 months at screening.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:34:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:34:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 34,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Concomitant disease that confers a life expectancy of <6 months at screening.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:34:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:34:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:736882236889",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "concomitant disease with life expectancy <6 months",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "concomitant disease with life expectancy <6 months",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 30,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:30:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:30:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 30,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:30:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:30:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:4755b0436e5d",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "condition that may render the patient unable to comply with study requirements",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "condition that may render the patient unable to comply with study requirements",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "t2dm-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 6,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Contraindication to any component of polypill",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:6:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06143566",
-          "pair_id": "3beee40e__NCT06143566",
-          "row_id": "3beee40e__NCT06143566:criterion:6:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 6,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Contraindication to any component of polypill",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:6:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06143566",
-          "pair_id": "d57e867e__NCT06143566",
-          "row_id": "d57e867e__NCT06143566:criterion:6:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:7aed2a8d2ad5",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "contraindication to any component of polypill",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "contraindication to any component of polypill",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 7,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Contraindicated to RHC that can be left in place for approximately 6 hours.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:7:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07221513",
-          "pair_id": "509f9a77__NCT07221513",
-          "row_id": "509f9a77__NCT07221513:criterion:7:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 7,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Contraindicated to RHC that can be left in place for approximately 6 hours.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:7:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07221513",
-          "pair_id": "a06bce31__NCT07221513",
-          "row_id": "a06bce31__NCT07221513:criterion:7:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:0ee0e539a88b",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "contraindication to rhc",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "contraindication to RHC",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 2,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:2:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07221513",
-          "pair_id": "509f9a77__NCT07221513",
-          "row_id": "509f9a77__NCT07221513:criterion:2:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 2,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:2:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07221513",
-          "pair_id": "a06bce31__NCT07221513",
-          "row_id": "a06bce31__NCT07221513:criterion:2:free-text:condition:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:202e5de87954",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "cpcph",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "cpcPH",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 22,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have current spinal cord compression (symptomatic or asymptomatic and detected by radiographic imaging). Participants with leptomeningeal disease and without cord compression are allowed.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:22:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:22:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 22,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have current spinal cord compression (symptomatic or asymptomatic and detected by radiographic imaging). Participants with leptomeningeal disease and without cord compression are allowed.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:22:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:22:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:faa1e9de0ce1",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "current spinal cord compression",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "current spinal cord compression",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 3,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:3:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT05967689",
-          "pair_id": "83f922a9__NCT05967689",
-          "row_id": "83f922a9__NCT05967689:criterion:3:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 11,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:11:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT05967689",
-          "pair_id": "83f922a9__NCT05967689",
-          "row_id": "83f922a9__NCT05967689:criterion:11:free-text:condition:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:6eaffb7c9ea0",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "egfr ex20ins status",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "EGFR ex20ins status",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Participants with HF New York Heart Association Class II-III.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07221513",
-          "pair_id": "509f9a77__NCT07221513",
-          "row_id": "509f9a77__NCT07221513:criterion:0:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Participants with HF New York Heart Association Class II-III.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07221513",
-          "pair_id": "a06bce31__NCT07221513",
-          "row_id": "a06bce31__NCT07221513:criterion:0:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:e18513906f67",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "hf new york heart association class ii-iii",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "HF New York Heart Association Class II-III",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 5,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "History of kidney transplant",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:5:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "55c5b8d3__NCT06128278",
-          "row_id": "55c5b8d3__NCT06128278:criterion:5:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 5,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "History of kidney transplant",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:5:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "d02b2ca5__NCT06128278",
-          "row_id": "d02b2ca5__NCT06128278:criterion:5:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:49dbda631330",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "history of kidney transplant",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "history of kidney transplant",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 16,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Previously received an investigational antineoplastic agent for NSCLC.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:16:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:16:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 16,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Previously received an investigational antineoplastic agent for NSCLC.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:16:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:16:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:5f5dab52db91",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "investigational antineoplastic agent for nsclc",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "investigational antineoplastic agent for nsclc",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 20,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Had major surgery within 28 days prior to randomization. Minor surgical procedures, such as catheter placement or minimally invasive biopsy, are allowed.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:20:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:20:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 20,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Had major surgery within 28 days prior to randomization. Minor surgical procedures, such as catheter placement or minimally invasive biopsy, are allowed.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:20:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:20:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:bde96f6a7259",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "major surgery within 28 days prior to randomization",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "major surgery within 28 days prior to randomization",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 2,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Have at least 1 measurable (i.e., target) lesion by Investigator assessment per RECIST v1.1.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:2:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:2:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 2,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Have at least 1 measurable (i.e., target) lesion by Investigator assessment per RECIST v1.1.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:2:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:2:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:aee06cca4e37",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "measurable lesion",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "measurable lesion",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 27,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have ongoing cardiac dysrhythmias of \u2265CTCAE Grade 2, uncontrolled atrial fibrillation of any grade, or QT interval corrected for heart rate by Fredericia's formula (QTcF) >470 milliseconds (female) or >450 milliseconds (male), or symptomatic bradycardia <45 bpm within 6 months before enrollment; participants treated with medications known to be associated with the development of TdP.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:27:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:27:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 27,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have ongoing cardiac dysrhythmias of \u2265CTCAE Grade 2, uncontrolled atrial fibrillation of any grade, or QT interval corrected for heart rate by Fredericia's formula (QTcF) >470 milliseconds (female) or >450 milliseconds (male), or symptomatic bradycardia <45 bpm within 6 months before enrollment; participants treated with medications known to be associated with the development of TdP.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:27:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:27:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:485c30819164",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "ongoing cardiac dysrhythmias",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "ongoing cardiac dysrhythmias",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 11,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Other diseases requiring Renin-Angiotensin-Aldosterone System (RAAS) inhibitor therapy, besides hypertension;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:11:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:criterion:11:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 11,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Other diseases requiring Renin-Angiotensin-Aldosterone System (RAAS) inhibitor therapy, besides hypertension;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:11:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07297797",
-          "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:criterion:11:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:e98434779f77",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "other diseases requiring raas inhibitor therapy",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "other diseases requiring RAAS inhibitor therapy",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 23,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "The presence of other malignant tumors.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:23:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07362459",
-          "pair_id": "3a364909__NCT07362459",
-          "row_id": "3a364909__NCT07362459:criterion:23:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 23,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "The presence of other malignant tumors.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:23:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07362459",
-          "pair_id": "9cbf47d8__NCT07362459",
-          "row_id": "9cbf47d8__NCT07362459:criterion:23:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:11beff837e0a",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "other malignant tumors",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "other malignant tumors",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 11,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "have other serious medical conditions that require close monitoring",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:11:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06220266",
-          "pair_id": "3a364909__NCT06220266",
-          "row_id": "3a364909__NCT06220266:criterion:11:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 11,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "have other serious medical conditions that require close monitoring",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:11:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06220266",
-          "pair_id": "60b0873c__NCT06220266",
-          "row_id": "60b0873c__NCT06220266:criterion:11:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:b9e6003396cd",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "other serious medical conditions",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "other serious medical conditions",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 7,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "No prior systemic anti-tumor therapy for the studied disease.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:7:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07362459",
-          "pair_id": "3a364909__NCT07362459",
-          "row_id": "3a364909__NCT07362459:criterion:7:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 7,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "No prior systemic anti-tumor therapy for the studied disease.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:7:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07362459",
-          "pair_id": "9cbf47d8__NCT07362459",
-          "row_id": "9cbf47d8__NCT07362459:criterion:7:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:6a8932e427a5",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "prior systemic anti-tumor therapy for the studied disease",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "prior systemic anti-tumor therapy for the studied disease",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 17,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Previously received any prior TKI, including ROS1-targeted TKIs.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:17:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:17:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 17,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Previously received any prior TKI, including ROS1-targeted TKIs.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:17:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:17:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:4ad0b873e2ea",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "prior tki including ros1-targeted tkis",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "prior TKI including ros1-targeted TKIs",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 1,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Have documentation of ROS1 rearrangement by a positive result",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:1:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:1:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 1,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Have documentation of ROS1 rearrangement by a positive result",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:1:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:1:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:fd57a217c7d1",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "ros1 rearrangement",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "ros1 rearrangement",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 21,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have symptomatic CNS metastases at Screening or asymptomatic disease requiring an increasing dose of corticosteroids to control symptoms within 7 days prior to randomization. Participants with no prior history of signs or symptoms of CNS metastases but who receive prophylactic steroids or anticonvulsants are allowed.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:21:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:21:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 21,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have symptomatic CNS metastases at Screening or asymptomatic disease requiring an increasing dose of corticosteroids to control symptoms within 7 days prior to randomization. Participants with no prior history of signs or symptoms of CNS metastases but who receive prophylactic steroids or anticonvulsants are allowed.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:21:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:21:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:4fdfedda0da1",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "symptomatic cns metastases",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "symptomatic CNS metastases",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 14,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "All toxicities from prior anticancer therapy have resolved to \u2264 Grade 1 according to the National Cancer Institute Common Terminology Criteria for Adverse Events (NCI CTCAE v5.0), or have resolved to previous baseline, at the time of randomization.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:14:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:14:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 14,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "All toxicities from prior anticancer therapy have resolved to \u2264 Grade 1 according to the National Cancer Institute Common Terminology Criteria for Adverse Events (NCI CTCAE v5.0), or have resolved to previous baseline, at the time of randomization.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:14:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:14:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:02d38791c45c",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "toxicities from prior anticancer therapy",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "toxicities from prior anticancer therapy",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "t2dm-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Patients with Type 2 DM",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06143566",
-          "pair_id": "3beee40e__NCT06143566",
-          "row_id": "3beee40e__NCT06143566:criterion:0:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Patients with Type 2 DM",
-          "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06143566",
-          "pair_id": "d57e867e__NCT06143566",
-          "row_id": "d57e867e__NCT06143566:criterion:0:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:8f8561d3532d",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "type 2 dm",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "type 2 dm",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "free_text"
       ],
       "domain": "medication",
@@ -2430,43 +1374,6 @@
     {
       "case_count": 1,
       "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 14,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "New York Heart Association (NYHA) Class III-IV heart failure;",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:14:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06568471",
-          "pair_id": "e7d52393__NCT06568471",
-          "row_id": "e7d52393__NCT06568471:criterion:14:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:0bc822a86154",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "new york heart association (nyha) class iii-iv heart failure",
-      "occurrence_count": 1,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "New York Heart Association (NYHA) Class III-IV heart failure",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
         "condition_present"
       ],
       "domain": "condition",
@@ -2869,43 +1776,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "severe congestive heart failure",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 8,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Significant co-morbid conditions that lead the investigator to conclude that life expectancy < 1 year",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:8:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT04040959",
-          "pair_id": "e7d52393__NCT04040959",
-          "row_id": "e7d52393__NCT04040959:criterion:8:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:0619b45bcff9",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "significant co-morbid conditions with life expectancy < 1 year",
-      "occurrence_count": 1,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "significant co-morbid conditions with life expectancy < 1 year",
       "trial_count": 1
     },
     {
@@ -3517,6 +2387,65 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "Zipalertinib (TAS6417/CLN081)",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 7,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:7:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 7,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:7:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 7,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:7:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:b7e7ab2ac104",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
       "trial_count": 1
     },
     {
@@ -4171,6 +3100,54 @@
     {
       "case_count": 2,
       "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 19,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "A history of myocardial infarction, unstable angina, cardiac insufficiency with New York Heart Association (NYHA) class \u2265 III, or severe arrhythmia uncontrolled by medication within 6 months prior to enrollment.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:19:condition-phrase:gap:unsupported",
+          "message": "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution.",
+          "nct_id": "NCT07362459",
+          "pair_id": "3a364909__NCT07362459",
+          "row_id": "3a364909__NCT07362459:criterion:19:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 19,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "A history of myocardial infarction, unstable angina, cardiac insufficiency with New York Heart Association (NYHA) class \u2265 III, or severe arrhythmia uncontrolled by medication within 6 months prior to enrollment.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:19:condition-phrase:gap:unsupported",
+          "message": "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution.",
+          "nct_id": "NCT07362459",
+          "pair_id": "9cbf47d8__NCT07362459",
+          "row_id": "9cbf47d8__NCT07362459:criterion:19:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:01572361a8fa",
+      "message_examples": [
+        "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution."
+      ],
+      "normalized_surface": "a history of myocardial infarction, unstable angina, cardiac insufficiency with new york heart association (nyha) class \u2265 iii, or severe arrhythmia uncontrolled by medication within 6 months prior to enrollment",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "A history of myocardial infarction, unstable angina, cardiac insufficiency with New York Heart Association (NYHA) class \u2265 III, or severe arrhythmia uncontrolled by medication within 6 months prior to enrollment.",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
         "condition_present"
       ],
       "domain": "condition",
@@ -4419,6 +3396,246 @@
       ],
       "example_rows": [
         {
+          "criterion_index": 34,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Concomitant disease that confers a life expectancy of <6 months at screening.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:34:condition-phrase:gap:unsupported",
+          "message": "Life-expectancy criteria are prognostic judgments and cannot be safely represented as an atomic condition mapping.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:34:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 34,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Concomitant disease that confers a life expectancy of <6 months at screening.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:34:condition-phrase:gap:unsupported",
+          "message": "Life-expectancy criteria are prognostic judgments and cannot be safely represented as an atomic condition mapping.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:34:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:01274e1a24a7",
+      "message_examples": [
+        "Life-expectancy criteria are prognostic judgments and cannot be safely represented as an atomic condition mapping."
+      ],
+      "normalized_surface": "concomitant disease with life expectancy <6 months",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "concomitant disease with life expectancy <6 months",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 30,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:30:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:30:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 30,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:30:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:30:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:52f2c6400e53",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "condition that may render the patient unable to comply with study requirements",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "condition that may render the patient unable to comply with study requirements",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "t2dm-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 6,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Contraindication to any component of polypill",
+          "eval_slice": "t2dm-academic",
+          "gap_id": "criterion:6:condition-phrase:gap:unsupported",
+          "message": "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution.",
+          "nct_id": "NCT06143566",
+          "pair_id": "3beee40e__NCT06143566",
+          "row_id": "3beee40e__NCT06143566:criterion:6:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 6,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Contraindication to any component of polypill",
+          "eval_slice": "t2dm-academic",
+          "gap_id": "criterion:6:condition-phrase:gap:unsupported",
+          "message": "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution.",
+          "nct_id": "NCT06143566",
+          "pair_id": "d57e867e__NCT06143566",
+          "row_id": "d57e867e__NCT06143566:criterion:6:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:9668af2d03ca",
+      "message_examples": [
+        "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution."
+      ],
+      "normalized_surface": "contraindication to any component of polypill",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "contraindication to any component of polypill",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 7,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Contraindicated to RHC that can be left in place for approximately 6 hours.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
+          "message": "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution.",
+          "nct_id": "NCT07221513",
+          "pair_id": "509f9a77__NCT07221513",
+          "row_id": "509f9a77__NCT07221513:criterion:7:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 7,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Contraindicated to RHC that can be left in place for approximately 6 hours.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
+          "message": "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution.",
+          "nct_id": "NCT07221513",
+          "pair_id": "a06bce31__NCT07221513",
+          "row_id": "a06bce31__NCT07221513:criterion:7:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:1ad18d10afd3",
+      "message_examples": [
+        "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution."
+      ],
+      "normalized_surface": "contraindication to rhc",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "contraindication to RHC",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 2,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'cpcPH' is classified as composite_unhandled: cpcPH requires pulmonary hypertension plus RHC/hemodynamic subtype evidence; mapping it to broad pulmonary hypertension alone would over-match.",
+          "nct_id": "NCT07221513",
+          "pair_id": "509f9a77__NCT07221513",
+          "row_id": "509f9a77__NCT07221513:criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 2,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'cpcPH' is classified as composite_unhandled: cpcPH requires pulmonary hypertension plus RHC/hemodynamic subtype evidence; mapping it to broad pulmonary hypertension alone would over-match.",
+          "nct_id": "NCT07221513",
+          "pair_id": "a06bce31__NCT07221513",
+          "row_id": "a06bce31__NCT07221513:criterion:2:free-text:condition:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:8d2fa8fe3592",
+      "message_examples": [
+        "Reviewed condition surface 'cpcPH' is classified as composite_unhandled: cpcPH requires pulmonary hypertension plus RHC/hemodynamic subtype evidence; mapping it to broad pulmonary hypertension alone would over-match."
+      ],
+      "normalized_surface": "cpcph",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "cpcPH",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
           "criterion_index": 25,
           "criterion_kind": "condition_absent",
           "criterion_source_text": "Any current active malignancy (this does not include localized cancers such as basal or squamous cell carcinoma of the skin). Any history of malignancy that is likely to result in mortality or require significant medical or surgical intervention within the following year.",
@@ -4454,6 +3671,102 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "current active malignancy",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 22,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Have current spinal cord compression (symptomatic or asymptomatic and detected by radiographic imaging). Participants with leptomeningeal disease and without cord compression are allowed.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:22:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'current spinal cord compression' is classified as out_of_scope: Current spinal cord compression is an oncology/neuro-imaging disease-state criterion outside the current cardiometabolic patient profile.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:22:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 22,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Have current spinal cord compression (symptomatic or asymptomatic and detected by radiographic imaging). Participants with leptomeningeal disease and without cord compression are allowed.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:22:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'current spinal cord compression' is classified as out_of_scope: Current spinal cord compression is an oncology/neuro-imaging disease-state criterion outside the current cardiometabolic patient profile.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:22:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:4b7a918e4e4f",
+      "message_examples": [
+        "Reviewed condition surface 'current spinal cord compression' is classified as out_of_scope: Current spinal cord compression is an oncology/neuro-imaging disease-state criterion outside the current cardiometabolic patient profile."
+      ],
+      "normalized_surface": "current spinal cord compression",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "current spinal cord compression",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 3,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:3:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'EGFR ex20ins status' is classified as out_of_scope: EGFR exon 20 insertion status is a genomic biomarker, not a condition ConceptSet in the current patient profile.",
+          "nct_id": "NCT05967689",
+          "pair_id": "83f922a9__NCT05967689",
+          "row_id": "83f922a9__NCT05967689:criterion:3:free-text:condition:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 11,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:11:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'EGFR ex20ins status' is classified as out_of_scope: EGFR exon 20 insertion status is a genomic biomarker, not a condition ConceptSet in the current patient profile.",
+          "nct_id": "NCT05967689",
+          "pair_id": "83f922a9__NCT05967689",
+          "row_id": "83f922a9__NCT05967689:criterion:11:free-text:condition:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:9ca3ab3117e7",
+      "message_examples": [
+        "Reviewed condition surface 'EGFR ex20ins status' is classified as out_of_scope: EGFR exon 20 insertion status is a genomic biomarker, not a condition ConceptSet in the current patient profile."
+      ],
+      "normalized_surface": "egfr ex20ins status",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "EGFR ex20ins status",
       "trial_count": 1
     },
     {
@@ -4502,6 +3815,102 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "heavy alcohol use",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 0,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:0:condition-phrase:nyha-functional-class:gap:unsupported",
+          "message": "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile.",
+          "nct_id": "NCT07221513",
+          "pair_id": "509f9a77__NCT07221513",
+          "row_id": "509f9a77__NCT07221513:criterion:0:condition-phrase:nyha-functional-class:gap:unsupported"
+        },
+        {
+          "criterion_index": 0,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:0:condition-phrase:nyha-functional-class:gap:unsupported",
+          "message": "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile.",
+          "nct_id": "NCT07221513",
+          "pair_id": "a06bce31__NCT07221513",
+          "row_id": "a06bce31__NCT07221513:criterion:0:condition-phrase:nyha-functional-class:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:994bdbc07475",
+      "message_examples": [
+        "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile."
+      ],
+      "normalized_surface": "hf new york heart association class ii-iii",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "HF New York Heart Association Class II-III",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 5,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "History of kidney transplant",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:5:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'history of kidney transplant' is classified as out_of_scope: Kidney transplant history is procedure/transplant history, not a condition ConceptSet represented by the current condition matcher.",
+          "nct_id": "NCT06128278",
+          "pair_id": "55c5b8d3__NCT06128278",
+          "row_id": "55c5b8d3__NCT06128278:criterion:5:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 5,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "History of kidney transplant",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:5:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'history of kidney transplant' is classified as out_of_scope: Kidney transplant history is procedure/transplant history, not a condition ConceptSet represented by the current condition matcher.",
+          "nct_id": "NCT06128278",
+          "pair_id": "d02b2ca5__NCT06128278",
+          "row_id": "d02b2ca5__NCT06128278:criterion:5:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:09ea817d2be5",
+      "message_examples": [
+        "Reviewed condition surface 'history of kidney transplant' is classified as out_of_scope: Kidney transplant history is procedure/transplant history, not a condition ConceptSet represented by the current condition matcher."
+      ],
+      "normalized_surface": "history of kidney transplant",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "history of kidney transplant",
       "trial_count": 1
     },
     {
@@ -4598,6 +4007,150 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "illicit drug abuse",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 16,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Previously received an investigational antineoplastic agent for NSCLC.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:16:condition:gap:reviewed-extractor_bug",
+          "message": "Reviewed condition surface 'investigational antineoplastic agent for nsclc' is classified as extractor_bug: This is investigational medication/treatment exposure, but extraction surfaced it as a condition.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:16:condition:gap:reviewed-extractor_bug"
+        },
+        {
+          "criterion_index": 16,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Previously received an investigational antineoplastic agent for NSCLC.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:16:condition:gap:reviewed-extractor_bug",
+          "message": "Reviewed condition surface 'investigational antineoplastic agent for nsclc' is classified as extractor_bug: This is investigational medication/treatment exposure, but extraction surfaced it as a condition.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:16:condition:gap:reviewed-extractor_bug"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:f6e2daef6edf",
+      "message_examples": [
+        "Reviewed condition surface 'investigational antineoplastic agent for nsclc' is classified as extractor_bug: This is investigational medication/treatment exposure, but extraction surfaced it as a condition."
+      ],
+      "normalized_surface": "investigational antineoplastic agent for nsclc",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "investigational antineoplastic agent for nsclc",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 20,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Had major surgery within 28 days prior to randomization. Minor surgical procedures, such as catheter placement or minimally invasive biopsy, are allowed.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:20:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'major surgery within 28 days prior to randomization' is classified as out_of_scope: Major surgery is procedure history with a temporal window, not a condition ConceptSet in the current matcher.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:20:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 20,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Had major surgery within 28 days prior to randomization. Minor surgical procedures, such as catheter placement or minimally invasive biopsy, are allowed.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:20:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'major surgery within 28 days prior to randomization' is classified as out_of_scope: Major surgery is procedure history with a temporal window, not a condition ConceptSet in the current matcher.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:20:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:bae4ff2f2258",
+      "message_examples": [
+        "Reviewed condition surface 'major surgery within 28 days prior to randomization' is classified as out_of_scope: Major surgery is procedure history with a temporal window, not a condition ConceptSet in the current matcher."
+      ],
+      "normalized_surface": "major surgery within 28 days prior to randomization",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "major surgery within 28 days prior to randomization",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 2,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Have at least 1 measurable (i.e., target) lesion by Investigator assessment per RECIST v1.1.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:2:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'measurable lesion' is classified as out_of_scope: Measurable lesion criteria require imaging/RECIST assessment rather than an atomic condition mapping.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:2:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 2,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Have at least 1 measurable (i.e., target) lesion by Investigator assessment per RECIST v1.1.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:2:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'measurable lesion' is classified as out_of_scope: Measurable lesion criteria require imaging/RECIST assessment rather than an atomic condition mapping.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:2:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:7cdf9dd43943",
+      "message_examples": [
+        "Reviewed condition surface 'measurable lesion' is classified as out_of_scope: Measurable lesion criteria require imaging/RECIST assessment rather than an atomic condition mapping."
+      ],
+      "normalized_surface": "measurable lesion",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "measurable lesion",
       "trial_count": 1
     },
     {
@@ -4709,30 +4262,30 @@
         {
           "criterion_index": 16,
           "criterion_kind": "condition_absent",
-          "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
+          "criterion_source_text": "",
           "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:16:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'NYHA grade III-IV heart failure' is classified as composite_unhandled: NYHA grade III-IV heart failure combines heart failure with functional class and a temporal window; mapping to generic heart failure would over-match.",
+          "gap_id": "criterion:16:condition-phrase:nyha-functional-class:gap:unsupported",
+          "message": "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile.",
           "nct_id": "NCT07489209",
           "pair_id": "38f38890__NCT07489209",
-          "row_id": "38f38890__NCT07489209:criterion:16:condition:gap:reviewed-composite_unhandled"
+          "row_id": "38f38890__NCT07489209:criterion:16:condition-phrase:nyha-functional-class:gap:unsupported"
         },
         {
           "criterion_index": 16,
           "criterion_kind": "condition_absent",
-          "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
+          "criterion_source_text": "",
           "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:16:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'NYHA grade III-IV heart failure' is classified as composite_unhandled: NYHA grade III-IV heart failure combines heart failure with functional class and a temporal window; mapping to generic heart failure would over-match.",
+          "gap_id": "criterion:16:condition-phrase:nyha-functional-class:gap:unsupported",
+          "message": "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile.",
           "nct_id": "NCT07489209",
           "pair_id": "d02b2ca5__NCT07489209",
-          "row_id": "d02b2ca5__NCT07489209:criterion:16:condition:gap:reviewed-composite_unhandled"
+          "row_id": "d02b2ca5__NCT07489209:criterion:16:condition-phrase:nyha-functional-class:gap:unsupported"
         }
       ],
       "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:aca994fe952b",
+      "group_id": "compiler-gap-group:9aebf811c3d3",
       "message_examples": [
-        "Reviewed condition surface 'NYHA grade III-IV heart failure' is classified as composite_unhandled: NYHA grade III-IV heart failure combines heart failure with functional class and a temporal window; mapping to generic heart failure would over-match."
+        "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile."
       ],
       "normalized_surface": "nyha grade iii-iv heart failure",
       "occurrence_count": 2,
@@ -4740,8 +4293,56 @@
       "recommended_action": "implement_compiler_logic",
       "resolver_policy": "cached_only",
       "severity": "medium",
-      "stage": "concept_resolution",
+      "stage": "predicate_translation",
       "surface": "NYHA grade III-IV heart failure",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 27,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Have ongoing cardiac dysrhythmias of \u2265CTCAE Grade 2, uncontrolled atrial fibrillation of any grade, or QT interval corrected for heart rate by Fredericia's formula (QTcF) >470 milliseconds (female) or >450 milliseconds (male), or symptomatic bradycardia <45 bpm within 6 months before enrollment; participants treated with medications known to be associated with the development of TdP.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:27:condition-phrase:gap:unsupported",
+          "message": "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:27:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 27,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Have ongoing cardiac dysrhythmias of \u2265CTCAE Grade 2, uncontrolled atrial fibrillation of any grade, or QT interval corrected for heart rate by Fredericia's formula (QTcF) >470 milliseconds (female) or >450 milliseconds (male), or symptomatic bradycardia <45 bpm within 6 months before enrollment; participants treated with medications known to be associated with the development of TdP.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:27:condition-phrase:gap:unsupported",
+          "message": "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:27:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:96faee13abf1",
+      "message_examples": [
+        "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution."
+      ],
+      "normalized_surface": "ongoing cardiac dysrhythmias",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "ongoing cardiac dysrhythmias",
       "trial_count": 1
     },
     {
@@ -4799,6 +4400,150 @@
       ],
       "domain": "condition",
       "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 11,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Other diseases requiring Renin-Angiotensin-Aldosterone System (RAAS) inhibitor therapy, besides hypertension;",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:11:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'other diseases requiring RAAS inhibitor therapy' is classified as composite_unhandled: This surface combines an unspecified disease with medication-indication logic; neither half is an atomic condition mapping.",
+          "nct_id": "NCT07297797",
+          "pair_id": "28db1c55__NCT07297797",
+          "row_id": "28db1c55__NCT07297797:criterion:11:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 11,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Other diseases requiring Renin-Angiotensin-Aldosterone System (RAAS) inhibitor therapy, besides hypertension;",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:11:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'other diseases requiring RAAS inhibitor therapy' is classified as composite_unhandled: This surface combines an unspecified disease with medication-indication logic; neither half is an atomic condition mapping.",
+          "nct_id": "NCT07297797",
+          "pair_id": "407ef75b__NCT07297797",
+          "row_id": "407ef75b__NCT07297797:criterion:11:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:9e5c65ecb7e1",
+      "message_examples": [
+        "Reviewed condition surface 'other diseases requiring RAAS inhibitor therapy' is classified as composite_unhandled: This surface combines an unspecified disease with medication-indication logic; neither half is an atomic condition mapping."
+      ],
+      "normalized_surface": "other diseases requiring raas inhibitor therapy",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "other diseases requiring RAAS inhibitor therapy",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 23,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "The presence of other malignant tumors.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:23:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'other malignant tumors' is classified as out_of_scope: Other malignant tumors is a broad oncology history/cancer-exception phrase outside the current cardiometabolic matcher scope.",
+          "nct_id": "NCT07362459",
+          "pair_id": "3a364909__NCT07362459",
+          "row_id": "3a364909__NCT07362459:criterion:23:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 23,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "The presence of other malignant tumors.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:23:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'other malignant tumors' is classified as out_of_scope: Other malignant tumors is a broad oncology history/cancer-exception phrase outside the current cardiometabolic matcher scope.",
+          "nct_id": "NCT07362459",
+          "pair_id": "9cbf47d8__NCT07362459",
+          "row_id": "9cbf47d8__NCT07362459:criterion:23:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:10dd07fb0f10",
+      "message_examples": [
+        "Reviewed condition surface 'other malignant tumors' is classified as out_of_scope: Other malignant tumors is a broad oncology history/cancer-exception phrase outside the current cardiometabolic matcher scope."
+      ],
+      "normalized_surface": "other malignant tumors",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "other malignant tumors",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 11,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "have other serious medical conditions that require close monitoring",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:11:condition-phrase:gap:unsupported",
+          "message": "Generic 'other medical condition' criteria are investigator-judgment catchalls and should remain explicit compiler gaps.",
+          "nct_id": "NCT06220266",
+          "pair_id": "3a364909__NCT06220266",
+          "row_id": "3a364909__NCT06220266:criterion:11:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 11,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "have other serious medical conditions that require close monitoring",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:11:condition-phrase:gap:unsupported",
+          "message": "Generic 'other medical condition' criteria are investigator-judgment catchalls and should remain explicit compiler gaps.",
+          "nct_id": "NCT06220266",
+          "pair_id": "60b0873c__NCT06220266",
+          "row_id": "60b0873c__NCT06220266:criterion:11:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:14d5870c2b14",
+      "message_examples": [
+        "Generic 'other medical condition' criteria are investigator-judgment catchalls and should remain explicit compiler gaps."
+      ],
+      "normalized_surface": "other serious medical conditions",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "other serious medical conditions",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
         "ckd"
       ],
       "example_rows": [
@@ -4838,6 +4583,150 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "primary renal glycosuria",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 7,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "No prior systemic anti-tumor therapy for the studied disease.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:7:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'prior systemic anti-tumor therapy for the studied disease' is classified as out_of_scope: Prior systemic anti-tumor therapy is treatment-exposure history, not a condition ConceptSet.",
+          "nct_id": "NCT07362459",
+          "pair_id": "3a364909__NCT07362459",
+          "row_id": "3a364909__NCT07362459:criterion:7:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 7,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "No prior systemic anti-tumor therapy for the studied disease.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:7:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'prior systemic anti-tumor therapy for the studied disease' is classified as out_of_scope: Prior systemic anti-tumor therapy is treatment-exposure history, not a condition ConceptSet.",
+          "nct_id": "NCT07362459",
+          "pair_id": "9cbf47d8__NCT07362459",
+          "row_id": "9cbf47d8__NCT07362459:criterion:7:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:13bbd957adc6",
+      "message_examples": [
+        "Reviewed condition surface 'prior systemic anti-tumor therapy for the studied disease' is classified as out_of_scope: Prior systemic anti-tumor therapy is treatment-exposure history, not a condition ConceptSet."
+      ],
+      "normalized_surface": "prior systemic anti-tumor therapy for the studied disease",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "prior systemic anti-tumor therapy for the studied disease",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 17,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Previously received any prior TKI, including ROS1-targeted TKIs.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:17:condition:gap:reviewed-extractor_bug",
+          "message": "Reviewed condition surface 'prior TKI including ros1-targeted TKIs' is classified as extractor_bug: This is prior medication/class exposure plus tumor target context, but extraction surfaced it as a condition.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:17:condition:gap:reviewed-extractor_bug"
+        },
+        {
+          "criterion_index": 17,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Previously received any prior TKI, including ROS1-targeted TKIs.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:17:condition:gap:reviewed-extractor_bug",
+          "message": "Reviewed condition surface 'prior TKI including ros1-targeted TKIs' is classified as extractor_bug: This is prior medication/class exposure plus tumor target context, but extraction surfaced it as a condition.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:17:condition:gap:reviewed-extractor_bug"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:bf7345557b64",
+      "message_examples": [
+        "Reviewed condition surface 'prior TKI including ros1-targeted TKIs' is classified as extractor_bug: This is prior medication/class exposure plus tumor target context, but extraction surfaced it as a condition."
+      ],
+      "normalized_surface": "prior tki including ros1-targeted tkis",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "prior TKI including ros1-targeted TKIs",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 1,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Have documentation of ROS1 rearrangement by a positive result",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:1:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'ros1 rearrangement' is classified as out_of_scope: ROS1 rearrangement is a tumor genomic biomarker, not a condition ConceptSet in the current patient profile.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:1:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 1,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Have documentation of ROS1 rearrangement by a positive result",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:1:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'ros1 rearrangement' is classified as out_of_scope: ROS1 rearrangement is a tumor genomic biomarker, not a condition ConceptSet in the current patient profile.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:1:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:ee352c397847",
+      "message_examples": [
+        "Reviewed condition surface 'ros1 rearrangement' is classified as out_of_scope: ROS1 rearrangement is a tumor genomic biomarker, not a condition ConceptSet in the current patient profile."
+      ],
+      "normalized_surface": "ros1 rearrangement",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "ros1 rearrangement",
       "trial_count": 1
     },
     {
@@ -4895,6 +4784,150 @@
       ],
       "domain": "condition",
       "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 21,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Have symptomatic CNS metastases at Screening or asymptomatic disease requiring an increasing dose of corticosteroids to control symptoms within 7 days prior to randomization. Participants with no prior history of signs or symptoms of CNS metastases but who receive prophylactic steroids or anticonvulsants are allowed.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:21:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'symptomatic CNS metastases' is classified as out_of_scope: Symptomatic CNS metastases are oncology disease-state/imaging criteria outside the current cardiometabolic patient profile.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:21:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 21,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Have symptomatic CNS metastases at Screening or asymptomatic disease requiring an increasing dose of corticosteroids to control symptoms within 7 days prior to randomization. Participants with no prior history of signs or symptoms of CNS metastases but who receive prophylactic steroids or anticonvulsants are allowed.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:21:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'symptomatic CNS metastases' is classified as out_of_scope: Symptomatic CNS metastases are oncology disease-state/imaging criteria outside the current cardiometabolic patient profile.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:21:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:07b09dc4a37d",
+      "message_examples": [
+        "Reviewed condition surface 'symptomatic CNS metastases' is classified as out_of_scope: Symptomatic CNS metastases are oncology disease-state/imaging criteria outside the current cardiometabolic patient profile."
+      ],
+      "normalized_surface": "symptomatic cns metastases",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "symptomatic CNS metastases",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 35,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:35:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:35:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 35,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:35:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:35:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:d776f6ee9fd8",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "the investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 14,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "All toxicities from prior anticancer therapy have resolved to \u2264 Grade 1 according to the National Cancer Institute Common Terminology Criteria for Adverse Events (NCI CTCAE v5.0), or have resolved to previous baseline, at the time of randomization.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:14:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'toxicities from prior anticancer therapy' is classified as out_of_scope: This requires adverse-event grading and prior-therapy provenance rather than an atomic condition ConceptSet.",
+          "nct_id": "NCT06564324",
+          "pair_id": "55c5b8d3__NCT06564324",
+          "row_id": "55c5b8d3__NCT06564324:criterion:14:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 14,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "All toxicities from prior anticancer therapy have resolved to \u2264 Grade 1 according to the National Cancer Institute Common Terminology Criteria for Adverse Events (NCI CTCAE v5.0), or have resolved to previous baseline, at the time of randomization.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:14:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'toxicities from prior anticancer therapy' is classified as out_of_scope: This requires adverse-event grading and prior-therapy provenance rather than an atomic condition ConceptSet.",
+          "nct_id": "NCT06564324",
+          "pair_id": "d362f4e5__NCT06564324",
+          "row_id": "d362f4e5__NCT06564324:criterion:14:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:70c573223369",
+      "message_examples": [
+        "Reviewed condition surface 'toxicities from prior anticancer therapy' is classified as out_of_scope: This requires adverse-event grading and prior-therapy provenance rather than an atomic condition ConceptSet."
+      ],
+      "normalized_surface": "toxicities from prior anticancer therapy",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "toxicities from prior anticancer therapy",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
         "hypertension-industry"
       ],
       "example_rows": [
@@ -4903,28 +4936,28 @@
           "criterion_kind": "condition_absent",
           "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
           "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'uncontrolled severe arrhythmia' is classified as composite_unhandled: Uncontrolled severe arrhythmia combines a condition with severity/control qualifiers and a temporal window; collapsing it to generic cardiac arrhythmia would over-match.",
+          "gap_id": "criterion:9:condition-phrase:gap:unsupported",
+          "message": "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution.",
           "nct_id": "NCT07297797",
           "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:criterion:9:condition:gap:reviewed-composite_unhandled"
+          "row_id": "28db1c55__NCT07297797:criterion:9:condition-phrase:gap:unsupported"
         },
         {
           "criterion_index": 9,
           "criterion_kind": "condition_absent",
           "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
           "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:condition:gap:reviewed-composite_unhandled",
-          "message": "Reviewed condition surface 'uncontrolled severe arrhythmia' is classified as composite_unhandled: Uncontrolled severe arrhythmia combines a condition with severity/control qualifiers and a temporal window; collapsing it to generic cardiac arrhythmia would over-match.",
+          "gap_id": "criterion:9:condition-phrase:gap:unsupported",
+          "message": "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution.",
           "nct_id": "NCT07297797",
           "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:criterion:9:condition:gap:reviewed-composite_unhandled"
+          "row_id": "407ef75b__NCT07297797:criterion:9:condition-phrase:gap:unsupported"
         }
       ],
       "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:7abf8d4b75a1",
+      "group_id": "compiler-gap-group:2cc61639ca9f",
       "message_examples": [
-        "Reviewed condition surface 'uncontrolled severe arrhythmia' is classified as composite_unhandled: Uncontrolled severe arrhythmia combines a condition with severity/control qualifiers and a temporal window; collapsing it to generic cardiac arrhythmia would over-match."
+        "Qualified arrhythmia criteria require active/ongoing status, CTCAE grade, rhythm subtype, or symptom thresholds before safe execution."
       ],
       "normalized_surface": "uncontrolled severe arrhythmia",
       "occurrence_count": 2,
@@ -4932,7 +4965,7 @@
       "recommended_action": "implement_compiler_logic",
       "resolver_policy": "cached_only",
       "severity": "medium",
-      "stage": "concept_resolution",
+      "stage": "predicate_translation",
       "surface": "uncontrolled severe arrhythmia",
       "trial_count": 1
     },
@@ -6940,6 +6973,154 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "active liver disease",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 37,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "For Cohorts A2, B1, B2, and B3 only: Known hypersensitivity to cemiplimab or any of its excipients or contraindicated to cemiplimab per approved local labeling.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:37:condition-phrase:gap:unsupported",
+          "message": "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution.",
+          "nct_id": "NCT06090266",
+          "pair_id": "fa2d28b1__NCT06090266",
+          "row_id": "fa2d28b1__NCT06090266:criterion:37:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:584283d09fdf",
+      "message_examples": [
+        "Contraindication criteria require procedure- or product-specific intolerance, allergy, or safety evidence before patient-history execution."
+      ],
+      "normalized_surface": "for cohorts a2, b1, b2, and b3 only: known hypersensitivity to cemiplimab or any of its excipients or contraindicated to cemiplimab per approved local labeling",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "For Cohorts A2, B1, B2, and B3 only: Known hypersensitivity to cemiplimab or any of its excipients or contraindicated to cemiplimab per approved local labeling.",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 14,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:14:condition-phrase:nyha-functional-class:gap:unsupported",
+          "message": "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile.",
+          "nct_id": "NCT06568471",
+          "pair_id": "e7d52393__NCT06568471",
+          "row_id": "e7d52393__NCT06568471:criterion:14:condition-phrase:nyha-functional-class:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:7594a08a4f81",
+      "message_examples": [
+        "NYHA class requires functional-status evidence that is not encoded as a condition row in the current patient profile."
+      ],
+      "normalized_surface": "new york heart association (nyha) class iii-iv heart failure",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "New York Heart Association (NYHA) Class III-IV heart failure",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 8,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Significant co-morbid conditions that lead the investigator to conclude that life expectancy < 1 year",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:8:condition-phrase:gap:unsupported",
+          "message": "Life-expectancy criteria are prognostic judgments and cannot be safely represented as an atomic condition mapping.",
+          "nct_id": "NCT04040959",
+          "pair_id": "e7d52393__NCT04040959",
+          "row_id": "e7d52393__NCT04040959:criterion:8:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:51be1ee54308",
+      "message_examples": [
+        "Life-expectancy criteria are prognostic judgments and cannot be safely represented as an atomic condition mapping."
+      ],
+      "normalized_surface": "significant co-morbid conditions with life expectancy < 1 year",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "significant co-morbid conditions with life expectancy < 1 year",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 58,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "The participant is, in the Investigator's opinion, unable or unwilling to comply with the trial procedures.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:58:condition-phrase:gap:unsupported",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT05967689",
+          "pair_id": "83f922a9__NCT05967689",
+          "row_id": "83f922a9__NCT05967689:criterion:58:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:ef2d59f62c11",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "the participant is, in the investigator's opinion, unable or unwilling to comply with the trial procedures",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "The participant is, in the Investigator's opinion, unable or unwilling to comply with the trial procedures.",
       "trial_count": 1
     },
     {

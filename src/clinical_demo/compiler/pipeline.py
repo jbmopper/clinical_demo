@@ -152,6 +152,35 @@ _LEFT_SIDED_HEART_DISEASE_RE = re.compile(
     r")\b",
     re.IGNORECASE,
 )
+_NYHA_HEART_FAILURE_RE = re.compile(
+    r"\b(?:"
+    r"(?:hf|heart\s+failure|congestive\s+heart\s+failure)\b.*"
+    r"(?:new\s+york\s+heart\s+association|nyha)\b.*(?:class|grade)\s+[ivx]+"
+    r"(?:\s*[-/]\s*[ivx]+)?|"
+    r"(?:new\s+york\s+heart\s+association|nyha)\b.*(?:class|grade)\s+[ivx]+"
+    r"(?:\s*[-/]\s*[ivx]+)?.*\b(?:hf|heart\s+failure|congestive\s+heart\s+failure)"
+    r")\b",
+    re.IGNORECASE,
+)
+_CONTRAINDICATION_RE = re.compile(r"\bcontraindicat(?:ion|ed)\s+to\b", re.IGNORECASE)
+_LIFE_EXPECTANCY_RE = re.compile(
+    r"\blife\s+expectancy\b.*(?:<|less\s+than|under)\s*\d+\s*" r"(?:days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
+_STUDY_COMPLIANCE_RE = re.compile(
+    r"\b(?:unable|inability|ability)\b.*\b(?:comply|complete\s+the\s+study)\b|"
+    r"\bstudy\s+requirements?\b",
+    re.IGNORECASE,
+)
+_QUALIFIED_ARRHYTHMIA_RE = re.compile(
+    r"\b(?:ongoing|uncontrolled|severe|ctcae|grade)\b.*\b"
+    r"(?:cardiac\s+)?(?:dysrhythmias?|arrhythmias?|atrial\s+fibrillation)\b",
+    re.IGNORECASE,
+)
+_OTHER_MEDICAL_CONDITION_RE = re.compile(
+    r"\bother\s+(?:serious\s+)?medical\s+conditions?\b",
+    re.IGNORECASE,
+)
 _CARDIOVASCULAR_EVENT_TERMS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(r"\b(?:acute\s+coronary\s+syndrome|acs)\b", re.IGNORECASE),
@@ -705,6 +734,95 @@ def _compile_condition_phrase_promotion(
     if not normalized:
         return None
 
+    if _NYHA_HEART_FAILURE_RE.search(surface):
+        return _compile_condition_phrase_with_unsupported_qualifier(
+            criterion,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            target_surface="heart failure",
+            qualifier_surface="NYHA functional class",
+            resolver_policy=resolver_policy,
+            context=context,
+            promotion_kind="nyha-heart-failure",
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+            reason=(
+                "NYHA class requires functional-status evidence that is not encoded "
+                "as a condition row in the current patient profile."
+            ),
+        )
+
+    if _CONTRAINDICATION_RE.search(surface):
+        return _unsupported_condition_phrase(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+            reason=(
+                "Contraindication criteria require procedure- or product-specific "
+                "intolerance, allergy, or safety evidence before patient-history execution."
+            ),
+        )
+
+    if _LIFE_EXPECTANCY_RE.search(surface):
+        return _unsupported_condition_phrase(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+            reason=(
+                "Life-expectancy criteria are prognostic judgments and cannot be "
+                "safely represented as an atomic condition mapping."
+            ),
+        )
+
+    if _STUDY_COMPLIANCE_RE.search(surface):
+        return _unsupported_condition_phrase(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+            reason=(
+                "Study-compliance criteria require protocol-adherence or investigator "
+                "judgment evidence outside the current structured clinical profile."
+            ),
+        )
+
+    if _QUALIFIED_ARRHYTHMIA_RE.search(surface):
+        return _unsupported_condition_phrase(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+            reason=(
+                "Qualified arrhythmia criteria require active/ongoing status, CTCAE "
+                "grade, rhythm subtype, or symptom thresholds before safe execution."
+            ),
+        )
+
+    if _OTHER_MEDICAL_CONDITION_RE.search(surface):
+        return _unsupported_condition_phrase(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+            reason=(
+                "Generic 'other medical condition' criteria are investigator-judgment "
+                "catchalls and should remain explicit compiler gaps."
+            ),
+        )
+
     if _LEFT_SIDED_HEART_DISEASE_RE.search(surface):
         return _unsupported_condition_phrase(
             criterion,
@@ -806,6 +924,97 @@ def _compile_condition_phrase_alias(
         diagnostics=compiled.diagnostics,
         promotion_domain=promotion_domain,
         promotion_label=promotion_label,
+        expansion=compiled.expansion,
+    )
+
+
+def _compile_condition_phrase_with_unsupported_qualifier(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    surface: str,
+    target_surface: str,
+    qualifier_surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+    promotion_kind: str,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+    reason: str,
+) -> _FreeTextPromotionCompilation:
+    sub_id = f"{source_criterion_id}:condition-phrase:{_slugify(target_surface)}"
+    qualifier_id = f"{source_criterion_id}:condition-phrase:{_slugify(qualifier_surface)}"
+    surrogate = _criterion_like(
+        criterion,
+        kind=_condition_surrogate_kind(criterion),
+        condition=ConditionCriterion(condition_text=target_surface),
+    )
+    compiled = _compile_criterion(
+        surrogate,
+        index=index,
+        resolver_policy=resolver_policy,
+        composite_groups=[],
+        context=context,
+        source_criterion_id_override=sub_id,
+        allow_condition_phrase_promotion=False,
+    )
+    qualifier_gap = _gap(
+        gap_id=f"{qualifier_id}:gap:unsupported",
+        stage="predicate_translation",
+        domain="condition",
+        kind="unsupported_predicate",
+        source_criterion_id=qualifier_id,
+        surface=surface,
+        message=reason,
+        resolver_policy=resolver_policy,
+    )
+    gaps = [*compiled.unresolved_gaps, qualifier_gap]
+    diagnostics = [
+        *compiled.diagnostics,
+        _diagnostic(
+            severity="warning",
+            code="condition_phrase.unsupported_qualifier",
+            message=reason,
+            stage="predicate_translation",
+            source_criterion_id=qualifier_id,
+            facts=[
+                ("surface", surface),
+                ("target_surface", target_surface),
+                ("qualifier_surface", qualifier_surface),
+                ("gap_id", qualifier_gap.gap_id),
+            ],
+        ),
+    ]
+    support_ids = [support.support_id for support in compiled.resolved_supports]
+    predicate = CheckablePredicatePlan(
+        status="unsupported",
+        predicate_kind="compound",
+        expression=None,
+        input_refs=[sub_id, qualifier_id],
+        support_ids=support_ids,
+        gap_ids=[gap.gap_id for gap in gaps],
+    )
+    compound_logic = CompoundLogicPlan(
+        status="unresolved",
+        operator="all_of",
+        source_group_ids=[],
+        subcheck_ids=[sub_id, qualifier_id],
+        gap_ids=[gap.gap_id for gap in gaps],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind=promotion_kind,
+        predicate=predicate,
+        predicates=[],
+        supports=compiled.resolved_supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
+        compound_logic=compound_logic,
         expansion=compiled.expansion,
     )
 

@@ -28,7 +28,11 @@ Composite or out-of-scope surfaces such as uncontrolled severe arrhythmia,
 left-sided heart disease, active malignancy, liver dysfunction, sleep-apnea
 severity phrases, illicit drug abuse, and heavy alcohol use are explicitly
 classified so they become typed compiler gaps instead of opaque unmapped
-concepts.
+concepts. The current top-gap tranche also records type 2 DM as a reviewed T2DM
+abbreviation and classifies cpcPH, kidney transplant history, EGFR/ROS1
+biomarkers, measurable-lesion criteria, CNS/spinal metastasis phrases, prior
+anti-tumor/TKI exposure, recent major surgery, and oncology toxicity phrases so
+the compiler can report why they are not executable condition mappings.
 
 Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at
