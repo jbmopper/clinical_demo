@@ -313,6 +313,33 @@ def test_condition_compiler_preserves_raw_hyphenated_lookup_surface() -> None:
     assert compiled.checkable_predicates[0].target_codes == frozenset({"46177005"})
 
 
+def test_reviewed_condition_nonmapped_emits_typed_gap() -> None:
+    criterion = _condition("Uncontrolled systemic hypertension")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unresolved"
+    assert compiled.expansion.status == "unsupported"
+    assert compiled.unresolved_gaps[0].gap_id == (
+        "criterion:0:condition:gap:reviewed-composite_unhandled"
+    )
+    assert compiled.unresolved_gaps[0].kind == "unsupported_predicate"
+    assert compiled.diagnostics[0].code == "condition.reviewed.composite_unhandled"
+
+
+def test_reviewed_condition_mapping_can_use_specific_code_list() -> None:
+    criterion = _condition("chronic kidney disease (CKD) stage 3-4")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.expansion.strategy == "reviewed_code_list"
+    assert compiled.resolved_supports[0].target_label == "Chronic kidney disease stage 3 or 4"
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"433144002", "431857002"})
+
+
 def test_free_text_condition_mention_compiles_to_condition_predicate() -> None:
     criterion = _free_text("Bone fractures within the past 12 months").model_copy(
         update={

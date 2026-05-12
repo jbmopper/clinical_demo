@@ -21,20 +21,22 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  eval run `c467039ca2aa` now reflects reviewed lab mappings/non-mappings,
-  shared reviewed `ConceptSet` lookup, measurement threshold-value blocking
-  gaps, and regenerated compiler review/movement artifacts under
+  eval run `2802063cfb09` now reflects reviewed lab mappings/non-mappings,
+  reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
+  reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
+  threshold-value blocking gaps, and regenerated compiler review/movement
+  artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   `matcher_inputs` run `500e8f14fa5a`, criterion-level
-  `unmapped_concept` is down from 316/1076 (29.4%) to 148/1076 (13.8%),
-  with 24 indeterminate-to-determinate criterion movements and 5 case-rollup
-  movements. The path is still not default-ready: diagnostics show 373
-  unresolved compiler gaps, 43 closed-world-blocking cases, and 511 blocking
-  validation findings. The deduped review packet has 200 groups (119
-  `review_mapping`, 71 `implement_compiler_logic`, 6 `choose_candidate`, and 4
-  `review_gap`). Next work is reviewing the 24 movement rows, especially the
-  17 measurement movements, then shifting the main queue toward condition,
-  temporal/event, and medication-class gaps while CC-08/CC-10 handles
+  `unmapped_concept` is down from 316/1076 (29.4%) to 122/1076 (11.3%),
+  with 26 indeterminate-to-determinate criterion movements and 6 case-rollup
+  movements. The path is still not default-ready: diagnostics show 371
+  unresolved compiler gaps, 43 closed-world-blocking cases, and 507 blocking
+  validation findings. The deduped review packet has 199 groups (106
+  `review_mapping`, 83 `implement_compiler_logic`, 6 `choose_candidate`, and 4
+  `review_gap`). Next work is reviewing the 26 movement rows, especially the
+  17 measurement movements and 5 condition movements, then continuing the
+  condition/event/medication-class compiler queue while CC-08/CC-10 handles
   normal-range phrases plus sex/modality/fasting provenance.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
   `matcher_assumption_mode` change behavior, not just metadata, and
@@ -1682,6 +1684,8 @@ promotion remain follow-on work.
 | 3.3 | Define and implement the routing policy after 2.12-2.16 establish the patient-side labels, matcher assumption modes, retrieval/adjudication path, unit layer, and LLM cost accounting; re-run eval; produce the "money slide" dashboard (cost vs. quality, before/after policy). Start with efficient measured reruns over `none`, `retrieval_only`, and one bounded-adjudication model before broad model sweeps; the policy should say when the system has enough support to flag a possible match and when it must abstain. | 4 |
 | 3.3a | **TrialGPT/TREC-style benchmark scaffold.** Add a local benchmark schema/exporter that frames our seed around TrialGPT's retrieval -> criterion matching -> ranking shape and the TREC Clinical Trials patient-summary-to-suitable-trials task. This is a lightweight local scaffold for comparable reporting, not full official TREC ingestion. *First slice done — `clinical_demo.evals.trial_benchmark` defines patient-summary queries, trial-ranking candidates, criterion matching cases, prediction/metric schemas, and unknown-safe MRR / recall@10 helpers. `scripts/export_trial_benchmark.py` exports the 49-pair seed into `eval/benchmarks/local_trialgpt_trec_seed.json` (27 patient queries, 49 candidate trials, 60 criterion cases).* | 2 |
 | 3.3b | **Official TREC/TrialGPT benchmark ingestion.** Download/register the official TREC Clinical Trials topics, trial corpus, and relevance judgments; pull the TrialGPT code/data references; write an adapter from external patient-summary/trial records into `clinical_demo.evals.trial_benchmark`; and report standard retrieval/ranking metrics such as recall@k, precision@k, nDCG@k, and MRR. Keep this as an external benchmark scoreboard, separate from the internal FHIR-row citation calibration. | 4 |
+| 3.3c | **CT.gov corpus store + hybrid retrieval layer.** Build a local, chunkable ClinicalTrials.gov protocol store from public trial JSON: stable NCT ids, criteria paragraphs, eligibility fields, conditions, interventions, outcomes, phase/status, source timestamps, and section-level chunks. Add a retrieval interface that can run lexical-only first and later plug in embeddings/vector search without changing downstream compiler contracts. Use it for cross-trial surface discovery, candidate expansion, similar-criterion examples, and reviewer work-queue clustering. Parallelizable with Phase 2 compiler work as long as it only produces read-only candidate/context artifacts until validation gates are in place. | 5 |
+| 3.3d | **LLM gap triage + patch-proposal workflow.** Add an opt-in workflow that feeds unresolved compiler gaps plus cited corpus/evidence context to an LLM and asks for bounded outputs only: proposed reviewed-registry rows, candidate ConceptSet/code-list patches, compiler-rule suggestions, or "leave unresolved" rationales. Generated proposals must land in a review packet, not directly in the executable registry; deterministic validators, tests, and human approval promote them. This is the future self-building path without letting the system silently teach itself unsafe mappings. Parallelizable after the typed gap schema and reviewer packets are stable. | 4 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
 | 3.6 | **Patient note/free-text evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. This should start now as a bounded v0, not wait for perfect realism: Synthea free text is acceptable for plumbing tests only, hand-crafted note fixtures should cover clinical behavior, and MIMIC-IV-Note later calibrates realism. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
@@ -1692,7 +1696,7 @@ promotion remain follow-on work.
 | 3.10 | 20-minute presentation deck — see §8. | 4 |
 | 3.11 | Project README and repo polish (architecture diagram, eval results table, "how to reproduce", honest limitations section). | 3 |
 | 3.12 | **Performance pass (far-future / after correctness).** Profile end-to-end latency before optimizing. Candidate work: precompute/cache patient profiles and note indexes, parallelize per-criterion deterministic matches, batch or cache terminology resolution, avoid duplicate extraction/cache reads, stream API progress for long graph runs, tune LLM matcher/critic concurrency with rate-limit guards, and add latency/cost budgets to eval reports so speedups are measured rather than guessed. | 4 |
-| **Phase 3 total** | | **~65 hr** |
+| **Phase 3 total** | | **~74 hr** |
 | **Exit criterion** | Deployed demo, dashboard, writeup, deck. The whole story can be told in 20 minutes. | |
 
 ### Phase 4 — Buffer / dogfood

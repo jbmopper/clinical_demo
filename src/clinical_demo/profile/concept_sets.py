@@ -85,6 +85,17 @@ CHRONIC_KIDNEY_DISEASE = ConceptSet(
     ),
 )
 
+CKD_STAGE_3_OR_4 = ConceptSet(
+    name="Chronic kidney disease stage 3 or 4",
+    system=SNOMED,
+    codes=frozenset(
+        {
+            "433144002",  # Chronic kidney disease stage 3
+            "431857002",  # Chronic kidney disease stage 4
+        }
+    ),
+)
+
 FRACTURE = ConceptSet(
     name="Bone fracture",
     system=SNOMED,
@@ -208,6 +219,7 @@ CONCEPT_SETS_BY_ID: dict[str, ConceptSet] = {
     "ASPARTATE_AMINOTRANSFERASE": ASPARTATE_AMINOTRANSFERASE,
     "BMI": BMI,
     "CHRONIC_KIDNEY_DISEASE": CHRONIC_KIDNEY_DISEASE,
+    "CKD_STAGE_3_OR_4": CKD_STAGE_3_OR_4,
     "C_PEPTIDE": C_PEPTIDE,
     "DIASTOLIC_BP": DIASTOLIC_BP,
     "EGFR": EGFR,
@@ -243,6 +255,7 @@ __all__ = [
     "ASPARTATE_AMINOTRANSFERASE",
     "BMI",
     "CHRONIC_KIDNEY_DISEASE",
+    "CKD_STAGE_3_OR_4",
     "CONCEPT_SETS_BY_ID",
     "C_PEPTIDE",
     "DIASTOLIC_BP",

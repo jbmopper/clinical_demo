@@ -7,659 +7,6 @@
   "artifact_type": "compiler-gap-review-groups",
   "groups": [
     {
-      "case_count": 7,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 23,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:23:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:23:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 23,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:23:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:23:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 23,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:23:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:23:free-text:condition:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:53c58f2c3db2",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "acutely decompensated heart failure",
-      "occurrence_count": 7,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "acutely decompensated heart failure",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of full pneumonectomy",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:18:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:18:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of full pneumonectomy",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:18:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:18:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of full pneumonectomy",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:18:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:18:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:61169cc5d5f2",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "history of full pneumonectomy",
-      "occurrence_count": 7,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "history of full pneumonectomy",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 25,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:25:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:25:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 25,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:25:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:25:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 25,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:25:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:25:free-text:condition:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:eb96d24b3e8e",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "received intravenous inotropes",
-      "occurrence_count": 7,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "Received intravenous inotropes",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
-        "temporal_window"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 4,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Receiving stable background therapy for PAH for >90 days and will continue receiving throughout trial. Background treatments may consist of monotherapy, double therapy, or triple therapy with currently available medications for PAH.",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "gap:criterion:4:temporal:event_unmapped",
-          "message": "Temporal event surface did not map to a condition ConceptSet using cached/local lookup. Tried event variants: stable background therapy for pah.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:gap:criterion:4:temporal:event_unmapped"
-        },
-        {
-          "criterion_index": 4,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Receiving stable background therapy for PAH for >90 days and will continue receiving throughout trial. Background treatments may consist of monotherapy, double therapy, or triple therapy with currently available medications for PAH.",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "gap:criterion:4:temporal:event_unmapped",
-          "message": "Temporal event surface did not map to a condition ConceptSet using cached/local lookup. Tried event variants: stable background therapy for pah.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:gap:criterion:4:temporal:event_unmapped"
-        },
-        {
-          "criterion_index": 4,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Receiving stable background therapy for PAH for >90 days and will continue receiving throughout trial. Background treatments may consist of monotherapy, double therapy, or triple therapy with currently available medications for PAH.",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "gap:criterion:4:temporal:event_unmapped",
-          "message": "Temporal event surface did not map to a condition ConceptSet using cached/local lookup. Tried event variants: stable background therapy for pah.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:gap:criterion:4:temporal:event_unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:b410f5e06bb2",
-      "message_examples": [
-        "Temporal event surface did not map to a condition ConceptSet using cached/local lookup. Tried event variants: stable background therapy for pah."
-      ],
-      "normalized_surface": "stable background therapy for pah",
-      "occurrence_count": 7,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "stable background therapy for PAH",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 19,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:19:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:19:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 19,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:19:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:19:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 19,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:19:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:19:free-text:condition:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:c3b8dac5b258",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "structured exercise program",
-      "occurrence_count": 7,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "structured exercise program",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 13,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:13:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:13:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:13:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:13:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:13:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:13:free-text:condition:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:8ca6befbc74c",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "uncontrolled systemic hypertension",
-      "occurrence_count": 7,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "Uncontrolled systemic hypertension",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 7,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:7:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT05967689",
-          "pair_id": "83f922a9__NCT05967689",
-          "row_id": "83f922a9__NCT05967689:criterion:7:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 14,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:14:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT05967689",
-          "pair_id": "83f922a9__NCT05967689",
-          "row_id": "83f922a9__NCT05967689:criterion:14:free-text:condition:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 21,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:21:free-text:condition:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT05967689",
-          "pair_id": "83f922a9__NCT05967689",
-          "row_id": "83f922a9__NCT05967689:criterion:21:free-text:condition:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:a3fd1c520e27",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "brain metastasis",
-      "occurrence_count": 3,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "brain metastasis",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 13,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Active infection or antibiotic therapy",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:13:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "55c5b8d3__NCT06128278",
-          "row_id": "55c5b8d3__NCT06128278:criterion:13:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Active infection or antibiotic therapy",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:13:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "d02b2ca5__NCT06128278",
-          "row_id": "d02b2ca5__NCT06128278:criterion:13:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:dd900ad56b07",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "active infection",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "active infection",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 4,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Advanced CKD requiring dialysis",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:4:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "55c5b8d3__NCT06128278",
-          "row_id": "55c5b8d3__NCT06128278:criterion:4:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 4,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Advanced CKD requiring dialysis",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:4:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "d02b2ca5__NCT06128278",
-          "row_id": "d02b2ca5__NCT06128278:criterion:4:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:1b19d54053fb",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "advanced chronic kidney disease (ckd) requiring dialysis",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "advanced chronic kidney disease (CKD) requiring dialysis",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 20,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of biopsy-proven non-diabetic chronic kidney disease (CKD);",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:20:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:20:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 20,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of biopsy-proven non-diabetic chronic kidney disease (CKD);",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:20:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:20:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:3381889be025",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "biopsy-proven non-diabetic chronic kidney disease (ckd",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "biopsy-proven non-diabetic chronic kidney disease (CKD)",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 24,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Cancer treatment (excluding non-melanoma skin cancer treated by excision, carcinoma in situ of the cervix or uterus, ductal breast cancer in situ, resected non-metastatic breast or prostate cancer) within one year of screening.",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:24:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:24:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 24,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Cancer treatment (excluding non-melanoma skin cancer treated by excision, carcinoma in situ of the cervix or uterus, ductal breast cancer in situ, resected non-metastatic breast or prostate cancer) within one year of screening.",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:24:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:24:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:683bf0cb7882",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "cancer treatment",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "cancer treatment",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 1,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Women with CKD including stage 3-4 (eGFR 15-59 ml/min/1.73m2) determined by the Chronic Kidney Disease Epidemiology Collaboration (CKD-EPI) 2021 equation",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:1:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "55c5b8d3__NCT06128278",
-          "row_id": "55c5b8d3__NCT06128278:criterion:1:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 1,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Women with CKD including stage 3-4 (eGFR 15-59 ml/min/1.73m2) determined by the Chronic Kidney Disease Epidemiology Collaboration (CKD-EPI) 2021 equation",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:1:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06128278",
-          "pair_id": "d02b2ca5__NCT06128278",
-          "row_id": "d02b2ca5__NCT06128278:criterion:1:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:a0211bf0455d",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "chronic kidney disease (ckd) stage 3-4",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "chronic kidney disease (CKD) stage 3-4",
-      "trial_count": 1
-    },
-    {
       "case_count": 2,
       "criterion_kinds": [
         "condition_absent"
@@ -1666,54 +1013,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "measurable lesion",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "temporal_window"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 13,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "gap:criterion:13:temporal:event_unmapped",
-          "message": "Temporal event surface did not map to a condition ConceptSet using cached/local lookup. Tried event variants: medication affecting blood pressure.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:gap:criterion:13:temporal:event_unmapped"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "gap:criterion:13:temporal:event_unmapped",
-          "message": "Temporal event surface did not map to a condition ConceptSet using cached/local lookup. Tried event variants: medication affecting blood pressure.",
-          "nct_id": "NCT07297797",
-          "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:gap:criterion:13:temporal:event_unmapped"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:abf3d9e395c0",
-      "message_examples": [
-        "Temporal event surface did not map to a condition ConceptSet using cached/local lookup. Tried event variants: medication affecting blood pressure."
-      ],
-      "normalized_surface": "medication affecting blood pressure",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "medication affecting blood pressure",
       "trial_count": 1
     },
     {
@@ -5461,6 +4760,360 @@
     {
       "case_count": 7,
       "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 23,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:23:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'acutely decompensated heart failure' is classified as out_of_scope: Acutely decompensated heart failure requires heart-failure acuity/decompensation state that is not represented in the current patient profile; collapsing it to a generic condition code would over-match.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:23:free-text:condition:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 23,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:23:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'acutely decompensated heart failure' is classified as out_of_scope: Acutely decompensated heart failure requires heart-failure acuity/decompensation state that is not represented in the current patient profile; collapsing it to a generic condition code would over-match.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:23:free-text:condition:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 23,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:23:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'acutely decompensated heart failure' is classified as out_of_scope: Acutely decompensated heart failure requires heart-failure acuity/decompensation state that is not represented in the current patient profile; collapsing it to a generic condition code would over-match.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:23:free-text:condition:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:370e58f91f2b",
+      "message_examples": [
+        "Reviewed condition surface 'acutely decompensated heart failure' is classified as out_of_scope: Acutely decompensated heart failure requires heart-failure acuity/decompensation state that is not represented in the current patient profile; collapsing it to a generic condition code would over-match."
+      ],
+      "normalized_surface": "acutely decompensated heart failure",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "acutely decompensated heart failure",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 18,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of full pneumonectomy",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:18:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:18:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 18,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of full pneumonectomy",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:18:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:18:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 18,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of full pneumonectomy",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:18:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:18:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:a7e0da4e7041",
+      "message_examples": [
+        "Reviewed condition surface 'history of full pneumonectomy' is classified as out_of_scope: Full pneumonectomy is procedure/surgical-history evidence, not a condition concept represented in the current patient profile."
+      ],
+      "normalized_surface": "history of full pneumonectomy",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "history of full pneumonectomy",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 25,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug",
+          "message": "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
+        },
+        {
+          "criterion_index": 25,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug",
+          "message": "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
+        },
+        {
+          "criterion_index": 25,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug",
+          "message": "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:ea443b80c57a",
+      "message_examples": [
+        "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface."
+      ],
+      "normalized_surface": "received intravenous inotropes",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "Received intravenous inotropes",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "temporal_window"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 4,
+          "criterion_kind": "temporal_window",
+          "criterion_source_text": "Receiving stable background therapy for PAH for >90 days and will continue receiving throughout trial. Background treatments may consist of monotherapy, double therapy, or triple therapy with currently available medications for PAH.",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "gap:criterion:4:temporal:reviewed_composite_unhandled",
+          "message": "Reviewed temporal event surface 'stable background therapy for pah' is classified as composite_unhandled: This surface requires medication exposure, PAH indication context, and stability over a window; it is not safely checkable as a single condition event.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:gap:criterion:4:temporal:reviewed_composite_unhandled"
+        },
+        {
+          "criterion_index": 4,
+          "criterion_kind": "temporal_window",
+          "criterion_source_text": "Receiving stable background therapy for PAH for >90 days and will continue receiving throughout trial. Background treatments may consist of monotherapy, double therapy, or triple therapy with currently available medications for PAH.",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "gap:criterion:4:temporal:reviewed_composite_unhandled",
+          "message": "Reviewed temporal event surface 'stable background therapy for pah' is classified as composite_unhandled: This surface requires medication exposure, PAH indication context, and stability over a window; it is not safely checkable as a single condition event.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:gap:criterion:4:temporal:reviewed_composite_unhandled"
+        },
+        {
+          "criterion_index": 4,
+          "criterion_kind": "temporal_window",
+          "criterion_source_text": "Receiving stable background therapy for PAH for >90 days and will continue receiving throughout trial. Background treatments may consist of monotherapy, double therapy, or triple therapy with currently available medications for PAH.",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "gap:criterion:4:temporal:reviewed_composite_unhandled",
+          "message": "Reviewed temporal event surface 'stable background therapy for pah' is classified as composite_unhandled: This surface requires medication exposure, PAH indication context, and stability over a window; it is not safely checkable as a single condition event.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:gap:criterion:4:temporal:reviewed_composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:6a8ad48990f7",
+      "message_examples": [
+        "Reviewed temporal event surface 'stable background therapy for pah' is classified as composite_unhandled: This surface requires medication exposure, PAH indication context, and stability over a window; it is not safely checkable as a single condition event."
+      ],
+      "normalized_surface": "stable background therapy for pah",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "stable background therapy for PAH",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 19,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 19,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 19,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:72b6f09d0e26",
+      "message_examples": [
+        "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile."
+      ],
+      "normalized_surface": "structured exercise program",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "structured exercise program",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 13,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 13,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 13,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:13:free-text:condition:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:c9044bc8372f",
+      "message_examples": [
+        "Reviewed condition surface 'Uncontrolled systemic hypertension' is classified as composite_unhandled: Uncontrolled systemic hypertension needs severity/control or blood-pressure threshold semantics; mapping it to generic hypertension would lose the uncontrolled qualifier."
+      ],
+      "normalized_surface": "uncontrolled systemic hypertension",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "Uncontrolled systemic hypertension",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
         "measurement_threshold"
       ],
       "domain": "measurement",
@@ -5693,6 +5346,305 @@
       "stage": "concept_resolution",
       "surface": "life expectancy",
       "trial_count": 3
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 7,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:7:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'brain metastasis' is classified as out_of_scope: Metastatic oncology disease state is not represented in the current Synthea patient profile.",
+          "nct_id": "NCT05967689",
+          "pair_id": "83f922a9__NCT05967689",
+          "row_id": "83f922a9__NCT05967689:criterion:7:free-text:condition:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 14,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:14:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'brain metastasis' is classified as out_of_scope: Metastatic oncology disease state is not represented in the current Synthea patient profile.",
+          "nct_id": "NCT05967689",
+          "pair_id": "83f922a9__NCT05967689",
+          "row_id": "83f922a9__NCT05967689:criterion:14:free-text:condition:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 21,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:21:free-text:condition:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'brain metastasis' is classified as out_of_scope: Metastatic oncology disease state is not represented in the current Synthea patient profile.",
+          "nct_id": "NCT05967689",
+          "pair_id": "83f922a9__NCT05967689",
+          "row_id": "83f922a9__NCT05967689:criterion:21:free-text:condition:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:45dcca7cbc07",
+      "message_examples": [
+        "Reviewed condition surface 'brain metastasis' is classified as out_of_scope: Metastatic oncology disease state is not represented in the current Synthea patient profile."
+      ],
+      "normalized_surface": "brain metastasis",
+      "occurrence_count": 3,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "brain metastasis",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 13,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Active infection or antibiotic therapy",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:13:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'active infection' is classified as out_of_scope: Active infection is too broad for a reviewed condition code list and requires acute infection status not represented in the current patient profile.",
+          "nct_id": "NCT06128278",
+          "pair_id": "55c5b8d3__NCT06128278",
+          "row_id": "55c5b8d3__NCT06128278:criterion:13:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 13,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Active infection or antibiotic therapy",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:13:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'active infection' is classified as out_of_scope: Active infection is too broad for a reviewed condition code list and requires acute infection status not represented in the current patient profile.",
+          "nct_id": "NCT06128278",
+          "pair_id": "d02b2ca5__NCT06128278",
+          "row_id": "d02b2ca5__NCT06128278:criterion:13:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:1266ae043d28",
+      "message_examples": [
+        "Reviewed condition surface 'active infection' is classified as out_of_scope: Active infection is too broad for a reviewed condition code list and requires acute infection status not represented in the current patient profile."
+      ],
+      "normalized_surface": "active infection",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "active infection",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 4,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Advanced CKD requiring dialysis",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:4:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'advanced chronic kidney disease (CKD) requiring dialysis' is classified as composite_unhandled: This surface combines CKD severity with dialysis/procedure dependence; it is not safely represented by the broad CKD condition ConceptSet.",
+          "nct_id": "NCT06128278",
+          "pair_id": "55c5b8d3__NCT06128278",
+          "row_id": "55c5b8d3__NCT06128278:criterion:4:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 4,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Advanced CKD requiring dialysis",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:4:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'advanced chronic kidney disease (CKD) requiring dialysis' is classified as composite_unhandled: This surface combines CKD severity with dialysis/procedure dependence; it is not safely represented by the broad CKD condition ConceptSet.",
+          "nct_id": "NCT06128278",
+          "pair_id": "d02b2ca5__NCT06128278",
+          "row_id": "d02b2ca5__NCT06128278:criterion:4:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:f892f79a7f23",
+      "message_examples": [
+        "Reviewed condition surface 'advanced chronic kidney disease (CKD) requiring dialysis' is classified as composite_unhandled: This surface combines CKD severity with dialysis/procedure dependence; it is not safely represented by the broad CKD condition ConceptSet."
+      ],
+      "normalized_surface": "advanced chronic kidney disease (ckd) requiring dialysis",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "advanced chronic kidney disease (CKD) requiring dialysis",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 20,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of biopsy-proven non-diabetic chronic kidney disease (CKD);",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:20:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'biopsy-proven non-diabetic chronic kidney disease (CKD)' is classified as composite_unhandled: This surface requires CKD plus biopsy confirmation and non-diabetic etiology; collapsing it to generic CKD would lose required provenance and etiology.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:20:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 20,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of biopsy-proven non-diabetic chronic kidney disease (CKD);",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:20:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'biopsy-proven non-diabetic chronic kidney disease (CKD)' is classified as composite_unhandled: This surface requires CKD plus biopsy confirmation and non-diabetic etiology; collapsing it to generic CKD would lose required provenance and etiology.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:20:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:c88d7ac12fad",
+      "message_examples": [
+        "Reviewed condition surface 'biopsy-proven non-diabetic chronic kidney disease (CKD)' is classified as composite_unhandled: This surface requires CKD plus biopsy confirmation and non-diabetic etiology; collapsing it to generic CKD would lose required provenance and etiology."
+      ],
+      "normalized_surface": "biopsy-proven non-diabetic chronic kidney disease (ckd",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "biopsy-proven non-diabetic chronic kidney disease (CKD)",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 24,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Cancer treatment (excluding non-melanoma skin cancer treated by excision, carcinoma in situ of the cervix or uterus, ductal breast cancer in situ, resected non-metastatic breast or prostate cancer) within one year of screening.",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:24:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'cancer treatment' is classified as out_of_scope: Cancer treatment is therapy exposure/procedure history rather than a condition ConceptSet represented in the current patient profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:24:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 24,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Cancer treatment (excluding non-melanoma skin cancer treated by excision, carcinoma in situ of the cervix or uterus, ductal breast cancer in situ, resected non-metastatic breast or prostate cancer) within one year of screening.",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:24:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'cancer treatment' is classified as out_of_scope: Cancer treatment is therapy exposure/procedure history rather than a condition ConceptSet represented in the current patient profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:24:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:16f0d676aeec",
+      "message_examples": [
+        "Reviewed condition surface 'cancer treatment' is classified as out_of_scope: Cancer treatment is therapy exposure/procedure history rather than a condition ConceptSet represented in the current patient profile."
+      ],
+      "normalized_surface": "cancer treatment",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "cancer treatment",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "temporal_window"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 13,
+          "criterion_kind": "temporal_window",
+          "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "gap:criterion:13:temporal:reviewed_extractor_bug",
+          "message": "Reviewed temporal event surface 'medication affecting blood pressure' is classified as extractor_bug: This is medication-class exposure, not a condition event; it should be handled by medication/class compiler logic.",
+          "nct_id": "NCT07297797",
+          "pair_id": "28db1c55__NCT07297797",
+          "row_id": "28db1c55__NCT07297797:gap:criterion:13:temporal:reviewed_extractor_bug"
+        },
+        {
+          "criterion_index": 13,
+          "criterion_kind": "temporal_window",
+          "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "gap:criterion:13:temporal:reviewed_extractor_bug",
+          "message": "Reviewed temporal event surface 'medication affecting blood pressure' is classified as extractor_bug: This is medication-class exposure, not a condition event; it should be handled by medication/class compiler logic.",
+          "nct_id": "NCT07297797",
+          "pair_id": "407ef75b__NCT07297797",
+          "row_id": "407ef75b__NCT07297797:gap:criterion:13:temporal:reviewed_extractor_bug"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:dc931361e35d",
+      "message_examples": [
+        "Reviewed temporal event surface 'medication affecting blood pressure' is classified as extractor_bug: This is medication-class exposure, not a condition event; it should be handled by medication/class compiler logic."
+      ],
+      "normalized_surface": "medication affecting blood pressure",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "medication affecting blood pressure",
+      "trial_count": 1
     },
     {
       "case_count": 2,

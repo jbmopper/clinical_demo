@@ -41,6 +41,7 @@ from clinical_demo.terminology.expansion import expand_concept_set
 from clinical_demo.terminology.resolver import TerminologyResolver
 from clinical_demo.terminology.reviewed_registry import (
     ExpansionPolicy,
+    ReviewedMappingEntry,
     ReviewedMappingRegistry,
     load_reviewed_mapping_registry,
 )
@@ -283,6 +284,7 @@ def _compile_criterion(
             source_criterion_id=source_id,
             resolver_policy=resolver_policy,
             resolver=context.resolver,
+            reviewed_registry=context.reviewed_registry,
         )
         supports.extend(temporal.supports)
         gaps.extend(temporal.gaps)
@@ -950,6 +952,56 @@ def _compile_condition_resolution(
             support_ids=[],
         )
 
+    reviewed_nonmapped = _reviewed_nonmapped_condition_entry(surface, context=context)
+    if reviewed_nonmapped is not None:
+        reviewed_entry, lookup_surface = reviewed_nonmapped
+        gap_kind = _reviewed_nonmapped_gap_kind(reviewed_entry)
+        status: ResolutionStatus = "ambiguous" if gap_kind == "ambiguous_mapping" else "unsupported"
+        gap = _gap(
+            gap_id=f"{source_criterion_id}:condition:gap:reviewed-{reviewed_entry.status}",
+            stage="concept_resolution",
+            domain="condition",
+            kind=gap_kind,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            message=(
+                f"Reviewed condition surface {lookup_surface!r} is classified as "
+                f"{reviewed_entry.status}: {reviewed_entry.reason}"
+            ),
+            resolver_policy=context.resolver_policy,
+        )
+        diagnostic = _diagnostic(
+            severity="warning",
+            code=f"condition.reviewed.{reviewed_entry.status}",
+            message=gap.message,
+            stage="concept_resolution",
+            source_criterion_id=source_criterion_id,
+            facts=[
+                ("surface", surface),
+                ("lookup_surface", lookup_surface),
+                ("reviewed_status", reviewed_entry.status),
+                ("gap_id", gap.gap_id),
+            ],
+        )
+        return _condition_output(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            expansion=ExpansionPlan(
+                status=status,
+                domain="condition",
+                source_surface=surface,
+                strategy=reviewed_entry.expansion_policy,
+                support_ids=[],
+                gap_ids=[gap.gap_id],
+            ),
+            supports=[],
+            gaps=[gap],
+            diagnostics=[diagnostic],
+            concept_set=None,
+            support_ids=[],
+        )
+
     candidates, concept_sets = _condition_candidates(surface, context=context)
     decision = gate_candidate_set(candidates)
     if decision.verdict != "auto_map" or decision.selected is None:
@@ -1140,6 +1192,38 @@ def _condition_candidates(
         concept_sets[candidate.target_key] = concept_set
 
     return candidates, concept_sets
+
+
+def _reviewed_nonmapped_condition_entry(
+    surface: str,
+    *,
+    context: _CompilerResolutionContext,
+) -> tuple[ReviewedMappingEntry, str] | None:
+    lookup_variants: list[str] = []
+    seen_lookup_variants: set[str] = set()
+
+    def add_lookup_variant(candidate: str) -> None:
+        normalized = " ".join(candidate.lower().split())
+        if not normalized or normalized in seen_lookup_variants:
+            return
+        seen_lookup_variants.add(normalized)
+        lookup_variants.append(candidate)
+
+    add_lookup_variant(surface)
+    for variant in generate_query_variants(surface):
+        add_lookup_variant(variant.variant)
+
+    for lookup_surface in lookup_variants:
+        entry = context.reviewed_registry.lookup("condition", lookup_surface)
+        if entry is not None and entry.status != "mapped":
+            return entry, lookup_surface
+    return None
+
+
+def _reviewed_nonmapped_gap_kind(entry: ReviewedMappingEntry) -> ResolutionGapKind:
+    if entry.status == "ambiguous":
+        return "ambiguous_mapping"
+    return "unsupported_predicate"
 
 
 def _candidate_score(source_kind: CandidateSourceKind, transform_count: int) -> float:

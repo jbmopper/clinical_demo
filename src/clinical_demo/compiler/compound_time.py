@@ -22,6 +22,10 @@ from clinical_demo.matcher.concept_lookup import lookup_condition
 from clinical_demo.profile import ConceptSet
 from clinical_demo.settings import ResolverExecutionPolicy, get_settings
 from clinical_demo.terminology import TerminologyCache, TerminologyResolver
+from clinical_demo.terminology.reviewed_registry import (
+    ReviewedMappingEntry,
+    ReviewedMappingRegistry,
+)
 
 from .schema import (
     CheckablePredicatePlan,
@@ -209,6 +213,7 @@ def compile_temporal_window(
     source_criterion_id: str,
     resolver_policy: ResolverExecutionPolicy = "cached_only",
     resolver: TerminologyResolver | None = None,
+    reviewed_registry: ReviewedMappingRegistry | None = None,
 ) -> TemporalWindowCompilation:
     """Compile a temporal-window criterion into a checkable plan.
 
@@ -252,53 +257,92 @@ def compile_temporal_window(
             )
         )
     else:
-        lookup = _lookup_temporal_event_condition(surface, resolver=resolver)
-        concept_set = lookup.concept_set
-        if concept_set is None:
+        reviewed_nonmapped = _reviewed_nonmapped_temporal_event(surface, reviewed_registry)
+        if reviewed_nonmapped is not None:
+            reviewed_entry, lookup_surface, transforms = reviewed_nonmapped
             gaps.append(
                 _temporal_gap(
                     source_criterion_id=source_criterion_id,
-                    suffix="event_unmapped",
+                    suffix=f"reviewed_{reviewed_entry.status}",
                     surface=surface,
                     message=(
-                        "Temporal event surface did not map to a condition ConceptSet "
-                        "using cached/local lookup. Tried event variants: "
-                        f"{', '.join(lookup.tried_surfaces)}."
+                        f"Reviewed temporal event surface {lookup_surface!r} is classified as "
+                        f"{reviewed_entry.status}: {reviewed_entry.reason}"
                     ),
                     resolver_policy=resolver_policy,
-                    kind="unmapped_concept",
+                    kind=_reviewed_nonmapped_temporal_gap_kind(reviewed_entry),
                     stage="concept_resolution",
                     domain="condition",
                 )
             )
-        else:
-            supports.append(
-                _temporal_event_support(
+            diagnostics.append(
+                CompilerDiagnostic(
+                    severity="warning",
+                    code=f"temporal_event.reviewed.{reviewed_entry.status}",
+                    message=(
+                        f"Reviewed temporal event surface {lookup_surface!r} is classified as "
+                        f"{reviewed_entry.status}: {reviewed_entry.reason}"
+                    ),
+                    stage="concept_resolution",
                     source_criterion_id=source_criterion_id,
-                    surface=lookup.lookup_surface,
-                    normalized_surface=lookup.normalized_lookup_surface,
-                    concept_set=concept_set,
-                    resolver_policy=resolver_policy,
+                    facts=[
+                        DiagnosticFact(key="event_surface", value=surface),
+                        DiagnosticFact(key="lookup_surface", value=lookup_surface),
+                        DiagnosticFact(key="reviewed_status", value=reviewed_entry.status),
+                        DiagnosticFact(key="transforms", value=", ".join(transforms) or "none"),
+                    ],
                 )
             )
-            if lookup.normalized_lookup_surface != normalized_surface:
-                diagnostics.append(
-                    CompilerDiagnostic(
-                        severity="info",
-                        code="temporal_event_surface_normalized",
-                        message=("Temporal event surface was normalized before condition lookup."),
-                        stage="concept_resolution",
+        else:
+            lookup = _lookup_temporal_event_condition(surface, resolver=resolver)
+            concept_set = lookup.concept_set
+            if concept_set is None:
+                gaps.append(
+                    _temporal_gap(
                         source_criterion_id=source_criterion_id,
-                        facts=[
-                            DiagnosticFact(key="event_surface", value=surface),
-                            DiagnosticFact(key="lookup_surface", value=lookup.lookup_surface),
-                            DiagnosticFact(
-                                key="transforms",
-                                value=", ".join(lookup.transforms) or "none",
-                            ),
-                        ],
+                        suffix="event_unmapped",
+                        surface=surface,
+                        message=(
+                            "Temporal event surface did not map to a condition ConceptSet "
+                            "using cached/local lookup. Tried event variants: "
+                            f"{', '.join(lookup.tried_surfaces)}."
+                        ),
+                        resolver_policy=resolver_policy,
+                        kind="unmapped_concept",
+                        stage="concept_resolution",
+                        domain="condition",
                     )
                 )
+            else:
+                supports.append(
+                    _temporal_event_support(
+                        source_criterion_id=source_criterion_id,
+                        surface=lookup.lookup_surface,
+                        normalized_surface=lookup.normalized_lookup_surface,
+                        concept_set=concept_set,
+                        resolver_policy=resolver_policy,
+                    )
+                )
+                if lookup.normalized_lookup_surface != normalized_surface:
+                    diagnostics.append(
+                        CompilerDiagnostic(
+                            severity="info",
+                            code="temporal_event_surface_normalized",
+                            message=(
+                                "Temporal event surface was normalized before condition lookup."
+                            ),
+                            stage="concept_resolution",
+                            source_criterion_id=source_criterion_id,
+                            facts=[
+                                DiagnosticFact(key="event_surface", value=surface),
+                                DiagnosticFact(key="lookup_surface", value=lookup.lookup_surface),
+                                DiagnosticFact(
+                                    key="transforms",
+                                    value=", ".join(lookup.transforms) or "none",
+                                ),
+                            ],
+                        )
+                    )
 
     if temporal.direction != "within_past":
         gaps.append(
@@ -442,6 +486,7 @@ def _temporal_gap(
     resolver_policy: ResolverExecutionPolicy,
     kind: Literal[
         "unmapped_concept",
+        "ambiguous_mapping",
         "unsupported_predicate",
     ] = "unsupported_predicate",
     stage: Literal["concept_resolution", "predicate_translation"] = "predicate_translation",
@@ -457,6 +502,27 @@ def _temporal_gap(
         message=message,
         resolver_policy=resolver_policy,
     )
+
+
+def _reviewed_nonmapped_temporal_event(
+    surface: str,
+    reviewed_registry: ReviewedMappingRegistry | None,
+) -> tuple[ReviewedMappingEntry, str, tuple[str, ...]] | None:
+    if reviewed_registry is None:
+        return None
+    for lookup_surface, transforms in _temporal_event_lookup_variants(surface):
+        entry = reviewed_registry.lookup("condition", lookup_surface)
+        if entry is not None and entry.status != "mapped":
+            return entry, lookup_surface, transforms
+    return None
+
+
+def _reviewed_nonmapped_temporal_gap_kind(
+    entry: ReviewedMappingEntry,
+) -> Literal["ambiguous_mapping", "unsupported_predicate"]:
+    if entry.status == "ambiguous":
+        return "ambiguous_mapping"
+    return "unsupported_predicate"
 
 
 def _temporal_event_support(

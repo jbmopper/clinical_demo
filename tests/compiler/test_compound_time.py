@@ -12,6 +12,7 @@ from clinical_demo.extractor.schema import (
     FreeTextCriterion,
     TemporalWindowCriterion,
 )
+from clinical_demo.terminology.reviewed_registry import load_reviewed_mapping_registry
 
 
 def _condition(text: str) -> ExtractedCriterion:
@@ -237,6 +238,22 @@ def test_temporal_unmapped_event_is_gap_not_executable() -> None:
     assert result.gaps[0].kind == "unmapped_concept"
     assert result.gaps[0].stage == "concept_resolution"
     assert result.diagnostics[0].code == "temporal_window_not_executable"
+
+
+def test_temporal_reviewed_nonmapped_event_is_typed_gap() -> None:
+    criterion = _temporal(event_text="stable background therapy for PAH", window_days=90)
+
+    result = compile_temporal_window(
+        criterion,
+        source_criterion_id="criterion:5b",
+        reviewed_registry=load_reviewed_mapping_registry(),
+    )
+
+    assert result.event_resolved is False
+    assert result.predicate.status == "unsupported"
+    assert result.gaps[0].gap_id == "gap:criterion:5b:temporal:reviewed_composite_unhandled"
+    assert result.gaps[0].kind == "unsupported_predicate"
+    assert result.diagnostics[0].code == "temporal_event.reviewed.composite_unhandled"
 
 
 def test_temporal_generic_event_surface_is_unsupported_gap() -> None:

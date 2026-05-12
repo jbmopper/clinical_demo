@@ -4,26 +4,26 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "c467039ca2aa",
-  "notes": "2026-05-11 compiled_predicates closed-world deterministic after reviewed measurement-tail nonmapping tranche; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "2802063cfb09",
+  "notes": "compiled_predicates after condition/event reviewed gap slice; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 23328.94783525262,
-  "avg_scoring_latency_ms": 476.1009762296453,
+  "total_scoring_latency_ms": 20766.804338316433,
+  "avg_scoring_latency_ms": 423.81233343502925,
   "verdict_counts": {
-    "fail": 60,
-    "indeterminate": 889,
+    "fail": 62,
+    "indeterminate": 887,
     "pass": 127
   },
   "reason_counts": {
     "ambiguous_criterion": 31,
     "human_review_required": 613,
     "no_data": 5,
-    "ok": 187,
-    "unmapped_concept": 148,
-    "unsupported_kind": 74,
+    "ok": 189,
+    "unmapped_concept": 122,
+    "unsupported_kind": 98,
     "unsupported_mood": 18
   },
   "kind_counts": {
@@ -37,10 +37,10 @@
     "sex": 6,
     "temporal_window": 15
   },
-  "unmapped_count": 148,
-  "unmapped_rate": 0.137546468401487,
-  "indeterminate_count": 889,
-  "indeterminate_rate": 0.8262081784386617,
+  "unmapped_count": 122,
+  "unmapped_rate": 0.11338289962825279,
+  "indeterminate_count": 887,
+  "indeterminate_rate": 0.8243494423791822,
   "binding_registered_total": 27,
   "binding_registered_resolved": 27,
   "binding_registered_unmapped": 0,
@@ -57,16 +57,6 @@
   },
   "top_unmapped_surfaces": [
     {
-      "surface": "stable background therapy for PAH",
-      "kind": "temporal_window",
-      "count": 7
-    },
-    {
-      "surface": "history of full pneumonectomy",
-      "kind": "condition_absent",
-      "count": 7
-    },
-    {
       "surface": "uncontrolled severe arrhythmia",
       "kind": "condition_absent",
       "count": 2
@@ -74,11 +64,6 @@
     {
       "surface": "other diseases requiring RAAS inhibitor therapy",
       "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "medication affecting blood pressure",
-      "kind": "temporal_window",
       "count": 2
     },
     {
@@ -132,16 +117,6 @@
       "count": 2
     },
     {
-      "surface": "biopsy-proven non-diabetic chronic kidney disease (CKD)",
-      "kind": "condition_absent",
-      "count": 2
-    },
-    {
-      "surface": "cancer treatment",
-      "kind": "condition_absent",
-      "count": 2
-    },
-    {
       "surface": "illicit drug abuse",
       "kind": "condition_absent",
       "count": 2
@@ -155,26 +130,51 @@
       "surface": "condition that may render the patient unable to comply with study requirements",
       "kind": "condition_absent",
       "count": 2
+    },
+    {
+      "surface": "HoFH",
+      "kind": "condition_present",
+      "count": 2
+    },
+    {
+      "surface": "lipid-lowering treatment",
+      "kind": "medication_present",
+      "count": 2
+    },
+    {
+      "surface": "NYHA grade III-IV heart failure",
+      "kind": "condition_absent",
+      "count": 2
+    },
+    {
+      "surface": "natural menopause",
+      "kind": "condition_present",
+      "count": 2
+    },
+    {
+      "surface": "organ transplant",
+      "kind": "condition_present",
+      "count": 2
     }
   ],
   "compiler_compilation_present_cases": 47,
   "compiler_compilation_missing_cases": 2,
   "compiler_compiled_criteria_total": 1076,
-  "compiler_checkable_predicates_total": 212,
-  "compiler_unresolved_gaps_total": 373,
+  "compiler_checkable_predicates_total": 214,
+  "compiler_unresolved_gaps_total": 371,
   "compiler_unresolved_gaps_by_kind": {
     "ambiguous_mapping": 13,
     "insufficient_source": 22,
-    "unmapped_concept": 213,
-    "unsupported_predicate": 125
+    "unmapped_concept": 156,
+    "unsupported_predicate": 180
   },
   "compiler_unresolved_gaps_by_stage": {
-    "concept_resolution": 315,
+    "concept_resolution": 313,
     "predicate_translation": 47,
     "unit_normalization": 11
   },
   "compiler_unresolved_gaps_by_domain": {
-    "condition": 200,
+    "condition": 198,
     "free_text": 34,
     "measurement": 69,
     "medication": 58,
@@ -183,6 +183,6 @@
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,
-  "compiler_closed_world_findings_total": 1125,
-  "compiler_closed_world_blocking_findings_total": 511
+  "compiler_closed_world_findings_total": 1121,
+  "compiler_closed_world_blocking_findings_total": 507
 }
