@@ -41,8 +41,8 @@
       "adjudicator_output_tokens": 0
     },
     {
-      "run_id": "792ebbec7376",
-      "notes": "CC-03 reviewed descendant expansion fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "run_id": "c4ccb713a2d5",
+      "notes": "Condition event decomposition and long-tail terminology fresh-cache compiled eval; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
       "llm_use_level": "none",
       "matcher_assumption_mode": "closed_world_eval",
       "total_label_targets": 50,
@@ -59,8 +59,8 @@
       "retrieved_patient_row_counts": {},
       "cited_patient_row_counts": {},
       "eligibility_counts": {
-        "fail": 30,
-        "indeterminate": 15,
+        "fail": 33,
+        "indeterminate": 12,
         "pass_pending_review": 2
       },
       "adjudicator_calls": 0,
@@ -72,10 +72,10 @@
   "mode_deltas": [
     {
       "baseline_run_id": "e8efb7bcce35",
-      "comparison_run_id": "792ebbec7376",
-      "changed_cases": 3,
+      "comparison_run_id": "c4ccb713a2d5",
+      "changed_cases": 6,
       "movements": {
-        "indeterminate->fail": 2,
+        "indeterminate->fail": 5,
         "indeterminate->pass_pending_review": 1
       }
     }

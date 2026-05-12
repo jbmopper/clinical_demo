@@ -13,102 +13,6 @@
       ],
       "domain": "condition",
       "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 25,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have clinically significant cardiovascular diseases within 6 months prior to randomization: myocardial infarction, severe/unstable angina, coronary/peripheral endovascular treatment, heart failure, cerebrovascular disorder including transient ischemic attack, pulmonary embolism, deep venous thrombosis and or other clinically significant thrombosis.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:25:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "55c5b8d3__NCT06564324",
-          "row_id": "55c5b8d3__NCT06564324:criterion:25:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 25,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Have clinically significant cardiovascular diseases within 6 months prior to randomization: myocardial infarction, severe/unstable angina, coronary/peripheral endovascular treatment, heart failure, cerebrovascular disorder including transient ischemic attack, pulmonary embolism, deep venous thrombosis and or other clinically significant thrombosis.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:25:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06564324",
-          "pair_id": "d362f4e5__NCT06564324",
-          "row_id": "d362f4e5__NCT06564324:criterion:25:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:3272f77d903b",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "clinically significant cardiovascular diseases",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "clinically significant cardiovascular diseases",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 19,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Subject has evidence of clinically significant left-sided heart disease within 6 months as defined by: Left ventricular ejection fraction <40% as assessed by echocardiography. More than mild left-sided valvulopathy (e.g., worse than mild mitral stenosis or regurgitation and worse than mild aortic stenosis or regurgitation). LVEDP or PCWP >15 mmHg (or >12 mmHg if PVR \u22654 to 6.25 Wood units).",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:19:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:19:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 19,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Subject has evidence of clinically significant left-sided heart disease within 6 months as defined by: Left ventricular ejection fraction <40% as assessed by echocardiography. More than mild left-sided valvulopathy (e.g., worse than mild mitral stenosis or regurgitation and worse than mild aortic stenosis or regurgitation). LVEDP or PCWP >15 mmHg (or >12 mmHg if PVR \u22654 to 6.25 Wood units).",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:19:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:19:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:9c92ecc1a15e",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "clinically significant left-sided heart disease",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "clinically significant left-sided heart disease",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
         "hypertension-industry"
       ],
       "example_rows": [
@@ -349,54 +253,6 @@
       ],
       "domain": "condition",
       "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 25,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Any current active malignancy (this does not include localized cancers such as basal or squamous cell carcinoma of the skin). Any history of malignancy that is likely to result in mortality or require significant medical or surgical intervention within the following year.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:25:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:25:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 25,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Any current active malignancy (this does not include localized cancers such as basal or squamous cell carcinoma of the skin). Any history of malignancy that is likely to result in mortality or require significant medical or surgical intervention within the following year.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:25:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:25:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:e78f46a888f7",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "current active malignancy",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "current active malignancy",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
         "nsclc"
       ],
       "example_rows": [
@@ -489,54 +345,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 26,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women, 4 drinks or more on any day or 8 drinks or more per week);",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:26:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:26:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 26,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women, 4 drinks or more on any day or 8 drinks or more per week);",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:26:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:26:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:a5790368c9a2",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "heavy alcohol use",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "heavy alcohol use",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "condition_present"
       ],
       "domain": "condition",
@@ -585,54 +393,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 27,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "The subject has a history of congenital heart disease irrespective of any prior treatment of surgical intervention.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:27:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:27:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 27,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "The subject has a history of congenital heart disease irrespective of any prior treatment of surgical intervention.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:27:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:27:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:36b3a8d6457c",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "history of congenital heart disease",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "history of congenital heart disease",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "condition_present"
       ],
       "domain": "condition",
@@ -676,199 +436,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "history of kidney transplant",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 37,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pugh C) impairment or disordered coagulation.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:37:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:37:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 37,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pugh C) impairment or disordered coagulation.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:37:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:37:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:d9ae5b9934a1",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "history of liver dysfunction",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "history of liver dysfunction",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 1,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Genetic diagnosis or clinical diagnosis of HoFH.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:1:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07489209",
-          "pair_id": "38f38890__NCT07489209",
-          "row_id": "38f38890__NCT07489209:criterion:1:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 1,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Genetic diagnosis or clinical diagnosis of HoFH.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:1:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07489209",
-          "pair_id": "d02b2ca5__NCT07489209",
-          "row_id": "d02b2ca5__NCT07489209:criterion:1:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:6edbd524ec6b",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "hofh",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "HoFH",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent",
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 1,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "HoFH diagnosed by genetic confirmation",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:1:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06597006",
-          "pair_id": "c2786fee__NCT06597006",
-          "row_id": "c2786fee__NCT06597006:criterion:1:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 7,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Documented history of homozygous familial hypercholesterolemia (HoFH);",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:7:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06568471",
-          "pair_id": "e7d52393__NCT06568471",
-          "row_id": "e7d52393__NCT06568471:criterion:7:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:b29056ed0fcc",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "homozygous familial hypercholesterolemia (hofh",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "homozygous familial hypercholesterolemia (HoFH)",
-      "trial_count": 2
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 25,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Illicit drug abuse within 6 months of screening;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:25:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:25:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 25,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Illicit drug abuse within 6 months of screening;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:25:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:25:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:2476fd439f72",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "illicit drug abuse",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "illicit drug abuse",
       "trial_count": 1
     },
     {
@@ -1018,102 +585,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Natural menopause, last menstrual period more than one year ago.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06220266",
-          "pair_id": "3a364909__NCT06220266",
-          "row_id": "3a364909__NCT06220266:criterion:0:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Natural menopause, last menstrual period more than one year ago.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06220266",
-          "pair_id": "60b0873c__NCT06220266",
-          "row_id": "60b0873c__NCT06220266:criterion:0:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:be50601a6f5b",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "natural menopause",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "natural menopause",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 16,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:16:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07489209",
-          "pair_id": "38f38890__NCT07489209",
-          "row_id": "38f38890__NCT07489209:criterion:16:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 16,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:16:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07489209",
-          "pair_id": "d02b2ca5__NCT07489209",
-          "row_id": "d02b2ca5__NCT07489209:criterion:16:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:6390ea31f0c3",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "nyha grade iii-iv heart failure",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "NYHA grade III-IV heart failure",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "condition_absent"
       ],
       "domain": "condition",
@@ -1157,54 +628,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "ongoing cardiac dysrhythmias",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 8,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Ever had an organ transplant",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:8:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06220266",
-          "pair_id": "3a364909__NCT06220266",
-          "row_id": "3a364909__NCT06220266:criterion:8:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 8,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Ever had an organ transplant",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "criterion:8:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06220266",
-          "pair_id": "60b0873c__NCT06220266",
-          "row_id": "60b0873c__NCT06220266:criterion:8:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:7abb636563a3",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "organ transplant",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "organ transplant",
       "trial_count": 1
     },
     {
@@ -1354,102 +777,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "A clinical diagnosis of PH-ILD.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:0:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 0,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "A clinical diagnosis of PH-ILD.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:0:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:0:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:b52a45c9c1b6",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "ph-ild",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "ph-ild",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 19,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of primary renal glycosuria;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:19:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:19:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 19,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of primary renal glycosuria;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:19:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:19:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:4554c99fcb1f",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "primary renal glycosuria",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "primary renal glycosuria",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "condition_absent"
       ],
       "domain": "condition",
@@ -1541,54 +868,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "prior TKI including ros1-targeted TKIs",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Subject has another concomitant diagnosis of pulmonary hypertension not otherwise considered to be PH-ILD.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:18:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:18:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 18,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Subject has another concomitant diagnosis of pulmonary hypertension not otherwise considered to be PH-ILD.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:18:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:18:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:19a8a5159be6",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "pulmonary hypertension not otherwise considered to be ph-ild",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "pulmonary hypertension not otherwise considered to be ph-ild",
       "trial_count": 1
     },
     {
@@ -1781,150 +1060,6 @@
       "severity": "high",
       "stage": "concept_resolution",
       "surface": "type 2 dm",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 9,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:criterion:9:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 9,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:9:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT07297797",
-          "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:criterion:9:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:d372e0a13076",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "uncontrolled severe arrhythmia",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "uncontrolled severe arrhythmia",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 39,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:39:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:39:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 39,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:39:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:39:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:7e9a8dea79fd",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "worse than mild untreated sleep apnea",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "worse than mild untreated sleep apnea",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 15,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of \u22653 severe hypoglycemic events (requiring third-party assistance for correction) within 3 months of screening;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:15:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:15:condition:gap:no_candidates"
-        },
-        {
-          "criterion_index": 15,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "History of \u22653 severe hypoglycemic events (requiring third-party assistance for correction) within 3 months of screening;",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:15:condition:gap:no_candidates",
-          "message": "No non-rejected candidates were supplied.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:15:condition:gap:no_candidates"
-        }
-      ],
-      "gap_kind": "unmapped_concept",
-      "group_id": "compiler-gap-group:6d23f7c41ed4",
-      "message_examples": [
-        "No non-rejected candidates were supplied."
-      ],
-      "normalized_surface": "\u22653 severe hypoglycemic events",
-      "occurrence_count": 2,
-      "priority": 20,
-      "recommended_action": "review_mapping",
-      "resolver_policy": "cached_only",
-      "severity": "high",
-      "stage": "concept_resolution",
-      "surface": "\u22653 severe hypoglycemic events",
       "trial_count": 1
     },
     {
@@ -5228,6 +4363,246 @@
     {
       "case_count": 2,
       "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 19,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Subject has evidence of clinically significant left-sided heart disease within 6 months as defined by: Left ventricular ejection fraction <40% as assessed by echocardiography. More than mild left-sided valvulopathy (e.g., worse than mild mitral stenosis or regurgitation and worse than mild aortic stenosis or regurgitation). LVEDP or PCWP >15 mmHg (or >12 mmHg if PVR \u22654 to 6.25 Wood units).",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:19:condition-phrase:gap:unsupported",
+          "message": "Left-sided heart disease requires decomposition into left-ventricular function, valvular disease, or hemodynamic measurements before safe patient-history execution.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:19:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 19,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Subject has evidence of clinically significant left-sided heart disease within 6 months as defined by: Left ventricular ejection fraction <40% as assessed by echocardiography. More than mild left-sided valvulopathy (e.g., worse than mild mitral stenosis or regurgitation and worse than mild aortic stenosis or regurgitation). LVEDP or PCWP >15 mmHg (or >12 mmHg if PVR \u22654 to 6.25 Wood units).",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:19:condition-phrase:gap:unsupported",
+          "message": "Left-sided heart disease requires decomposition into left-ventricular function, valvular disease, or hemodynamic measurements before safe patient-history execution.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:19:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:273008e8749b",
+      "message_examples": [
+        "Left-sided heart disease requires decomposition into left-ventricular function, valvular disease, or hemodynamic measurements before safe patient-history execution."
+      ],
+      "normalized_surface": "clinically significant left-sided heart disease",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "clinically significant left-sided heart disease",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 25,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Any current active malignancy (this does not include localized cancers such as basal or squamous cell carcinoma of the skin). Any history of malignancy that is likely to result in mortality or require significant medical or surgical intervention within the following year.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:25:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'current active malignancy' is classified as composite_unhandled: Current active malignancy adds active/current status and exception clauses to a broad cancer concept, so an atomic malignancy mapping would over-match.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:25:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 25,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Any current active malignancy (this does not include localized cancers such as basal or squamous cell carcinoma of the skin). Any history of malignancy that is likely to result in mortality or require significant medical or surgical intervention within the following year.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:25:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'current active malignancy' is classified as composite_unhandled: Current active malignancy adds active/current status and exception clauses to a broad cancer concept, so an atomic malignancy mapping would over-match.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:25:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:ab3df211298f",
+      "message_examples": [
+        "Reviewed condition surface 'current active malignancy' is classified as composite_unhandled: Current active malignancy adds active/current status and exception clauses to a broad cancer concept, so an atomic malignancy mapping would over-match."
+      ],
+      "normalized_surface": "current active malignancy",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "current active malignancy",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 26,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women, 4 drinks or more on any day or 8 drinks or more per week);",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:26:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'heavy alcohol use' is classified as out_of_scope: Heavy alcohol use is quantified substance-use history, not a condition ConceptSet represented in the current patient profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:26:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 26,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women, 4 drinks or more on any day or 8 drinks or more per week);",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:26:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'heavy alcohol use' is classified as out_of_scope: Heavy alcohol use is quantified substance-use history, not a condition ConceptSet represented in the current patient profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:26:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:8875a456e98b",
+      "message_examples": [
+        "Reviewed condition surface 'heavy alcohol use' is classified as out_of_scope: Heavy alcohol use is quantified substance-use history, not a condition ConceptSet represented in the current patient profile."
+      ],
+      "normalized_surface": "heavy alcohol use",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "heavy alcohol use",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 37,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pugh C) impairment or disordered coagulation.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:37:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'history of liver dysfunction' is classified as composite_unhandled: History of liver dysfunction is tied to moderate/severe Child-Pugh impairment or coagulation disorder in the source criterion; those qualifiers should be decomposed instead of collapsed to a broad finding.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:37:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 37,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pugh C) impairment or disordered coagulation.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:37:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'history of liver dysfunction' is classified as composite_unhandled: History of liver dysfunction is tied to moderate/severe Child-Pugh impairment or coagulation disorder in the source criterion; those qualifiers should be decomposed instead of collapsed to a broad finding.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:37:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:9e46fadc7abc",
+      "message_examples": [
+        "Reviewed condition surface 'history of liver dysfunction' is classified as composite_unhandled: History of liver dysfunction is tied to moderate/severe Child-Pugh impairment or coagulation disorder in the source criterion; those qualifiers should be decomposed instead of collapsed to a broad finding."
+      ],
+      "normalized_surface": "history of liver dysfunction",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "history of liver dysfunction",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 25,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Illicit drug abuse within 6 months of screening;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:25:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'illicit drug abuse' is classified as out_of_scope: Illicit drug abuse is substance-use/social-history evidence with a screening lookback, not a condition surface represented in the current patient profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:25:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 25,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Illicit drug abuse within 6 months of screening;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:25:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'illicit drug abuse' is classified as out_of_scope: Illicit drug abuse is substance-use/social-history evidence with a screening lookback, not a condition surface represented in the current patient profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:25:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:91a847973e70",
+      "message_examples": [
+        "Reviewed condition surface 'illicit drug abuse' is classified as out_of_scope: Illicit drug abuse is substance-use/social-history evidence with a screening lookback, not a condition surface represented in the current patient profile."
+      ],
+      "normalized_surface": "illicit drug abuse",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "illicit drug abuse",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
         "temporal_window"
       ],
       "domain": "condition",
@@ -5271,6 +4646,390 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "medication affecting blood pressure",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 0,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Natural menopause, last menstrual period more than one year ago.",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:0:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'natural menopause' is classified as out_of_scope: Natural menopause with last menstrual period more than one year ago is reproductive/menstrual-history evidence, not a condition represented in the current patient profile.",
+          "nct_id": "NCT06220266",
+          "pair_id": "3a364909__NCT06220266",
+          "row_id": "3a364909__NCT06220266:criterion:0:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 0,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Natural menopause, last menstrual period more than one year ago.",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:0:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'natural menopause' is classified as out_of_scope: Natural menopause with last menstrual period more than one year ago is reproductive/menstrual-history evidence, not a condition represented in the current patient profile.",
+          "nct_id": "NCT06220266",
+          "pair_id": "60b0873c__NCT06220266",
+          "row_id": "60b0873c__NCT06220266:criterion:0:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:23fbc429e7fb",
+      "message_examples": [
+        "Reviewed condition surface 'natural menopause' is classified as out_of_scope: Natural menopause with last menstrual period more than one year ago is reproductive/menstrual-history evidence, not a condition represented in the current patient profile."
+      ],
+      "normalized_surface": "natural menopause",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "natural menopause",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 16,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:16:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'NYHA grade III-IV heart failure' is classified as composite_unhandled: NYHA grade III-IV heart failure combines heart failure with functional class and a temporal window; mapping to generic heart failure would over-match.",
+          "nct_id": "NCT07489209",
+          "pair_id": "38f38890__NCT07489209",
+          "row_id": "38f38890__NCT07489209:criterion:16:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 16,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:16:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'NYHA grade III-IV heart failure' is classified as composite_unhandled: NYHA grade III-IV heart failure combines heart failure with functional class and a temporal window; mapping to generic heart failure would over-match.",
+          "nct_id": "NCT07489209",
+          "pair_id": "d02b2ca5__NCT07489209",
+          "row_id": "d02b2ca5__NCT07489209:criterion:16:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:aca994fe952b",
+      "message_examples": [
+        "Reviewed condition surface 'NYHA grade III-IV heart failure' is classified as composite_unhandled: NYHA grade III-IV heart failure combines heart failure with functional class and a temporal window; mapping to generic heart failure would over-match."
+      ],
+      "normalized_surface": "nyha grade iii-iv heart failure",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "NYHA grade III-IV heart failure",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hyperlipidemia"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 8,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Ever had an organ transplant",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:8:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'organ transplant' is classified as out_of_scope: Organ transplant is procedure/surgical-history evidence, not a condition ConceptSet represented in the current patient profile.",
+          "nct_id": "NCT06220266",
+          "pair_id": "3a364909__NCT06220266",
+          "row_id": "3a364909__NCT06220266:criterion:8:condition:gap:reviewed-out_of_scope"
+        },
+        {
+          "criterion_index": 8,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Ever had an organ transplant",
+          "eval_slice": "hyperlipidemia",
+          "gap_id": "criterion:8:condition:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'organ transplant' is classified as out_of_scope: Organ transplant is procedure/surgical-history evidence, not a condition ConceptSet represented in the current patient profile.",
+          "nct_id": "NCT06220266",
+          "pair_id": "60b0873c__NCT06220266",
+          "row_id": "60b0873c__NCT06220266:criterion:8:condition:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:c1c549d1f5a6",
+      "message_examples": [
+        "Reviewed condition surface 'organ transplant' is classified as out_of_scope: Organ transplant is procedure/surgical-history evidence, not a condition ConceptSet represented in the current patient profile."
+      ],
+      "normalized_surface": "organ transplant",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "organ transplant",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 19,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of primary renal glycosuria;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:19:condition:gap:reviewed-true_miss",
+          "message": "Reviewed condition surface 'primary renal glycosuria' is classified as true_miss: Reviewed as an exact SNOMED miss in the available resolver/cache evidence; this may need future urine-glucose plus normal-serum-glucose decomposition if represented in patient data.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:19:condition:gap:reviewed-true_miss"
+        },
+        {
+          "criterion_index": 19,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of primary renal glycosuria;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:19:condition:gap:reviewed-true_miss",
+          "message": "Reviewed condition surface 'primary renal glycosuria' is classified as true_miss: Reviewed as an exact SNOMED miss in the available resolver/cache evidence; this may need future urine-glucose plus normal-serum-glucose decomposition if represented in patient data.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:19:condition:gap:reviewed-true_miss"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:be8ee440db0f",
+      "message_examples": [
+        "Reviewed condition surface 'primary renal glycosuria' is classified as true_miss: Reviewed as an exact SNOMED miss in the available resolver/cache evidence; this may need future urine-glucose plus normal-serum-glucose decomposition if represented in patient data."
+      ],
+      "normalized_surface": "primary renal glycosuria",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "primary renal glycosuria",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 20,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Subjects must NOT have 3 or more of the following left ventricular disease/dysfunction risk factors at screening: Body mass index (BMI) \u226530 kg/m2. Uncontrolled diabetes, HbA1C >9.5%, urine glycosuria >1.0 g/dl, or presence of diabetic ketoacidosis History of significant coronary disease within 6 months of screening as demonstrated by any of the following: History of myocardial infarction or acute coronary syndrome (unstable angina), or Percutaneous coronary intervention or percutaneous transluminal angioplasty, or previous coronary artery bypass graft, or Evidence of coronary artery disease (>50% stenosis in at least one major coronary artery) or abnormal nuclear stress test.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:20:condition-phrase:gap:unsupported",
+          "message": "Left-sided heart disease requires decomposition into left-ventricular function, valvular disease, or hemodynamic measurements before safe patient-history execution.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:20:condition-phrase:gap:unsupported"
+        },
+        {
+          "criterion_index": 20,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Subjects must NOT have 3 or more of the following left ventricular disease/dysfunction risk factors at screening: Body mass index (BMI) \u226530 kg/m2. Uncontrolled diabetes, HbA1C >9.5%, urine glycosuria >1.0 g/dl, or presence of diabetic ketoacidosis History of significant coronary disease within 6 months of screening as demonstrated by any of the following: History of myocardial infarction or acute coronary syndrome (unstable angina), or Percutaneous coronary intervention or percutaneous transluminal angioplasty, or previous coronary artery bypass graft, or Evidence of coronary artery disease (>50% stenosis in at least one major coronary artery) or abnormal nuclear stress test.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:20:condition-phrase:gap:unsupported",
+          "message": "Left-sided heart disease requires decomposition into left-ventricular function, valvular disease, or hemodynamic measurements before safe patient-history execution.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:20:condition-phrase:gap:unsupported"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:128ac71a1d53",
+      "message_examples": [
+        "Left-sided heart disease requires decomposition into left-ventricular function, valvular disease, or hemodynamic measurements before safe patient-history execution."
+      ],
+      "normalized_surface": "subjects must not have 3 or more of the following left ventricular disease/dysfunction risk factors at screening: body mass index (bmi) \u226530 kg/m2. uncontrolled diabetes, hba1c >9.5%, urine glycosuria >1.0 g/dl, or presence of diabetic ketoacidosis history of significant coronary disease within 6 months of screening as demonstrated by any of the following: history of myocardial infarction or acute coronary syndrome (unstable angina), or percutaneous coronary intervention or percutaneous transluminal angioplasty, or previous coronary artery bypass graft, or evidence of coronary artery disease (>50% stenosis in at least one major coronary artery) or abnormal nuclear stress test",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "Subjects must NOT have 3 or more of the following left ventricular disease/dysfunction risk factors at screening: Body mass index (BMI) \u226530 kg/m2. Uncontrolled diabetes, HbA1C >9.5%, urine glycosuria >1.0 g/dl, or presence of diabetic ketoacidosis History of significant coronary disease within 6 months of screening as demonstrated by any of the following: History of myocardial infarction or acute coronary syndrome (unstable angina), or Percutaneous coronary intervention or percutaneous transluminal angioplasty, or previous coronary artery bypass graft, or Evidence of coronary artery disease (>50% stenosis in at least one major coronary artery) or abnormal nuclear stress test.",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 9,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:9:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'uncontrolled severe arrhythmia' is classified as composite_unhandled: Uncontrolled severe arrhythmia combines a condition with severity/control qualifiers and a temporal window; collapsing it to generic cardiac arrhythmia would over-match.",
+          "nct_id": "NCT07297797",
+          "pair_id": "28db1c55__NCT07297797",
+          "row_id": "28db1c55__NCT07297797:criterion:9:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 9,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:9:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'uncontrolled severe arrhythmia' is classified as composite_unhandled: Uncontrolled severe arrhythmia combines a condition with severity/control qualifiers and a temporal window; collapsing it to generic cardiac arrhythmia would over-match.",
+          "nct_id": "NCT07297797",
+          "pair_id": "407ef75b__NCT07297797",
+          "row_id": "407ef75b__NCT07297797:criterion:9:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:7abf8d4b75a1",
+      "message_examples": [
+        "Reviewed condition surface 'uncontrolled severe arrhythmia' is classified as composite_unhandled: Uncontrolled severe arrhythmia combines a condition with severity/control qualifiers and a temporal window; collapsing it to generic cardiac arrhythmia would over-match."
+      ],
+      "normalized_surface": "uncontrolled severe arrhythmia",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "uncontrolled severe arrhythmia",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 39,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:39:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'worse than mild untreated sleep apnea' is classified as composite_unhandled: This surface combines sleep apnea with treatment status and AHI/severity semantics; a generic sleep-apnea mapping would over-match treated or mild disease.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:39:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 39,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:39:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface 'worse than mild untreated sleep apnea' is classified as composite_unhandled: This surface combines sleep apnea with treatment status and AHI/severity semantics; a generic sleep-apnea mapping would over-match treated or mild disease.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:39:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:f40c6c71f3a1",
+      "message_examples": [
+        "Reviewed condition surface 'worse than mild untreated sleep apnea' is classified as composite_unhandled: This surface combines sleep apnea with treatment status and AHI/severity semantics; a generic sleep-apnea mapping would over-match treated or mild disease."
+      ],
+      "normalized_surface": "worse than mild untreated sleep apnea",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "worse than mild untreated sleep apnea",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "condition",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 15,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of \u22653 severe hypoglycemic events (requiring third-party assistance for correction) within 3 months of screening;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:15:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface '\u22653 severe hypoglycemic events' is classified as composite_unhandled: The surface is an event-count criterion, not an atomic condition lookup; event occurrence count, third-party assistance, and the three-month window need compiler support.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:15:condition:gap:reviewed-composite_unhandled"
+        },
+        {
+          "criterion_index": 15,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "History of \u22653 severe hypoglycemic events (requiring third-party assistance for correction) within 3 months of screening;",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:15:condition:gap:reviewed-composite_unhandled",
+          "message": "Reviewed condition surface '\u22653 severe hypoglycemic events' is classified as composite_unhandled: The surface is an event-count criterion, not an atomic condition lookup; event occurrence count, third-party assistance, and the three-month window need compiler support.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:15:condition:gap:reviewed-composite_unhandled"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:e534202a41de",
+      "message_examples": [
+        "Reviewed condition surface '\u22653 severe hypoglycemic events' is classified as composite_unhandled: The surface is an event-count criterion, not an atomic condition lookup; event occurrence count, third-party assistance, and the three-month window need compiler support."
+      ],
+      "normalized_surface": "\u22653 severe hypoglycemic events",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "concept_resolution",
+      "surface": "\u22653 severe hypoglycemic events",
       "trial_count": 1
     },
     {

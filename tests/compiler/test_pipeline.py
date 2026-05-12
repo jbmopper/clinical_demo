@@ -366,6 +366,123 @@ def test_reviewed_condition_mapping_can_use_descendant_expansion() -> None:
     assert "22298006" in compiled.checkable_predicates[0].target_codes
 
 
+def test_cardiovascular_event_phrase_promotes_to_reviewed_condition_without_alias(
+    monkeypatch,
+) -> None:
+    def fail_alias_lookup(surface: str):
+        raise AssertionError(f"legacy alias lookup should not be used for {surface!r}")
+
+    monkeypatch.setattr(
+        "clinical_demo.compiler.pipeline.lookup_condition_alias",
+        fail_alias_lookup,
+    )
+    criterion = _condition("major adverse cardiovascular events")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.expansion.strategy == "descendants"
+    assert compiled.resolved_supports[0].surface == "cardiovascular disease"
+    assert compiled.diagnostics[0].code == "condition.promoted.cardiovascular-event"
+    assert "22298006" in compiled.checkable_predicates[0].target_codes
+    assert "230690007" in compiled.checkable_predicates[0].target_codes
+
+
+def test_plural_cardiovascular_disease_phrase_promotes_to_reviewed_condition() -> None:
+    criterion = _condition("clinically significant cardiovascular diseases")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.expansion.strategy == "descendants"
+    assert compiled.resolved_supports[0].surface == "cardiovascular disease"
+    assert compiled.diagnostics[0].code == "condition.promoted.cardiovascular-event"
+
+
+def test_ph_ild_phrase_decomposes_to_pulmonary_hypertension_and_ild() -> None:
+    criterion = _condition("PH-ILD")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.status == "resolved"
+    assert compiled.compound_logic.operator == "all_of"
+    assert compiled.compound_logic.subcheck_ids == [
+        "criterion:0:condition-phrase:001",
+        "criterion:0:condition-phrase:002",
+    ]
+    assert [predicate.surface for predicate in compiled.checkable_predicates] == [
+        "PH",
+        "interstitial lung disease",
+    ]
+    assert {
+        code for predicate in compiled.checkable_predicates for code in predicate.target_codes
+    } >= {
+        "70995007",
+        "233703007",
+    }
+
+
+def test_named_cardiovascular_event_bundle_compiles_explicit_subchecks() -> None:
+    criterion = _condition("myocardial infarction, stroke, or transient ischemic attack")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.operator == "any_of"
+    assert compiled.compound_logic.subcheck_ids == [
+        "criterion:0:condition-phrase:001",
+        "criterion:0:condition-phrase:002",
+        "criterion:0:condition-phrase:003",
+    ]
+    assert compiled.unresolved_gaps == []
+    assert [predicate.surface for predicate in compiled.checkable_predicates] == [
+        "myocardial infarction",
+        "stroke",
+        "transient ischemic attack",
+    ]
+    assert {
+        code for predicate in compiled.checkable_predicates for code in predicate.target_codes
+    } >= {
+        "22298006",
+        "230690007",
+        "266257000",
+    }
+
+
+def test_left_sided_heart_disease_emits_typed_unsupported_gap() -> None:
+    criterion = _condition("clinically significant left-sided heart disease")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.checkable_predicates == []
+    assert compiled.unresolved_gaps[0].gap_id == ("criterion:0:condition-phrase:gap:unsupported")
+    assert compiled.unresolved_gaps[0].kind == "unsupported_predicate"
+    assert compiled.diagnostics[1].code == "condition_phrase.unsupported"
+
+
+def test_single_nested_cardiovascular_event_atom_does_not_decompose_recursively() -> None:
+    criterion = _condition("acute pulmonary embolism")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "condition_presence"
+    assert compiled.compound_logic.status == "skipped"
+    assert [predicate.surface for predicate in compiled.checkable_predicates] == [
+        "acute pulmonary embolism"
+    ]
+
+
 def test_free_text_condition_mention_compiles_to_condition_predicate() -> None:
     criterion = _free_text("Bone fractures within the past 12 months").model_copy(
         update={

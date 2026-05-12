@@ -1166,7 +1166,7 @@
             "reviewer": "codex-assisted review",
             "reviewed_at": "2026-05-12",
             "resolver_version": "reviewed-registry-v1",
-            "expansion_policy": "descendants"
+            "expansion_policy": "exact_code"
         },
         {
             "kind": "condition",
@@ -1322,7 +1322,7 @@
             "reviewer": "codex-assisted review",
             "reviewed_at": "2026-05-12",
             "resolver_version": "reviewed-registry-v1",
-            "expansion_policy": "descendants"
+            "expansion_policy": "exact_code"
         },
         {
             "kind": "condition",
@@ -1416,6 +1416,188 @@
             "reviewed_at": "2026-05-12",
             "resolver_version": "reviewed-registry-v1",
             "expansion_policy": "descendants"
+        },
+        {
+            "kind": "condition",
+            "surface": "myocardial infarction",
+            "normalized_surface": "myocardial infarction",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:myocardial-infarction",
+            "candidates": [
+                {
+                    "name": "Myocardial infarction",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "22298006"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for myocardial infarction event surfaces."
+                }
+            ],
+            "reason": "Reviewed cardiovascular event atom emitted by compiler decomposition.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 cardiovascular/event compiler decomposition follow-up.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "acute coronary syndrome",
+            "normalized_surface": "acute coronary syndrome",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:acute-coronary-syndrome",
+            "candidates": [
+                {
+                    "name": "Acute coronary syndrome",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "394659003"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for acute coronary syndrome event surfaces."
+                }
+            ],
+            "reason": "Reviewed cardiovascular event atom emitted by compiler decomposition.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 cardiovascular/event compiler decomposition follow-up.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "stroke",
+            "normalized_surface": "stroke",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:stroke",
+            "candidates": [
+                {
+                    "name": "Cerebrovascular accident",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "230690007"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for stroke event surfaces."
+                }
+            ],
+            "reason": "Reviewed cerebrovascular event atom emitted by compiler decomposition.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 cardiovascular/event compiler decomposition follow-up.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "transient ischemic attack",
+            "normalized_surface": "transient ischemic attack",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:transient-ischemic-attack",
+            "candidates": [
+                {
+                    "name": "Transient ischemic attack",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "266257000"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for transient ischemic attack event surfaces."
+                }
+            ],
+            "reason": "Reviewed cerebrovascular event atom emitted by compiler decomposition.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 cardiovascular/event compiler decomposition follow-up.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "deep venous thrombosis",
+            "normalized_surface": "deep venous thrombosis",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:deep-venous-thrombosis",
+            "candidates": [
+                {
+                    "name": "Deep venous thrombosis",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "128053003"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for deep venous thrombosis event surfaces."
+                }
+            ],
+            "reason": "Reviewed thrombotic event atom emitted by compiler decomposition.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 cardiovascular/event compiler decomposition follow-up.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "pulmonary embolism",
+            "normalized_surface": "pulmonary embolism",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:pulmonary-embolism",
+            "candidates": [
+                {
+                    "name": "Pulmonary embolism",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "59282003"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for pulmonary embolism event surfaces."
+                }
+            ],
+            "reason": "Reviewed thromboembolic event atom emitted by compiler decomposition.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 cardiovascular/event compiler decomposition follow-up.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "interstitial lung disease",
+            "normalized_surface": "interstitial lung disease",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:interstitial-lung-disease",
+            "candidates": [
+                {
+                    "name": "Interstitial lung disease",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "233703007"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for the ILD atom emitted by PH-ILD decomposition."
+                }
+            ],
+            "reason": "Reviewed PH-ILD decomposition atom so PH-ILD compilation is cache-independent.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-12 PH-ILD compiler decomposition follow-up.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
         },
         {
             "kind": "condition",
@@ -1751,6 +1933,371 @@
             "reason": "Reviewed exact SNOMED mapping for unstable angina.",
             "source": "compiler cache-independent closure review",
             "provenance": "2026-05-12 fresh-cache vs warmed-cache compiler-review delta.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "uncontrolled severe arrhythmia",
+            "normalized_surface": "uncontrolled severe arrhythmia",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [
+                {
+                    "name": "Cardiac arrhythmia",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "698247007"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "The base arrhythmia concept is mappable, but uncontrolled/severe status and the six-month window must be represented separately."
+                }
+            ],
+            "reason": "Uncontrolled severe arrhythmia combines a condition with severity/control qualifiers and a temporal window; collapsing it to generic cardiac arrhythmia would over-match.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 PH-ILD exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "ph-ild",
+            "normalized_surface": "ph-ild",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "PH-ILD is pulmonary hypertension associated with interstitial lung disease and requires decomposition into PH plus ILD/etiology context; no single reviewed condition code should stand in for that composite.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 PH-ILD inclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "pulmonary hypertension not otherwise considered to be ph-ild",
+            "normalized_surface": "pulmonary hypertension not otherwise considered to be ph-ild",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [
+                {
+                    "name": "Pulmonary hypertension",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "70995007"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "The base pulmonary-hypertension concept is already reviewed; the not-PH-ILD subtype exclusion is criterion logic."
+                }
+            ],
+            "reason": "This surface means another pulmonary-hypertension diagnosis outside PH-ILD. It needs subtype/etiology exclusion logic rather than a single condition mapping.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 PH-ILD exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "clinically significant left-sided heart disease",
+            "normalized_surface": "clinically significant left-sided heart disease",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "The criterion defines this through echocardiographic/hemodynamic thresholds and valvulopathy severity; it should be decomposed into measurement and valve/heart-disease predicates rather than mapped atomically.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 left-sided heart disease exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "current active malignancy",
+            "normalized_surface": "current active malignancy",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [
+                {
+                    "name": "Malignant neoplasm",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "1240414004"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "The base malignancy concept is reviewed; current/active status and localized-cancer exceptions are not terminology-only semantics."
+                }
+            ],
+            "reason": "Current active malignancy adds active/current status and exception clauses to a broad cancer concept, so an atomic malignancy mapping would over-match.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 malignancy exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "history of congenital heart disease",
+            "normalized_surface": "history of congenital heart disease",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:history-of-congenital-heart-disease",
+            "candidates": [
+                {
+                    "name": "Congenital heart disease",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "13213009"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed SNOMED parent mapping for congenital heart disease; history timing remains criterion context."
+                }
+            ],
+            "reason": "Maps the disease surface to congenital heart disease while preserving the history qualifier as criterion context.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 congenital heart disease exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "history of liver dysfunction",
+            "normalized_surface": "history of liver dysfunction",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [
+                {
+                    "name": "Decreased liver function",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "77981007"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "The base liver-dysfunction finding is mappable, but Child-Pugh severity and disordered coagulation are separate criterion semantics."
+                }
+            ],
+            "reason": "History of liver dysfunction is tied to moderate/severe Child-Pugh impairment or coagulation disorder in the source criterion; those qualifiers should be decomposed instead of collapsed to a broad finding.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 hepatic exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "worse than mild untreated sleep apnea",
+            "normalized_surface": "worse than mild untreated sleep apnea",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [
+                {
+                    "name": "Sleep apnea",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "73430006"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "The base sleep-apnea condition is mappable, but untreated status and worse-than-mild severity must be represented separately."
+                }
+            ],
+            "reason": "This surface combines sleep apnea with treatment status and AHI/severity semantics; a generic sleep-apnea mapping would over-match treated or mild disease.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06475781 sleep-apnea exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "\u22653 severe hypoglycemic events",
+            "normalized_surface": "\u22653 severe hypoglycemic events",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [
+                {
+                    "name": "Recurrent severe hypoglycemia",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "237636001"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "A related severe-hypoglycemia concept exists, but the criterion requires counting at least three assisted events within a time window."
+                }
+            ],
+            "reason": "The surface is an event-count criterion, not an atomic condition lookup; event occurrence count, third-party assistance, and the three-month window need compiler support.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06217302 severe hypoglycemia exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "primary renal glycosuria",
+            "normalized_surface": "primary renal glycosuria",
+            "status": "true_miss",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Reviewed as an exact SNOMED miss in the available resolver/cache evidence; this may need future urine-glucose plus normal-serum-glucose decomposition if represented in patient data.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06217302 renal glycosuria exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "illicit drug abuse",
+            "normalized_surface": "illicit drug abuse",
+            "status": "out_of_scope",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Illicit drug abuse is substance-use/social-history evidence with a screening lookback, not a condition surface represented in the current patient profile.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06217302 substance-use exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "heavy alcohol use",
+            "normalized_surface": "heavy alcohol use",
+            "status": "out_of_scope",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Heavy alcohol use is quantified substance-use history, not a condition ConceptSet represented in the current patient profile.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for NCT06217302 alcohol-use exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "HoFH",
+            "normalized_surface": "hofh",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:homozygous-familial-hypercholesterolemia",
+            "candidates": [
+                {
+                    "name": "Familial hypercholesterolemia - homozygous",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "238078005"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for the HoFH abbreviation."
+                }
+            ],
+            "reason": "Maps HoFH to homozygous familial hypercholesterolemia.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for hyperlipidemia HoFH criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "homozygous familial hypercholesterolemia (HoFH)",
+            "normalized_surface": "homozygous familial hypercholesterolemia (hofh",
+            "status": "mapped",
+            "concept_set": "reviewed:condition:homozygous-familial-hypercholesterolemia",
+            "candidates": [
+                {
+                    "name": "Familial hypercholesterolemia - homozygous",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "238078005"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "Reviewed exact SNOMED mapping for the expanded HoFH surface."
+                }
+            ],
+            "reason": "Maps the expanded HoFH surface to homozygous familial hypercholesterolemia.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for hyperlipidemia HoFH criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "NYHA grade III-IV heart failure",
+            "normalized_surface": "nyha grade iii-iv heart failure",
+            "status": "composite_unhandled",
+            "concept_set": null,
+            "candidates": [
+                {
+                    "name": "Heart failure",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "84114007"
+                    ],
+                    "source": "compiler terminology review",
+                    "score": 1.0,
+                    "reason": "The base heart-failure concept is reviewed; NYHA functional class III-IV must be represented separately."
+                }
+            ],
+            "reason": "NYHA grade III-IV heart failure combines heart failure with functional class and a temporal window; mapping to generic heart failure would over-match.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for hyperlipidemia cardiovascular exclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "natural menopause",
+            "normalized_surface": "natural menopause",
+            "status": "out_of_scope",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Natural menopause with last menstrual period more than one year ago is reproductive/menstrual-history evidence, not a condition represented in the current patient profile.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for hyperlipidemia reproductive-status inclusion criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "exact_code"
+        },
+        {
+            "kind": "condition",
+            "surface": "organ transplant",
+            "normalized_surface": "organ transplant",
+            "status": "out_of_scope",
+            "concept_set": null,
+            "candidates": [],
+            "reason": "Organ transplant is procedure/surgical-history evidence, not a condition ConceptSet represented in the current patient profile.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-11 compiler-review group for hyperlipidemia transplant-history criteria.",
             "reviewer": "codex-assisted review",
             "reviewed_at": "2026-05-12",
             "resolver_version": "reviewed-registry-v1",

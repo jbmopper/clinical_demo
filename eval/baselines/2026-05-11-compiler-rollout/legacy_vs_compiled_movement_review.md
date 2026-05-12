@@ -3,18 +3,21 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `792ebbec7376`
-- changed cases: 3/49
-- changed criteria: 237/1076
-- criterion directions: indeterminate_to_determinate=12 / reason_changed=225
+- comparison: `c4ccb713a2d5`
+- changed cases: 6/49
+- changed criteria: 280/1076
+- criterion directions: indeterminate_to_determinate=31 / reason_changed=249
 
 ## Case Movements
 
 | Pair | Slice | Baseline | Comparison |
 |---|---|---:|---:|
+| `2e555528__NCT06475781` | hypertension-industry | indeterminate | fail |
 | `3a364909__NCT07362459` | nsclc | indeterminate | fail |
+| `56cfe6a5__NCT06475781` | hypertension-industry | indeterminate | fail |
 | `83f922a9__NCT05967689` | nsclc | indeterminate | pass_pending_review |
 | `9cbf47d8__NCT07362459` | nsclc | indeterminate | fail |
+| `e7d52393__NCT06568471` | hyperlipidemia | indeterminate | fail |
 
 ## Criterion Movements
 
@@ -32,6 +35,7 @@ Public-Artifact-Safety: synthetic
 | `1293efbb__NCT06524960` | 16 | free_text | indeterminate->indeterminate | reason_changed | compound | Treatment with any of the following drugs in past year: immunosuppressants, anticonvulsant therap... |
 | `1293efbb__NCT06964087` | 3 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Diagnosis of T1DM within the last 20 years for Part A, within 1 to 10 years [N=15 at >5 to 10, N=... |
 | `1293efbb__NCT06964087` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | For Parts B and C only, T-cell phenotype Th40 level greater than or equal to 35% of CD3+ leukocyt... |
+| `1293efbb__NCT06964087` | 12 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Patients with a history of venous and arterial thromboembolic events including, but not limited t... |
 | `28db1c55__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `28db1c55__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `28db1c55__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
@@ -46,12 +50,20 @@ Public-Artifact-Safety: synthetic
 | `28db1c55__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `28db1c55__NCT07297797` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | the 24-hour mean systolic blood pressure assessed by ABPM at Screening is ≥ 130 mmHg and < 160 mmHg. |
 | `28db1c55__NCT07297797` | 8 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Occurrence of any cardiovascular or cerebrovascular event within 6 months prior to screening; |
+| `28db1c55__NCT07297797` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Presence of uncontrolled severe arrhythmia within 6 months prior to screening; |
 | `28db1c55__NCT07297797` | 13 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use... |
+| `2e555528__NCT06475781` | 0 | condition_present | indeterminate->fail | indeterminate_to_determinate | compound | A clinical diagnosis of PH-ILD. |
 | `2e555528__NCT06475781` | 9 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have a baseline 6-minute walk distance ≥100 meters and ≤500 meters. |
 | `2e555528__NCT06475781` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit... |
 | `2e555528__NCT06475781` | 15 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Pulmonary function test (PFT) showing a percent predicted forced vital capacity (FVC) <70% of pre... |
+| `2e555528__NCT06475781` | 18 | condition_absent | indeterminate->pass | indeterminate_to_determinate | compound | Subject has another concomitant diagnosis of pulmonary hypertension not otherwise considered to b... |
+| `2e555528__NCT06475781` | 19 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Subject has evidence of clinically significant left-sided heart disease within 6 months as define... |
 | `2e555528__NCT06475781` | 21 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest. |
+| `2e555528__NCT06475781` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Any current active malignancy (this does not include localized cancers such as basal or squamous... |
+| `2e555528__NCT06475781` | 27 | condition_absent | indeterminate->pass | indeterminate_to_determinate | condition_presence | The subject has a history of congenital heart disease irrespective of any prior treatment of surg... |
 | `2e555528__NCT06475781` | 33 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Uncontrolled hypertension as evidenced by systolic blood pressure >160 mmHg or diastolic blood pr... |
+| `2e555528__NCT06475781` | 37 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pu... |
+| `2e555528__NCT06475781` | 39 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted. |
 | `2e555528__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `2e555528__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `2e555528__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
@@ -69,16 +81,26 @@ Public-Artifact-Safety: synthetic
 | `38f38890__NCT06217302` | 10 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of any SGLT inhibitor in the previous 2 months; |
 | `38f38890__NCT06217302` | 13 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of anti tumor necrosis factor (TNF) alpha biologic medications at screening; |
 | `38f38890__NCT06217302` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Known allergies, hypersensitivity, or intolerance to SOTA; |
+| `38f38890__NCT06217302` | 15 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of ≥3 severe hypoglycemic events (requiring third-party assistance for correction) within... |
 | `38f38890__NCT06217302` | 17 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Blood beta-hydroxybutyrate (BHB) >0.6 mmol/L for >2 hours on >2 occasions during the Run-in period; |
 | `38f38890__NCT06217302` | 18 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Inadequate beta hydroxybutyrate (BHB) testing (<50% of the prescribed measurements) during Run-in; |
+| `38f38890__NCT06217302` | 19 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of primary renal glycosuria; |
 | `38f38890__NCT06217302` | 20 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of biopsy-proven non-diabetic chronic kidney disease (CKD); |
 | `38f38890__NCT06217302` | 24 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Cancer treatment (excluding non-melanoma skin cancer treated by excision, carcinoma in situ of th... |
+| `38f38890__NCT06217302` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Illicit drug abuse within 6 months of screening; |
+| `38f38890__NCT06217302` | 26 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women,... |
 | `38f38890__NCT06217302` | 27 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Participation in another interventional clinical research study within 30 days of screening; |
+| `38f38890__NCT07489209` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | Genetic diagnosis or clinical diagnosis of HoFH. |
 | `38f38890__NCT07489209` | 4 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving stable and tolerable lipid-lowering treatment or other drugs for chronic diseases treat... |
+| `38f38890__NCT07489209` | 16 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to random... |
 | `38f38890__NCT07489209` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Uncontrolled hypertension at screening (blood pressure >160/100 mmHg). |
+| `3a364909__NCT06220266` | 0 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Natural menopause, last menstrual period more than one year ago. |
+| `3a364909__NCT06220266` | 8 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Ever had an organ transplant |
 | `3a364909__NCT07362459` | 2 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | ECOG Performance Status score of 0 to 1. |
 | `3a364909__NCT07362459` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | An expected survival of ≥ 3 months. |
 | `3a364909__NCT07362459` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | At least one measurable non-CNS lesion according to RECIST v1.1 criteria. |
+| `3a364909__NCT07362459` | 18 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | A history of arterial thrombosis, deep vein thrombosis, cerebral infarction, transient ischemic a... |
+| `3a364909__NCT07362459` | 19 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | A history of myocardial infarction, unstable angina, cardiac insufficiency with New York Heart As... |
 | `3a364909__NCT07362459` | 32 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Current participation in another clinical trial, with the exception of observational (non-interve... |
 | `3beee40e__NCT06143566` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hyperkalemia > 5.0 |
 | `3beee40e__NCT07394114` | 5 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Acute complications of diabetes (such as diabetic ketoacidosis, diabetic lactic acidosis, or hype... |
@@ -102,6 +124,7 @@ Public-Artifact-Safety: synthetic
 | `407ef75b__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `407ef75b__NCT07297797` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | the 24-hour mean systolic blood pressure assessed by ABPM at Screening is ≥ 130 mmHg and < 160 mmHg. |
 | `407ef75b__NCT07297797` | 8 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Occurrence of any cardiovascular or cerebrovascular event within 6 months prior to screening; |
+| `407ef75b__NCT07297797` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Presence of uncontrolled severe arrhythmia within 6 months prior to screening; |
 | `407ef75b__NCT07297797` | 13 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use... |
 | `509f9a77__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `509f9a77__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
@@ -129,12 +152,20 @@ Public-Artifact-Safety: synthetic
 | `55c5b8d3__NCT06564324` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Eastern Cooperative Oncology Group (ECOG) performance status zero (0) to 1. |
 | `55c5b8d3__NCT06564324` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Minimum life expectancy of 3 months or more. |
 | `55c5b8d3__NCT06564324` | 13 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated creatinine clearance (CLcr) ≥45 mL/min as calculated using the method standard for the... |
+| `55c5b8d3__NCT06564324` | 25 | condition_absent | indeterminate->pass | indeterminate_to_determinate | condition_presence | Have clinically significant cardiovascular diseases within 6 months prior to randomization: myoca... |
 | `55c5b8d3__NCT06564324` | 30 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Be pregnant or breastfeeding |
+| `56cfe6a5__NCT06475781` | 0 | condition_present | indeterminate->fail | indeterminate_to_determinate | compound | A clinical diagnosis of PH-ILD. |
 | `56cfe6a5__NCT06475781` | 9 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have a baseline 6-minute walk distance ≥100 meters and ≤500 meters. |
 | `56cfe6a5__NCT06475781` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit... |
 | `56cfe6a5__NCT06475781` | 15 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Pulmonary function test (PFT) showing a percent predicted forced vital capacity (FVC) <70% of pre... |
+| `56cfe6a5__NCT06475781` | 18 | condition_absent | indeterminate->pass | indeterminate_to_determinate | compound | Subject has another concomitant diagnosis of pulmonary hypertension not otherwise considered to b... |
+| `56cfe6a5__NCT06475781` | 19 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Subject has evidence of clinically significant left-sided heart disease within 6 months as define... |
 | `56cfe6a5__NCT06475781` | 21 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | The subject is receiving >10 L/min of oxygen supplementation by any mode of delivery at rest. |
+| `56cfe6a5__NCT06475781` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Any current active malignancy (this does not include localized cancers such as basal or squamous... |
+| `56cfe6a5__NCT06475781` | 27 | condition_absent | indeterminate->pass | indeterminate_to_determinate | condition_presence | The subject has a history of congenital heart disease irrespective of any prior treatment of surg... |
 | `56cfe6a5__NCT06475781` | 33 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Uncontrolled hypertension as evidenced by systolic blood pressure >160 mmHg or diastolic blood pr... |
+| `56cfe6a5__NCT06475781` | 37 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pu... |
+| `56cfe6a5__NCT06475781` | 39 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted. |
 | `56cfe6a5__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `56cfe6a5__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `56cfe6a5__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
@@ -147,6 +178,8 @@ Public-Artifact-Safety: synthetic
 | `56cfe6a5__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `56cfe6a5__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
 | `56cfe6a5__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `60b0873c__NCT06220266` | 0 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Natural menopause, last menstrual period more than one year ago. |
+| `60b0873c__NCT06220266` | 8 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Ever had an organ transplant |
 | `60b0873c__NCT07224763` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Evidence of thymic involution on chest computed tomography (CT) scan with a thymic region of inte... |
 | `60b0873c__NCT07224763` | 5 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Live within 3 hours travel time of the xenotransplant center. |
 | `60b0873c__NCT07224763` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated Post Transplant Survival Calculator score >20%. |
@@ -171,8 +204,11 @@ Public-Artifact-Safety: synthetic
 | `9cbf47d8__NCT07362459` | 2 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | ECOG Performance Status score of 0 to 1. |
 | `9cbf47d8__NCT07362459` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | An expected survival of ≥ 3 months. |
 | `9cbf47d8__NCT07362459` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | At least one measurable non-CNS lesion according to RECIST v1.1 criteria. |
+| `9cbf47d8__NCT07362459` | 18 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | A history of arterial thrombosis, deep vein thrombosis, cerebral infarction, transient ischemic a... |
+| `9cbf47d8__NCT07362459` | 19 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | A history of myocardial infarction, unstable angina, cardiac insufficiency with New York Heart As... |
 | `9cbf47d8__NCT07362459` | 32 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Current participation in another clinical trial, with the exception of observational (non-interve... |
 | `9e84e569__NCT04602754` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Participants with total cholesterol > 500 mg/dL or triglycerides > 500 mg/dL; |
+| `9e84e569__NCT04602754` | 19 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Participants who had any cardiovascular event (acute myocardial infarction, acute coronary syndro... |
 | `9e84e569__NCT04602754` | 20 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Bariatric surgery in the last two years and/ or other gastrointestinal surgeries that can cause c... |
 | `9e84e569__NCT04602754` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with known uncontrolled hypothyroidism or TSH levels > 5 mIU/L; |
 | `9e84e569__NCT04602754` | 27 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Participants using medications that may interfere with triglyceride and cholesterol metabolism st... |
@@ -212,11 +248,16 @@ Public-Artifact-Safety: synthetic
 | `c2786fee__NCT06217302` | 10 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of any SGLT inhibitor in the previous 2 months; |
 | `c2786fee__NCT06217302` | 13 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Use of anti tumor necrosis factor (TNF) alpha biologic medications at screening; |
 | `c2786fee__NCT06217302` | 14 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Known allergies, hypersensitivity, or intolerance to SOTA; |
+| `c2786fee__NCT06217302` | 15 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of ≥3 severe hypoglycemic events (requiring third-party assistance for correction) within... |
 | `c2786fee__NCT06217302` | 17 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Blood beta-hydroxybutyrate (BHB) >0.6 mmol/L for >2 hours on >2 occasions during the Run-in period; |
 | `c2786fee__NCT06217302` | 18 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Inadequate beta hydroxybutyrate (BHB) testing (<50% of the prescribed measurements) during Run-in; |
+| `c2786fee__NCT06217302` | 19 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of primary renal glycosuria; |
 | `c2786fee__NCT06217302` | 20 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of biopsy-proven non-diabetic chronic kidney disease (CKD); |
 | `c2786fee__NCT06217302` | 24 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Cancer treatment (excluding non-melanoma skin cancer treated by excision, carcinoma in situ of th... |
+| `c2786fee__NCT06217302` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Illicit drug abuse within 6 months of screening; |
+| `c2786fee__NCT06217302` | 26 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women,... |
 | `c2786fee__NCT06217302` | 27 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Participation in another interventional clinical research study within 30 days of screening; |
+| `c2786fee__NCT06597006` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | HoFH diagnosed by genetic confirmation |
 | `c2786fee__NCT06597006` | 3 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | On an optimal dose of statin (investigator's discretion), unless statin intolerant, with or witho... |
 | `c2786fee__NCT06597006` | 5 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants on a documented regimen of LDL-apheresis for ≥ 3 months before screening will be all... |
 | `c2786fee__NCT06597006` | 13 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Active liver disease defined as any known current infectious, neoplastic, or metabolic pathology... |
@@ -240,16 +281,21 @@ Public-Artifact-Safety: synthetic
 | `d02b2ca5__NCT06128278` | 10 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Consumption of soy and soy-based products 3 days prior to testing |
 | `d02b2ca5__NCT06128278` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Uncontrolled hypertension in CKD group (BP>140/90 mmHg) |
 | `d02b2ca5__NCT06128278` | 13 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Active infection or antibiotic therapy |
+| `d02b2ca5__NCT07489209` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | Genetic diagnosis or clinical diagnosis of HoFH. |
 | `d02b2ca5__NCT07489209` | 4 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving stable and tolerable lipid-lowering treatment or other drugs for chronic diseases treat... |
+| `d02b2ca5__NCT07489209` | 16 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to random... |
 | `d02b2ca5__NCT07489209` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Uncontrolled hypertension at screening (blood pressure >160/100 mmHg). |
 | `d362f4e5__NCT06564324` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Eastern Cooperative Oncology Group (ECOG) performance status zero (0) to 1. |
 | `d362f4e5__NCT06564324` | 6 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Minimum life expectancy of 3 months or more. |
 | `d362f4e5__NCT06564324` | 13 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated creatinine clearance (CLcr) ≥45 mL/min as calculated using the method standard for the... |
+| `d362f4e5__NCT06564324` | 25 | condition_absent | indeterminate->pass | indeterminate_to_determinate | condition_presence | Have clinically significant cardiovascular diseases within 6 months prior to randomization: myoca... |
 | `d362f4e5__NCT06564324` | 30 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Be pregnant or breastfeeding |
 | `d57e867e__NCT06143566` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hyperkalemia > 5.0 |
 | `e7d52393__NCT04040959` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Blood pressure controlled to <140/90 mmHg for the past 3 months |
 | `e7d52393__NCT04040959` | 11 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Proteinuria > 5 g/day |
 | `e7d52393__NCT06568471` | 3 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | On a stable diet and lipid-lowering oral drugs (such as statins, ezetimibe or Hybutimibe, omega-3... |
+| `e7d52393__NCT06568471` | 7 | condition_absent | indeterminate->fail | indeterminate_to_determinate | condition_presence | Documented history of homozygous familial hypercholesterolemia (HoFH); |
+| `e7d52393__NCT06568471` | 12 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | Serious arrhythmia, MI, unstable angina pectoris, PCI, CABG, implantable cardioverter defibrillat... |
 | `e7d52393__NCT06568471` | 17 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Unexplained creatine kinase (CK) > 5 x ULN (retested once is needed if suspected to be related to... |
 | `fa2d28b1__NCT06090266` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have measurable disease per RECIST v1.1. |
 | `fa2d28b1__NCT06090266` | 10 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Resolution of prior clinically significant therapy-related AEs (excluding alopecia and ≤ Grade 2... |

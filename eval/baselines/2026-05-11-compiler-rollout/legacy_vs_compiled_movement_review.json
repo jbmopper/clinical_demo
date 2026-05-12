@@ -6,35 +6,55 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "792ebbec7376",
+  "comparison_run_id": "c4ccb713a2d5",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "792ebbec7376",
+    "comparison_run_id": "c4ccb713a2d5",
     "common_cases": 49,
-    "changed_cases": 3,
+    "changed_cases": 6,
     "compared_criteria": 1076,
-    "changed_criteria": 237,
+    "changed_criteria": 280,
     "by_case_movement": {
-      "indeterminate->fail": 2,
+      "indeterminate->fail": 5,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 4,
-      "indeterminate->indeterminate": 225,
-      "indeterminate->pass": 8
+      "indeterminate->fail": 10,
+      "indeterminate->indeterminate": 249,
+      "indeterminate->pass": 21
     },
     "by_direction": {
-      "indeterminate_to_determinate": 12,
-      "reason_changed": 225
+      "indeterminate_to_determinate": 31,
+      "reason_changed": 249
     }
   },
   "case_movements": [
+    {
+      "row_id": "case:2e555528__NCT06475781",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
     {
       "row_id": "case:3a364909__NCT07362459",
       "pair_id": "3a364909__NCT07362459",
       "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
       "nct_id": "NCT07362459",
       "eval_slice": "nsclc",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
+      "row_id": "case:56cfe6a5__NCT06475781",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
       "baseline_eligibility": "indeterminate",
       "comparison_eligibility": "fail",
       "movement": "indeterminate->fail"
@@ -55,6 +75,16 @@
       "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
       "nct_id": "NCT07362459",
       "eval_slice": "nsclc",
+      "baseline_eligibility": "indeterminate",
+      "comparison_eligibility": "fail",
+      "movement": "indeterminate->fail"
+    },
+    {
+      "row_id": "case:e7d52393__NCT06568471",
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT06568471",
+      "eval_slice": "hyperlipidemia",
       "baseline_eligibility": "indeterminate",
       "comparison_eligibility": "fail",
       "movement": "indeterminate->fail"
@@ -392,6 +422,47 @@
       "comparison_gap_ids": [
         "criterion:4:measurement:gap:reviewed-out_of_scope"
       ]
+    },
+    {
+      "row_id": "criterion:1293efbb__NCT06964087:12",
+      "pair_id": "1293efbb__NCT06964087",
+      "patient_id": "1293efbb-72dc-8b15-3bd6-916f96ed54f4",
+      "nct_id": "NCT06964087",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 12,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "Patients with a history of venous and arterial thromboembolic events including, but not limited to, the following: Deep venous thrombosis, pulmonary embolism, myocardial infarction, stroke, transient ischemic attack, or arterial insufficiency causing digital gangrene.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:12",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:12:condition-phrase:001:predicate:condition",
+        "criterion:12:condition-phrase:002:predicate:condition",
+        "criterion:12:condition-phrase:003:predicate:condition",
+        "criterion:12:condition-phrase:004:predicate:condition",
+        "criterion:12:condition-phrase:005:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:12:condition-phrase:001:condition:support:concept-set",
+        "criterion:12:condition-phrase:001:condition:support:expansion",
+        "criterion:12:condition-phrase:002:condition:support:concept-set",
+        "criterion:12:condition-phrase:002:condition:support:expansion",
+        "criterion:12:condition-phrase:003:condition:support:concept-set",
+        "criterion:12:condition-phrase:003:condition:support:expansion",
+        "criterion:12:condition-phrase:004:condition:support:concept-set",
+        "criterion:12:condition-phrase:004:condition:support:expansion",
+        "criterion:12:condition-phrase:005:condition:support:concept-set",
+        "criterion:12:condition-phrase:005:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:28db1c55__NCT06941441:3",
@@ -749,6 +820,32 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:28db1c55__NCT07297797:9",
+      "pair_id": "28db1c55__NCT07297797",
+      "patient_id": "28db1c55-fe99-d5c8-8fc4-bffda09ab3be",
+      "nct_id": "NCT07297797",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 9,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:9:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
       "row_id": "criterion:28db1c55__NCT07297797:13",
       "pair_id": "28db1c55__NCT07297797",
       "patient_id": "28db1c55-fe99-d5c8-8fc4-bffda09ab3be",
@@ -773,6 +870,38 @@
       "comparison_gap_ids": [
         "gap:criterion:13:temporal:reviewed_extractor_bug"
       ]
+    },
+    {
+      "row_id": "criterion:2e555528__NCT06475781:0",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 0,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "A clinical diagnosis of PH-ILD.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:0",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:0:condition-phrase:001:predicate:condition",
+        "criterion:0:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:0:condition-phrase:001:condition:support:concept-set",
+        "criterion:0:condition-phrase:001:condition:support:expansion",
+        "criterion:0:condition-phrase:002:condition:support:concept-set",
+        "criterion:0:condition-phrase:002:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:2e555528__NCT06475781:9",
@@ -851,6 +980,64 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:2e555528__NCT06475781:18",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 18,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Subject has another concomitant diagnosis of pulmonary hypertension not otherwise considered to be PH-ILD.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:18",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:18:condition-phrase:001:predicate:condition",
+        "criterion:18:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:condition-phrase:001:condition:support:concept-set",
+        "criterion:18:condition-phrase:001:condition:support:expansion",
+        "criterion:18:condition-phrase:002:condition:support:concept-set",
+        "criterion:18:condition-phrase:002:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:2e555528__NCT06475781:19",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 19,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Subject has evidence of clinically significant left-sided heart disease within 6 months as defined by: Left ventricular ejection fraction <40% as assessed by echocardiography. More than mild left-sided valvulopathy (e.g., worse than mild mitral stenosis or regurgitation and worse than mild aortic stenosis or regurgitation). LVEDP or PCWP >15 mmHg (or >12 mmHg if PVR ≥4 to 6.25 Wood units).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:19",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:19:condition-phrase:gap:unsupported"
+      ]
+    },
+    {
       "row_id": "criterion:2e555528__NCT06475781:21",
       "pair_id": "2e555528__NCT06475781",
       "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
@@ -877,6 +1064,61 @@
       ]
     },
     {
+      "row_id": "criterion:2e555528__NCT06475781:25",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 25,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Any current active malignancy (this does not include localized cancers such as basal or squamous cell carcinoma of the skin). Any history of malignancy that is likely to result in mortality or require significant medical or surgical intervention within the following year.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:25",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:25:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
+      "row_id": "criterion:2e555528__NCT06475781:27",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 27,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "The subject has a history of congenital heart disease irrespective of any prior treatment of surgical intervention.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:27",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:27:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:27:condition:support:concept-set",
+        "criterion:27:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:2e555528__NCT06475781:33",
       "pair_id": "2e555528__NCT06475781",
       "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
@@ -899,6 +1141,58 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:2e555528__NCT06475781:37",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 37,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pugh C) impairment or disordered coagulation.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:37",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:37:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
+      "row_id": "criterion:2e555528__NCT06475781:39",
+      "pair_id": "2e555528__NCT06475781",
+      "patient_id": "2e555528-3530-497a-222a-7a3bbb35d938",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 39,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:39",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:39:condition:gap:reviewed-composite_unhandled"
+      ]
     },
     {
       "row_id": "criterion:2e555528__NCT06941441:3",
@@ -1338,6 +1632,32 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:38f38890__NCT06217302:15",
+      "pair_id": "38f38890__NCT06217302",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 15,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of ≥3 severe hypoglycemic events (requiring third-party assistance for correction) within 3 months of screening;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:15",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:15:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
       "row_id": "criterion:38f38890__NCT06217302:17",
       "pair_id": "38f38890__NCT06217302",
       "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
@@ -1387,6 +1707,32 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:18:measurement:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:38f38890__NCT06217302:19",
+      "pair_id": "38f38890__NCT06217302",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 19,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of primary renal glycosuria;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:19",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:19:condition:gap:reviewed-true_miss"
       ]
     },
     {
@@ -1442,6 +1788,58 @@
       ]
     },
     {
+      "row_id": "criterion:38f38890__NCT06217302:25",
+      "pair_id": "38f38890__NCT06217302",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 25,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Illicit drug abuse within 6 months of screening;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:25",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:25:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:38f38890__NCT06217302:26",
+      "pair_id": "38f38890__NCT06217302",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 26,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women, 4 drinks or more on any day or 8 drinks or more per week);",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:26",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:26:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
       "row_id": "criterion:38f38890__NCT06217302:27",
       "pair_id": "38f38890__NCT06217302",
       "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
@@ -1466,6 +1864,35 @@
       ],
       "comparison_support_ids": [
         "criterion:27:free-text:support:trial-exposure"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:38f38890__NCT07489209:1",
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 1,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Genetic diagnosis or clinical diagnosis of HoFH.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:1",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:1:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:1:condition:support:concept-set",
+        "criterion:1:condition:support:expansion"
       ],
       "comparison_gap_ids": []
     },
@@ -1500,6 +1927,32 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:38f38890__NCT07489209:16",
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 16,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:16",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:16:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
       "row_id": "criterion:38f38890__NCT07489209:22",
       "pair_id": "38f38890__NCT07489209",
       "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
@@ -1523,6 +1976,58 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:22:measurement:gap:reviewed-ambiguous"
+      ]
+    },
+    {
+      "row_id": "criterion:3a364909__NCT06220266:0",
+      "pair_id": "3a364909__NCT06220266",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 0,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Natural menopause, last menstrual period more than one year ago.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:0",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:0:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:3a364909__NCT06220266:8",
+      "pair_id": "3a364909__NCT06220266",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 8,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Ever had an organ transplant",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:8",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:8:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -1602,6 +2107,70 @@
       "comparison_gap_ids": [
         "criterion:8:measurement:gap:reviewed-out_of_scope"
       ]
+    },
+    {
+      "row_id": "criterion:3a364909__NCT07362459:18",
+      "pair_id": "3a364909__NCT07362459",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "nct_id": "NCT07362459",
+      "eval_slice": "nsclc",
+      "criterion_index": 18,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "A history of arterial thrombosis, deep vein thrombosis, cerebral infarction, transient ischemic attack, or significant vascular disease within 6 months prior to enrollment.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:18",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:18:condition-phrase:001:predicate:condition",
+        "criterion:18:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:condition-phrase:001:condition:support:concept-set",
+        "criterion:18:condition-phrase:001:condition:support:expansion",
+        "criterion:18:condition-phrase:002:condition:support:concept-set",
+        "criterion:18:condition-phrase:002:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:3a364909__NCT07362459:19",
+      "pair_id": "3a364909__NCT07362459",
+      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
+      "nct_id": "NCT07362459",
+      "eval_slice": "nsclc",
+      "criterion_index": 19,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "A history of myocardial infarction, unstable angina, cardiac insufficiency with New York Heart Association (NYHA) class ≥ III, or severe arrhythmia uncontrolled by medication within 6 months prior to enrollment.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:19",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:19:condition-phrase:001:predicate:condition",
+        "criterion:19:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:19:condition-phrase:001:condition:support:concept-set",
+        "criterion:19:condition-phrase:001:condition:support:expansion",
+        "criterion:19:condition-phrase:002:condition:support:concept-set",
+        "criterion:19:condition-phrase:002:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:3a364909__NCT07362459:32",
@@ -2198,6 +2767,32 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:407ef75b__NCT07297797:9",
+      "pair_id": "407ef75b__NCT07297797",
+      "patient_id": "407ef75b-0a9c-ec23-60e5-c90ba86e27af",
+      "nct_id": "NCT07297797",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 9,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Presence of uncontrolled severe arrhythmia within 6 months prior to screening;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:9",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:9:condition:gap:reviewed-composite_unhandled"
+      ]
     },
     {
       "row_id": "criterion:407ef75b__NCT07297797:13",
@@ -2898,6 +3493,35 @@
       ]
     },
     {
+      "row_id": "criterion:55c5b8d3__NCT06564324:25",
+      "pair_id": "55c5b8d3__NCT06564324",
+      "patient_id": "55c5b8d3-99d0-58ad-8444-e42bb81bd5c7",
+      "nct_id": "NCT06564324",
+      "eval_slice": "nsclc",
+      "criterion_index": 25,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Have clinically significant cardiovascular diseases within 6 months prior to randomization: myocardial infarction, severe/unstable angina, coronary/peripheral endovascular treatment, heart failure, cerebrovascular disorder including transient ischemic attack, pulmonary embolism, deep venous thrombosis and or other clinically significant thrombosis.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:25",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:25:condition-phrase:cardiovascular-disease:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:condition-phrase:cardiovascular-disease:condition:support:concept-set",
+        "criterion:25:condition-phrase:cardiovascular-disease:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:55c5b8d3__NCT06564324:30",
       "pair_id": "55c5b8d3__NCT06564324",
       "patient_id": "55c5b8d3-99d0-58ad-8444-e42bb81bd5c7",
@@ -2919,6 +3543,38 @@
       "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:56cfe6a5__NCT06475781:0",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 0,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "A clinical diagnosis of PH-ILD.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:0",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:0:condition-phrase:001:predicate:condition",
+        "criterion:0:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:0:condition-phrase:001:condition:support:concept-set",
+        "criterion:0:condition-phrase:001:condition:support:expansion",
+        "criterion:0:condition-phrase:002:condition:support:concept-set",
+        "criterion:0:condition-phrase:002:condition:support:expansion"
+      ],
       "comparison_gap_ids": []
     },
     {
@@ -2998,6 +3654,64 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:56cfe6a5__NCT06475781:18",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 18,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Subject has another concomitant diagnosis of pulmonary hypertension not otherwise considered to be PH-ILD.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:18",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:18:condition-phrase:001:predicate:condition",
+        "criterion:18:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:condition-phrase:001:condition:support:concept-set",
+        "criterion:18:condition-phrase:001:condition:support:expansion",
+        "criterion:18:condition-phrase:002:condition:support:concept-set",
+        "criterion:18:condition-phrase:002:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:56cfe6a5__NCT06475781:19",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 19,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Subject has evidence of clinically significant left-sided heart disease within 6 months as defined by: Left ventricular ejection fraction <40% as assessed by echocardiography. More than mild left-sided valvulopathy (e.g., worse than mild mitral stenosis or regurgitation and worse than mild aortic stenosis or regurgitation). LVEDP or PCWP >15 mmHg (or >12 mmHg if PVR ≥4 to 6.25 Wood units).",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:19",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:19:condition-phrase:gap:unsupported"
+      ]
+    },
+    {
       "row_id": "criterion:56cfe6a5__NCT06475781:21",
       "pair_id": "56cfe6a5__NCT06475781",
       "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
@@ -3024,6 +3738,61 @@
       ]
     },
     {
+      "row_id": "criterion:56cfe6a5__NCT06475781:25",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 25,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Any current active malignancy (this does not include localized cancers such as basal or squamous cell carcinoma of the skin). Any history of malignancy that is likely to result in mortality or require significant medical or surgical intervention within the following year.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:25",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:25:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
+      "row_id": "criterion:56cfe6a5__NCT06475781:27",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 27,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "The subject has a history of congenital heart disease irrespective of any prior treatment of surgical intervention.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:27",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:27:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:27:condition:support:concept-set",
+        "criterion:27:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:56cfe6a5__NCT06475781:33",
       "pair_id": "56cfe6a5__NCT06475781",
       "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
@@ -3046,6 +3815,58 @@
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:56cfe6a5__NCT06475781:37",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 37,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of liver dysfunction, including subjects with moderate (Child-Pugh B) or severe (Child Pugh C) impairment or disordered coagulation.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:37",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:37:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
+      "row_id": "criterion:56cfe6a5__NCT06475781:39",
+      "pair_id": "56cfe6a5__NCT06475781",
+      "patient_id": "56cfe6a5-4835-d925-fd7a-84faf11306f0",
+      "nct_id": "NCT06475781",
+      "eval_slice": "hypertension-industry",
+      "criterion_index": 39,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Worse than mild untreated sleep apnea (5-14.9 events/hour). Treated sleep apnea is permitted.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:39",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:39:condition:gap:reviewed-composite_unhandled"
+      ]
     },
     {
       "row_id": "criterion:56cfe6a5__NCT06941441:3",
@@ -3350,6 +4171,58 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT06220266:0",
+      "pair_id": "60b0873c__NCT06220266",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 0,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Natural menopause, last menstrual period more than one year ago.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:0",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:0:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:60b0873c__NCT06220266:8",
+      "pair_id": "60b0873c__NCT06220266",
+      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
+      "nct_id": "NCT06220266",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 8,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Ever had an organ transplant",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:8",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:8:condition:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -3970,6 +4843,70 @@
       ]
     },
     {
+      "row_id": "criterion:9cbf47d8__NCT07362459:18",
+      "pair_id": "9cbf47d8__NCT07362459",
+      "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
+      "nct_id": "NCT07362459",
+      "eval_slice": "nsclc",
+      "criterion_index": 18,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "A history of arterial thrombosis, deep vein thrombosis, cerebral infarction, transient ischemic attack, or significant vascular disease within 6 months prior to enrollment.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:18",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:18:condition-phrase:001:predicate:condition",
+        "criterion:18:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:18:condition-phrase:001:condition:support:concept-set",
+        "criterion:18:condition-phrase:001:condition:support:expansion",
+        "criterion:18:condition-phrase:002:condition:support:concept-set",
+        "criterion:18:condition-phrase:002:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:9cbf47d8__NCT07362459:19",
+      "pair_id": "9cbf47d8__NCT07362459",
+      "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
+      "nct_id": "NCT07362459",
+      "eval_slice": "nsclc",
+      "criterion_index": 19,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "A history of myocardial infarction, unstable angina, cardiac insufficiency with New York Heart Association (NYHA) class ≥ III, or severe arrhythmia uncontrolled by medication within 6 months prior to enrollment.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:19",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:19:condition-phrase:001:predicate:condition",
+        "criterion:19:condition-phrase:002:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:19:condition-phrase:001:condition:support:concept-set",
+        "criterion:19:condition-phrase:001:condition:support:expansion",
+        "criterion:19:condition-phrase:002:condition:support:concept-set",
+        "criterion:19:condition-phrase:002:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:9cbf47d8__NCT07362459:32",
       "pair_id": "9cbf47d8__NCT07362459",
       "patient_id": "9cbf47d8-b59a-ef34-c330-77accc084c17",
@@ -4019,6 +4956,44 @@
       "comparison_predicate_kind": "measurement_threshold",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:9e84e569__NCT04602754:19",
+      "pair_id": "9e84e569__NCT04602754",
+      "patient_id": "9e84e569-7adc-ff42-ccdb-9fe9c23842a6",
+      "nct_id": "NCT04602754",
+      "eval_slice": "t2dm-industry",
+      "criterion_index": 19,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "Participants who had any cardiovascular event (acute myocardial infarction, acute coronary syndrome, recent onset stable angina, stroke, unstable congestive heart failure requiring treatment change), underwent revascularization or vascular surgery in the 6 months prior to screening;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:19",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:19:condition-phrase:001:predicate:condition",
+        "criterion:19:condition-phrase:002:predicate:condition",
+        "criterion:19:condition-phrase:003:predicate:condition",
+        "criterion:19:condition-phrase:004:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:19:condition-phrase:001:condition:support:concept-set",
+        "criterion:19:condition-phrase:001:condition:support:expansion",
+        "criterion:19:condition-phrase:002:condition:support:concept-set",
+        "criterion:19:condition-phrase:002:condition:support:expansion",
+        "criterion:19:condition-phrase:003:condition:support:concept-set",
+        "criterion:19:condition-phrase:003:condition:support:expansion",
+        "criterion:19:condition-phrase:004:condition:support:concept-set",
+        "criterion:19:condition-phrase:004:condition:support:expansion"
+      ],
       "comparison_gap_ids": []
     },
     {
@@ -5054,6 +6029,32 @@
       "comparison_gap_ids": []
     },
     {
+      "row_id": "criterion:c2786fee__NCT06217302:15",
+      "pair_id": "c2786fee__NCT06217302",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 15,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of ≥3 severe hypoglycemic events (requiring third-party assistance for correction) within 3 months of screening;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:15",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:15:condition:gap:reviewed-composite_unhandled"
+      ]
+    },
+    {
       "row_id": "criterion:c2786fee__NCT06217302:17",
       "pair_id": "c2786fee__NCT06217302",
       "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
@@ -5103,6 +6104,32 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:18:measurement:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:c2786fee__NCT06217302:19",
+      "pair_id": "c2786fee__NCT06217302",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 19,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "History of primary renal glycosuria;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:19",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:19:condition:gap:reviewed-true_miss"
       ]
     },
     {
@@ -5158,6 +6185,58 @@
       ]
     },
     {
+      "row_id": "criterion:c2786fee__NCT06217302:25",
+      "pair_id": "c2786fee__NCT06217302",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 25,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Illicit drug abuse within 6 months of screening;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:25",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:25:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
+      "row_id": "criterion:c2786fee__NCT06217302:26",
+      "pair_id": "c2786fee__NCT06217302",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06217302",
+      "eval_slice": "ckd",
+      "criterion_index": 26,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women, 4 drinks or more on any day or 8 drinks or more per week);",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:26",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:26:condition:gap:reviewed-out_of_scope"
+      ]
+    },
+    {
       "row_id": "criterion:c2786fee__NCT06217302:27",
       "pair_id": "c2786fee__NCT06217302",
       "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
@@ -5182,6 +6261,35 @@
       ],
       "comparison_support_ids": [
         "criterion:27:free-text:support:trial-exposure"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:c2786fee__NCT06597006:1",
+      "pair_id": "c2786fee__NCT06597006",
+      "patient_id": "c2786fee-2b45-56cd-f36c-96ad2ce9ab01",
+      "nct_id": "NCT06597006",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 1,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "HoFH diagnosed by genetic confirmation",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:1",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:1:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:1:condition:support:concept-set",
+        "criterion:1:condition:support:expansion"
       ],
       "comparison_gap_ids": []
     },
@@ -5781,6 +6889,35 @@
       ]
     },
     {
+      "row_id": "criterion:d02b2ca5__NCT07489209:1",
+      "pair_id": "d02b2ca5__NCT07489209",
+      "patient_id": "d02b2ca5-7e63-1c3d-505f-3a7218bac46d",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 1,
+      "criterion_kind": "condition_present",
+      "criterion_source_text": "Genetic diagnosis or clinical diagnosis of HoFH.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:1",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:1:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:1:condition:support:concept-set",
+        "criterion:1:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:d02b2ca5__NCT07489209:4",
       "pair_id": "d02b2ca5__NCT07489209",
       "patient_id": "d02b2ca5-7e63-1c3d-505f-3a7218bac46d",
@@ -5809,6 +6946,32 @@
         "criterion:4:medication:support:class-member-002"
       ],
       "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:d02b2ca5__NCT07489209:16",
+      "pair_id": "d02b2ca5__NCT07489209",
+      "patient_id": "d02b2ca5-7e63-1c3d-505f-3a7218bac46d",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 16,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to randomization, or acute coronary syndrome or stroke within 6 months prior to randomization.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "indeterminate",
+      "comparison_reason": "unsupported_kind",
+      "movement": "indeterminate->indeterminate",
+      "direction": "reason_changed",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:16",
+      "comparison_predicate_status": "unresolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [],
+      "comparison_support_ids": [],
+      "comparison_gap_ids": [
+        "criterion:16:condition:gap:reviewed-composite_unhandled"
+      ]
     },
     {
       "row_id": "criterion:d02b2ca5__NCT07489209:22",
@@ -5913,6 +7076,35 @@
       "comparison_gap_ids": [
         "criterion:13:measurement:gap:reviewed-out_of_scope"
       ]
+    },
+    {
+      "row_id": "criterion:d362f4e5__NCT06564324:25",
+      "pair_id": "d362f4e5__NCT06564324",
+      "patient_id": "d362f4e5-244f-cf80-f2d5-25bcd2c97785",
+      "nct_id": "NCT06564324",
+      "eval_slice": "nsclc",
+      "criterion_index": 25,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Have clinically significant cardiovascular diseases within 6 months prior to randomization: myocardial infarction, severe/unstable angina, coronary/peripheral endovascular treatment, heart failure, cerebrovascular disorder including transient ischemic attack, pulmonary embolism, deep venous thrombosis and or other clinically significant thrombosis.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": false,
+      "comparison_compiled_id": "compiled:criterion:25",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:25:condition-phrase:cardiovascular-disease:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:condition-phrase:cardiovascular-disease:condition:support:concept-set",
+        "criterion:25:condition-phrase:cardiovascular-disease:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:d362f4e5__NCT06564324:30",
@@ -6043,6 +7235,70 @@
         "criterion:3:medication:support:class-expansion",
         "criterion:3:medication:support:class-member-001",
         "criterion:3:medication:support:class-member-002"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:e7d52393__NCT06568471:7",
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT06568471",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 7,
+      "criterion_kind": "condition_absent",
+      "criterion_source_text": "Documented history of homozygous familial hypercholesterolemia (HoFH);",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "unmapped_concept",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:7",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_ids": [
+        "criterion:7:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:7:condition:support:concept-set",
+        "criterion:7:condition:support:expansion"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
+      "row_id": "criterion:e7d52393__NCT06568471:12",
+      "pair_id": "e7d52393__NCT06568471",
+      "patient_id": "e7d52393-d28b-96d3-fe60-5a19ef9ce171",
+      "nct_id": "NCT06568471",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 12,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "Serious arrhythmia, MI, unstable angina pectoris, PCI, CABG, implantable cardioverter defibrillator, aortic valve surgery or stroke within 3 months prior to the first dose;",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:12",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:12:condition-phrase:001:predicate:condition",
+        "criterion:12:condition-phrase:002:predicate:condition",
+        "criterion:12:condition-phrase:003:predicate:condition"
+      ],
+      "comparison_support_ids": [
+        "criterion:12:condition-phrase:001:condition:support:concept-set",
+        "criterion:12:condition-phrase:001:condition:support:expansion",
+        "criterion:12:condition-phrase:002:condition:support:concept-set",
+        "criterion:12:condition-phrase:002:condition:support:expansion",
+        "criterion:12:condition-phrase:003:condition:support:concept-set",
+        "criterion:12:condition-phrase:003:condition:support:expansion"
       ],
       "comparison_gap_ids": []
     },

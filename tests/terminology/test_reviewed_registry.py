@@ -134,3 +134,59 @@ def test_committed_cache_independent_closure_mappings_load() -> None:
     assert len(sotatercept.candidates[0].codes) == 8
     assert active_liver_disease is not None
     assert active_liver_disease.status == "composite_unhandled"
+
+
+def test_committed_condition_long_tail_review_rows_load() -> None:
+    registry = load_reviewed_mapping_registry(
+        REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
+    )
+
+    hofh = registry.lookup("condition", "HoFH")
+    congenital = registry.lookup("condition", "history of congenital heart disease")
+    arrhythmia = registry.lookup("condition", "uncontrolled severe arrhythmia")
+    hypoglycemia = registry.lookup("condition", "\u22653 severe hypoglycemic events")
+    renal_glycosuria = registry.lookup("condition", "primary renal glycosuria")
+    organ_transplant = registry.lookup("condition", "organ transplant")
+
+    assert hofh is not None
+    assert hofh.status == "mapped"
+    assert hofh.concept_set == "reviewed:condition:homozygous-familial-hypercholesterolemia"
+    assert hofh.candidates[0].codes == frozenset({"238078005"})
+    assert congenital is not None
+    assert congenital.status == "mapped"
+    assert congenital.candidates[0].codes == frozenset({"13213009"})
+    assert congenital.expansion_policy == "exact_code"
+    assert arrhythmia is not None
+    assert arrhythmia.status == "composite_unhandled"
+    assert arrhythmia.candidates[0].codes == frozenset({"698247007"})
+    assert hypoglycemia is not None
+    assert hypoglycemia.status == "composite_unhandled"
+    assert hypoglycemia.candidates[0].codes == frozenset({"237636001"})
+    assert renal_glycosuria is not None
+    assert renal_glycosuria.status == "true_miss"
+    assert organ_transplant is not None
+    assert organ_transplant.status == "out_of_scope"
+
+
+def test_committed_cardiovascular_decomposition_atoms_load() -> None:
+    registry = load_reviewed_mapping_registry(
+        REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
+    )
+
+    expected_codes = {
+        "myocardial infarction": "22298006",
+        "acute coronary syndrome": "394659003",
+        "stroke": "230690007",
+        "transient ischemic attack": "266257000",
+        "deep venous thrombosis": "128053003",
+        "pulmonary embolism": "59282003",
+        "interstitial lung disease": "233703007",
+    }
+
+    for surface, code in expected_codes.items():
+        entry = registry.lookup("condition", surface)
+
+        assert entry is not None
+        assert entry.status == "mapped"
+        assert entry.candidates[0].codes == frozenset({code})
+        assert entry.expansion_policy == "exact_code"

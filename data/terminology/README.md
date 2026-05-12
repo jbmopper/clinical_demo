@@ -19,6 +19,17 @@ LDL-C, triglycerides, total bilirubin, and mean sitting office systolic BP
 resolve through the shared profile `ConceptSet` registry rather than through ad
 hoc compiler aliases.
 
+Condition/event rows now carry the same reviewed contract. Atomic surfaces such
+as HoFH, congenital heart disease, myocardial infarction, stroke, transient
+ischemic attack, deep venous thrombosis, pulmonary embolism, and interstitial
+lung disease resolve from committed rows so PH-ILD and cardiovascular event-list
+phrases can decompose into executable predicates without warmed cache state.
+Composite or out-of-scope surfaces such as uncontrolled severe arrhythmia,
+left-sided heart disease, active malignancy, liver dysfunction, sleep-apnea
+severity phrases, illicit drug abuse, and heavy alcohol use are explicitly
+classified so they become typed compiler gaps instead of opaque unmapped
+concepts.
+
 Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at
 load time so runtime resolver integration has a single deterministic answer.

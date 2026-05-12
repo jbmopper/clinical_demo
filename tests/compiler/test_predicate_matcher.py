@@ -73,6 +73,28 @@ def test_compiled_condition_predicate_executes_reviewed_descendant_expansion() -
     assert verdicts[0].evidence[0].kind == "condition"
 
 
+def test_compiled_cardiovascular_event_phrase_executes_reviewed_promotion() -> None:
+    criterion = crit_condition(text="major adverse cardiovascular events", polarity="exclusion")
+    profile = make_profile(
+        conditions=[
+            make_condition(
+                code="22298006",
+                display="Myocardial infarction",
+                onset=AS_OF.replace(year=AS_OF.year - 1),
+            )
+        ]
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    verdicts = match_compiled_criteria(compilation, profile, make_trial())
+
+    assert compilation.criteria[0].predicate.status == "resolved"
+    assert compilation.criteria[0].resolved_supports[0].surface == "cardiovascular disease"
+    assert verdicts[0].verdict == "fail"
+    assert verdicts[0].reason == "ok"
+    assert verdicts[0].evidence[0].kind == "condition"
+
+
 def test_compiled_measurement_predicate_executes_threshold() -> None:
     criterion = crit_measurement(text="HbA1c", operator=">=", value=7.0, unit="%")
     profile = make_profile(observations=[make_lab(loinc="4548-4", value=7.4, unit="%")])

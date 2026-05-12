@@ -40,6 +40,7 @@ from clinical_demo.terminology import (
     cache_path_for_rxnorm,
     cache_path_for_surface_resolution,
     cache_path_for_vsac,
+    load_reviewed_mapping_registry,
 )
 from clinical_demo.terminology.rxnorm_client import RXNORM_SYSTEM_URI
 from clinical_demo.terminology.umls_search_client import (
@@ -52,6 +53,7 @@ VSAC_FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "vsac" / "diab
 RXNORM_FIXTURE = (
     Path(__file__).resolve().parents[1] / "fixtures" / "rxnorm" / "metformin_drugs.json"
 )
+REPO_ROOT = Path(__file__).resolve().parents[2]
 SNOMED = "http://snomed.info/sct"
 
 
@@ -877,6 +879,38 @@ def test_reviewed_registry_inline_code_set_maps_without_python_concept_set(
     assert cached.status == "mapped"
     assert cached.concept_set == out
     assert cached.candidates[0].source == "reviewed_registry"
+
+
+def test_committed_long_tail_reviewed_condition_rows_resolve_and_cache(
+    tmp_path: Path,
+) -> None:
+    cache = TerminologyCache(tmp_path)
+    resolver = TerminologyResolver(
+        cache,
+        reviewed_registry=load_reviewed_mapping_registry(
+            REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
+        ),
+    )
+
+    hofh = resolver.resolve_condition("HoFH")
+    congenital = resolver.resolve_condition("history of congenital heart disease")
+    arrhythmia = resolver.resolve_condition("uncontrolled severe arrhythmia")
+    ild = resolver.resolve_condition("interstitial lung disease")
+
+    assert hofh is not None
+    assert hofh.system == SNOMED
+    assert hofh.codes == frozenset({"238078005"})
+    assert congenital is not None
+    assert congenital.system == SNOMED
+    assert congenital.codes == frozenset({"13213009"})
+    assert ild is not None
+    assert ild.system == SNOMED
+    assert ild.codes == frozenset({"233703007"})
+    assert arrhythmia is None
+    cached = cache.get_surface_resolution("condition", "uncontrolled severe arrhythmia")
+    assert cached is not None
+    assert cached.status == "composite_unhandled"
+    assert cached.candidates[0].codes == frozenset({"698247007"})
 
 
 def test_disabled_policy_bypasses_reviewed_registry(tmp_path: Path) -> None:

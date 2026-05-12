@@ -121,6 +121,63 @@ _WITHIN_WINDOW_RE = re.compile(
     r"\bwithin\s+(?P<num>\d+)\s+(?P<unit>days?|weeks?|months?|years?)\b",
     re.IGNORECASE,
 )
+_PH_ILD_RE = re.compile(
+    r"\b(?:"
+    r"ph\s*[-/]\s*ild|"
+    r"pulmonary\s+hypertension\s+(?:associated\s+with|due\s+to|secondary\s+to)\s+"
+    r"(?:interstitial\s+lung\s+disease|ild)"
+    r")\b",
+    re.IGNORECASE,
+)
+_CARDIOVASCULAR_PROMOTION_RE = re.compile(
+    r"\b(?:"
+    r"(?:major\s+adverse\s+)?cardiovascular\s+events?|"
+    r"cardiovascular\s*/\s*cerebrovascular\s+events?|"
+    r"cardiovascular\s+or\s+cerebrovascular\s+events?|"
+    r"cardiovascular\s+conditions?|"
+    r"clinically\s+significant\s+cardiovascular\s+diseases?|"
+    r"cvd"
+    r")\b",
+    re.IGNORECASE,
+)
+_UNSAFE_CARDIOVASCULAR_PROMOTION_RE = re.compile(
+    r"\b(?:risk\s+factors?|surgery|procedure|assessment|functional|prevention|screening)\b",
+    re.IGNORECASE,
+)
+_LEFT_SIDED_HEART_DISEASE_RE = re.compile(
+    r"\b(?:"
+    r"left[-\s]+sided\s+heart\s+disease|"
+    r"left[-\s]+sided\s+valvulopathy|"
+    r"left\s+ventricular\s+disease\s*/\s*dysfunction"
+    r")\b",
+    re.IGNORECASE,
+)
+_CARDIOVASCULAR_EVENT_TERMS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(r"\b(?:acute\s+coronary\s+syndrome|acs)\b", re.IGNORECASE),
+        "acute coronary syndrome",
+    ),
+    (
+        re.compile(r"\b(?:myocardial\s+infarction|heart\s+attack|mi)\b", re.IGNORECASE),
+        "myocardial infarction",
+    ),
+    (re.compile(r"\b(?:cerebrovascular\s+accident|cva|stroke)\b", re.IGNORECASE), "stroke"),
+    (
+        re.compile(r"\b(?:transient\s+ischa?emic\s+attack|tia)\b", re.IGNORECASE),
+        "transient ischemic attack",
+    ),
+    (
+        re.compile(
+            r"\b(?:deep\s+vein\s+thrombosis|deep\s+venous\s+thrombosis|dvt)\b", re.IGNORECASE
+        ),
+        "deep venous thrombosis",
+    ),
+    (re.compile(r"\bacute\s+pulmonary\s+embolism\b", re.IGNORECASE), "acute pulmonary embolism"),
+    (re.compile(r"\b(?:pulmonary\s+embolism|pe)\b", re.IGNORECASE), "pulmonary embolism"),
+    (re.compile(r"\bcongestive\s+heart\s+failure\b", re.IGNORECASE), "congestive heart failure"),
+    (re.compile(r"\bheart\s+failure\b", re.IGNORECASE), "heart failure"),
+    (re.compile(r"\bunstable\s+angina\b", re.IGNORECASE), "unstable angina"),
+)
 
 
 def compile_extracted_criteria(
@@ -203,6 +260,7 @@ def _compile_criterion(
     composite_groups: Sequence[CompositeCriterionGroup],
     context: _CompilerResolutionContext,
     source_criterion_id_override: str | None = None,
+    allow_condition_phrase_promotion: bool = True,
 ) -> CompiledCriterion:
     source_id = source_criterion_id_override or source_criterion_id(index)
     domain = _resolution_domain(criterion.kind)
@@ -249,6 +307,32 @@ def _compile_criterion(
             supports.extend(trial_promotion.supports)
             gaps.extend(trial_promotion.gaps)
             diagnostics.extend(trial_promotion.diagnostics)
+        elif (
+            allow_condition_phrase_promotion
+            and surface is not None
+            and (
+                phrase_promotion := _compile_condition_phrase_promotion(
+                    criterion,
+                    index=index,
+                    source_criterion_id=source_id,
+                    surface=surface,
+                    resolver_policy=resolver_policy,
+                    context=context,
+                    promotion_domain="condition",
+                    promotion_label="condition",
+                )
+            )
+            is not None
+        ):
+            predicate = phrase_promotion.predicate
+            predicates.extend(phrase_promotion.predicates)
+            supports.extend(phrase_promotion.supports)
+            gaps.extend(phrase_promotion.gaps)
+            diagnostics.extend(phrase_promotion.diagnostics)
+            if phrase_promotion.compound_logic is not None:
+                compound_plan = phrase_promotion.compound_logic
+            if phrase_promotion.expansion is not None:
+                expansion = phrase_promotion.expansion
         else:
             condition = _compile_condition_resolution(
                 criterion,
@@ -452,6 +536,19 @@ def _compile_free_text_promotion(
             context=context,
         )
 
+    phrase_promotion = _compile_condition_phrase_promotion(
+        criterion,
+        index=index,
+        source_criterion_id=source_criterion_id,
+        surface=criterion.source_text,
+        resolver_policy=resolver_policy,
+        context=context,
+        promotion_domain="free_text",
+        promotion_label="free-text",
+    )
+    if phrase_promotion is not None:
+        return phrase_promotion
+
     if len(typed_mentions) != 1:
         return None
     if not criterion.negated and _NEGATION_CUE_RE.search(criterion.source_text):
@@ -509,6 +606,7 @@ def _compile_free_text_promotion(
         composite_groups=[],
         context=context,
         source_criterion_id_override=sub_id,
+        allow_condition_phrase_promotion=False,
     )
     return _promoted_compilation(
         criterion,
@@ -589,6 +687,248 @@ def _compile_free_text_medication_list(
         gaps=gaps,
         diagnostics=diagnostics,
         compound_logic=compound_logic,
+    )
+
+
+def _compile_condition_phrase_promotion(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+) -> _FreeTextPromotionCompilation | None:
+    normalized = _normalize_text(surface)
+    if not normalized:
+        return None
+
+    if _LEFT_SIDED_HEART_DISEASE_RE.search(surface):
+        return _unsupported_condition_phrase(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+            reason=(
+                "Left-sided heart disease requires decomposition into left-ventricular "
+                "function, valvular disease, or hemodynamic measurements before safe "
+                "patient-history execution."
+            ),
+        )
+
+    if _PH_ILD_RE.search(surface):
+        return _compile_condition_phrase_compound(
+            criterion,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            surfaces=["PH", "interstitial lung disease"],
+            operator="all_of",
+            resolver_policy=resolver_policy,
+            context=context,
+            promotion_kind="ph-ild",
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+        )
+
+    if _is_promotable_cardiovascular_event_surface(surface):
+        return _compile_condition_phrase_alias(
+            criterion,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            target_surface="cardiovascular disease",
+            resolver_policy=resolver_policy,
+            context=context,
+            promotion_kind="cardiovascular-event",
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+        )
+
+    event_surfaces = _cardiovascular_event_surfaces(surface)
+    if len(event_surfaces) >= 2:
+        return _compile_condition_phrase_compound(
+            criterion,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            surfaces=event_surfaces,
+            operator="any_of",
+            resolver_policy=resolver_policy,
+            context=context,
+            promotion_kind="cardiovascular-event-list",
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+        )
+
+    return None
+
+
+def _compile_condition_phrase_alias(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    surface: str,
+    target_surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+    promotion_kind: str,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+) -> _FreeTextPromotionCompilation:
+    sub_id = f"{source_criterion_id}:condition-phrase:{_slugify(target_surface)}"
+    surrogate = _criterion_like(
+        criterion,
+        kind=_condition_surrogate_kind(criterion),
+        condition=ConditionCriterion(condition_text=target_surface),
+    )
+    compiled = _compile_criterion(
+        surrogate,
+        index=index,
+        resolver_policy=resolver_policy,
+        composite_groups=[],
+        context=context,
+        source_criterion_id_override=sub_id,
+        allow_condition_phrase_promotion=False,
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind=promotion_kind,
+        predicate=compiled.predicate,
+        predicates=compiled.checkable_predicates,
+        supports=compiled.resolved_supports,
+        gaps=compiled.unresolved_gaps,
+        diagnostics=compiled.diagnostics,
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
+        expansion=compiled.expansion,
+    )
+
+
+def _compile_condition_phrase_compound(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    surfaces: Sequence[str],
+    operator: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+    promotion_kind: str,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+) -> _FreeTextPromotionCompilation:
+    supports: list[ResolutionSupport] = []
+    gaps: list[ResolutionGap] = []
+    predicates: list[CheckablePredicate] = []
+    diagnostics: list[CompilerDiagnostic] = []
+    subcheck_ids: list[str] = []
+
+    for sub_index, sub_surface in enumerate(surfaces, start=1):
+        sub_id = f"{source_criterion_id}:condition-phrase:{sub_index:03d}"
+        subcheck_ids.append(sub_id)
+        surrogate = _criterion_like(
+            criterion,
+            kind=_condition_surrogate_kind(criterion),
+            condition=ConditionCriterion(condition_text=sub_surface),
+        )
+        compiled = _compile_criterion(
+            surrogate,
+            index=index,
+            resolver_policy=resolver_policy,
+            composite_groups=[],
+            context=context,
+            source_criterion_id_override=sub_id,
+            allow_condition_phrase_promotion=False,
+        )
+        supports.extend(compiled.resolved_supports)
+        gaps.extend(compiled.unresolved_gaps)
+        predicates.extend(compiled.checkable_predicates)
+        diagnostics.extend(compiled.diagnostics)
+
+    predicate = _compound_predicate_plan(
+        subcheck_ids,
+        predicates=predicates,
+        gaps=gaps,
+        operator=operator,
+    )
+    compound_logic = CompoundLogicPlan(
+        status="resolved",
+        operator=operator,  # type: ignore[arg-type]
+        source_group_ids=[],
+        subcheck_ids=subcheck_ids,
+        gap_ids=[gap.gap_id for gap in gaps],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=", ".join(surfaces),
+        promotion_kind=promotion_kind,
+        predicate=predicate,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
+        compound_logic=compound_logic,
+    )
+
+
+def _unsupported_condition_phrase(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+    reason: str,
+) -> _FreeTextPromotionCompilation:
+    gap = _gap(
+        gap_id=f"{source_criterion_id}:condition-phrase:gap:unsupported",
+        stage="predicate_translation",
+        domain="condition",
+        kind="unsupported_predicate",
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        message=reason,
+        resolver_policy=resolver_policy,
+    )
+    predicate = CheckablePredicatePlan(
+        status="unsupported",
+        predicate_kind="condition_presence",
+        expression=None,
+        input_refs=[source_criterion_id],
+        support_ids=[],
+        gap_ids=[gap.gap_id],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind="unsupported-condition-phrase",
+        predicate=predicate,
+        predicates=[],
+        supports=[],
+        gaps=[gap],
+        diagnostics=[
+            _diagnostic(
+                severity="warning",
+                code="condition_phrase.unsupported",
+                message=reason,
+                stage="predicate_translation",
+                source_criterion_id=source_criterion_id,
+                facts=[("surface", surface), ("gap_id", gap.gap_id)],
+            )
+        ],
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
     )
 
 
@@ -755,6 +1095,49 @@ def _free_text_measurement_threshold(
 
 def _looks_like_trial_exposure(text: str) -> bool:
     return bool(_TRIAL_EXPOSURE_RE.search(text))
+
+
+def _is_promotable_cardiovascular_event_surface(text: str) -> bool:
+    if _UNSAFE_CARDIOVASCULAR_PROMOTION_RE.search(text):
+        return False
+    normalized = _normalize_text(text)
+    if normalized == "cardiovascular disease":
+        return False
+    return bool(_CARDIOVASCULAR_PROMOTION_RE.search(text))
+
+
+def _cardiovascular_event_surfaces(text: str) -> list[str]:
+    surfaces: list[str] = []
+    seen: set[str] = set()
+    for pattern, surface in _CARDIOVASCULAR_EVENT_TERMS:
+        if pattern.search(text) is None:
+            continue
+        normalized = _normalize_text(surface)
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        surfaces.append(surface)
+
+    normalized_surfaces = {surface: _normalize_text(surface) for surface in surfaces}
+    return [
+        surface
+        for surface in surfaces
+        if not any(
+            normalized_surfaces[surface] != other and normalized_surfaces[surface] in other
+            for other in normalized_surfaces.values()
+        )
+    ]
+
+
+def _condition_surrogate_kind(criterion: ExtractedCriterion) -> CriterionKind:
+    if criterion.kind in {"condition_present", "condition_absent"}:
+        return criterion.kind
+    return "condition_present"
+
+
+def _slugify(text: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", _normalize_text(text)).strip("-")
+    return slug or "surface"
 
 
 def _looks_unsafe_composite_surface(text: str) -> bool:

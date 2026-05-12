@@ -21,32 +21,32 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `752bd67507c6` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `c4ccb713a2d5` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
   anchors, reviewed lipid-lowering/bisphosphonate/RAAS class closure, reviewed
   medication non-mapping classifications, inline reviewed code sets for
   cache-independent condition/medication closure, exact-reviewed precedence in
-  candidate ranking, and regenerated compiler review/movement artifacts under
+  candidate ranking, reviewed descendant expansions, PH-ILD decomposition,
+  cardiovascular event-list decomposition, long-tail condition terminology
+  rows, and regenerated compiler review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
-  `unmapped_concept` is down from 317/1076 (29.5%) to 115/1076 (10.7%),
-  with 12 indeterminate-to-determinate criterion movements, 5
-  determinate-to-indeterminate safety movements for broad concepts requiring
-  descendant expansion, and 3 case-rollup movements. The path is still not
-  default-ready: diagnostics show 369 unresolved compiler gaps, 43
-  closed-world-blocking cases, and 507 blocking validation findings. The
-  deduped review packet has 198 groups (98 `review_mapping`, 90
-  `implement_compiler_logic`, 6 `choose_candidate`, and 4 `review_gap`). The
-  first cache-independent closure pass is complete for the warmed-cache delta:
-  an empty-cache probe had regressed to 424 gaps / 156 compiled
-  `unmapped_concept`, and now fresh-cache compiled diagnostics match the
-  warmed snapshot on opaque `unmapped_concept` and case rollup. Remaining next
-  work is reviewing the 17 decisive movement rows, implementing SNOMED
-  descendant/value-set expansion for broad parent disease classes, and
-  continuing condition/event/medication compiler coverage while CC-08/CC-10
-  handles normal-range phrases plus sex/modality/fasting provenance.
+  `unmapped_concept` is down from 317/1076 (29.5%) to 79/1076 (7.3%),
+  with 31 indeterminate-to-determinate criterion movements and 6 case-rollup
+  movements. The path is still not default-ready: diagnostics show 354
+  unresolved compiler gaps, 43 closed-world-blocking cases, and 473 blocking
+  validation findings. The deduped review packet has 190 groups (80
+  `review_mapping`, 100 `implement_compiler_logic`, 6 `choose_candidate`, and 4
+  `review_gap`). The first cache-independent closure pass is complete for the
+  warmed-cache delta: an empty-cache probe had regressed to 424 gaps / 156
+  compiled `unmapped_concept`, then reviewed artifacts brought it back to the
+  warmed snapshot, and the decomposition slice now cuts opaque
+  `unmapped_concept` further to 79. Remaining next work is reviewing the 31
+  decisive movement rows, reducing the 100 grouped `implement_compiler_logic`
+  items, tightening measurement normal-range/provenance handling, and preparing
+  a smaller human grading packet once the closed-world blockers are lower.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
   `matcher_assumption_mode` change behavior, not just metadata, and
   fixes the silent-flip bug in v0.1. Before: `_match_condition` /
@@ -1414,7 +1414,13 @@ promotion remain follow-on work.
     including qualifier stripping (`recent`, `prior`, `documented`), history
     and diagnosis prefix stripping, diagnosis suffix stripping, and T1D/T2D
     shorthand expansion. Workflow anchors such as screening/baseline visits
-    remain explicit unsupported predicates.
+    remain explicit unsupported predicates. Condition/event decomposition slice
+    landed 2026-05-12: PH-ILD compiles into pulmonary hypertension plus
+    interstitial lung disease, cardiovascular event lists compile into explicit
+    event subchecks, single nested atoms such as congestive heart failure and
+    acute pulmonary embolism avoid recursive decomposition, and left-sided heart
+    disease stays an explicit unsupported compiler gap until ventricular,
+    valvular, or hemodynamic decomposition is implemented.
 
 - id: CC-08
   title: Measurement criterion compiler
@@ -1653,26 +1659,24 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`752bd67507c6`) after the reviewed condition/event,
-  medication registry-closure, and cache-independent terminology-closure
-  slices. Both runs
-  have the same 2 deceased-patient scoring refusals and the same Layer-1
+  `compiled_predicates` (`c4ccb713a2d5`) after the reviewed condition/event,
+  medication registry-closure, cache-independent terminology-closure, reviewed
+  descendant-expansion, and condition/event decomposition slices. Both runs have
+  the same 2 deceased-patient scoring refusals and the same Layer-1
   structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
-  reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 115/1076
-  (10.7%); it adds 12 indeterminate-to-determinate criterion wins, records 5
-  determinate-to-indeterminate safety movements for broad parent concepts that
-  need descendant expansion, and changes 3 case rollups (all away from
-  indeterminate). It is still not default-ready: compiler diagnostics show 369
-  unresolved gaps and 43 closed-world-blocking compiled cases, with 507 blocking
-  validation findings. The regenerated compiler-review artifact now dedupes the
-  369 raw rows to 198
-  surface/action/policy groups (98 `review_mapping`, 90
+  reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 79/1076
+  (7.3%); it adds 31 indeterminate-to-determinate criterion wins and changes 6
+  case rollups (all away from indeterminate). It is still not default-ready:
+  compiler diagnostics show 354 unresolved gaps and 43 closed-world-blocking
+  compiled cases, with 473 blocking validation findings. The regenerated
+  compiler-review artifact now dedupes the 354 raw rows to 190
+  surface/action/policy groups (80 `review_mapping`, 100
   `implement_compiler_logic`, 6 `choose_candidate`, and 4 `review_gap`).
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
-  eval seed policy, triaging the 17 decisive criterion movements / 3 case
-  rollups, implementing descendant/value-set expansion, and using the deduped
-  compiler-review packet for targeted reviewer/registry work.
+  eval seed policy, triaging the 31 decisive criterion movements / 6 case
+  rollups, reducing the remaining grouped compiler-logic gaps, and using the
+  deduped compiler-review packet for targeted reviewer/registry work.
 - Movement review artifact (2026-05-12 cache-independent refresh):
   `scripts/eval.py movement-review` now exports baseline-vs-comparison case and
   criterion movements, defaulting to decisive verdict changes with
