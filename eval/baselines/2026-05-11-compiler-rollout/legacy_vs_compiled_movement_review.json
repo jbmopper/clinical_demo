@@ -6,27 +6,24 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "752bd67507c6",
+  "comparison_run_id": "792ebbec7376",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "752bd67507c6",
+    "comparison_run_id": "792ebbec7376",
     "common_cases": 49,
     "changed_cases": 3,
     "compared_criteria": 1076,
-    "changed_criteria": 242,
+    "changed_criteria": 237,
     "by_case_movement": {
       "indeterminate->fail": 2,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "fail->indeterminate": 1,
       "indeterminate->fail": 4,
       "indeterminate->indeterminate": 225,
-      "indeterminate->pass": 8,
-      "pass->indeterminate": 4
+      "indeterminate->pass": 8
     },
     "by_direction": {
-      "determinate_to_indeterminate": 5,
       "indeterminate_to_determinate": 12,
       "reason_changed": 225
     }
@@ -1526,62 +1523,6 @@
       "comparison_support_ids": [],
       "comparison_gap_ids": [
         "criterion:22:measurement:gap:reviewed-ambiguous"
-      ]
-    },
-    {
-      "row_id": "criterion:3a364909__NCT06220266:7",
-      "pair_id": "3a364909__NCT06220266",
-      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
-      "nct_id": "NCT06220266",
-      "eval_slice": "hyperlipidemia",
-      "criterion_index": 7,
-      "criterion_kind": "condition_present",
-      "criterion_source_text": "Endocrine system disease such as thyroid",
-      "baseline_verdict": "pass",
-      "baseline_reason": "ok",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "pass->indeterminate",
-      "direction": "determinate_to_indeterminate",
-      "baseline_evidence_under_assumption": true,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:7",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:7:condition:support:concept-set"
-      ],
-      "comparison_gap_ids": [
-        "criterion:7:condition:gap:expansion"
-      ]
-    },
-    {
-      "row_id": "criterion:3a364909__NCT06220266:10",
-      "pair_id": "3a364909__NCT06220266",
-      "patient_id": "3a364909-94ec-e0c4-0156-8a2e15fa354e",
-      "nct_id": "NCT06220266",
-      "eval_slice": "hyperlipidemia",
-      "criterion_index": 10,
-      "criterion_kind": "condition_present",
-      "criterion_source_text": "has a psychiatric disorder",
-      "baseline_verdict": "pass",
-      "baseline_reason": "ok",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "pass->indeterminate",
-      "direction": "determinate_to_indeterminate",
-      "baseline_evidence_under_assumption": true,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:10",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:10:condition:support:concept-set"
-      ],
-      "comparison_gap_ids": [
-        "criterion:10:condition:gap:expansion"
       ]
     },
     {
@@ -3412,62 +3353,6 @@
       ]
     },
     {
-      "row_id": "criterion:60b0873c__NCT06220266:7",
-      "pair_id": "60b0873c__NCT06220266",
-      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
-      "nct_id": "NCT06220266",
-      "eval_slice": "hyperlipidemia",
-      "criterion_index": 7,
-      "criterion_kind": "condition_present",
-      "criterion_source_text": "Endocrine system disease such as thyroid",
-      "baseline_verdict": "pass",
-      "baseline_reason": "ok",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "pass->indeterminate",
-      "direction": "determinate_to_indeterminate",
-      "baseline_evidence_under_assumption": true,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:7",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:7:condition:support:concept-set"
-      ],
-      "comparison_gap_ids": [
-        "criterion:7:condition:gap:expansion"
-      ]
-    },
-    {
-      "row_id": "criterion:60b0873c__NCT06220266:10",
-      "pair_id": "60b0873c__NCT06220266",
-      "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
-      "nct_id": "NCT06220266",
-      "eval_slice": "hyperlipidemia",
-      "criterion_index": 10,
-      "criterion_kind": "condition_present",
-      "criterion_source_text": "has a psychiatric disorder",
-      "baseline_verdict": "pass",
-      "baseline_reason": "ok",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "pass->indeterminate",
-      "direction": "determinate_to_indeterminate",
-      "baseline_evidence_under_assumption": true,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:10",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:10:condition:support:concept-set"
-      ],
-      "comparison_gap_ids": [
-        "criterion:10:condition:gap:expansion"
-      ]
-    },
-    {
       "row_id": "criterion:60b0873c__NCT07224763:4",
       "pair_id": "60b0873c__NCT07224763",
       "patient_id": "60b0873c-9665-b3f0-61f4-d09ae9667a27",
@@ -4879,34 +4764,6 @@
         "criterion:9:unit:normalization"
       ],
       "comparison_gap_ids": []
-    },
-    {
-      "row_id": "criterion:aa01ba4c__NCT07064473:5",
-      "pair_id": "aa01ba4c__NCT07064473",
-      "patient_id": "aa01ba4c-e0ac-805a-f1cb-9b38dc431f4f",
-      "nct_id": "NCT07064473",
-      "eval_slice": "t2dm-industry",
-      "criterion_index": 5,
-      "criterion_kind": "condition_present",
-      "criterion_source_text": "Established cardiovascular (CV) disease and on active pharmacological treatment",
-      "baseline_verdict": "fail",
-      "baseline_reason": "ok",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "fail->indeterminate",
-      "direction": "determinate_to_indeterminate",
-      "baseline_evidence_under_assumption": true,
-      "comparison_evidence_under_assumption": false,
-      "comparison_compiled_id": "compiled:criterion:5",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [
-        "criterion:5:condition:support:concept-set"
-      ],
-      "comparison_gap_ids": [
-        "criterion:5:condition:gap:expansion"
-      ]
     },
     {
       "row_id": "criterion:aa01ba4c__NCT07064473:6",

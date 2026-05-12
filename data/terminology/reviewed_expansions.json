@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "expansions": [
+    {
+      "policy": "descendants",
+      "source_system": "http://snomed.info/sct",
+      "source_codes": [
+        "362969004"
+      ],
+      "source_display": "Disorder of endocrine system",
+      "expanded_name": "Endocrine system disease reviewed descendant closure",
+      "expanded_codes": [
+        {
+          "code": "362969004",
+          "display": "Disorder of endocrine system",
+          "reason": "Reviewed parent code retained so exact parent-coded patient rows remain executable."
+        },
+        {
+          "code": "73211009",
+          "display": "Diabetes mellitus",
+          "reason": "Existing project patient-vocabulary anchor for diabetes mellitus."
+        },
+        {
+          "code": "44054006",
+          "display": "Type 2 diabetes mellitus",
+          "reason": "Existing reviewed/profile child condition under endocrine disease."
+        },
+        {
+          "code": "46635009",
+          "display": "Type 1 diabetes mellitus",
+          "reason": "Existing reviewed/profile child condition under endocrine disease."
+        },
+        {
+          "code": "15777000",
+          "display": "Prediabetes",
+          "reason": "Existing profile child condition in the diabetes/glucose-metabolism family."
+        },
+        {
+          "code": "40930008",
+          "display": "Hypothyroidism",
+          "reason": "Reviewed thyroid-disorder child named by current trial criteria."
+        },
+        {
+          "code": "34486009",
+          "display": "Hyperthyroidism",
+          "reason": "Reviewed thyroid-disorder child named by current trial criteria."
+        },
+        {
+          "code": "66999008",
+          "display": "Hyperparathyroidism",
+          "reason": "Reviewed endocrine child observed in terminology cache investigation."
+        },
+        {
+          "code": "36976004",
+          "display": "Hypoparathyroidism",
+          "reason": "Reviewed endocrine child observed in terminology cache investigation."
+        }
+      ],
+      "reason": "Reviewed offline SNOMED descendant closure for broad endocrine disease criteria. This is intentionally narrower than a full SNOMED transitive closure and is safe for deterministic closed-world eval because every executable child code is committed here.",
+      "source": "compiler expansion review",
+      "provenance": "2026-05-12 CC-03 fresh-cache expansion follow-up.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-expansion-registry-v1"
+    },
+    {
+      "policy": "descendants",
+      "source_system": "http://snomed.info/sct",
+      "source_codes": [
+        "74732009"
+      ],
+      "source_display": "Mental disorder",
+      "expanded_name": "Psychiatric disorder reviewed descendant closure",
+      "expanded_codes": [
+        {
+          "code": "74732009",
+          "display": "Mental disorder",
+          "reason": "Reviewed parent code retained so exact parent-coded patient rows remain executable."
+        },
+        {
+          "code": "370143000",
+          "display": "Major depressive disorder",
+          "reason": "Common psychiatric child condition named by trial text and CHIA-style retained examples."
+        },
+        {
+          "code": "35489007",
+          "display": "Depressive disorder",
+          "reason": "Common psychiatric child condition named by trial text and CHIA-style retained examples."
+        },
+        {
+          "code": "48694002",
+          "display": "Anxiety",
+          "reason": "Common psychiatric child condition under mental disorder."
+        },
+        {
+          "code": "13746004",
+          "display": "Bipolar disorder",
+          "reason": "Common psychiatric child condition named by trial text and CHIA-style retained examples."
+        },
+        {
+          "code": "58214004",
+          "display": "Schizophrenia",
+          "reason": "Common psychiatric child condition named by trial text and CHIA-style retained examples."
+        },
+        {
+          "code": "47505003",
+          "display": "Posttraumatic stress disorder",
+          "reason": "Common psychiatric child condition under mental disorder."
+        }
+      ],
+      "reason": "Reviewed offline SNOMED descendant closure for broad psychiatric disorder criteria. Substance-use and social-risk phrases remain separate compiler work because broad inclusion here would over-match.",
+      "source": "compiler expansion review",
+      "provenance": "2026-05-12 CC-03 fresh-cache expansion follow-up.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-expansion-registry-v1"
+    },
+    {
+      "policy": "descendants",
+      "source_system": "http://snomed.info/sct",
+      "source_codes": [
+        "49601007"
+      ],
+      "source_display": "Disorder of cardiovascular system",
+      "expanded_name": "Cardiovascular disease reviewed descendant closure",
+      "expanded_codes": [
+        {
+          "code": "49601007",
+          "display": "Disorder of cardiovascular system",
+          "reason": "Reviewed parent code retained so exact parent-coded patient rows remain executable."
+        },
+        {
+          "code": "38341003",
+          "display": "Hypertensive disorder",
+          "reason": "Existing project patient-vocabulary anchor for cardiovascular disease."
+        },
+        {
+          "code": "59621000",
+          "display": "Essential hypertension",
+          "reason": "Existing project patient-vocabulary anchor for cardiovascular disease."
+        },
+        {
+          "code": "31992008",
+          "display": "Secondary hypertension",
+          "reason": "Existing reviewed child condition under cardiovascular disease."
+        },
+        {
+          "code": "70995007",
+          "display": "Pulmonary hypertension",
+          "reason": "Existing reviewed child condition under cardiovascular disease."
+        },
+        {
+          "code": "84114007",
+          "display": "Heart failure",
+          "reason": "Existing reviewed child condition under cardiovascular disease."
+        },
+        {
+          "code": "42343007",
+          "display": "Congestive heart failure",
+          "reason": "Existing reviewed child condition under cardiovascular disease."
+        },
+        {
+          "code": "49436004",
+          "display": "Atrial fibrillation",
+          "reason": "Existing reviewed child condition under cardiovascular disease."
+        },
+        {
+          "code": "4557003",
+          "display": "Preinfarction syndrome",
+          "reason": "Existing reviewed unstable-angina child condition under cardiovascular disease."
+        },
+        {
+          "code": "706870000",
+          "display": "Acute pulmonary embolism",
+          "reason": "Existing reviewed child condition under cardiovascular disease."
+        },
+        {
+          "code": "22298006",
+          "display": "Myocardial infarction",
+          "reason": "Trial criteria explicitly name myocardial infarction inside cardiovascular disease examples."
+        },
+        {
+          "code": "394659003",
+          "display": "Acute coronary syndrome",
+          "reason": "Trial criteria explicitly name acute coronary syndrome inside cardiovascular disease examples."
+        },
+        {
+          "code": "230690007",
+          "display": "Cerebrovascular accident",
+          "reason": "Trial criteria explicitly name stroke/cerebrovascular disorder inside cardiovascular disease examples."
+        },
+        {
+          "code": "266257000",
+          "display": "Transient ischemic attack",
+          "reason": "Trial criteria explicitly name transient ischemic attack inside cardiovascular disease examples."
+        },
+        {
+          "code": "128053003",
+          "display": "Deep venous thrombosis",
+          "reason": "Trial criteria explicitly name deep venous thrombosis inside cardiovascular/thrombotic examples."
+        }
+      ],
+      "reason": "Reviewed offline SNOMED descendant closure for broad cardiovascular disease criteria. The list is deliberately patient-vocabulary and trial-example oriented rather than a full transitive hierarchy dump.",
+      "source": "compiler expansion review",
+      "provenance": "2026-05-12 CC-03 fresh-cache expansion follow-up.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-12",
+      "resolver_version": "reviewed-expansion-registry-v1"
+    }
+  ]
+}

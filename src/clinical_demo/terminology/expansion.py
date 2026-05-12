@@ -8,11 +8,16 @@ treat an unimplemented expansion as complete.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from clinical_demo.profile import ConceptSet
+from clinical_demo.terminology.reviewed_expansions import (
+    ReviewedExpansionRegistry,
+    load_reviewed_expansion_registry,
+)
 from clinical_demo.terminology.reviewed_registry import ExpansionPolicy as ConceptExpansionPolicy
 
 ExpansionStatus = Literal["resolved", "unresolved", "unsupported"]
@@ -61,7 +66,8 @@ def expand_concept_set(
 
     ``exact_code`` and ``reviewed_code_list`` keep the reviewed codes exactly.
     ``patient_vocabulary_closure`` intersects reviewed codes with observed
-    patient vocabulary. ``descendants`` and ``value_set_oid`` remain explicit
+    patient vocabulary. ``descendants`` and ``value_set_oid`` use committed
+    reviewed expansion closures when available; otherwise they remain explicit
     unsupported results until graph/value-set resolvers are available.
     """
 
@@ -88,24 +94,32 @@ def expand_concept_set(
     if request.policy == "patient_vocabulary_closure":
         return _patient_vocabulary_closure(request)
     if request.policy == "descendants":
+        reviewed = _reviewed_expansion(request)
+        if reviewed is not None:
+            return reviewed
         return ConceptExpansionResult(
             policy=request.policy,
             status="unsupported",
             input_concept_set=request.concept_set,
             unsupported_reason="descendants_not_available_offline",
             reason=(
-                "SNOMED descendant expansion requires a terminology graph and is "
-                "not implemented in the offline foundation."
+                "No reviewed offline SNOMED descendant expansion is committed "
+                "for this ConceptSet; live graph expansion is not available in "
+                "deterministic runs."
             ),
         )
+    reviewed = _reviewed_expansion(request)
+    if reviewed is not None:
+        return reviewed
     return ConceptExpansionResult(
         policy=request.policy,
         status="unsupported",
         input_concept_set=request.concept_set,
         unsupported_reason="value_set_oid_requires_resolver",
         reason=(
-            "Value-set OID expansion requires a resolver/cache-backed value-set "
-            "source and is not implemented in the offline foundation."
+            "No reviewed offline value-set expansion is committed for this "
+            "ConceptSet/OID; live value-set expansion is not available in "
+            "deterministic runs."
         ),
     )
 
@@ -171,6 +185,31 @@ def _patient_vocabulary_closure(request: ConceptExpansionRequest) -> ConceptExpa
         removed_codes=removed,
         reason="Filtered reviewed ConceptSet codes to observed patient vocabulary.",
     )
+
+
+def _reviewed_expansion(request: ConceptExpansionRequest) -> ConceptExpansionResult | None:
+    entry = _reviewed_expansion_registry().lookup(
+        concept_set=request.concept_set,
+        policy=request.policy,
+        value_set_oid=request.value_set_oid,
+    )
+    if entry is None:
+        return None
+
+    expanded = entry.to_concept_set()
+    return ConceptExpansionResult(
+        policy=request.policy,
+        status="resolved",
+        input_concept_set=request.concept_set,
+        expanded_concept_set=expanded,
+        included_codes=expanded.codes,
+        reason=entry.reason,
+    )
+
+
+@lru_cache(maxsize=1)
+def _reviewed_expansion_registry() -> ReviewedExpansionRegistry:
+    return load_reviewed_expansion_registry()
 
 
 __all__ = [

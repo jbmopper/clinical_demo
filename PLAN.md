@@ -1271,6 +1271,12 @@ promotion remain follow-on work.
     - Cache namespace for expansion inputs and frozen outputs.
     - Patient-vocabulary filter so broad SNOMED closures can be narrowed to codes
       present in the active dataset when appropriate.
+    - 2026-05-12 implementation slice: `reviewed_expansions.json` plus
+      `clinical_demo.terminology.reviewed_expansions` now provide
+      cache-independent reviewed descendant closures for endocrine system disease,
+      psychiatric disorder, and cardiovascular disease. This removes the
+      fresh-cache dependency on warmed exact parent-code hits while keeping
+      missing descendant closures as typed expansion gaps.
   exit_criteria:
     - "bone fractures" can map through a parent/closure policy, not a manually
       typed list of every Synthea fracture code.

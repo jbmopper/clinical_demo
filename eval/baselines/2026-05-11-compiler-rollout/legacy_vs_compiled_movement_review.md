@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `752bd67507c6`
+- comparison: `792ebbec7376`
 - changed cases: 3/49
-- changed criteria: 242/1076
-- criterion directions: determinate_to_indeterminate=5 / indeterminate_to_determinate=12 / reason_changed=225
+- changed criteria: 237/1076
+- criterion directions: indeterminate_to_determinate=12 / reason_changed=225
 
 ## Case Movements
 
@@ -76,8 +76,6 @@ Public-Artifact-Safety: synthetic
 | `38f38890__NCT06217302` | 27 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Participation in another interventional clinical research study within 30 days of screening; |
 | `38f38890__NCT07489209` | 4 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving stable and tolerable lipid-lowering treatment or other drugs for chronic diseases treat... |
 | `38f38890__NCT07489209` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Uncontrolled hypertension at screening (blood pressure >160/100 mmHg). |
-| `3a364909__NCT06220266` | 7 | condition_present | pass->indeterminate | determinate_to_indeterminate | condition_presence | Endocrine system disease such as thyroid |
-| `3a364909__NCT06220266` | 10 | condition_present | pass->indeterminate | determinate_to_indeterminate | condition_presence | has a psychiatric disorder |
 | `3a364909__NCT07362459` | 2 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | ECOG Performance Status score of 0 to 1. |
 | `3a364909__NCT07362459` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | An expected survival of ≥ 3 months. |
 | `3a364909__NCT07362459` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | At least one measurable non-CNS lesion according to RECIST v1.1 criteria. |
@@ -149,8 +147,6 @@ Public-Artifact-Safety: synthetic
 | `56cfe6a5__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `56cfe6a5__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
 | `56cfe6a5__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
-| `60b0873c__NCT06220266` | 7 | condition_present | pass->indeterminate | determinate_to_indeterminate | condition_presence | Endocrine system disease such as thyroid |
-| `60b0873c__NCT06220266` | 10 | condition_present | pass->indeterminate | determinate_to_indeterminate | condition_presence | has a psychiatric disorder |
 | `60b0873c__NCT07224763` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Evidence of thymic involution on chest computed tomography (CT) scan with a thymic region of inte... |
 | `60b0873c__NCT07224763` | 5 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Live within 3 hours travel time of the xenotransplant center. |
 | `60b0873c__NCT07224763` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated Post Transplant Survival Calculator score >20%. |
@@ -205,7 +201,6 @@ Public-Artifact-Safety: synthetic
 | `a06bce31__NCT07221513` | 1 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Participants will be classified as having HFrEF (LVEF ≤ 40%) or HFpEF (LVEF >40% and ≤70%). |
 | `a06bce31__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Right heart catheterization (RHC) based evidence of cpcPH: |
 | `a06bce31__NCT07221513` | 9 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Body mass index (BMI) >45 kg/m² at screening. |
-| `aa01ba4c__NCT07064473` | 5 | condition_present | fail->indeterminate | determinate_to_indeterminate | condition_presence | Established cardiovascular (CV) disease and on active pharmacological treatment |
 | `aa01ba4c__NCT07064473` | 6 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | At least one additional risk factor for developing heart failure (HF) |
 | `aa01ba4c__NCT07064473` | 10 | medication_present | indeterminate->indeterminate | reason_changed | medication_exposure | Treatment with an Mineralocorticoid receptor antagonist (MRA) |
 | `aa01ba4c__NCT07064473` | 13 | medication_present | indeterminate->indeterminate | reason_changed | medication_exposure | A direct renin inhibitor (e.g. aliskiren) |

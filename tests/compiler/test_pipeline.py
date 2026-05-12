@@ -351,6 +351,21 @@ def test_reviewed_condition_mapping_can_use_specific_code_list() -> None:
     assert compiled.checkable_predicates[0].target_codes == frozenset({"433144002", "431857002"})
 
 
+def test_reviewed_condition_mapping_can_use_descendant_expansion() -> None:
+    criterion = _condition("cardiovascular disease")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.unresolved_gaps == []
+    assert compiled.predicate.status == "resolved"
+    assert compiled.expansion.status == "resolved"
+    assert compiled.expansion.strategy == "descendants"
+    assert "49601007" in compiled.checkable_predicates[0].target_codes
+    assert "84114007" in compiled.checkable_predicates[0].target_codes
+    assert "22298006" in compiled.checkable_predicates[0].target_codes
+
+
 def test_free_text_condition_mention_compiles_to_condition_predicate() -> None:
     criterion = _free_text("Bone fractures within the past 12 months").model_copy(
         update={

@@ -12,6 +12,14 @@ def _concept_set() -> ConceptSet:
     )
 
 
+def _cardiovascular_parent() -> ConceptSet:
+    return ConceptSet(
+        name="cardiovascular disease",
+        system="http://snomed.info/sct",
+        codes=frozenset({"49601007"}),
+    )
+
+
 def test_exact_code_expansion_preserves_concept_set_codes() -> None:
     result = expand_concept_set(_concept_set(), policy="exact_code")
 
@@ -71,6 +79,17 @@ def test_descendants_policy_is_explicitly_unsupported_offline() -> None:
     assert result.status == "unsupported"
     assert result.expanded_concept_set is None
     assert result.unsupported_reason == "descendants_not_available_offline"
+
+
+def test_descendants_policy_uses_reviewed_offline_expansion_when_available() -> None:
+    result = expand_concept_set(_cardiovascular_parent(), policy="descendants")
+
+    assert result.status == "resolved"
+    assert result.expanded_concept_set is not None
+    assert result.expanded_concept_set.name == "Cardiovascular disease reviewed descendant closure"
+    assert "49601007" in result.included_codes
+    assert "84114007" in result.included_codes
+    assert "22298006" in result.included_codes
 
 
 def test_value_set_oid_policy_is_explicitly_unsupported_offline() -> None:

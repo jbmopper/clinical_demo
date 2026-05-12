@@ -1,7 +1,7 @@
 # Reviewed Terminology Registry
 
-`reviewed_mappings.json` and `reviewed_medication_classes.json` are committed
-project data, not resolver caches.
+`reviewed_mappings.json`, `reviewed_medication_classes.json`, and
+`reviewed_expansions.json` are committed project data, not resolver caches.
 
 Use this registry for terminology decisions that a reviewer has explicitly
 accepted, rejected, or classified as requiring non-atomic compiler handling.
@@ -43,11 +43,21 @@ class surfaces such as `statins`, `lipid-lowering treatment`,
 through reviewed/cache-only RxNorm lookup before creating an executable class
 predicate; missing members remain compiler gaps rather than partial matches.
 
+Reviewed expansion entries are loaded by
+`clinical_demo.terminology.reviewed_expansions`. They turn reviewed broad
+parents such as endocrine system disease, psychiatric disorder, and
+cardiovascular disease into executable SNOMED code closures without reading the
+warmed terminology cache. These closures are deliberately narrower than full
+SNOMED transitive hierarchy dumps: each included code has committed reviewer
+provenance, and a missing closure still produces a typed expansion gap rather
+than silently executing the parent alone.
+
 Expansion policies:
 
 - `exact_code`: the entry names one exact code or exact concept.
 - `descendants`: the entry intentionally includes descendants under a reviewed
-  hierarchy concept.
+  hierarchy concept. For deterministic runs this requires a matching row in
+  `reviewed_expansions.json`; otherwise the compiler emits an expansion gap.
 - `value_set_oid`: the entry delegates expansion to a reviewed value-set OID.
 - `reviewed_code_list`: the entry points at a project-owned reviewed code list.
 - `patient_vocabulary_closure`: the entry is closed over codes observed in the
