@@ -109,6 +109,8 @@ def test_committed_medication_mappings_load() -> None:
     furosemide = registry.lookup("medication", "furosemide")
     hydrochlorothiazide = registry.lookup("medication", "hydrochlorothiazide")
     norepinephrine = registry.lookup("medication", "norepinephrine")
+    anastrozole = registry.lookup("medication", "anastrozole")
+    carbamazepine = registry.lookup("medication", "carbamazepine")
 
     assert metformin is not None
     assert metformin.status == "mapped"
@@ -140,6 +142,12 @@ def test_committed_medication_mappings_load() -> None:
     assert norepinephrine is not None
     assert norepinephrine.status == "mapped"
     assert norepinephrine.candidates[0].codes == frozenset({"242969"})
+    assert anastrozole is not None
+    assert anastrozole.status == "mapped"
+    assert anastrozole.candidates[0].codes == frozenset({"199224"})
+    assert carbamazepine is not None
+    assert carbamazepine.status == "mapped"
+    assert carbamazepine.candidates[0].codes == frozenset({"308971"})
 
 
 def test_committed_procedure_mappings_load() -> None:

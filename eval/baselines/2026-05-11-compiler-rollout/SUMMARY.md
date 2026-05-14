@@ -10,7 +10,9 @@ reviewed sex-specific ULN reference-limit translation, and reviewed
 antidiabetic medication-class closure, C-peptide unit conversion, and reviewed
 procedure-history predicate execution, blood-pressure-affecting medication
 class closure, coronary-intervention temporal procedure rerouting, and
-condition-typed intravenous-inotrope medication exposure promotion.
+condition-typed intravenous-inotrope medication exposure promotion, plus
+aromatase-inhibitor and anticonvulsant current-vocabulary medication-class
+closures.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -72,14 +74,18 @@ measurement, and medication hardening slices landed.
   condition-typed medication exposure pass adds reviewed intravenous-inotrope
   current-vocabulary closure over norepinephrine and promotes medication-like
   Condition mentions into `medication_exposure` only when the reviewed
-  medication compiler emits an executable predicate.
+  medication compiler emits an executable predicate. The latest medication-class
+  closure pass adds reviewed current-vocabulary anchors for anastrozole and
+  carbamazepine so aromatase-inhibitor and anticonvulsant-therapy rows compile
+  without live RxNorm lookup; broader steroid/immunosuppressant/HRT classes
+  remain typed gaps until route and exception semantics are modeled.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `69e1b44cd6ec` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 22.2s |
+| `compiled_predicates` | `7d58de5d529d` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 22.6s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
@@ -93,7 +99,10 @@ decomposition, sex-specific hemoglobin ULN translation, antidiabetic
 medication-class closure, C-peptide unit conversion, full-pneumonectomy
 procedure-history execution, blood-pressure-affecting medication-class
 exposure, coronary-intervention procedure-history temporal windows, and
-condition-typed intravenous-inotrope medication exposure promotion. The final
+condition-typed intravenous-inotrope medication exposure promotion. The latest
+aromatase-inhibitor/anticonvulsant class closure removed four medication-class
+compiler gaps but produced no additional verdict movement because the parent
+drug-list criterion still has other unresolved medication-class members. The final
 movement packet has 83
 indeterminate-to-determinate criterion wins plus 1
 determinate-to-determinate movement. The prior broad-parent
@@ -146,8 +155,8 @@ a group so the absence-as-negative decisions match the validation contract.
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 355
-- unresolved compiler gaps: 289
+- checkable predicates: 359
+- unresolved compiler gaps: 285
 - closed-world validation: 4 ok cases, 43 blocking cases
 - validation findings: 983 total, 397 blocking
 
@@ -156,16 +165,16 @@ Unresolved compiler gaps by recommended action:
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 271 |
+| `implement_compiler_logic` | 267 |
 | `review_gap` | 10 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-289 raw rows to 165 distinct surface/action/policy work items:
+285 raw rows to 163 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 159 |
+| `implement_compiler_logic` | 157 |
 | `review_gap` | 1 |
 
 The current threshold gate passes only without `--require-compilation`, because
@@ -175,11 +184,11 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 289 \
+  --max-unresolved-gaps 285 \
   --max-closed-world-blocking-cases 43 \
   --max-closed-world-blocking-findings 397 \
   --max-gap-kind unmapped_concept=0 \
-  --max-gap-kind unsupported_predicate=271 \
+  --max-gap-kind unsupported_predicate=267 \
   --max-gap-kind ambiguous_mapping=8 \
   --max-gap-kind insufficient_source=10
 ```
@@ -240,7 +249,11 @@ and moving two NCT07489209 free-text temporal criteria from indeterminate to
 determinate `pass`. The condition-typed medication exposure slice then reduced
 unresolved compiler gaps to 289, increased checkable predicates to 355, reduced
 total validation findings to 983, and moved seven NCT06941441 intravenous-
-inotrope free-text criteria from indeterminate to determinate `pass`.
+inotrope free-text criteria from indeterminate to determinate `pass`. The
+aromatase-inhibitor/anticonvulsant class slice then reduced unresolved compiler
+gaps to 285 and increased checkable predicates to 359 without verdict movement,
+because the affected drug-list criterion still contains other unresolved
+medication-class members.
 
 ## Patient-Evidence Calibration
 
@@ -250,7 +263,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `69e1b44cd6ec` | 5/50 | 80.0% | 40.0% | 17 |
+| `7d58de5d529d` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

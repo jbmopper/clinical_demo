@@ -142,6 +142,45 @@
       "resolver_version": "reviewed-medication-class-registry-v1"
     },
     {
+      "class_id": "reviewed-medication-class:aromatase-inhibitors-current-vocab",
+      "display": "Aromatase inhibitors (current patient vocabulary)",
+      "surfaces": [
+        "aromatase inhibitor",
+        "aromatase inhibitors"
+      ],
+      "member_surfaces": [
+        "anastrozole"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed aromatase-inhibitor expansion closed over the committed Synthea medication vocabulary currently carrying anastrozole tablet rows.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced aromatase-inhibitor exposure criteria; committed Synthea FHIR rows include RxNorm-coded anastrozole representatives.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-13",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
+      "class_id": "reviewed-medication-class:anticonvulsants-current-vocab",
+      "display": "Anticonvulsants (current patient vocabulary)",
+      "surfaces": [
+        "anticonvulsant",
+        "anticonvulsants",
+        "anticonvulsant medication",
+        "anticonvulsant medications",
+        "anticonvulsant therapy"
+      ],
+      "member_surfaces": [
+        "carbamazepine"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed anticonvulsant expansion closed over the committed Synthea medication vocabulary currently carrying carbamazepine/Tegretol rows.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced anticonvulsant therapy as a medication-class gap; committed Synthea FHIR rows include RxNorm-coded carbamazepine representatives.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-13",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
       "class_id": "reviewed-medication-class:glp-1-receptor-agonists",
       "display": "GLP-1 receptor agonists",
       "surfaces": [

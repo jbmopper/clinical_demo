@@ -81,6 +81,8 @@ def test_committed_reviewed_medication_classes_load() -> None:
     raas = registry.lookup("RASB")
     bp_affecting = registry.lookup("medication affecting blood pressure")
     inotropes = registry.lookup("received intravenous inotropes")
+    aromatase_inhibitors = registry.lookup("aromatase inhibitors")
+    anticonvulsants = registry.lookup("anticonvulsant therapy")
     glp1 = registry.lookup("GLP-1 RA")
     sglt2 = registry.lookup("sglt-2 inhibitors")
     sglt_variant = registry.lookup("SGLT inhibitor")
@@ -109,6 +111,12 @@ def test_committed_reviewed_medication_classes_load() -> None:
     assert inotropes is not None
     assert inotropes.member_surfaces == ("norepinephrine",)
     assert registry.lookup("IV inotropes") is inotropes
+    assert aromatase_inhibitors is not None
+    assert aromatase_inhibitors.member_surfaces == ("anastrozole",)
+    assert registry.lookup("aromatase inhibitor") is aromatase_inhibitors
+    assert anticonvulsants is not None
+    assert anticonvulsants.member_surfaces == ("carbamazepine",)
+    assert registry.lookup("anticonvulsant medications") is anticonvulsants
     assert glp1 is not None
     assert glp1.member_surfaces == ("semaglutide",)
     assert sglt2 is not None

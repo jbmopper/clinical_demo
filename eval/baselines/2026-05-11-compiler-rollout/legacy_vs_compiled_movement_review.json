@@ -6,10 +6,10 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "69e1b44cd6ec",
+  "comparison_run_id": "7d58de5d529d",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "69e1b44cd6ec",
+    "comparison_run_id": "7d58de5d529d",
     "common_cases": 49,
     "changed_cases": 13,
     "compared_criteria": 1076,
@@ -599,28 +599,32 @@
       "comparison_predicate_status": "unresolved",
       "comparison_predicate_kind": "compound",
       "comparison_predicate_ids": [
+        "criterion:16:free-text:medication-list:002:predicate:medication",
         "criterion:16:free-text:medication-list:004:predicate:medication",
         "criterion:16:free-text:medication-list:006:predicate:medication",
         "criterion:16:free-text:medication-list:007:predicate:medication",
         "criterion:16:free-text:medication-list:008:predicate:medication",
         "criterion:16:free-text:medication-list:009:predicate:medication",
+        "criterion:16:free-text:medication-list:010:predicate:medication",
         "criterion:16:free-text:medication-list:011:predicate:medication"
       ],
       "comparison_support_ids": [
+        "criterion:16:free-text:medication-list:002:medication:support:class-expansion",
+        "criterion:16:free-text:medication-list:002:medication:support:class-member-001",
         "criterion:16:free-text:medication-list:004:medication:support:concept-set",
         "criterion:16:free-text:medication-list:006:medication:support:concept-set",
         "criterion:16:free-text:medication-list:007:medication:support:concept-set",
         "criterion:16:free-text:medication-list:008:medication:support:concept-set",
         "criterion:16:free-text:medication-list:009:medication:support:concept-set",
+        "criterion:16:free-text:medication-list:010:medication:support:class-expansion",
+        "criterion:16:free-text:medication-list:010:medication:support:class-member-001",
         "criterion:16:free-text:medication-list:011:medication:support:class-expansion",
         "criterion:16:free-text:medication-list:011:medication:support:class-member-001"
       ],
       "comparison_gap_ids": [
         "criterion:16:free-text:medication-list:001:medication:gap:reviewed-composite_unhandled",
-        "criterion:16:free-text:medication-list:002:medication:gap:medication_class",
         "criterion:16:free-text:medication-list:003:medication:gap:medication_list",
-        "criterion:16:free-text:medication-list:005:medication:gap:reviewed-out_of_scope",
-        "criterion:16:free-text:medication-list:010:medication:gap:medication_class"
+        "criterion:16:free-text:medication-list:005:medication:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -6591,28 +6595,32 @@
       "comparison_predicate_status": "unresolved",
       "comparison_predicate_kind": "compound",
       "comparison_predicate_ids": [
+        "criterion:16:free-text:medication-list:002:predicate:medication",
         "criterion:16:free-text:medication-list:004:predicate:medication",
         "criterion:16:free-text:medication-list:006:predicate:medication",
         "criterion:16:free-text:medication-list:007:predicate:medication",
         "criterion:16:free-text:medication-list:008:predicate:medication",
         "criterion:16:free-text:medication-list:009:predicate:medication",
+        "criterion:16:free-text:medication-list:010:predicate:medication",
         "criterion:16:free-text:medication-list:011:predicate:medication"
       ],
       "comparison_support_ids": [
+        "criterion:16:free-text:medication-list:002:medication:support:class-expansion",
+        "criterion:16:free-text:medication-list:002:medication:support:class-member-001",
         "criterion:16:free-text:medication-list:004:medication:support:concept-set",
         "criterion:16:free-text:medication-list:006:medication:support:concept-set",
         "criterion:16:free-text:medication-list:007:medication:support:concept-set",
         "criterion:16:free-text:medication-list:008:medication:support:concept-set",
         "criterion:16:free-text:medication-list:009:medication:support:concept-set",
+        "criterion:16:free-text:medication-list:010:medication:support:class-expansion",
+        "criterion:16:free-text:medication-list:010:medication:support:class-member-001",
         "criterion:16:free-text:medication-list:011:medication:support:class-expansion",
         "criterion:16:free-text:medication-list:011:medication:support:class-member-001"
       ],
       "comparison_gap_ids": [
         "criterion:16:free-text:medication-list:001:medication:gap:reviewed-composite_unhandled",
-        "criterion:16:free-text:medication-list:002:medication:gap:medication_class",
         "criterion:16:free-text:medication-list:003:medication:gap:medication_list",
-        "criterion:16:free-text:medication-list:005:medication:gap:reviewed-out_of_scope",
-        "criterion:16:free-text:medication-list:010:medication:gap:medication_class"
+        "criterion:16:free-text:medication-list:005:medication:gap:reviewed-out_of_scope"
       ]
     },
     {

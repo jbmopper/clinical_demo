@@ -275,6 +275,56 @@ def test_committed_intravenous_inotrope_class_expands_without_rxnorm_cache(
     ]
 
 
+def test_committed_aromatase_inhibitor_class_expands_without_rxnorm_cache(
+    tmp_path: Path,
+) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("aromatase inhibitors"),
+        source_criterion_id="criterion:aromatase-inhibitors",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == "Aromatase inhibitors (current patient vocabulary)"
+    assert result.concept_set.codes == frozenset({"199224"})
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "aromatase inhibitors",
+        "anastrozole",
+    ]
+
+
+def test_committed_anticonvulsant_class_expands_without_rxnorm_cache(
+    tmp_path: Path,
+) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("anticonvulsant therapy"),
+        source_criterion_id="criterion:anticonvulsants",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == "Anticonvulsants (current patient vocabulary)"
+    assert result.concept_set.codes == frozenset({"308971"})
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "anticonvulsant therapy",
+        "carbamazepine",
+    ]
+
+
 def test_committed_glp1_class_expands_without_rxnorm_cache(tmp_path: Path) -> None:
     resolver = TerminologyResolver(
         TerminologyCache(tmp_path),

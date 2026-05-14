@@ -66,7 +66,10 @@ RxNorm anchors (`metformin`, `insulin`, statins, alendronic acid, and RAAS
 representatives) plus cache-independent reviewed RxNorm code sets for trial-only
 surfaces such as `Sotatercept`, `abaloparatide`, `Symlin`, `teriparatide`,
 `semaglutide`, `dapagliflozin`, `amylin`/pramlintide, and
-`calcitonin`/salmon-calcitonin.
+`calcitonin`/salmon-calcitonin. The next current-vocabulary class pass adds
+reviewed anchors for `anastrozole` and `carbamazepine`, letting
+aromatase-inhibitor and anticonvulsant-therapy criteria compile without live
+RxNorm lookups.
 Medication-class entries are loaded by
 `clinical_demo.terminology.medication_classes`. They key one or more reviewed
 class surfaces such as `statins`, `lipid-lowering treatment`,
