@@ -24,6 +24,9 @@ data/cache/
 
 eval/runs.sqlite
 eval/runs.sqlite-*
+# Local-only calibration snapshots before refresh; often exceed size gates
+# and may include note rows blocked by `public-artifact-privacy-gate`.
+eval/calibration/*pre-refresh*.json
 # `eval/baselines/` is intentionally tracked — committed numbers are
 # the regression artifact for layer-1 (and later) eval runs (see
 # PLAN task 2.7 / decision D-68). Per-pair `*_report.json` dumps are
