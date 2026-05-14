@@ -18,900 +18,150 @@
 > head commit. Detailed task history lives in §6; per-decision
 > rationale lives in §12.
 
-- **Active phase:** Phase 2 — Workflow + eval.
-- **Latest compiler rollout snapshot:** opt-in
-  `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `b47ada00d6a7` now reflects reviewed lab mappings/non-mappings,
-  reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
-  reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
-  threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
-  anchors, reviewed lipid-lowering/bisphosphonate/RAAS class closure, reviewed
-  medication non-mapping classifications, inline reviewed code sets for
-  cache-independent condition/medication closure, exact-reviewed precedence in
-  candidate ranking, reviewed descendant expansions, PH-ILD decomposition,
-  cardiovascular event-list decomposition, long-tail condition terminology
-  rows, qualifier-aware condition phrase gaps, a final opaque-unmapped review
-  pass (GLP-1/semaglutide, amylin, calcitonin, diabetes/HF/pregnancy variants,
-  and singleton oncology/genomic/procedure/status classifications), and
-  compiler-side blood-pressure threshold decomposition for explicit
-  systolic/diastolic phrases plus generic `BP >160/100` / `BP <140/90`
-  shorthand, including SBP/DBP abbreviation pairs, and reviewed ULN
-  reference-limit translation for AST/ALT, total-bilirubin, and sex-specific
-  hemoglobin multiplier criteria, plus reviewed SGLT/SGLT2 spelling-variant
-  and non-insulin antidiabetic medication-class closure, C-peptide
-  `nmol/L` to `ng/mL` conversion, and reviewed full-pneumonectomy
-  procedure-history execution against parsed patient `Procedure` rows,
-  blood-pressure-affecting medication-class closure for the current Synthea
-  RxNorm vocabulary, and reviewed coronary-intervention temporal-event
-  rerouting through `procedure_history` predicates, plus reviewed
-  intravenous-inotrope medication-class closure and promotion of
-  condition-typed free-text medication exposure rows, reviewed
-  aromatase-inhibitor/anticonvulsant current-vocabulary medication-class
-  closures, reviewed DPP-4 out-of-scope medication-class variants,
-  provenance-sensitive plasma-glucose threshold preservation, free-text
-  plasma-glucose threshold routing into measurement compilation,
-  normal-range/provenance-specific measurement gap kinds, and structured
-  `free_text_review` routing/validation plus reviewer-artifact classification
-  for nonclinical condition surfaces, plus reviewed current-vocabulary
-  anticoagulant closure and condition/temporal medication-class exposure
-  rerouting, plus reviewer-artifact classification for reviewed
-  `out_of_scope`/`extractor_bug` compiler gaps, plus CKD/renal-failure
-  dialysis-dependent composite decomposition into condition and
-  `procedure_history` subchecks over reviewed dialysis Procedure rows.
-  It regenerates the compiler
-  review/movement artifacts under
-  `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
-  fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
-  `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
-  with 88 indeterminate-to-determinate criterion movements, 275 reason-only
-  criterion changes, and 13 case-rollup movements. The path is still not
-  default-ready: diagnostics show 280 unresolved compiler gaps, 43
-  closed-world-blocking cases, and 379 blocking validation findings. The
-  deduped review packet has 159 groups (69 `implement_compiler_logic`, 5
-  `choose_candidate`, and 85 `review_gap`); there are no remaining
-  `review_mapping` groups, and the
-  generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
-  ULN buckets, SGLT/non-insulin antidiabetic medication-class buckets, and the
-  C-peptide unit-conversion bucket are closed; the full-pneumonectomy
-  procedure-history bucket and renal dialysis-dependent CKD/ESRD composite
-  bucket are now executable. The first
-  cache-independent closure pass is complete for the
-  warmed-cache delta: an empty-cache probe had regressed to 424 gaps / 156
-  compiled `unmapped_concept`, then reviewed artifacts brought it back to the
-  warmed snapshot; decomposition and opaque-gap review then eliminated the
-  remaining opaque `unmapped_concept` rows. BP and reviewed ULN slices then
-  turned more typed measurement compiler work into executable predicates, and
-  the reviewed medication-class slice turned more class-like medication surfaces
-  into executable cache-independent predicates. The C-peptide unit slice removed
-  the last unit-normalization bucket from the compiler-review groups. The
-  procedure-history slice introduced completed-procedure parsing and
-  `procedure_history` predicates for reviewed surgical-history surfaces. The
-  blood-pressure-affecting medication slice turned NCT07297797's temporal
-  medication-class exposure into executable RxNorm predicates. The
-  coronary-intervention procedure slice turned two NCT07489209 free-text
-  temporal procedure rows from indeterminate to determinate `pass` by checking
-  completed PCI/CABG procedure history inside the six-month window. The
-  condition-typed medication exposure slice turned seven NCT06941441
-  intravenous-inotrope rows from indeterminate to determinate `pass` by
-  promoting reviewed medication-like Condition mentions into medication
-  exposure predicates. The aromatase-inhibitor/anticonvulsant slice removed
-  four more medication-class compiler gaps and added four checkable predicates
-  without moving verdicts because the parent drug-list criterion still has
-  other unresolved medication-class members. The structured free-text-review
-  slice makes reviewed nonclinical condition surfaces validate and match as
-  `human_review_required` instead of ordinary unsupported structured gaps,
-  lowering blocking validation findings without pretending those criteria are
-  executable. The latest free-text measurement routing and gap-taxonomy slice
-  moves the ADA plasma-glucose diagnostic clauses out of generic free-text
-  implementation work into measurement-domain `provenance_required` gaps and
-  splits normal-range measurement blockers into `normal_range_unknown`, reducing
-  the deduped implementation queue without changing unsafe execution behavior.
-  The anticoagulation exposure slice turns condition-shaped chronic
-  anticoagulation therapy into a reviewed medication-class predicate over
-  warfarin, enoxaparin, and heparin; PAH background therapy remains a typed
-  composite gap because no current patient-vocabulary PAH therapy anchors exist.
-  The reviewer-artifact cleanup keeps reviewed `out_of_scope` and
-  `extractor_bug` gaps in the `review_gap` lane, including promoted
-  subcriterion rows, so the remaining implementation queue is no longer
-  inflated by things we have already classified as non-executable.
-  The renal dialysis composite slice removes the three CKD/renal-failure
-  dialysis-dependence implementation groups by decomposing them into reviewed
-  CKD/ESRD condition atoms plus reviewed dialysis procedure-history atoms.
-  The remaining compiler-gap count is intentional: formerly opaque rows are now
-  typed unsupported/composite work.
-  Remaining next work is reviewing the decisive movement rows, reducing the
-  69 grouped `implement_compiler_logic` items, implementing safe
-  normal-range/provenance execution where patient data can support it, and
-  preparing a smaller human grading packet
-  once the closed-world blockers are lower.
-- **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
-  `matcher_assumption_mode` change behavior, not just metadata, and
-  fixes the silent-flip bug in v0.1. Before: `_match_condition` /
-  `_match_medication` / `_match_temporal_window` returned raw `fail`
-  on mapped-but-absent concepts regardless of mode. For
-  `condition_present` inclusion criteria that came out as the
-  expected hard `fail`; for `condition_absent` inclusion criteria
-  the polarity helper silently flipped that to `pass` — so the
-  matcher was claiming the patient *did not have* the condition any
-  time we couldn't find a row, which is the literal definition of
-  conflating absence-of-evidence with evidence-of-absence. Now:
-  `open_world` returns `indeterminate(no_data)` on mapped-but-
-  absent for those three kinds (an honest "the record is silent");
-  `closed_world_eval` and `closed_world_demo` opt back into
-  absence-as-negative for the same kinds and stamp
-  `evidence_under_assumption=True` on the verdict so audits can
-  pivot on which decisions depend on the closed-world contract.
-  Labs (`measurement_threshold`) deliberately stay
-  `indeterminate(no_data)` in every mode — a missing lab is not the
-  same as a normal lab, and the user prefers N/A visibility. The
-  unmapped-concept guardrail is preserved: terminology gaps remain
-  `indeterminate(unmapped_concept)` in every mode, so closed-world
-  cannot mask mapping failures (D-73). The case-level rollup
-  gains a fourth state `pass_pending_review` for "no fails, every
-  remaining indeterminate is `human_review_required`" — i.e.
-  structured criteria all decided positively and only free-text is
-  left for a human eye. `MatchVerdict` now carries `assumption` and
-  `evidence_under_assumption` for the trail.
+- **Active phase:** Phase 2 closeout → Phase 3 prep. Compiler-closure work is
+  **frozen**. The active track is presentation-readiness: fill calibration
+  labels, run one cost/quality sweep, draft the deployment-readiness doc.
 
-  Twin baselines (`eval/baselines/2026-05-04-2.19/`):
-  `7ad02d2ce814` (open_world) and `505d88763f00`
-  (closed_world_eval), same seed, same binding strategy, no LLM. The
-  closed-world numbers exactly match the previous v0.1 baseline
-  (`pass`=110 / `fail`=32 / `indeterminate`=919 / `ok`=142),
-  confirming v0.2 closed-world is a faithful re-implementation of
-  the prior implicit behavior; open-world is the new honest default
-  (`pass`=77 / `fail`=21 / `indeterminate`=963 / `ok`=98 / `no_data`
-  62 vs 18). The 44-criterion swing between modes is exactly the
-  mapped-but-absent verdicts, which is the toggle's whole point.
-  `pass_pending_review` does not fire on the current eval seed yet
-  because every case carries at least one non-free-text
-  indeterminate (composites or missing labs); it becomes a real
-  state once Phase 3 LLM disambiguation eats into the
-  unmapped-concept floor.
+- **Frozen compiler baseline (do not advance without a deck-level reason).**
+  Snapshot `b47ada00d6a7` under
+  `eval/baselines/2026-05-11-compiler-rollout/SUMMARY.md`. Closed-world
+  deterministic, cached extraction, 47/49 cases scored (2 deceased-patient
+  refusals). Headline numbers:
+    - Criterion-level `unmapped_concept`: **0 / 1076** (down from 317/1076 =
+      29.5% on the same-run legacy `matcher_inputs` path).
+    - Compiled checkable predicates: 368.
+    - Unresolved compiler gaps: **280**, all typed
+      (`unsupported_predicate`=252, `ambiguous_mapping`=8,
+      `insufficient_source`=10, `provenance_required`=6,
+      `normal_range_unknown`=4, `unmapped_concept`=0). No opaque misses
+      remain.
+    - Closed-world validation: 4 ok cases, **43 blocking cases**,
+      **379 blocking findings**.
+    - Case rollup: 40 fail / 5 indeterminate / 0 pass / 2 `pass_pending_review`.
+    - Layer-1 structured-field metrics (extractor) hold at
+      **89.0% agreement / 98.6% coverage**, unchanged by the compiler push
+      and presentable as-is.
 
-  Previous correction (still relevant): open terminology resolution
-  is genuinely open for conditions and labs via `UMLSSearchClient`
-  (SNOMED `searchType=exact`, LOINC `searchType=words` + numeric
-  Parts filter); composites short-circuit to
-  `composite_unhandled`; hand-curated `extractor_bug` /
-  `out_of_scope` classifications win over resolver hits in the work
-  queue. UMLS fair-use is ~20 req/s with no published daily cap;
-  one-time cold warmup of ~149 unique surfaces, then served from
-  the on-disk surface cache. New snapshot on 2026-05-05:
-  `eval/baselines/2026-05-05/open_resolver_none_diagnostics.json`
-  (`17fc2bc0a9cd`) moves deterministic no-LLM `unmapped_concept` to
-  445/1061 (41.9%), down 106 criteria / 9.2 pp from the 2026-05-04
-  no-LLM baseline; the paired
-  `open_resolver_surface_work_queue.json` captures the remaining
-  top surfaces as composites, out-of-scope data-model gaps,
-  ambiguity, extractor bug, or true misses. `scripts/check_terminology_regressions.py`
-  now fails if a surface preserved in a legacy `status=resolved` watchlist
-  reappears in a run's `top_unmapped_surfaces`; the first watchlist
-  lives at `eval/baselines/2026-05-05/resolved_surface_watchlist.json`.
-- **Last completed:** PLAN task 2.22 matcher semantics slice —
-  **native composite groups now affect deterministic eligibility.** Bumped
-  `MATCHER_VERSION` to `matcher-v0.3`. `match_extracted` accepts
-  `composite_groups[]`, evaluates subchecks as raw
-  predicates, rolls them up with the existing `any_of` / `all_of` truth-table
-  helper, and applies parent polarity/negation once after group rollup. This is
-  wired through imperative `score_pair` and the LangGraph route/deterministic
-  node so free-text composite parents with native groups no longer detour to
-  the old free-text path. Tests pin inclusion `any_of` pass behavior and the
-  easy-to-get-wrong exclusion `any_of` polarity case. Nested groups and richer
-  clinical-event subcheck extraction remain future work.
-  Previous: PLAN task 2.21 second slice —
-  **native composite extraction contract.** Added
-  `composite_groups[]` to the extractor schema so explicit OR/AND bundles can
-  carry stable parent/subcheck metadata without duplicating subchecks as
-  top-level flat criteria. The extractor prompt is bumped to `extractor-v0.6`
-  with native composite guidance and a few-shot example; the fixer now backfills
-  native groups for explicit semicolon-delimited `OR` / `AND` bundles while
-  preserving the flat parent criterion for matcher compatibility. This moves
-  composites out of reviewer-only inference and into the persisted extraction
-  contract.
-  Previous: PLAN task 2.21 first slice —
-  **deterministic criterion fixing layer.** Added
-  `clinical_demo.extractor.fix.fix_extracted_criteria` between extraction
-  enrichment and matching in both imperative `score_pair` and LangGraph
-  `extract_node`. The first fixer pass normalizes known condition and
-  measurement surfaces, infers systolic/diastolic blood pressure when source
-  text says which one, converts zero-window diagnosis-shaped temporal rows
-  such as "T1D diagnosis" into condition criteria, and routes unsafe composites
-  to cited `free_text` review rows instead of letting them fall through as
-  generic atomic terminology misses. The original `source_text` is preserved
-  and fixer provenance is appended to extraction metadata / free-text notes.
-  Verification: `uv run pytest` 677/677, targeted criterion-fixer /
-  scoring / graph / terminology tests 110/110, targeted ruff clean, targeted
-  format check clean, targeted mypy clean.
-  Previous: PLAN task 2.20 first slice —
-  **mapping expansion + `mapped` terminology language.** Renamed work-queue,
-  regression-gate, and diagnostic report language from `resolved` to `mapped`
-  while keeping legacy `status=resolved` watchlists and old surface-cache
-  fingerprints readable. Added high-confidence mappings for type 1 diabetes
-  / T1D diagnosis, C-peptide concentrations, and qualified hypertension
-  surfaces such as "mild to moderate hypertension." Curated local mappings now
-  override stale `true_miss` cache rows so adding a mapping case actually
-  repairs old misses. `scripts/check_terminology_regressions.py` now accepts
-  `--mapped-work-queue` and keeps `--resolved-work-queue` as a deprecated
-  alias. Verification: `uv run pytest` 671/671, targeted terminology /
-  diagnostics tests 86/86, targeted ruff clean, targeted format check clean,
-  targeted mypy clean, both mapped and legacy regression-gate CLI invocations
-  clean, and `git diff --check` clean.
-  Previous: Coming-week calibration/reporting slice 1 —
-  **patient-evidence report + local TrialGPT/TREC scaffold.** After merging
-  PR #2/#3/#4 into `main`, added a patient-evidence eval report that compares
-  one or more persisted runs against
-  `eval/calibration/patient_evidence_labels.json`, including verdict accuracy
-  against `expected_matcher_verdict`, abstention rate, citation agreement,
-  case-level rollup movement, and adjudicator cost/call/token totals. Added
-  `scripts/eval.py patient-evidence` with `--strict-labels` and
-  `--min-usable-labels` gates; current labels are still 0/60 usable, so the
-  40-label gate fails as intended. Added a local TrialGPT/TREC-style benchmark
-  scaffold (`clinical_demo.evals.trial_benchmark`) plus
-  `scripts/export_trial_benchmark.py`; the first export writes 27 patient
-  summary queries, 49 candidate trial rows, and 60 criterion cases to
-  `eval/benchmarks/local_trialgpt_trec_seed.json`. Verification: focused
-  patient-evidence / benchmark tests 12/12, targeted ruff clean,
-  `uv run mypy src scripts tests/evals/test_patient_evidence.py
-  tests/evals/test_trial_benchmark.py` clean, JSON validation for the benchmark
-  artifact clean, `uv run pytest` 666/666, full ruff/format checks clean,
-  terminology regression gate clean, and `git diff --check` clean. Follow-up
-  planning now explicitly tracks MIMIC-IV access/use and official
-  TREC/TrialGPT benchmark ingestion instead of treating the local benchmark
-  scaffold as the end state.
-  Previous: PLAN task 2.18 regression gate + 2026-05-05
-  **open-resolver baseline snapshot.** Created
-  `eval/baselines/2026-05-05/` with open-world deterministic
-  (`17fc2bc0a9cd`), closed-world deterministic (`5a0e5717803c`), and
-  retrieval-only (`d659d6ff19bb`) diagnostics, plus
-  `open_resolver_surface_work_queue.json`, `resolved_surface_watchlist.json`,
-  and `SUMMARY.md`. Bounded adjudication was intentionally not rerun under the
-  current low weekly LLM budget. Added `scripts/check_terminology_regressions.py` plus
-  `find_resolved_surface_regressions` / renderer helpers in
-  `clinical_demo.terminology.work_queue`. Each baseline scored 47/49 cases,
-  with the same 2 deceased-patient refusals as prior baselines. Verification:
-  `uv run pytest tests/terminology/test_work_queue.py tests/terminology/test_cache.py
-  tests/terminology/test_resolver.py` 78/78, targeted ruff clean, all baseline
-  JSON artifacts validate with `uv run python -m json.tool`, and
-  `uv run python scripts/check_terminology_regressions.py --diagnostics
-  eval/baselines/2026-05-05/open_resolver_none_diagnostics.json
-  --resolved-work-queue eval/baselines/2026-05-05/resolved_surface_watchlist.json`
-  reports no mapped terminology regressions. PR #2 and PR #3 were merged into
-  `main` on 2026-05-05, followed by PR #4 documenting this coming-week plan.
+  Regression gate (run before merging anything that touches the compiler or
+  the reviewed registry):
 
-### Coming week plan (2026-05-05 to 2026-05-12)
+  ```bash
+  uv run python scripts/check_compiler_diagnostics.py \
+    --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
+    --max-unresolved-gaps 280 \
+    --max-closed-world-blocking-cases 43 \
+    --max-closed-world-blocking-findings 379 \
+    --max-gap-kind unmapped_concept=0 \
+    --max-gap-kind unsupported_predicate=252 \
+    --max-gap-kind ambiguous_mapping=8 \
+    --max-gap-kind insufficient_source=10 \
+    --max-gap-kind normal_range_unknown=4 \
+    --max-gap-kind provenance_required=6
+  ```
 
-- **Target effort:** 20-30 hours.
-- **Primary outcome:** calibrated patient-trial evidence matching with credible
-  cost/quality reporting: trials + patients go in, relevant patient evidence is
-  retrieved, bounded adjudication is measured against human labels, and the
-  results can support the presentation's cost/quality story.
-- **Operating rule for LLM/API spend:** use deterministic checks, retrieval,
-  citations, and regression gates first; then use LLM calls where they add
-  actual product behavior: criterion repair/normalization, bounded
-  patient-evidence adjudication, note/free-text evidence, ambiguity review, and
-  critic/revision. LLMs may propose or adjudicate against cited evidence; they
-  must not become gold labels or silently paper over unmapped concepts.
+- **Headline open gate — patient-evidence calibration labels.**
+  `eval/calibration/patient_evidence_labels.json` is at
+  **22 / 50 rows with `label` set, 0 / 50 with `reviewer` attribution**
+  (`open_world` mode: 45 rows, `closed_world_eval` mode: 5 rows). Without
+  filled, attributed labels, Phase 3.2 (cost/quality sweep) and 3.3 (routing
+  policy / "money slide") have no calibrated denominator and cannot be
+  reported in the 20-minute deck.
+
+  Interview-demo gate: **≥ 30 / 50 rows fully filled.** (The original 40/60
+  target reflected a 60-row packet; §6 task 2.12 reset the packet to 50
+  rows.) Each filled row needs `label`, `expected_matcher_verdict`, cited
+  source row ids when evidence exists, `reviewer`, and a one-line
+  `rationale`.
+
+- **Next up — fill labels (human task; blocks everything downstream).**
+  1. Open `eval/calibration/patient_evidence_candidates.json` alongside
+     `eval/calibration/patient_evidence_labels.json`. Each candidate row
+     carries the criterion, the deterministic verdict, retrieved
+     patient/trial source rows, and stable row ids.
+  2. Walk the **28 unlabeled rows** (those with `label: null`) and, to
+     harden them, the **22 partial rows** without a `reviewer`. Fill the
+     four required fields per row. Keep the matcher assumption mode each
+     candidate row was generated under unless you have an explicit reason
+     to switch.
+  3. When ≥ 30 rows are attributed, run the patient-evidence report against
+     the frozen baseline:
+
+     ```bash
+     uv run python scripts/eval.py patient-evidence \
+       --run-id b47ada00d6a7 \
+       --labels eval/calibration/patient_evidence_labels.json \
+       --min-usable-labels 30
+     ```
+
+     That hand-off unblocks the cost/quality sweep in the coming-week plan
+     below.
+
+- **Matcher semantics in force (still relevant — do not relitigate).**
+  matcher v0.3 with native `composite_groups[]` (§6 task 2.22) on top of
+  matcher v0.2 closed-world contract (§6 task 2.19). `open_world` returns
+  `indeterminate(no_data)` for mapped-but-absent conditions / medications /
+  temporal windows; `closed_world_eval` returns `fail` and stamps
+  `evidence_under_assumption=True`. Labs stay `no_data` in every mode.
+  `unmapped_concept` is unchanged across modes (D-73 guardrail).
+  `EligibilityRollup` has `pass_pending_review` for "no fails, only HRR
+  indeterminates left."
+
+- **Recent task history (consolidated — see §6 for slice-by-slice records):**
+  §6 task 2.22 (native composite matcher), 2.21 (criterion fixer + native
+  composite extractor schema), 2.20 (`mapped` terminology rename), 2.18
+  (regression gate + 2026-05-05 baseline), 2.17 (open UMLS/LOINC resolver
+  front door), 2.15/2.16 (bounded adjudicator + unit reconciliation),
+  2.13/2.14 (retrieval-only mode + LLM-use-level controls), 2.11
+  (deceased-patient guard), and **2.23 (2026-05-11 → 2026-05-14 compiler
+  rollout — now frozen as the demo baseline)**. Full provenance for the
+  compiler rollout lives in `eval/baselines/2026-05-11-compiler-rollout/`
+  and in git history.
+
+### Coming week plan (2026-05-14 to 2026-05-21)
+
+- **Target effort:** 15-20 hours, mostly non-coding.
+- **Operating rule:** every task on this list must move a number that ends
+  up in the 20-minute deck. No new compiler-closure slices. No new
+  terminology passes. If a regression appears against the frozen compiler
+  baseline, fix the regression; do not expand the snapshot.
+- **Primary outcome:** a defensible cost/quality dashboard for the
+  presentation, built on ≥ 30 attributed patient-evidence labels and the
+  existing extractor cache.
 - **Task sequence:**
-  1. ~~Merge PR #2, then PR #3, preserving the baseline/gate stack.~~ Done;
-     PR #4 also merged the documentation update.
-  2. Fill `eval/calibration/patient_evidence_labels.json`: target 60/60 rows;
-     minimum useful gate is 40/60. Each filled row needs `label`,
-     `expected_matcher_verdict`, cited source row IDs when evidence exists,
-     reviewer, and rationale.
-  3. ~~Add calibrated patient-evidence reporting across `none`,
-     `retrieval_only`, and `bounded_adjudication`: verdict agreement against
-     expected matcher verdicts, citation agreement, abstention rate, cost,
-     calls/tokens, and case-level rollup movement.~~ Done for report plumbing;
-     meaningful metrics still wait on filled labels.
-  4. ~~Add a TrialGPT/TREC-style local benchmark scaffold that mirrors
-     retrieval -> criterion matching -> ranking. This week is a local exporter
-     from the existing curated seed, not full official dataset ingestion. Use
-     NLM TrialGPT and NIST/TREC Clinical Trials as framing references:
-     <https://www.ncbi.nlm.nih.gov/research/trialgpt/about/> and
-     <https://trec.nist.gov/data/trials.html>.~~ Done as a local schema,
-     exporter, and initial seed artifact.
-  5. Continue mapping expansion and rename status language from `resolved` to
-     `mapped` where the system means "this surface has a usable concept/code
-     mapping." Keep compatibility for existing `resolved_*` artifacts until a
-     small migration lands, but new docs/reports should say `mapped`.
-  6. Add the criterion fixing layer: normalize criterion surfaces/units/polarity,
-     route unsafe non-atomic phrases into `human_review_required`, and add an
-     explicit composite representation before splitting OR/AND bundles into
-     ordinary matcher rows. Key invariant: an OR bundle such as ADA
-     hyperglycemia criteria must not become several top-level inclusion rows,
-     because the current scorer treats the criteria list as an AND contract.
-  7. Bring free-text/note patient-evidence LLM v0 forward. Done for note
-     ingestion/retrieval v0 (`DocumentReference.content.attachment.data` ->
-     citeable note rows), but docs and plan language need cleanup and the next
-     behavior slice is composite-aware evidence review/adjudication over
-     retrieved structured/note rows.
-  7a. Add reviewer-facing composite line items before deeper matcher changes:
-     detect/represent `any_of` / `all_of` subchecks with stable ids, retrieve
-     evidence per subcheck, and show the subcheck evidence in the calibration
-     UI. Do not let line items alter eligibility rollup until matcher semantics
-     explicitly understand composite groups.
-  7b. Tighten the calibration UI around matcher assumption mode. `open_world`
-     remains the clinical default; `closed_world_eval` is a synthetic-eval
-     override for selected closed data types only. Rows whose matcher result is
-     clearly open-world `no_data`, free-text review, labs, or unmapped concepts
-     should either disable closed-world choices or display an inline warning
-     before the reviewer can persist that assumption.
-  8. Start the MIMIC-IV data track while access is pending: document the local
-     data-root contract, `.gitignore`/artifact rules, table-to-evidence mapping,
-     and minimum cohort plan. After credentialed access lands, use MIMIC-IV
-     as private calibration/enhancement input for patient data files: improve
-     schema coverage, note/evidence retrieval, and realism checks without
-     reproducing MIMIC records in system outputs. Do not commit raw MIMIC data,
-     derived row-level excerpts, or any credentialed artifact to the repo.
-  9. Promote the TrialGPT/TREC work from local scaffold to external benchmark
-     plan: obtain the official TREC Clinical Trials topics/corpus/qrels and
-     TrialGPT code/data references, add an adapter into the local benchmark
-     schema, and report retrieval/ranking metrics separately from the local
-     patient-evidence calibration metrics.
-- **Assumptions:** oncology remains out of the core scope this week; broad
-  multi-model sweeps wait until patient-evidence labels have enough signal;
-  LLM-generated labels must not be treated as gold.
+  1. **Fill labels (human).** Bring
+     `eval/calibration/patient_evidence_labels.json` from 22/50 partial
+     to ≥ 30/50 fully attributed. ~3-5 hours.
+  2. **Cost/quality sweep (agent).** Once labels are in, run
+     patient-evidence reports across `none`, `retrieval_only`, and one
+     `bounded_adjudication` model against the frozen extractor cache.
+     Snapshot under `eval/baselines/2026-05-21-cost-quality/` with a
+     `SUMMARY.md` mirroring the compiler-rollout structure. ~2-3 hours.
+  3. **Routing policy diff (agent).** Pick a default LLM-use level per
+     criterion kind based on the cost/quality sweep; write the
+     "before vs. after" inputs into the same baseline directory. ~2 hours.
+  4. **Deployment-readiness doc skeleton (agent + human).** Stand up §7
+     as `docs/deployment-readiness.md` with section stubs and the numbers
+     already in hand (Layer 1, frozen compiler baseline, matcher-mode
+     semantics). Real prose pass follows once #2/#3 land. ~3 hours stub,
+     ~6-8 hours real pass.
+  5. **README polish (agent).** Architecture diagram pointer,
+     "how to reproduce the frozen baseline" recipe, honest limitations
+     section. ~2 hours.
+- **Explicitly deferred until after the interview demo:** MIMIC-IV access
+  track, official TREC/TrialGPT benchmark ingestion (3.3b), the CT.gov
+  corpus hybrid-retrieval layer (3.3c), the LLM gap-triage workflow (3.3d),
+  nested composite groups, oncology stretch (Phase 4.2), and any further
+  compiler-closure slices.
+- **Assumptions:** existing `label` values on the 22 partial rows stay as
+  written unless the reviewer changes them during the fill pass;
+  cardiometabolic is the only in-scope domain; LLM-generated labels are
+  not gold.
 
-- **Previous completed context:** PLAN task 2.19 — **closed-world matcher
-  semantics + open-world honesty fix.** Bumped `MATCHER_VERSION` to
-  `matcher-v0.2`. `match_criterion` /  `match_extracted` now take
-  `matcher_assumption_mode` as a kwarg, threaded down through
-  `_dispatch` to per-kind handlers. Per-kind handler signature
-  changed to a 5-tuple
-  `(verdict, reason, rationale, evidence, evidence_under_assumption)`
-  via `_HandlerResult`. `_match_condition`, `_match_medication`,
-  `_match_temporal_window` got an explicit closed-world branch that
-  returns `fail` with `evidence_under_assumption=True` for
-  mapped-but-absent inputs under `closed_world_eval` /
-  `closed_world_demo`; the open-world branch returns
-  `indeterminate(no_data)`. `_match_measurement` and the demographics
-  / age / sex paths return `evidence_under_assumption=False` — labs
-  stay `no_data` in every mode. `unmapped_concept` is unchanged in
-  every mode (D-73 guardrail). `MatchVerdict` gained `assumption:
-  MatcherAssumptionMode | None` and `evidence_under_assumption:
-  bool`. `score_pair` and `score_pair_graph` thread the mode into
-  `match_extracted`; the graph carries the mode on `ScoringState`
-  so `deterministic_match_node`, `revise_node`, and
-  `llm_match_node` can pick it up without closure tricks.
-  `EligibilityRollup` gained `pass_pending_review` and `_rollup`
-  reason-aware: `fail > non-HRR indeterminate > HRR-only-indeterminate
-  (pass_pending_review) > pass`. Tests updated:
-  `tests/matcher/test_matcher.py` now has explicit open vs
-  closed-world tests for `condition_present`, `condition_absent`,
-  `temporal_window`, and the unmapped-concept guardrail; the
-  pre-fix "absent silently flips to pass" test was rewritten to
-  pin both modes' new behaviors.
-  `tests/scoring/test_score_pair.py` got
-  `pass_pending_review` integration + helper coverage and updated
-  `_build` callsites for the new required kwargs.
-  `tests/adjudication/test_patient_evidence.py` similarly. Twin
-  no-LLM baselines saved at `eval/baselines/2026-05-04-2.19/`
-  (`open_world_diagnostics.json`, `closed_world_eval_diagnostics.json`,
-  `SUMMARY.md`). Verification: `uv run pytest` 656/656,
-  `uv run ruff check .` clean.
-  Previous: PLAN task 2.17 final slice + 2.18 first slice —
-  **open UMLS/LOINC search wired into the resolver front door.** Added
-  `clinical_demo.terminology.umls_search_client.UMLSSearchClient` with
-  `httpx.MockTransport`-driven offline tests (13 new tests in
-  `tests/terminology/test_umls_search_client.py`). Extended
-  `TerminologyResolver._resolve_open_condition` /
-  `_resolve_open_lab` to call UMLS on alias miss, cache `resolved`
-  with candidate provenance when hits land, and cache `true_miss` on
-  clean zero-hit responses; transport / parse errors soft-fail without
-  a poisoned cache row. Bumped `OPEN_SURFACE_RESOLVER_VERSION` to
-  `open-surface-v0.2` so cached alias-only `true_miss` rows get
-  re-resolved against UMLS on next hit. Added
-  `scripts/probe_umls.py` mirroring `probe_rxnorm.py` for operational
-  sanity-checking. Fixed work-queue precedence so
-  `_manual_nonresolved` classifications win over resolver-cached
-  matches for surfaces that UMLS can look up but the matcher cannot
-  usefully score against (life expectancy, ECOG). Snapshot at
-  `eval/baselines/2026-05-04-umls/`. Verification: `uv run pytest`
-  652/652, `uv run ruff check .` clean, deterministic smoke eval
-  `43c765d1dbcc` with deltas above.
-  Previous: PLAN task 2.18 first slice — **top-unmapped work queue
-  and cache warmer.** Added `clinical_demo.terminology.work_queue` with
-  `SurfaceWorkItem`, `build_surface_work_queue`, JSON/text renderers, and
-  cache writes for nonresolved classifications. Added
-  `scripts/warm_terminology_surfaces.py`, e.g.
-  `uv run python scripts/warm_terminology_surfaces.py --diagnostics
-  eval/baselines/2026-05-04/patient_evidence_none_diagnostics.json --limit 20`.
-  Focused tests cover resolved alias warming, ambiguous BP cache reuse,
-  composite pregnancy/breastfeeding classification, temporal-window review
-  classification, known data-model gaps (PVR, pneumonectomy, ECOG), life
-  expectancy extractor-kind misclassification, and text rendering.
-  Verification: `uv run pytest tests/terminology/test_work_queue.py
-  tests/terminology/test_cache.py tests/terminology/test_resolver.py` 66/66
-  and targeted ruff clean.
-  Previous: PLAN task 2.17 first slice — **open terminology resolver
-  front door with cached surface decisions.** `TerminologyCache` now has
-  schema-fingerprinted `surface.<kind>.<query>.<fp>.json` envelopes that store
-  `resolved`, `ambiguous`, `true_miss`, or `composite_unhandled` decisions plus
-  candidate/provenance metadata. `TerminologyResolver.resolve_*` checks this
-  surface cache before the old registry, writes resolved registry results into
-  the same front-door cache, then falls through to open lab/condition aliases or
-  raw RxNorm medication lookup. Added curated LOINC ConceptSets for BMI
-  (`39156-5`), hemoglobin (`718-7`), and platelet count (`777-3`), alias-mode
-  fallbacks for the same high-frequency surfaces, and unit normalization for
-  BMI spellings, eGFR `m^2`, hemoglobin `g/L` <-> `g/dL`, and platelet
-  count-per-microliter thresholds. Verification: `uv run pytest` 622/622,
-  `uv run ruff check .` clean, deterministic smoke eval `8f9900f3fefb`.
-  Previous: PLAN task 2.11 — **deceased-patient structured-safety
-  guard wired through loader, scoring, and API.** `Patient.deceased_date:
-  date | None` is parsed from FHIR `Patient.deceasedDateTime` (with a
-  defensive fallback for `deceasedBoolean=true` that pins the date to
-  `birth_date` and logs a warning). Both `score_pair` and `score_pair_graph`
-  raise the new `clinical_demo.scoring.PatientDeceasedError` (typed attrs:
-  `patient_id`, `deceased_date`, `as_of`; message cites
-  `Patient.deceasedDateTime`) when `deceased_date <= as_of`, including the
-  equality boundary; later-than-`as_of` deaths still score so retrospective
-  replays continue to work. FastAPI `/score` maps the refusal to
-  `422 {error: "patient_deceased", patient_id, deceased_date, as_of,
-  source_field, message}` instead of a 500. New deceased-path tests in the
-  synthea / scoring / graph / api suites; `uv run pytest` 608/608,
-  `uv run ruff check .` clean, `uv run mypy src` clean.
-  Previous: D-72 follow-up — **adjudicator cost telemetry persisted
-  on `ScorePairResult` and `eval/runs.sqlite`.** New
-  `clinical_demo.cost_telemetry.LLMCallCost` carries per-call `stage`,
-  `criterion_index`, model + prompt version, token counts, USD, and latency.
-  `adjudicate_patient_evidence` now returns `(MatchVerdict, LLMCallCost | None)`;
-  `_apply_retrieval_only` collects them into a list that rides on
-  `ScorePairResult.llm_calls`. `ScoringSummary` gains `adjudicator_calls`,
-  `adjudicator_input_tokens`, `adjudicator_output_tokens`, and
-  `adjudicator_cost_usd` aggregates so the SQLite store can persist them as
-  flat columns for fast pivots. `eval/runs.sqlite` schema bumped v2 -> v3 with
-  an additive migration adding the four `adjudicator_*` columns; `save_run`
-  populates them from the rolled-up summary. `scripts/eval.py` summary printer
-  now prints "adjudicator calls: N  cost (sum over M cases): $X". Web typings
-  (`web/src/lib/api.ts`) gained `LLMCallCost` and the new summary fields so
-  the reviewer dashboard can surface adjudicator spend without re-walking
-  evidence. Tests: new adjudicator no-op-returns-no-cost pin, updated
-  `test_bounded_adjudication_can_replace_indeterminate_with_cited_verdict` to
-  assert `llm_calls` / summary aggregates, and a new v2 -> v3 migration test.
-  Verification: `uv run pytest` 599/599, `uv run ruff check .` clean,
-  `uv run mypy src` clean. This unblocks the Phase 3.2 cost-quality sweep
-  precondition called out in D-72; the remaining blocker is filling the
-  60-row `eval/calibration/patient_evidence_labels.json` gold set.
-  Previous: PLAN tasks 2.15/2.16 empirical rerun —
-  **Bounded adjudication plus deterministic unit reconciliation evaluated.**
-  Added `clinical_demo.adjudication.patient_evidence`, a citation-required
-  structured-output LLM adjudicator that sees exactly one criterion, its
-  deterministic verdict, retrieved patient source rows, trial context, and the
-  matcher assumption mode. `llm_use_level="bounded_adjudication"` now runs this
-  pass after retrieval for indeterminate verdicts; decisive LLM answers are
-  fail-closed back to `indeterminate/human_review_required` if they do not cite
-  valid retrieved row IDs. Also added a small deterministic conventional-unit
-  layer: eGFR/BP/HbA1c missing-unit inference, eGFR unit aliases, and LDL-C
-  `mmol/L` <-> `mg/dL` conversion against Synthea observations. Refreshed all
-  30 curated trial extraction caches under extractor-v0.5 on 2026-05-04
-  (641 criteria, $0.0870 extractor cost, 35.2 min wall). Three cached 49-pair
-  eval runs are snapshotted under `eval/baselines/2026-05-04/`: deterministic
-  `none` run `8e718e87c3fa` (18 fail / 31 indeterminate cases),
-  `retrieval_only` run `dd8a939ea584` (same verdicts, 627 unresolved
-  criterion verdicts now carrying retrieved source-row evidence), and
-  `bounded_adjudication` run `4458ecd2199a` (27 fail / 22 indeterminate cases).
-  Bounded adjudication changed 624 criterion-level verdict/reason pairs:
-  39 indeterminate -> pass, 15 indeterminate -> fail, and 570 still
-  indeterminate but mostly clarified to `no_data`. Top-level movement was
-  9 cases from indeterminate -> fail, 0 cases -> pass. The 60-row
-  patient-evidence label file still has 0 filled labels, so this is an
-  empirical mode comparison, not calibrated quality yet. Verification:
-  `uv run pytest` passes 597 tests, `uv run ruff check .` passes, and
-  `npm run build` passes.
-  Previous: PLAN tasks 2.13/2.14 product move —
-  **Retrieval-only scoring mode wired through the product surface.**
-  `ScorePairResult` now records `matcher_assumption_mode` and
-  `llm_use_level`; `score_pair`, `score_pair_graph`, `scripts/score_pair.py`,
-  `scripts/eval.py run`, and FastAPI `/score` accept the same controls.
-  `llm_use_level="retrieval_only"` leaves deterministic verdicts unchanged
-  but appends ranked `retrieved_patient_row` evidence to indeterminate
-  verdicts using stable patient source-row IDs, lexical overlap, and
-  ConceptSet/code anchors. The Svelte score view exposes LLM-use and
-  assumption-mode controls and renders retrieved rows inline with their row
-  IDs and retrieval reasons. Targeted Python tests and the Svelte production
-  build pass; a no-LLM eval smoke was blocked by stale/missing extractor-v0.5
-  cache files, not by retrieval plumbing.
-  Previous: PLAN task 2.6 follow-up —
-  **Patient-side FHIR evidence calibration packet scaffold (PLAN 2.12)**.
-  Added `clinical_demo.evals.patient_evidence` with reviewer-facing schemas,
-  deterministic evidence-focused target selection, source-row IDs for
-  citations, JSON load/save helpers, and bucket summaries. Added
-  `scripts/build_patient_evidence_calibration.py`, which reads a persisted
-  eval run plus the calibrated Layer-3 judge report, selects 60 patient-side
-  evidence candidates, attaches patient/trial source context, and writes both
-  `eval/calibration/patient_evidence_candidates.json` and the blank label
-  template `eval/calibration/patient_evidence_labels.json`. Current packet
-  includes all 20 judge-incorrect rows plus stratified condition present/absent,
-  medication present/absent, measurement/unit, free-text patient-evidence, and
-  unmapped-concept examples. Human review of those 60 labels is still owed
-  before 2.12 is complete as a gold set.
-  Previous: PLAN task 2.6 follow-up —
-  **Calibrated full Layer-3 judge run**. Reran
-  `scripts/eval.py judge` on two-pass run `394703892184` with the 25-row
-  human label file and wrote
-  `eval/baselines/2026-04-30/layer3_judge_calibrated.json`. Results:
-  1,086 judged verdicts, 1,066 `correct`, 20 `incorrect`, all
-  high-confidence, total judge cost `$0.1738`. Calibration against the human
-  labels was 25/25 agreement (`agreement_rate=1.0`, `cohen_kappa=1.0`).
-  The incorrect rows are concentrated in unsupported evidence / wrong-verdict
-  cases, especially BP threshold polarity, CKD stage specificity, HbA1c range
-  interpretation, and duration/specificity constraints for diabetes. This
-  confirms the same architecture lesson as the manual pass: the matcher is
-  mostly honest, but patient-side evidence adjudication now needs its own
-  gold/calibration set before building a new LLM adjudicator.
-  Previous: PLAN task 2.6 follow-up —
-  **Layer-3 human calibration pass + source-context reviewer update**. The
-  initial manual pass saved 25 labels to
-  `eval/calibration/layer3_human_labels.json`; all 25 are `correct`. This is
-  a calibration win for the judge/matcher rubric, but also a product-quality
-  warning: many "correct" rows are correct because the deterministic matcher
-  is honest and fail-closed (`indeterminate` with a defensible reason), not
-  because the pipeline is clinically strong enough to resolve the case. To
-  make future review judge source evidence rather than only the matcher's
-  rationale, the calibration UI now shows patient-record and trial-record
-  source context alongside each row.
-  Previous: **Layer-3 calibration GUI**. Added a local browser workflow for
-  creating the human label file that calibrates the LLM judge: backend helpers
-  select a deterministic reason/verdict-stratified sample from a persisted
-  `RunResult`, convert `JudgeTarget`s into UI rows, and load/merge/save
-  `LayerThreeHumanLabel` JSON. FastAPI exposes `GET /eval/runs`,
-  `GET /layer3/calibration?run_id=...&limit=...`, and
-  `POST /layer3/calibration`, writing by default to
-  `eval/calibration/layer3_human_labels.json`. The Svelte reviewer app has a
-  `Score` / `Layer-3 calibration` mode switch, a calibration panel with run
-  selection, progress counts, readable criterion/verdict/evidence JSON,
-  `correct` / `incorrect` / `unjudgeable` radio labels, optional reviewer
-  rationale, and a save action.
-  Previous: PLAN task 2.6 v0 — **Layer-3 LLM-as-judge scaffolding and
-  smoke**. Added `clinical_demo.evals.layer_three` with a pinned judge
-  version (`llm-judge-v0.1`) and rubric prompt (`llm-judge-rubric-v0.2`), a
-  structured judge schema (`correct` / `incorrect` / `unjudgeable`),
-  verdict-target selection over persisted `RunResult`s, optional human
-  calibration labels, agreement-rate + Cohen's kappa calculation, and a text
-  renderer. Added `scripts/eval.py judge`; 5-verdict smoke on
-  `98568ccd090d` saved `layer3_judge_smoke.json` and fixed the justified
-  `indeterminate` rubric issue.
-  Previous: PLAN task 2.5 prompt follow-up — **extractor-v0.5 Chia
-  Observation / Scope tightening**. The first tightening attempt
-  (`extractor-v0.4`) regressed the retained sample; `extractor-v0.5`
-  recovered aggregate metrics (micro F1 37.7%, lenient micro F1 58.6%)
-  and cut `Observation` false positives, but did not solve `Observation`
-  exact TP or `Scope` recall.
-  Previous: PLAN task 2.5 diagnostic follow-up — **Chia overlap /
-  containment layer-2 view**. Added secondary same-type partial-match
-  diagnostics to `clinical_demo.evals.layer_two` while preserving exact
-  `(type, surface)` precision / recall / F1 as the primary score.
-  Replayed the frozen v0.3 retained sample from cache; exact micro F1
-  stayed 37.5%, and the boundary-aware view added 159 partial matches,
-  raising lenient micro F1 to 57.4% and lenient macro F1 to 54.3%.
-  Previous: PLAN task 2.5 prompt pass — **extractor-v0.3 Chia mention
-  discipline**. Bumped `PROMPT_VERSION` to `extractor-v0.3`, added Hard
-  Rule 14 plus Chia-style mention boundary guidance, and added a fourth
-  few-shot focused on `Scope`, full `Temporal` windows, comparator-rich
-  `Value`, `Qualifier`, `Observation`, `Negation`, `Multiplier`,
-  `Reference_point`, and `Procedure` labels. Reran the frozen 50-document
-  retained sample; micro F1 34.4% -> 37.5%, macro F1 33.0% -> 35.4%,
-  cost $0.0710.
-  Previous: PLAN task 2.5 retained-sample follow-up — **Chia layer-2
-  error profile**. Extended `scripts/eval.py chia` with deterministic
-  retained-sample controls and froze the 50-document baseline: 923 gold
-  mentions, 573 predicted, 257 true positives; micro F1 34.4%; macro
-  F1 33.0%; extraction cost $0.0588.
-  Previous: PLAN task 2.5 v0 — **Chia entity-mention F1 eval**. Added
-  `clinical_demo.evals.layer_two`, `report_layer_two`, and
-  `scripts/eval.py chia`; 5-document smoke cost $0.0078 and produced
-  25.7% micro F1 / 24.9% macro F1. Snapshot:
-  `eval/baselines/2026-04-30/layer2_chia_entity_f1_smoke.json`.
-  Previous: D-69 slice 5 — **two-pass terminology eval rerun and
-  diagnostic report**. Cached imperative eval with
-  `binding_strategy="two_pass"` ran 49 pairs with 0 errors; run id
-  `98568ccd090d`. Snapshot under `eval/baselines/2026-04-30/`.
-  Headline vs. D-68: `unmapped_concept` rate 81.9% -> 60.8%;
-  layer-1 coverage 55.3% -> 98.7%; agreement 81.0% -> 88.3%.
-  Added `eval report --diagnostics`, `--binding-strategy` for eval
-  runs, and a structured D-68 diagnostics baseline.
-  Previous: D-69 slice 4 hotfix — **T2DM binding
-  needed an explicit SNOMED filter, and the test suite needed
-  to be hermetic from `.env`**. A live smoke under
-  `BINDING_STRATEGY=two_pass` surfaced two latent issues. (1)
-  The slice-4 T2DM bindings shipped without a `system_filter`,
-  carried over from when the recorded fixture happened to be
-  SNOMED-only. The *live* eCQM Diabetes expansion now spans
-  SNOMED + ICD-10-CM, and `VSACClient` rejects multi-system
-  expansions without a filter (the matcher's ConceptSet is
-  single-system per query). The resolver was correctly
-  soft-failing and falling through to the alias table on every
-  T2DM lookup, defeating the entire wire-up. Added
-  `system_filter=SNOMED_SYSTEM` to all five T2DM surface forms
-  so live `two_pass` lookups now resolve to the 493-code SNOMED
-  Diabetes value set (vs. the alias table's 6-code curated
-  entry; meaningful recall delta worth measuring at slice-5).
-  (2) The legacy alias-table tests (`test_lookup_*_known_aliases`
-  and `test_lookup_medication_v0_returns_none_for_everything`)
-  silently inherited `binding_strategy` from the developer's
-  `.env`, so flipping the env var to `two_pass` started routing
-  those tests through the resolver -- producing different
-  ConceptSets (or non-None RxNorm hits) that broke object-
-  identity assertions. Added a tests-root `conftest.py` with a
-  session-wide autouse fixture that overrides
-  `Settings.model_config["env_file"]` to `None` for every test,
-  making the suite hermetic from `.env`. The fixture manages the
-  override directly (not via `monkeypatch`) so it doesn't shift
-  the fixture setup order in nested files (the langfuse shim's
-  `_reset_caches` autouse depends on monkeypatch having unwound
-  before its teardown reads `lru_cache.cache_clear` off a
-  swapped attribute -- requesting `monkeypatch` in the conftest
-  fixture would invert that order). Existing per-test
-  `two_pass_settings` opt-in still works because it monkeypatches
-  `get_settings` directly inside the matcher module. Also
-  updated `test_resolve_condition_uses_registry_then_cache` to
-  pre-warm the cache under `system_filter=SNOMED` because cache
-  keys include the filter (no-filter pre-warm misses after the
-  T2DM patch). One test docstring updated for the now-pinned
-  T2DM filter. Pytest stays at 547/547. Live smoke now resolves
-  T2DM (493 SNOMED codes), hypertension (14), HbA1c (5),
-  metformin (137); rosuvastatin correctly soft-fails (not in
-  registry, not in alias table). Cache populated under
-  `data/cache/terminology/` after the smoke; second-run latency
-  drops dramatically as expected.
-  Previous: D-69 slice 4 follow-on -- **VSAC bindings
-  registry population (conditions + labs)**. Two canonical eCQM
-  value-set OIDs added to the registry beyond the T2DM seed,
-  each validated against live VSAC `$expand` and shipped with
-  a recorded fixture so resolver tests stay
-  offline-deterministic. (1) **Essential Hypertension** -- OID
-  `2.16.840.1.113883.3.464.1003.104.12.1011` (CMS165's
-  Controlling High Blood Pressure value set; 14 SNOMED codes
-  including `59621000` Essential hypertension); bound from
-  surface forms `hypertension`, `essential hypertension`, `high
-  blood pressure`, `htn` with `system_filter=
-  "http://snomed.info/sct"` because the value set is
-  multi-system and the matcher's PatientProfile is
-  single-system per query. (2) **HbA1c Laboratory Test** --
-  OID `2.16.840.1.113883.3.464.1003.198.12.1013` (CMS122's
-  Diabetes HbA1c Poor Control value set; 5 LOINC codes:
-  4548-4 standard HbA1c %, 4549-2, 17855-8, 17856-6, 96595-4);
-  bound from `hba1c`, `hemoglobin a1c`, `haemoglobin a1c`,
-  `a1c`, `glycated hemoglobin`, `glycosylated hemoglobin`
-  with `system_filter="http://loinc.org"`. New module-level
-  constants `ECQM_HYPERTENSION_OID`, `ECQM_HBA1C_LAB_OID`,
-  `SNOMED_SYSTEM`, `LOINC_SYSTEM` so probe scripts and
-  regression tests can reference them by name instead of
-  retyping dotted strings. Fixtures added at
-  `tests/fixtures/vsac/hypertension_expansion.json` and
-  `tests/fixtures/vsac/hba1c_lab_expansion.json` -- recorded
-  via inline httpx round-trip (probe_vsac.py's `--record` is
-  hardwired to the diabetes fixture path; an extension to
-  multi-fixture support is a future ergonomics improvement).
-  Hyperlipidemia and CKD intentionally NOT included: research
-  surfaced canonical OIDs only under non-CMS authorities (HL7
-  Patient Care WG for hyperlipidemia; CKD Stage 5 only is too
-  narrow to bind to "ckd"); rather than guess we leave them on
-  the named follow-on list with the slice-5 eval rerun
-  empirically deciding the priority. Test changes: replaced
-  the single `test_ecqm_diabetes_oid_is_the_canonical_cms_value_set`
-  with a parametrize over all three OID constants; added
-  positive parametrized tests pinning each populated condition
-  / lab surface form to its OID + system_filter; new
-  `test_vsac_fixture_matches_pinned_oid` parametrize verifies
-  each recorded fixture's `id` field equals the constant we
-  pin (catches accidental fixture/OID mismatch); replaced the
-  empty-lab-registry pin with positive lookups; updated the
-  resolver-side soft-fail test docstring to reflect lab
-  registry now hits and falls through on cache+client miss.
-  Default `binding_strategy` stays `alias`; this expansion is
-  inert in production until an operator opts into `two_pass`.
-  Slice-5 eval rerun is the first chance to measure how much
-  these eight new bindings (4 hypertension surfaces + 6 HbA1c
-  surfaces; -2 for the 4-surface dedup on the OID) close the
-  alias-only `unmapped_concept` baseline.
-  Previous: D-69 slice 4 follow-on -- **medication bindings
-  registry population**. Six cardiometabolic ingredient
-  bindings added to `MEDICATION_BINDINGS`: metformin, insulin,
-  atorvastatin, simvastatin, semaglutide (GLP-1
-  representative), dapagliflozin (SGLT2 representative). Each
-  was validated against live RxNav `/drugs.json` via
-  `scripts/probe_rxnorm.py` and confirmed to return non-empty
-  SCD/SBD code lists -- the exact TTYs Synthea uses for
-  `MedicationRequest.medicationCodeableConcept.coding` (sample
-  cohort sweep showed atorvastatin RxCUI 259255 and simvastatin
-  312961 both as SCD codes, matching what `/drugs.json` returns
-  by default). `tty_filter=None` on every entry intentionally:
-  unioning SCD + SBD gives the broadest hit rate without
-  cross-system noise; future Synthea data drift toward IN/PIN
-  would mean *adding* TTYs, not dropping current ones.
-  Class-level coverage ("any GLP-1 agonist", "any SGLT2
-  inhibitor") is intentionally NOT modeled here -- RxNav
-  `/drugs.json?name=...` is an ingredient/brand lookup, not a
-  class lookup; representing a class would mean either querying
-  RxClass (separate API surface) or unioning multiple ingredient
-  bindings. Deferred until trial eligibility text actually
-  demands it; the slice-5 eval rerun will surface the gap as a
-  named follow-up rather than us papering over it with
-  hardcoded class lists. Two test changes: replaced the
-  `test_lab_and_medication_bindings_empty_in_v0` pin with a
-  per-entry parametrize that asserts each medication binding is
-  an `RxNormBinding` with no `tty_filter`, and a positive
-  lookup-via-helper test that exercises the same normalization
-  path the matcher uses; updated the resolver-side soft-fail
-  test docstring to match the new "registry hits but cache empty
-  + no client = None" reality. Bindings docstring + tests pin
-  the validation discipline so future expansions can't slip
-  past review.
-  Previous: PLAN task 2.10 / **D-69 slice 4** —
-  matcher-side terminology binding wire-up. Three new pieces and
-  one switched dispatch:
-    - `Settings.binding_strategy` literal grew from `Literal["alias"]`
-      to `Literal["alias", "two_pass"]`. `alias` stays the default
-      so a fresh checkout reproduces the D-68 baseline byte-for-byte;
-      `two_pass` opts the matcher into the new path. `one_pass`
-      (LLM emits the binding inline) remains intentionally unwired
-      and rejected at config-validation time so eval runs can't
-      silently look terminology-backed when they aren't.
-    - New `clinical_demo.terminology.bindings` module: a small
-      surface-form -> (`VSACBinding(oid, system_filter)` |
-      `RxNormBinding(name, tty_filter)`) registry. v0 seeds *one*
-      binding (T2DM -> eCQM Diabetes OID
-      `2.16.840.1.113883.3.464.1003.103.12.1001`) so the wire-up
-      is end-to-end exercisable against the recorded VSAC fixture
-      we already ship. Lab and medication registries are
-      intentionally empty in v0; population is a separate commit
-      so each addition can be validated against its source
-      authority (VSAC search UI / RxNav probe scripts) without
-      the slice-4 plumbing diff being noisy.
-    - New `clinical_demo.terminology.resolver` module:
-      `TerminologyResolver` orchestrates registry -> cache ->
-      live VSAC / RxNorm -> soft-fail. Cache hit short-circuits
-      before any client is touched; cache miss with no
-      credentials returns `None` (a fresh checkout without
-      `UMLS_API_KEY` can opt into `two_pass` and still benefit
-      from any pre-warmed cache rows); fetch error is caught
-      and logged, returns `None`. Process-wide singleton via
-      `get_resolver()` so the matcher's hot path does not
-      re-instantiate clients per criterion.
-    - `matcher.concept_lookup.lookup_*` now dispatches on
-      `binding_strategy`. Under `two_pass`: try the resolver
-      first; on `None` fall back to the alias table; if both
-      miss, return `None` (the matcher's existing
-      `unmapped_concept` branch). Under `alias` (default): the
-      resolver factory is never called, so a fresh checkout
-      pays zero terminology overhead. Both modes preserve the
-      surface-form normalization parity that lets a string hit
-      both bridges identically.
-  Soft-fail discipline mirrors D-65/D-66: any terminology-side
-  failure (no key, network error, schema drift, upstream HTTP
-  500) degrades to the alias fallback, never crashes the run.
-  33 new tests: `tests/terminology/test_bindings.py` (11 — seed
-  binding integrity, normalization parity vs. `concept_lookup`,
-  empty-registry pinning, type discipline);
-  `tests/terminology/test_resolver.py` (14 — cache-hit /
-  cache-miss-with-fetch / cache-miss-no-client soft-fail / fetch
-  error / network error / system_filter + tty_filter cache-key
-  discrimination across both VSAC and RxNorm, plus surface-form
-  wrapper coverage and an unknown-binding-type defensive
-  branch); `tests/matcher/test_concept_lookup.py` (+7 — alias
-  mode trip-wires the resolver factory to prove it isn't
-  consulted; `two_pass` mode honors a resolver hit, falls back
-  to alias on resolver miss, and returns `None` only when both
-  bridges miss). Slice 5's eval rerun will be the first chance
-  to measure how much the seed binding (alone) closes the
-  baseline's `unmapped_concept` rate; expanding bindings beyond
-  T2DM is the natural next commit and will widen that delta
-  monotonically without needing further plumbing changes.
-  Previous: CT.gov structured age/sex enrichment — the
-  second of the two §0 cleanups, landed serially after the
-  Rule-13 prompt patch so each commit's eval delta is
-  independently attributable in slice 5. New module
-  `clinical_demo.extractor.enrich` adds a deterministic
-  post-processor `enrich_with_structured_fields(extracted, trial)`:
-  if the extractor didn't emit a `kind="age"` row but
-  `trial.minimum_age` / `trial.maximum_age` parses, inject one
-  with the parsed bounds and a sentinel `source_text`
-  (`"[ct.gov structured field: ...]"`) so reviewers can tell
-  injected criteria from LLM-extracted ones at a glance; same
-  for `kind="sex"` against constraining `trial.sex` values
-  (MALE / FEMALE only — `ALL` is vacuous). Wired into the
-  imperative `score_pair` path and the `extract_node` graph
-  path, both of which now match against the enriched view.
-  Critically the enrichment runs *at use time*, not at
-  cache-write time — `scripts/extract_criteria.py` keeps
-  caching the LLM's raw output, so a CT.gov metadata refresh
-  doesn't invalidate the D-66 extractor cache and a second
-  `PROMPT_VERSION` bump in two commits is avoided. Chose
-  post-processing over a prompt-side hint deliberately: CT.gov
-  structured fields are canonical (the trial designer asserts
-  "minimum age = 18"), and routing canonical structured data
-  through an LLM for re-interpretation is silly and lossy.
-  Also: no-override discipline — if the extractor *did* emit
-  age or sex (the eligibility text may have nuanced the bound
-  with exception clauses), enrichment leaves it alone.
-  Estimated layer-1 coverage delta: 55% → ~95% on the D-68
-  baseline; the matcher's existing `_match_age` / `_match_sex`
-  branches consume the synthetic rows unchanged. 36 new tests
-  (24 in `tests/extractor/test_enrich.py` covering the parser,
-  the inject/no-inject branches, and identity-as-no-op
-  optimization; 2 in `tests/scoring/test_score_pair.py` pinning
-  the end-to-end wiring).
-  Previous: extractor compound-criterion routing patch (one of
-  the two §0 follow-up cleanups, sequenced before D-69 slice 4
-  so its eval delta is independently attributable). Adds
-  Hard Rule 13 to the extractor system prompt — "Single-concept
-  typed slots: condition_text / medication_text / measurement_text
-  / event_text must each contain exactly ONE clinical concept;
-  compound clauses joined by 'or' / 'and' / commas route to
-  `free_text` instead." Cross-references it from Rule 2
-  (Atomicity). Adds a third few-shot example built from real
-  D-68 baseline misroutes ("severe liver dysfunction (Child-Pugh
-  C grade) or significant jaundice or hepatic encephalopathy"
-  and a four-class lipid-lowering medication compound), each
-  routed to `free_text` with a Rule-13-citing note. `PROMPT_VERSION`
-  bumped `extractor-v0.1` → `extractor-v0.2`, which auto-orphans
-  all 30 cached extractions in `data/curated/extractions/` per
-  the D-66 cache key — slice 5's eval rerun re-extracts from
-  scratch under the new discipline (intentional; the whole point
-  of versioning the cache key on prompt version). Estimated
-  impact: ~50–100 verdicts move from silent
-  `unmapped_concept` to `human_review_required` where the LLM
-  matcher node can actually engage. 2 new prompt tests pin the
-  Rule-13 must-have phrase, the version floor at v0.2, and the
-  presence of the compound-clause few-shot example.
-  Previous: PLAN task 2.10 / **D-69** slice 3 — RxNorm REST
-  client + cache integration. New
-  `clinical_demo.terminology.rxnorm_client` module: thin sync
-  wrapper over RxNav `/drugs.json?name=...` returning a
-  matcher-shaped `RxNormConcepts` envelope (query + ConceptSet of
-  RxCUIs + the set of RxNorm term types that contributed). Unions
-  codes across every populated `conceptGroup` by default (Synthea
-  patient bundles can be coded at any TTY level — IN, SCD, SBD —
-  so a narrower default would silently drop valid evidence); a
-  `tty_filter=frozenset({...})` arg restricts to a chosen set for
-  slice-4 ablations. Auth model is the key difference from VSAC:
-  RxNav is **public, no API key** (gated only on a ~20 rps rate
-  limit), so a fresh checkout can probe RxNorm without an NLM
-  account. Same fail-loud discipline as VSAC: empty / malformed
-  responses raise `RxNormError` rather than returning an empty
-  ConceptSet (which would tell the matcher "no codes count" —
-  the wrong default). `TerminologyCache` extended with parallel
-  `get/put/_or_fetch_rxnorm_concepts` methods, an
-  `rxnorm_envelope_fingerprint` independent from the VSAC one
-  (so an RxNorm envelope rev does not invalidate VSAC entries
-  and vice versa), filename pattern
-  `rxnorm.<query_tag>.<filter_tag>.<schema_fp>.json` with the
-  query hashed (case-insensitive, whitespace-stripped) so
-  filename-unsafe surface forms like "Glucophage" or
-  "metformin/glipizide" round-trip cleanly. Recorded fixture
-  `tests/fixtures/rxnorm/metformin_drugs.json` plus live probe
-  script `scripts/probe_rxnorm.py`. 27 new offline tests (12
-  client + 15 cache); the cache tests also pin the
-  vsac/rxnorm-coexist-in-one-root contract. Decision **D-69**
-  updated; matcher wiring still lands in slice 4.
-  Previous: D-69 slice 2 — on-disk terminology cache
-  (`TerminologyCache`) with auto-invalidating envelope
-  fingerprint, atomic writes, and `vsac_expansion_or_fetch`
-  convenience. D-69 slice 1 — VSAC FHIR `$expand` client +
-  `UMLS_API_KEY` plumbing. Before that: D-67 / D-68 (first
-  baseline regression with indeterminacy diagnostic): layer-1
-  agreement 81.0%, coverage 55.3%, 89% of all indeterminates are
-  `unmapped_concept`. Snapshots in `eval/baselines/2026-04-21/`.
-- **Next:** Add explicit composite/OR criterion representation before treating
-  compound free-text criteria as independently matchable rows. First slice:
-  reviewer-facing line items for `any_of` / `all_of` subchecks with per-subcheck
-  retrieved evidence, plus UI guidance that closed-world labels are synthetic
-  eval assumptions, not the default clinical stance. Do not let composite line
-  items change eligibility rollup until matcher semantics own composite groups.
-  Do **not** regenerate `eval/calibration/patient_evidence_candidates.json`
-  until composite schema + per-subcheck retrieval are in place; otherwise the
-  large artifact will bake in the temporary shallow splitter and create noisy
-  review churn. Composite-aware retrieval may widen review/adjudication context,
-  but `match_extracted` and the case rollup must stay unchanged until the
-  extractor/fixer can emit parent/subcheck groups reliably.
 - **Gates at HEAD:** `uv run pytest` 677/677; targeted criterion-fixer /
   scoring / graph / terminology tests 110/110; targeted ruff clean; targeted
   format check clean; targeted mypy clean; mapped + legacy terminology
   regression gate clean; `git diff --check` clean.
-- **Branch:** `codex/criterion-fixing-layer` stacked on
-  `codex/mapped-terminology-expansion`.
+- **Branch:** `main` (compiler rollout merged; no active feature branch).
 
 ### Non-trivial open follow-ups
 
@@ -1035,13 +285,22 @@ so they don't get lost between sessions.
 
 When closing out a task:
 
-1. Update **Last completed** with task id and the commit SHA(s).
-2. Update **Next** with the next task id from §6.
+1. Update the **Next up** bullet so it reflects the actual next blocker (it
+   should usually point at one concrete artifact + one CLI command).
+2. Update **Recent task history** with the new §6 task id; do *not* paste a
+   slice-by-slice paragraph here — slice prose lives in the §6 task row or
+   in `eval/baselines/.../SUMMARY.md`, not in §0.
 3. Update **Gates at HEAD** with the actual numbers from a fresh
    `mypy` + `ruff check` + `ruff format --check` + `pytest -q`.
-4. Add/remove **follow-ups** as they appear/resolve. Don't let
+4. If you change the frozen baseline thresholds in **Frozen compiler
+   baseline**, update the gate command in the same bullet and add a §6 task
+   row explaining why.
+5. Add/remove **follow-ups** as they appear/resolve. Don't let
    this list grow past ~5 items; promote chronic ones into §13
    open questions or into a new task row.
+6. If §0 grows past ~80 visible lines of bullets (excluding the
+   Coming-week plan and Open follow-ups subsections), it's drifted back
+   into a changelog. Trim before committing.
 
 ---
 
@@ -1205,7 +464,8 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.20 | **Mapping expansion + `mapped` terminology rename.** Continue adding high-impact mapping cases from diagnostics, including obvious condition/lab/medication surfaces that should not survive as `unmapped_concept`. Rename report/cache/work-queue success language from `resolved` to `mapped`, with backward-compatible reads for existing `status=resolved` artifacts and legacy filenames. The exit criterion is that newly mapped high-frequency surfaces stay out of `top_unmapped_surfaces`, the regression gate speaks in `mapped` terms, and old baselines still load. | 3 |
 | 2.21 | **Criterion fixing layer.** Add a bounded layer after extraction and before deterministic matching that repairs criterion shape without hiding uncertainty: normalize surfaces and abbreviations, split safely splittable composites into atomic checks, repair obvious polarity/unit/context issues, attach mapping candidates/provenance, and mark unsafe fixes as `human_review_required`. LLM use is allowed here for interpretation, but deterministic validators and terminology cache results decide what is safe to feed into the matcher. | 5 |
 | 2.22 | **Composite criterion representation.** Add an explicit representation for compound criteria with boolean semantics (`any_of`, `all_of`, later nested groups) before splitting OR/AND bundles into matcher-visible rows. The immediate target is reviewer-facing line items: an ADA hyperglycemia bullet should become subchecks such as HbA1c threshold, fasting glucose threshold, OGTT threshold, and random glucose + symptoms threshold, each with its own retrieved evidence and citation state, while the parent criterion remains one top-level eligibility row. Do not model OR bundles as independent inclusion criteria under the current AND rollup. Sequence: first add a real parent/subcheck schema and per-subcheck retrieval; second wire the UI/adjudicator context to that schema; third add matcher/adjudicator semantics for parent `any_of` / `all_of`; only then regenerate `eval/calibration/patient_evidence_candidates.json`. Slices landed: shared extractor-side composite group/subcheck construction; calibration rows expose stable composite group/subcheck ids with per-subcheck retrieved evidence; safe mapped lab thresholds can become typed subcheck criteria; scoring retrieval unions parent and composite-subcheck evidence for retrieval-only / bounded adjudication; the bounded adjudicator prompt surfaces composite subcheck context explicitly; `extractor-v0.6` adds native `composite_groups[]`; and `match_extracted` / `score_pair` / LangGraph now consume flat native groups with raw-predicate group rollup followed by parent polarity. Follow-up: nested groups, Chia relation/equivalence alignment, richer clinical-event subcheck extraction, and regression metrics for composite handling. | 5 |
-| **Phase 2 total** | | **~89 hr** |
+| 2.23 | **2026-05-11 → 2026-05-14 compiler rollout (frozen as demo baseline).** *Done — and intentionally locked.* Consolidated record of the slice cadence that moved opt-in `compiled_predicates` from a parity experiment to the demo baseline. Snapshot lives at `eval/baselines/2026-05-11-compiler-rollout/` (`SUMMARY.md`, `compiled_predicates_diagnostics.json`, `legacy_vs_compiled_movement_review.json/.md`, `patient_evidence_legacy_vs_compiled.json/.md`, `compiled_predicates_compiler_review.json`, `compiled_predicates_compiler_review_groups.json`). Headline movement vs. same-run legacy `matcher_inputs`: criterion-level `unmapped_concept` 317/1076 (29.5%) → 0/1076 (0.0%); 88 indeterminate-to-determinate criterion movements; 275 reason-only changes; 13 case-rollup movements; 47/49 cases scored (2 deceased-patient refusals); Layer-1 metrics unchanged at 89.0% / 98.6%. Slice sequence (commits trace this exactly): cache-independent terminology closure + reviewed descendant expansions; condition/event decomposition + qualifier/top-gap review; final opaque-unmapped registry pass; BP threshold decomposition + ULN reference-limit translation + sex-specific hemoglobin ULN; antidiabetic medication-class closure + C-peptide unit conversion; full-pneumonectomy procedure-history execution; BP-affecting medication-class closure + coronary-intervention temporal procedure rerouting; condition-typed intravenous-inotrope medication exposure promotion; aromatase-inhibitor / anticonvulsant class closure + DPP-4 out-of-scope variants; structured `free_text_review` validation / matcher / reviewer hardening; free-text plasma-glucose routing + normal-range/provenance gap taxonomy; condition-shaped and temporal medication-class exposure rerouting + current-vocabulary anticoagulant closure; reviewer-artifact classification for reviewed `out_of_scope` / `extractor_bug` gaps; and CKD/ESRD-on-dialysis composite decomposition. **Frozen on 2026-05-14.** Further compiler-closure work is out of scope until a presentable number motivates it; the diagnostics gate documented in §0 is the regression contract. | 30 |
+| **Phase 2 total** | | **~119 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 
 ### Criterion Compiler / Resolution Layer Plan Objects
