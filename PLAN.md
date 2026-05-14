@@ -59,42 +59,58 @@
     --max-gap-kind provenance_required=6
   ```
 
-- **Headline open gate — patient-evidence calibration labels.**
-  `eval/calibration/patient_evidence_labels.json` is at
-  **22 / 50 rows with `label` set, 0 / 50 with `reviewer` attribution**
-  (`open_world` mode: 45 rows, `closed_world_eval` mode: 5 rows). Without
-  filled, attributed labels, Phase 3.2 (cost/quality sweep) and 3.3 (routing
-  policy / "money slide") have no calibrated denominator and cannot be
-  reported in the 20-minute deck.
+- **Headline open gate — patient-evidence calibration labels.** This is the
+  only product-quality gate on actual eligibility decisions. Without it we
+  cannot tell whether the matcher / retrieval / adjudication paths are
+  right on real (patient, criterion) rows, which is the question the
+  product exists to answer; deck slides are a byproduct.
 
-  Interview-demo gate: **≥ 30 / 50 rows fully filled.** (The original 40/60
-  target reflected a 60-row packet; §6 task 2.12 reset the packet to 50
-  rows.) Each filled row needs `label`, `expected_matcher_verdict`, cited
-  source row ids when evidence exists, `reviewer`, and a one-line
-  `rationale`.
+  `eval/calibration/patient_evidence_labels.json` was regenerated against
+  the frozen baseline (`b47ada00d6a7`) on 2026-05-14 and is now at
+  **0 / 26 rows filled**. The pre-refresh 50-row packet built against the
+  pre-compiler-rollout matcher state is preserved at
+  `eval/calibration/patient_evidence_{candidates,labels}.20260514-pre-refresh.json`
+  for audit / cross-reference (it carries 22 partially-filled rows and 9
+  rationales, but only 2 of those 22 align with the new packet's criterion
+  selection and even those were written before the matcher v0.2
+  silent-flip fix, so they are not seeded into the fresh template).
+
+  New packet shape (26 rows, 14 pairs): 9 `measurement_threshold`,
+  9 `free_text`, 7 `condition_present`, 1 `condition_absent`. Most
+  concentrated pair has 6 rows; 12 pairs have 1-2 rows each.
+  `unmapped_concept` candidates are 0 because the compiler baseline has 0.
+
+  Interview-demo gate: **≥ 20 / 26 rows labeled (≥ 77%); label all 26
+  if possible.** At N=20-26 the cost/quality sweep produces directional
+  accuracy signal between modes (`none` vs `retrieval_only` vs
+  `bounded_adjudication`); it does not produce statistically tight CIs and
+  the SUMMARY must say so. Each filled row needs `label`,
+  `expected_matcher_verdict`, cited source row ids when evidence exists,
+  `reviewer`, and a one-line `rationale`.
 
 - **Next up — fill labels (human task; blocks everything downstream).**
-  1. Open `eval/calibration/patient_evidence_candidates.json` alongside
-     `eval/calibration/patient_evidence_labels.json`. Each candidate row
-     carries the criterion, the deterministic verdict, retrieved
-     patient/trial source rows, and stable row ids.
-  2. Walk the **28 unlabeled rows** (those with `label: null`) and, to
-     harden them, the **22 partial rows** without a `reviewer`. Fill the
-     four required fields per row. Keep the matcher assumption mode each
-     candidate row was generated under unless you have an explicit reason
-     to switch.
-  3. When ≥ 30 rows are attributed, run the patient-evidence report against
-     the frozen baseline:
+  1. Boot the API (`uv run python scripts/serve.py`) and the Svelte dev
+     server (`npm --prefix web run dev`). Open `http://localhost:5173`
+     and switch to **Patient evidence** mode. The GUI loads from
+     `eval/calibration/patient_evidence_candidates.json` and writes back
+     to `eval/calibration/patient_evidence_labels.json` atomically.
+  2. Walk all 26 rows. Fill the five required fields per row. Keep the
+     matcher assumption mode each candidate row was generated under
+     unless you have an explicit reason to switch (the UI warns when
+     `closed_world_eval` is being applied to rows where `open_world` is
+     the honest default).
+  3. When ≥ 20 rows are attributed, run the patient-evidence report
+     against the frozen baseline:
 
      ```bash
      uv run python scripts/eval.py patient-evidence \
        --run-id b47ada00d6a7 \
        --labels eval/calibration/patient_evidence_labels.json \
-       --min-usable-labels 30
+       --min-usable-labels 20
      ```
 
-     That hand-off unblocks the cost/quality sweep in the coming-week plan
-     below.
+     A 0 exit code unblocks the cost/quality sweep in the coming-week
+     plan below.
 
 - **Matcher semantics in force (still relevant — do not relitigate).**
   matcher v0.3 with native `composite_groups[]` (§6 task 2.22) on top of
@@ -128,9 +144,8 @@
   presentation, built on ≥ 30 attributed patient-evidence labels and the
   existing extractor cache.
 - **Task sequence:**
-  1. **Fill labels (human).** Bring
-     `eval/calibration/patient_evidence_labels.json` from 22/50 partial
-     to ≥ 30/50 fully attributed. ~3-5 hours.
+  1. **Fill labels (human).** Walk the regenerated 26-row packet in the
+     reviewer GUI; aim for all 26 attributed, gate at ≥ 20. ~2-3 hours.
   2. **Cost/quality sweep (agent).** Once labels are in, run
      patient-evidence reports across `none`, `retrieval_only`, and one
      `bounded_adjudication` model against the frozen extractor cache.
