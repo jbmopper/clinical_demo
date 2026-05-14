@@ -230,6 +230,10 @@ class CheckablePredicate(BaseModel):
     value_high: float | None = Field(description="Inclusive upper bound, when applicable.")
     unit: str | None = Field(description="Canonical/conventional unit used for comparison.")
     window_days: int | None = Field(description="Temporal window length in days.")
+    min_duration_days: int | None = Field(
+        default=None,
+        description="Minimum observed exposure/event duration in days, when applicable.",
+    )
     support_ids: list[str] = Field(
         default_factory=list,
         description="Resolution supports consumed by this predicate.",

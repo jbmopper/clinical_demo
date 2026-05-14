@@ -8,13 +8,13 @@ This document explains how **evidence assumptions** (open vs closed world) inter
 
 These modes apply when a criterion’s **trial-side concept has already resolved** to a matcher vocabulary (`ConceptSet`) and the code looks for matching rows on the patient profile.
 
-| Mode | Intended use | When the chart has **no** matching active condition / medication / in-window event |
+| Mode | Intended use | When the chart has **no** matching active condition / medication exposure / in-window event |
 |------|----------------|-------------------------------------------------------------------------------------|
 | **Open world** (default) | Clinical chart review: the FHIR slice you have is not assumed complete. | Verdict stays **indeterminate** with reason **no data** — “silent chart” is **not** treated as proof the patient lacks the condition or drug. |
 | **Closed world (eval)** | Synthetic eval slices where the cohort record is treated as the full world for testing. | Raw predicate before polarity flip is **fail**, with a flag on the verdict that the conclusion **depended on the closed-world assumption** (so audits can separate honest “no row” from “negative under completeness assumption”). |
 | **Closed world (demo)** | Same semantics as eval variant; separate literal so callers can tag demo runs distinctly if needed. | Same as eval closed world for the whitelisted kinds. |
 
-**Kinds affected by open vs closed:** condition present/absent, medication present/absent, temporal-window lookbacks that reuse condition resolution for the event text, and the narrow free-text trial-exposure predicate for investigational-agent / clinical-trial participation criteria.
+**Kinds affected by open vs closed:** condition present/absent, medication present/absent, medication exposure windows or stable-duration checks, procedure-history lookbacks, temporal-window lookbacks that reuse condition resolution for the event text, and the narrow free-text trial-exposure predicate for investigational-agent / clinical-trial participation criteria.
 
 **Kinds *not* flipped by closed world:**
 

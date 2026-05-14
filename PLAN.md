@@ -1455,7 +1455,10 @@ promotion remain follow-on work.
     heart-failure support but do not emit executable predicates until functional
     class evidence is supported; contraindication, life-expectancy,
     study-compliance, qualified arrhythmia, and generic "other medical
-    condition" phrases become explicit unsupported compiler gaps.
+    condition" phrases become explicit unsupported compiler gaps. A 2026-05-13
+    exposure-window slice made source-text lookbacks executable for reviewed
+    procedure-history predicates, so a mapped surgery/procedure can now require
+    occurrence inside the criterion window instead of only "ever completed."
 
 - id: CC-08
   title: Measurement criterion compiler
@@ -1561,7 +1564,11 @@ promotion remain follow-on work.
     RxNorm SCD/SBD code union, SGLT/SGLT2 spelling variants resolve through
     the SGLT2 current-vocabulary class, and non-insulin antidiabetic surfaces
     resolve through metformin, semaglutide, and dapagliflozin while explicitly
-    excluding insulin.
+    excluding insulin. A 2026-05-13 exposure-semantics slice added typed
+    medication lookback windows and minimum observed duration constraints to
+    compiled medication predicates, covering cases such as recent medication
+    use and stable-dose therapy before screening without treating them as
+    generic active-medication checks.
 
 - id: CC-10
   title: Compiler validation gates
@@ -1741,6 +1748,11 @@ promotion remain follow-on work.
   medication-class surfaces now compile through reviewed class expansion and
   the C-peptide unit-conversion bucket is gone. The full-pneumonectomy
   procedure-history bucket now compiles through parsed patient `Procedure` rows.
+  A follow-on exposure/event spine now carries source lookback windows on
+  compiled medication and procedure predicates and carries minimum medication
+  exposure duration for stable-dose therapy clauses; the next eval should
+  measure how much this reduces temporal/exposure reason-only gaps before the
+  remaining PAH/background-therapy and medication-affecting-BP class work.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
@@ -1795,8 +1807,10 @@ promotion remain follow-on work.
   moved the snapshot to 299 unresolved compiler gaps with 343 checkable
   predicates by executing full-pneumonectomy history against completed
   patient `Procedure` rows. The next CC-08/CC-10 targets are normal-range phrase execution,
-  modality/fasting provenance support, broader procedure/event windows, and moving reviewed unsupported
-  measurement decisions into better compiler-specific gap kinds as the IR grows.
+  modality/fasting provenance support, PAH/background-therapy and
+  medication-affecting-BP class expansion on top of the new exposure-window
+  spine, and moving reviewed unsupported measurement decisions into better
+  compiler-specific gap kinds as the IR grows.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup
 

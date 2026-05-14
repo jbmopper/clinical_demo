@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Literal
 
 from tests.matcher._fixtures import (
@@ -7,9 +8,11 @@ from tests.matcher._fixtures import (
     crit_condition,
     crit_free_text,
     crit_measurement,
+    crit_medication,
     crit_temporal_window,
     make_condition,
     make_lab,
+    make_medication,
     make_procedure,
     make_profile,
     make_trial,
@@ -140,6 +143,77 @@ def test_compiled_procedure_history_exclusion_fails_when_present() -> None:
     assert verdict.verdict == "fail"
     assert verdict.reason == "ok"
     assert verdict.evidence[0].kind == "procedure"
+
+
+def test_compiled_procedure_history_applies_source_window() -> None:
+    criterion = crit_condition(text="history of full pneumonectomy").model_copy(
+        update={"source_text": "History of full pneumonectomy within 30 days"}
+    )
+    profile = make_profile(
+        procedures=[make_procedure(code="49795001", performed=AS_OF - timedelta(days=60))]
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(
+        compilation,
+        profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.checkable_predicates[0].window_days == 30
+    assert verdict.verdict == "fail"
+    assert verdict.reason == "ok"
+
+
+def test_compiled_medication_exposure_applies_source_window() -> None:
+    criterion = crit_medication(text="metformin").model_copy(
+        update={"source_text": "Use of metformin in the previous 2 months"}
+    )
+    profile = make_profile(
+        medications=[
+            make_medication(
+                code="860975",
+                start=AS_OF - timedelta(days=300),
+                end=AS_OF - timedelta(days=30),
+            )
+        ]
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert compilation.checkable_predicates[0].window_days == 60
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+    assert "overlaps" in verdict.evidence[0].note
+
+
+def test_compiled_medication_exposure_requires_minimum_duration() -> None:
+    criterion = crit_medication(text="metformin").model_copy(
+        update={"source_text": "On a stable dose of metformin for at least 30 days"}
+    )
+    compilation = compile_extracted_criteria([criterion])
+
+    short_profile = make_profile(
+        medications=[make_medication(code="860975", start=AS_OF - timedelta(days=10))]
+    )
+    long_profile = make_profile(
+        medications=[make_medication(code="860975", start=AS_OF - timedelta(days=45))]
+    )
+
+    short_verdict = match_compiled_criteria(
+        compilation,
+        short_profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+    long_verdict = match_compiled_criteria(compilation, long_profile, make_trial())[0]
+
+    assert compilation.checkable_predicates[0].min_duration_days == 30
+    assert short_verdict.verdict == "fail"
+    assert long_verdict.verdict == "pass"
+    assert "required duration >= 30 days" in long_verdict.evidence[0].note
 
 
 def test_compiled_measurement_predicate_executes_threshold() -> None:

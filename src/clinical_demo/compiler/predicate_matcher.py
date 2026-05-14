@@ -401,34 +401,48 @@ def _execute_medication(
     mode: MatcherAssumptionMode,
 ) -> tuple[Verdict, VerdictReason, str, list[Evidence], bool]:
     concept_set = _concept_set(predicate)
-    matches = [
-        medication
-        for medication in profile.active_medications
-        if medication.concept.code in concept_set.codes
-        and medication.concept.system == concept_set.system
-    ]
+    matches = _matching_medication_exposures(
+        profile,
+        concept_set,
+        window_days=predicate.window_days,
+        min_duration_days=predicate.min_duration_days,
+    )
     if matches:
         return (
             "pass",
             "ok",
-            f"Patient has active medication matching compiled predicate {concept_set.name!r}.",
-            [_medication_evidence(medication, profile) for medication in matches],
+            (
+                "Patient has medication exposure matching compiled predicate "
+                f"{concept_set.name!r}{_medication_constraint_suffix(predicate)}."
+            ),
+            [
+                _medication_evidence(
+                    medication,
+                    profile,
+                    window_days=predicate.window_days,
+                    min_duration_days=predicate.min_duration_days,
+                )
+                for medication in matches
+            ],
             False,
         )
 
-    looked_for = f"active medication in {concept_set.name!r}"
+    looked_for = _medication_looked_for(concept_set, profile, predicate)
     if mode in _CLOSED_WORLD_MODES:
         return (
             "fail",
             "ok",
             (
-                f"Patient has no active medication matching {concept_set.name!r} "
+                f"Patient has no medication exposure matching {concept_set.name!r} "
                 "(closed-world: treating absence in the curated record as negative)."
             ),
             [
                 MissingEvidence(
                     looked_for=looked_for,
-                    note=f"no matching active medications on profile; absence treated as negative under {mode}",
+                    note=(
+                        "no matching medication exposures on profile; "
+                        f"absence treated as negative under {mode}"
+                    ),
                 )
             ],
             True,
@@ -437,12 +451,100 @@ def _execute_medication(
         "indeterminate",
         "no_data",
         (
-            f"Patient record has no active medication matching {concept_set.name!r}; "
+            f"Patient record has no medication exposure matching {concept_set.name!r}; "
             "under open_world this is insufficient evidence, not absence."
         ),
-        [MissingEvidence(looked_for=looked_for, note="no matching active medications on profile")],
+        [
+            MissingEvidence(
+                looked_for=looked_for,
+                note="no matching medication exposures on profile",
+            )
+        ],
         False,
     )
+
+
+def _matching_medication_exposures(
+    profile: PatientProfile,
+    concept_set: ConceptSet,
+    *,
+    window_days: int | None,
+    min_duration_days: int | None,
+) -> list[Medication]:
+    medications = (
+        profile.patient.medications
+        if window_days is not None or min_duration_days is not None
+        else profile.active_medications
+    )
+    return [
+        medication
+        for medication in medications
+        if _medication_matches_concept_set(medication, concept_set)
+        and _medication_overlaps_window(medication, profile, window_days)
+        and _medication_meets_min_duration(medication, profile, min_duration_days)
+    ]
+
+
+def _medication_matches_concept_set(medication: Medication, concept_set: ConceptSet) -> bool:
+    return (
+        medication.concept.code in concept_set.codes
+        and medication.concept.system == concept_set.system
+    )
+
+
+def _medication_overlaps_window(
+    medication: Medication,
+    profile: PatientProfile,
+    window_days: int | None,
+) -> bool:
+    if window_days is None:
+        return medication.is_active(profile.as_of)
+    cutoff = profile.as_of - timedelta(days=window_days)
+    return medication.start_date <= profile.as_of and (
+        medication.end_date is None or medication.end_date >= cutoff
+    )
+
+
+def _medication_meets_min_duration(
+    medication: Medication,
+    profile: PatientProfile,
+    min_duration_days: int | None,
+) -> bool:
+    if min_duration_days is None:
+        return True
+    if medication.start_date > profile.as_of:
+        return False
+    exposure_end = profile.as_of
+    if medication.end_date is not None and medication.end_date < exposure_end:
+        exposure_end = medication.end_date
+    return (exposure_end - medication.start_date).days >= min_duration_days
+
+
+def _medication_constraint_suffix(predicate: CheckablePredicate) -> str:
+    parts: list[str] = []
+    if predicate.window_days is not None:
+        parts.append(f"within {predicate.window_days} days")
+    if predicate.min_duration_days is not None:
+        parts.append(f"for at least {predicate.min_duration_days} days")
+    return f" ({'; '.join(parts)})" if parts else ""
+
+
+def _medication_looked_for(
+    concept_set: ConceptSet,
+    profile: PatientProfile,
+    predicate: CheckablePredicate,
+) -> str:
+    if predicate.window_days is None:
+        base = f"active medication in {concept_set.name!r}"
+    else:
+        cutoff = profile.as_of - timedelta(days=predicate.window_days)
+        base = (
+            f"medication exposure in {concept_set.name!r} between "
+            f"{cutoff.isoformat()} and {profile.as_of.isoformat()}"
+        )
+    if predicate.min_duration_days is not None:
+        base += f" for at least {predicate.min_duration_days} days"
+    return base
 
 
 def _execute_procedure(
@@ -451,17 +553,23 @@ def _execute_procedure(
     mode: MatcherAssumptionMode,
 ) -> tuple[Verdict, VerdictReason, str, list[Evidence], bool]:
     concept_set = _concept_set(predicate)
-    matches = profile.matching_completed_procedures(concept_set)
+    matches = _matching_completed_procedures(profile, concept_set, predicate.window_days)
     if matches:
         return (
             "pass",
             "ok",
-            f"Patient has completed procedure matching compiled predicate {concept_set.name!r}.",
-            [_procedure_evidence(procedure) for procedure in matches],
+            (
+                "Patient has completed procedure matching compiled predicate "
+                f"{concept_set.name!r}{_window_constraint_suffix(predicate.window_days)}."
+            ),
+            [
+                _procedure_evidence(procedure, profile=profile, window_days=predicate.window_days)
+                for procedure in matches
+            ],
             False,
         )
 
-    looked_for = f"completed procedure in {concept_set.name!r} ({len(concept_set.codes)} codes)"
+    looked_for = _procedure_looked_for(concept_set, profile, predicate.window_days)
     if mode in _CLOSED_WORLD_MODES:
         return (
             "fail",
@@ -491,6 +599,36 @@ def _execute_procedure(
             )
         ],
         False,
+    )
+
+
+def _matching_completed_procedures(
+    profile: PatientProfile,
+    concept_set: ConceptSet,
+    window_days: int | None,
+) -> list[Procedure]:
+    matches = profile.matching_completed_procedures(concept_set)
+    if window_days is None:
+        return matches
+    cutoff = profile.as_of - timedelta(days=window_days)
+    return [procedure for procedure in matches if procedure.performed_date >= cutoff]
+
+
+def _window_constraint_suffix(window_days: int | None) -> str:
+    return f" (within {window_days} days)" if window_days is not None else ""
+
+
+def _procedure_looked_for(
+    concept_set: ConceptSet,
+    profile: PatientProfile,
+    window_days: int | None,
+) -> str:
+    if window_days is None:
+        return f"completed procedure in {concept_set.name!r} ({len(concept_set.codes)} codes)"
+    cutoff = profile.as_of - timedelta(days=window_days)
+    return (
+        f"completed procedure in {concept_set.name!r} ({len(concept_set.codes)} codes) between "
+        f"{cutoff.isoformat()} and {profile.as_of.isoformat()}"
     )
 
 
@@ -859,27 +997,53 @@ def _temporal_evidence(
     )
 
 
-def _medication_evidence(medication: Medication, profile: PatientProfile) -> MedicationEvidence:
+def _medication_evidence(
+    medication: Medication,
+    profile: PatientProfile,
+    *,
+    window_days: int | None = None,
+    min_duration_days: int | None = None,
+) -> MedicationEvidence:
+    if window_days is None:
+        note = (
+            f"{medication.concept.display or medication.concept.code} "
+            f"(active as of {profile.as_of.isoformat()})"
+        )
+    else:
+        cutoff = profile.as_of - timedelta(days=window_days)
+        end = medication.end_date.isoformat() if medication.end_date is not None else "active"
+        note = (
+            f"{medication.concept.display or medication.concept.code} exposure from "
+            f"{medication.start_date.isoformat()} to {end} "
+            f"(overlaps {cutoff.isoformat()}..{profile.as_of.isoformat()})"
+        )
+    if min_duration_days is not None:
+        note += f"; required duration >= {min_duration_days} days"
     return MedicationEvidence(
         concept=medication.concept,
         start_date=medication.start_date,
         end_date=medication.end_date,
-        note=(
-            f"{medication.concept.display or medication.concept.code} "
-            f"(active as of {profile.as_of.isoformat()})"
-        ),
+        note=note,
     )
 
 
-def _procedure_evidence(procedure: Procedure) -> ProcedureEvidence:
+def _procedure_evidence(
+    procedure: Procedure,
+    *,
+    profile: PatientProfile | None = None,
+    window_days: int | None = None,
+) -> ProcedureEvidence:
+    note = (
+        f"{procedure.concept.display or procedure.concept.code} "
+        f"performed on {procedure.performed_date.isoformat()}"
+    )
+    if window_days is not None and profile is not None:
+        note += f" (within {window_days} days of {profile.as_of.isoformat()})"
     return ProcedureEvidence(
         concept=procedure.concept,
         performed_date=procedure.performed_date,
         status=procedure.status,
-        note=(
-            f"{procedure.concept.display or procedure.concept.code} "
-            f"performed on {procedure.performed_date.isoformat()}"
-        ),
+        note=note,
     )
 
 

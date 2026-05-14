@@ -12,6 +12,7 @@ from clinical_demo.extractor.schema import (
     ExtractionMetadata,
     FreeTextCriterion,
     MeasurementCriterion,
+    MedicationCriterion,
     TemporalWindowCriterion,
     ThresholdOperator,
 )
@@ -85,6 +86,24 @@ def _measurement_with_value(
             value_high=None,
             unit=unit,
         ),
+        temporal_window=None,
+        free_text=None,
+        mentions=[],
+    )
+
+
+def _medication(text: str, source_text: str | None = None) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind="medication_present",
+        polarity="inclusion",
+        source_text=source_text or f"Receiving {text}",
+        negated=False,
+        mood="actual",
+        age=None,
+        sex=None,
+        condition=None,
+        medication=MedicationCriterion(medication_text=text),
+        measurement=None,
         temporal_window=None,
         free_text=None,
         mentions=[],
@@ -796,6 +815,24 @@ def test_free_text_trial_exposure_compiles_to_internal_predicate() -> None:
     assert compiled.predicate.predicate_kind == "trial_exposure"
     assert compiled.checkable_predicates[0].window_days == 90
     assert compiled.diagnostics[0].code == "free_text.promoted.trial-exposure"
+
+
+def test_medication_predicate_carries_exposure_window_and_minimum_duration() -> None:
+    criterion = _medication(
+        "metformin",
+        source_text="On a stable dose of metformin for at least 30 days within previous 2 months",
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    predicate = result.criteria[0].checkable_predicates[0]
+
+    assert predicate.predicate_kind == "medication_exposure"
+    assert predicate.window_days == 60
+    assert predicate.min_duration_days == 30
+    expression = result.criteria[0].predicate.expression
+    assert expression is not None
+    assert "window=60d" in expression
+    assert "min_duration=30d" in expression
 
 
 def test_condition_shaped_trial_exposure_compiles_to_internal_predicate() -> None:

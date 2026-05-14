@@ -166,6 +166,19 @@ _WITHIN_WINDOW_RE = re.compile(
     r"\bwithin\s+(?P<num>\d+)\s+(?P<unit>days?|weeks?|months?|years?)\b",
     re.IGNORECASE,
 )
+_MIN_DURATION_RE = re.compile(
+    r"\bfor\s+"
+    r"(?:(?:at\s+least|a\s+minimum\s+of|minimum\s+of|no\s+less\s+than|"
+    r"more\s+than|over)\s+|(?:>=|>)\s*)"
+    r"(?P<num>\d+)\s*(?P<unit>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
+_STABLE_DURATION_RE = re.compile(
+    r"\b(?:stable|background|maintenance|chronic|ongoing|current|receiving|on)\b"
+    r".{0,80}?"
+    r"\bfor\s+(?P<num>\d+)\s*(?P<unit>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
 _PROCEDURE_HISTORY_PREFIX_RE = re.compile(
     r"^(?:personal\s+)?(?:(?:past\s+)?medical\s+)?history\s+(?:of|for)\s+",
     re.IGNORECASE,
@@ -1829,6 +1842,13 @@ def _free_text_window_days(source_text: str) -> int | None:
     return _window_days(match.group("num"), match.group("unit"))
 
 
+def _minimum_duration_days(source_text: str) -> int | None:
+    match = _MIN_DURATION_RE.search(source_text) or _STABLE_DURATION_RE.search(source_text)
+    if match is None:
+        return None
+    return _window_days(match.group("num"), match.group("unit"))
+
+
 def _window_days(number_text: str | None, unit: str) -> int:
     count = int(number_text) if number_text is not None else 1
     unit = unit.lower()
@@ -2099,6 +2119,7 @@ def _compile_reviewed_procedure_history(
             target_system=concept_set.system,
             target_codes=concept_set.codes,
             negated=_criterion_is_absence(criterion),
+            window_days=_free_text_window_days(criterion.source_text),
             support_ids=support_ids,
             gap_ids=[],
         )
@@ -2780,12 +2801,17 @@ def _medication_predicate(
         target_system=medication.concept_set.system,
         target_codes=medication.concept_set.codes,
         negated=_criterion_is_absence(criterion),
+        window_days=_free_text_window_days(criterion.source_text),
+        min_duration_days=_minimum_duration_days(criterion.source_text),
         support_ids=medication.predicate.support_ids,
         gap_ids=[],
     )
-    return medication.predicate.model_copy(update={"predicate_ids": [predicate.predicate_id]}), [
-        predicate
-    ]
+    return medication.predicate.model_copy(
+        update={
+            "expression": _coded_expression(predicate),
+            "predicate_ids": [predicate.predicate_id],
+        }
+    ), [predicate]
 
 
 def _resolved_predicate_plan(
@@ -2821,6 +2847,7 @@ def _checkable_predicate(
     value_high: float | None = None,
     unit: str | None = None,
     window_days: int | None = None,
+    min_duration_days: int | None = None,
     support_ids: list[str] | None = None,
     gap_ids: list[str] | None = None,
 ) -> CheckablePredicate:
@@ -2840,6 +2867,7 @@ def _checkable_predicate(
         value_high=value_high,
         unit=unit,
         window_days=window_days,
+        min_duration_days=min_duration_days,
         support_ids=support_ids or [],
         gap_ids=gap_ids or [],
     )
@@ -2847,7 +2875,12 @@ def _checkable_predicate(
 
 def _coded_expression(predicate: CheckablePredicate) -> str:
     code_count = len(predicate.target_codes)
-    return f"{predicate.predicate_kind}({predicate.predicate_id},codes={code_count})"
+    parts = [f"codes={code_count}"]
+    if predicate.window_days is not None:
+        parts.append(f"window={predicate.window_days}d")
+    if predicate.min_duration_days is not None:
+        parts.append(f"min_duration={predicate.min_duration_days}d")
+    return f"{predicate.predicate_kind}({predicate.predicate_id},{','.join(parts)})"
 
 
 def _criterion_is_absence(criterion: ExtractedCriterion) -> bool:
