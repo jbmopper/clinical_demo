@@ -133,16 +133,45 @@
   compiler rollout lives in `eval/baselines/2026-05-11-compiler-rollout/`
   and in git history.
 
+- **Self-building track now scheduled (decision D-74).** The deck-track
+  this week is unchanged — fill labels, run the sweep, draft the doc —
+  but for the first time the plan also schedules work that lets the
+  system *propose its own gap fixes*. Two staged slices:
+    - **§6 task 2.24** (this week, after the cost/quality sweep baseline
+      is captured). Deterministic mention-to-composite promotion in
+      `clinical_demo.extractor.fix.fix_extracted_criteria` — recognizes
+      parenthetical comma-separated lists / inline disjunctions and
+      decomposes them into `composite_groups: any_of` using the typed
+      mentions the extractor already emitted. No LLM in this slice; it
+      is the safe wedge.
+    - **§6 task 3.3d** (Phase 3, after §2.24 is reviewable). Opt-in
+      LLM-driven bounded patch-proposal workflow scoped to the residual
+      `free_text` rows §2.24 did not handle, plus reviewed-registry
+      surface-to-ConceptSet gaps. Proposals land in
+      `data/terminology/review_inbox/`, never directly in the executable
+      registry. Validators + tests + human sign-off promote them.
+
+  Invariant: the deterministic compiler stays the trust boundary. Nothing
+  LLM-authored ever enters the executable registry or compiled
+  predicates without passing deterministic validators and a human sign-off.
+
 ### Coming week plan (2026-05-14 to 2026-05-21)
 
-- **Target effort:** 15-20 hours, mostly non-coding.
+- **Target effort:** 18-24 hours total; tasks #1-#5 are mostly
+  non-coding (~13-17 hr), task #6 is a small bounded coding slice
+  (~3-4 hr) gated behind tasks #1-#2 so the cost/quality baseline is
+  captured first.
 - **Operating rule:** every task on this list must move a number that ends
-  up in the 20-minute deck. No new compiler-closure slices. No new
-  terminology passes. If a regression appears against the frozen compiler
-  baseline, fix the regression; do not expand the snapshot.
+  up in the 20-minute deck *or* establish the first measurable
+  self-building movement (task #6 only). No new compiler-closure slices.
+  No new terminology passes. If a regression appears against the frozen
+  compiler baseline, fix the regression; do not expand the snapshot. Task
+  #6 must preserve the frozen compiler-diagnostics gate byte-for-byte on
+  rows it does not touch.
 - **Primary outcome:** a defensible cost/quality dashboard for the
-  presentation, built on ≥ 30 attributed patient-evidence labels and the
-  existing extractor cache.
+  presentation, built on ≥ 20 attributed patient-evidence labels and the
+  existing extractor cache; plus a small, reviewable deterministic
+  self-building slice in main with regression evidence.
 - **Task sequence:**
   1. **Fill labels (human).** Walk the regenerated 26-row packet in the
      reviewer GUI; aim for all 26 attributed, gate at ≥ 20. ~2-3 hours.
@@ -162,11 +191,29 @@
   5. **README polish (agent).** Architecture diagram pointer,
      "how to reproduce the frozen baseline" recipe, honest limitations
      section. ~2 hours.
+  6. **Self-building slice 1: deterministic composite promotion
+     (agent; §6 task 2.24, D-74).** Sequenced *after* task #2 lands so
+     the cost/quality sweep captures the frozen baseline before the
+     fixer narrows `free_text` rows. Extend
+     `clinical_demo.extractor.fix.fix_extracted_criteria` to recognize
+     parenthetical comma-separated lists and inline-disjunction shapes
+     and promote them to native `composite_groups: any_of` using the
+     extractor's already-emitted typed mentions. Constraints in §6
+     task 2.24 (1:1 with mentions, no invented concepts, frozen
+     compiler-diagnostics gate unchanged on rows the fixer does not
+     touch, fixture tests pin the new detector). Smoke-rerun against
+     the frozen extractor cache, then regenerate
+     `eval/calibration/patient_evidence_candidates.json` if the
+     `free_text` count moves and the labeling work for #1 is already
+     complete; otherwise freeze the old candidate snapshot under
+     `eval/calibration/*.20260514-pre-self-build.json` and pick up
+     re-labeling after the demo. ~3-4 hours.
 - **Explicitly deferred until after the interview demo:** MIMIC-IV access
   track, official TREC/TrialGPT benchmark ingestion (3.3b), the CT.gov
-  corpus hybrid-retrieval layer (3.3c), the LLM gap-triage workflow (3.3d),
-  nested composite groups, oncology stretch (Phase 4.2), and any further
-  compiler-closure slices.
+  corpus hybrid-retrieval layer (3.3c), the **LLM-driven** half of the
+  self-building track (3.3d — runs *after* §2.24 ships and the demo is
+  past), nested composite groups, oncology stretch (Phase 4.2), and any
+  further compiler-closure slices.
 - **Assumptions:** existing `label` values on the 22 partial rows stay as
   written unless the reviewer changes them during the fill pass;
   cardiometabolic is the only in-scope domain; LLM-generated labels are
@@ -183,6 +230,31 @@
 These are *not* blockers for the next task; they're tracked here
 so they don't get lost between sessions.
 
+- **Typed gap `interview_required` for fundamentally non-EHR criteria.**
+  Distinct from the generic `human_review_required` rationale: this kind
+  marks criteria where the evidence channel is *not the chart at all* but
+  the CRC interview, the screening packet, or a parallel system the CRC
+  has access to (CTMS — Clinical Trial Management System; OnCore, Veeva,
+  RealTime, etc.). Concrete examples surfaced during patient-evidence
+  labeling: "Patient is participating in a clinical trial of another
+  investigational drug or device" (NCT06964087 idx 28; lives in CTMS or
+  screening forms, not FHIR), "willing/able to comply with study
+  procedures," "able to give informed consent," "planning to become
+  pregnant" (the *intent* clause, distinct from current pregnancy which
+  *is* on the chart). Implementation shape (small, deterministic): extend
+  `clinical_demo.extractor.fix.fix_extracted_criteria` with a small,
+  curated allow-list of phrase patterns that the fixer rewrites from
+  `free_text` / `condition_*` to `kind=free_text` with a typed gap
+  `interview_required`. The matcher already routes typed gaps through
+  `human_review_required` rollup; the new kind just lets the reviewer
+  GUI separate "we can't decide from your chart" (interview-required)
+  from "we can't decide because evidence is ambiguous" (genuine HRR).
+  Out of scope: building a CTMS data adapter — there is no public CTMS
+  sample data and no standard schema across vendors (see D-74 follow-on
+  discussion). Sequenced: post-demo, ~1-2 hr deterministic slice. Picks
+  up patient-evidence-labeling row #7 as its first fixture; expected
+  matcher verdict stays `indeterminate` so calibration agreement is
+  unchanged.
 - **Gemini EAP / Vertex ADC path.** The current calibration research helper
   uses the Gemini Developer API / AI Studio API-key endpoint first and OpenAI
   fallback second. Gemini API-key calls are currently blocked by depleted
@@ -480,7 +552,8 @@ hot or slow, the *scope* gives, not the deadline — see §9.
 | 2.21 | **Criterion fixing layer.** Add a bounded layer after extraction and before deterministic matching that repairs criterion shape without hiding uncertainty: normalize surfaces and abbreviations, split safely splittable composites into atomic checks, repair obvious polarity/unit/context issues, attach mapping candidates/provenance, and mark unsafe fixes as `human_review_required`. LLM use is allowed here for interpretation, but deterministic validators and terminology cache results decide what is safe to feed into the matcher. | 5 |
 | 2.22 | **Composite criterion representation.** Add an explicit representation for compound criteria with boolean semantics (`any_of`, `all_of`, later nested groups) before splitting OR/AND bundles into matcher-visible rows. The immediate target is reviewer-facing line items: an ADA hyperglycemia bullet should become subchecks such as HbA1c threshold, fasting glucose threshold, OGTT threshold, and random glucose + symptoms threshold, each with its own retrieved evidence and citation state, while the parent criterion remains one top-level eligibility row. Do not model OR bundles as independent inclusion criteria under the current AND rollup. Sequence: first add a real parent/subcheck schema and per-subcheck retrieval; second wire the UI/adjudicator context to that schema; third add matcher/adjudicator semantics for parent `any_of` / `all_of`; only then regenerate `eval/calibration/patient_evidence_candidates.json`. Slices landed: shared extractor-side composite group/subcheck construction; calibration rows expose stable composite group/subcheck ids with per-subcheck retrieved evidence; safe mapped lab thresholds can become typed subcheck criteria; scoring retrieval unions parent and composite-subcheck evidence for retrieval-only / bounded adjudication; the bounded adjudicator prompt surfaces composite subcheck context explicitly; `extractor-v0.6` adds native `composite_groups[]`; and `match_extracted` / `score_pair` / LangGraph now consume flat native groups with raw-predicate group rollup followed by parent polarity. Follow-up: nested groups, Chia relation/equivalence alignment, richer clinical-event subcheck extraction, and regression metrics for composite handling. | 5 |
 | 2.23 | **2026-05-11 → 2026-05-14 compiler rollout (frozen as demo baseline).** *Done — and intentionally locked.* Consolidated record of the slice cadence that moved opt-in `compiled_predicates` from a parity experiment to the demo baseline. Snapshot lives at `eval/baselines/2026-05-11-compiler-rollout/` (`SUMMARY.md`, `compiled_predicates_diagnostics.json`, `legacy_vs_compiled_movement_review.json/.md`, `patient_evidence_legacy_vs_compiled.json/.md`, `compiled_predicates_compiler_review.json`, `compiled_predicates_compiler_review_groups.json`). Headline movement vs. same-run legacy `matcher_inputs`: criterion-level `unmapped_concept` 317/1076 (29.5%) → 0/1076 (0.0%); 88 indeterminate-to-determinate criterion movements; 275 reason-only changes; 13 case-rollup movements; 47/49 cases scored (2 deceased-patient refusals); Layer-1 metrics unchanged at 89.0% / 98.6%. Slice sequence (commits trace this exactly): cache-independent terminology closure + reviewed descendant expansions; condition/event decomposition + qualifier/top-gap review; final opaque-unmapped registry pass; BP threshold decomposition + ULN reference-limit translation + sex-specific hemoglobin ULN; antidiabetic medication-class closure + C-peptide unit conversion; full-pneumonectomy procedure-history execution; BP-affecting medication-class closure + coronary-intervention temporal procedure rerouting; condition-typed intravenous-inotrope medication exposure promotion; aromatase-inhibitor / anticonvulsant class closure + DPP-4 out-of-scope variants; structured `free_text_review` validation / matcher / reviewer hardening; free-text plasma-glucose routing + normal-range/provenance gap taxonomy; condition-shaped and temporal medication-class exposure rerouting + current-vocabulary anticoagulant closure; reviewer-artifact classification for reviewed `out_of_scope` / `extractor_bug` gaps; and CKD/ESRD-on-dialysis composite decomposition. **Frozen on 2026-05-14.** Further compiler-closure work is out of scope until a presentable number motivates it; the diagnostics gate documented in §0 is the regression contract. | 30 |
-| **Phase 2 total** | | **~119 hr** |
+| 2.24 | **Self-building slice 1: deterministic mention-to-composite promotion.** *First step out of the manual-flywheel mode.* The extractor (`extractor-v0.6`) already emits a typed `mentions` list for every criterion, including rows it routes to `free_text` under Hard Rule 13 because the natural-language form is a compound clause. Concrete worked example: NCT06524960 exclusion #18 ("Disorders associated with altered skeletal structure or function (Paget's disease, chronic liver disease (liver enzymes > twice the upper limit of normal), malignancy, hypoparathyroidism or hyperparathyroidism, acromegaly, Cushing's syndrome, hypopituitarism, chronic obstructive pulmonary disease, alcohol intake > 3 units/day)") — the extractor emits 12 typed mentions (10 Conditions, 2 Values) but `kind=free_text` and `composite_groups=[]`, so the compiler returns `human_review_required` despite having all structural information needed to attempt subchecks. Extend `clinical_demo.extractor.fix.fix_extracted_criteria` to recognize **parenthetical comma-separated lists** (and the closely related "either A or B or C" inline-disjunction shape) and promote them to native `composite_groups: any_of` (or `all_of` where the parent polarity warrants it) using the mentions the extractor already produced. **No new LLM call**; this is pure deterministic shape detection over an LLM output that has already been audited. Constraints: subchecks must be 1:1 with extractor mentions (no invented concepts); each subcheck inherits parent polarity/negation/mood; unmappable mentions become typed gaps (`unmapped_concept`, `composite_unhandled`) rather than silent `free_text`; the parent's display string remains the source text so reviewer UI still shows the original bundle; rollup semantics are the existing matcher v0.3 composite rules (any indeterminate subcheck in an `any_of` exclusion still blocks). Acceptance: at least three distinct compound-list shapes detected with fixture tests; the frozen-compiler-diagnostics gate still passes byte-for-byte on rows the new fixer does not touch; a smoke run reports the reduction in `kind=free_text` rows attributable to the slice; the calibration packet builder picks up the new composite groups so the reviewer GUI shows decomposed subchecks where applicable. Trust boundary: this slice is deterministic and reviewable; the LLM-driven extension lives in §3.3d. Decision **D-74**. | 4 |
+| **Phase 2 total** | | **~123 hr** |
 | **Exit criterion** | Full pipeline runs through LangGraph; baseline eval numbers committed; UI shows real results from real data. | |
 
 ### Criterion Compiler / Resolution Layer Plan Objects
@@ -1285,7 +1358,7 @@ promotion remain follow-on work.
 | 3.3a | **TrialGPT/TREC-style benchmark scaffold.** Add a local benchmark schema/exporter that frames our seed around TrialGPT's retrieval -> criterion matching -> ranking shape and the TREC Clinical Trials patient-summary-to-suitable-trials task. This is a lightweight local scaffold for comparable reporting, not full official TREC ingestion. *First slice done — `clinical_demo.evals.trial_benchmark` defines patient-summary queries, trial-ranking candidates, criterion matching cases, prediction/metric schemas, and unknown-safe MRR / recall@10 helpers. `scripts/export_trial_benchmark.py` exports the 49-pair seed into `eval/benchmarks/local_trialgpt_trec_seed.json` (27 patient queries, 49 candidate trials, 60 criterion cases).* | 2 |
 | 3.3b | **Official TREC/TrialGPT benchmark ingestion.** Download/register the official TREC Clinical Trials topics, trial corpus, and relevance judgments; pull the TrialGPT code/data references; write an adapter from external patient-summary/trial records into `clinical_demo.evals.trial_benchmark`; and report standard retrieval/ranking metrics such as recall@k, precision@k, nDCG@k, and MRR. Keep this as an external benchmark scoreboard, separate from the internal FHIR-row citation calibration. | 4 |
 | 3.3c | **CT.gov corpus store + hybrid retrieval layer.** Build a local, chunkable ClinicalTrials.gov protocol store from public trial JSON: stable NCT ids, criteria paragraphs, eligibility fields, conditions, interventions, outcomes, phase/status, source timestamps, and section-level chunks. Add a retrieval interface that can run lexical-only first and later plug in embeddings/vector search without changing downstream compiler contracts. Use it for cross-trial surface discovery, candidate expansion, similar-criterion examples, and reviewer work-queue clustering. Parallelizable with Phase 2 compiler work as long as it only produces read-only candidate/context artifacts until validation gates are in place. | 5 |
-| 3.3d | **LLM gap triage + patch-proposal workflow.** Add an opt-in workflow that feeds unresolved compiler gaps plus cited corpus/evidence context to an LLM and asks for bounded outputs only: proposed reviewed-registry rows, candidate ConceptSet/code-list patches, compiler-rule suggestions, or "leave unresolved" rationales. Generated proposals must land in a review packet, not directly in the executable registry; deterministic validators, tests, and human approval promote them. This is the future self-building path without letting the system silently teach itself unsafe mappings. Parallelizable after the typed gap schema and reviewer packets are stable. | 4 |
+| 3.3d | **Self-building slice 2: LLM-driven bounded patch-proposal workflow.** *Builds on §2.24 (deterministic mention-to-composite promotion). Lands only after the deterministic wedge is in place and the cost/quality sweep has a baseline against the frozen compiler snapshot.* Narrow scope on first iteration: for criteria where §2.24's deterministic detector did **not** fire and the row remains `kind=free_text` despite the extractor having emitted multiple typed mentions, an opt-in LLM pass proposes a composite-group decomposition. Strictly bounded outputs: either (a) a `composite_groups: any_of` / `all_of` proposal whose subchecks are a strict subset of the extractor's existing `mentions` (no invented concepts), with citation back to the source-text span each subcheck covers; or (b) "leave unresolved" with a one-line typed rationale (e.g. `mixed_kinds`, `nested_clarifier`, `not_atomizable`). Second iteration extends the same proposal channel to reviewed-registry rows (surface → ConceptSet patches) and reviewed code-list expansions for medication/condition classes. **All proposals land in `data/terminology/review_inbox/` as JSON review packets** — never directly in the executable registry. Promotion path: deterministic validator (schema + 1:1-with-mentions check) → existing test suite → human sign-off → `git mv` into `data/terminology/reviewed_*.json`. The deterministic compiler stays the trust boundary; the LLM is a proposal generator, not a runtime decision-maker. Telemetry: per-proposal model, prompt version, token count, USD cost, and validator-pass-rate go into `eval/runs.sqlite` alongside the existing adjudicator cost columns so the self-building loop has its own cost/quality dashboard. Decision **D-74**. | 5 |
 | 3.4 | Red-team set: prompt injection in patient narrative fields, adversarial negation, unit confusion, temporal traps, OOD criteria. ~15–20 cases. | 4 |
 | 3.5 | Run red-team set; document failures; implement at least the cheap mitigations (input sanitization, structured-output enforcement, suspicious-pattern detection). | 4 |
 | 3.6 | **Patient note/free-text evidence slice.** Parse FHIR `DocumentReference` attachments (`content.attachment.data` first; `url` later), build a patient-note evidence index with provenance (resource id, date, section/header, excerpt/offset), retrieve only criterion-relevant snippets for free-text criteria, and add a patient-side LLM evidence step that can return `pass | fail | indeterminate` only with citations. Generated `resource.text.div` is display/fallback only, not high-trust clinical evidence. This should start now as a bounded v0, not wait for perfect realism: Synthea free text is acceptable for plumbing tests only, hand-crafted note fixtures should cover clinical behavior, and MIMIC-IV-Note later calibrates realism. Validation set must cover explicit evidence, explicit absence, insufficient evidence, temporal/as-of boundaries, structured-vs-note contradiction, and prompt injection in note text. | 6 |
@@ -2804,6 +2877,74 @@ warmup requests spread across RxNav (public) and UMLS (authenticated,
 ~20 req/s soft limit with no published daily cap); everything is
 cached on disk by the surface cache upstream, so repeat runs are
 cache-only. Snapshot: `eval/baselines/2026-05-04-umls/`.
+
+### D-74. Begin the self-building track, deterministic wedge first
+**Context (2026-05-14).** The post-rollout demo baseline
+(`b47ada00d6a7`) hit 0 `unmapped_concept`, 280 typed unresolved gaps, 43
+closed-world blocking cases, and 89.0% Layer-1 agreement/coverage. The
+remaining indeterminate volume is concentrated in two shapes: (a) rows the
+extractor routed to `kind=free_text` under Hard Rule 13 even though it
+emitted a typed `mentions` list (e.g. parenthetical comma-separated
+disorder lists), and (b) reviewed-registry gaps where the surface is real
+but no curated ConceptSet or code-list expansion exists yet. Both have
+been getting fixed manually, one slice per commit. That cadence is the
+right way to *establish* trust in the deterministic compiler, but at this
+point the structure is in place to start auto-generating proposals
+against it.
+
+**Decision.** Open a self-building track with two staged slices and one
+hard invariant.
+
+- **§2.24 (this week, after the cost/quality sweep baseline lands).**
+  Deterministic mention-to-composite promotion in
+  `clinical_demo.extractor.fix.fix_extracted_criteria`. Recognizes
+  compound-list shapes and decomposes them to `composite_groups: any_of`
+  using the typed mentions the extractor already produced. No LLM in
+  this slice. This is the safe wedge: it can only narrow `free_text`
+  rows, it cannot invent concepts, and it ships with byte-for-byte
+  regression-checking against the frozen compiler-diagnostics gate for
+  rows it does not touch.
+- **§3.3d (Phase 3, after §2.24 is reviewable).** Opt-in LLM
+  patch-proposal workflow scoped to the residual `free_text` rows §2.24
+  did not handle, plus reviewed-registry surface-to-ConceptSet gaps.
+  Outputs are strictly bounded: composite-group decomposition over a
+  subset of the existing `mentions` with span citations, or
+  registry-row patches with controlled fields, or "leave unresolved"
+  with a typed rationale. **All proposals land in
+  `data/terminology/review_inbox/`** as JSON packets. Promotion path is
+  deterministic validator → existing tests → human approval → `git mv`
+  into the executable registry.
+
+**Invariant.** The deterministic compiler stays the trust boundary. The
+LLM is a proposal generator, not a runtime decision-maker; nothing
+LLM-authored ever lands in the executable registry or in compiled
+predicates without passing through the deterministic validators and a
+human sign-off. Telemetry (model, prompt version, tokens, USD,
+validator-pass-rate) goes into `eval/runs.sqlite` so the self-building
+loop has the same cost/quality auditing as the existing adjudicator
+column set.
+
+**Rejected:** letting an LLM rewrite extractor output or compiler IR
+directly. The whole reason the deterministic compiler exists is so that
+*matching* never inherits unreviewed model bias; the self-building track
+must preserve that property.
+
+**Open follow-on:** once §2.24 ships, regenerate
+`eval/calibration/patient_evidence_candidates.json` and re-run the cost
+sweep to attribute movement to the slice. If the regeneration changes
+the labeling work in progress, freeze the old candidate snapshot under
+`eval/calibration/*.20260514-pre-self-build.json` rather than discarding
+labels.
+
+**Adjacent follow-on (not part of D-74 itself):** the patient-evidence
+labeling pass surfaced a different fixer concern — criteria that are
+*fundamentally not in FHIR* (e.g. "participating in another clinical
+trial," informed-consent capacity, intent-to-conceive). These need a new
+typed gap `interview_required` distinct from `human_review_required` so
+the reviewer GUI can separate "no chart evidence exists" from "chart
+evidence is ambiguous." Tracked in §0 non-trivial follow-ups; explicitly
+*not* a CTMS data adapter (there is no public CTMS sample data and no
+cross-vendor schema). Sequenced post-demo, deterministic, ~1-2 hr.
 
 ### D-9. Defer KPMG-specific framing of the writeup until Phase 3
 **Rejected:** writing the deployment readiness doc up front.
