@@ -452,6 +452,34 @@ def test_compiled_temporal_diagnosis_variant_executes_window() -> None:
     assert verdict.reason == "ok"
 
 
+def test_compiled_temporal_drug_event_executes_medication_duration() -> None:
+    criterion = crit_temporal_window(
+        event_text="lipid-lowering therapies", window_days=30
+    ).model_copy(
+        update={
+            "source_text": (
+                "Participants on lipid-lowering therapies must be on a stable dose "
+                "for ≥30 days before screening"
+            ),
+            "mentions": [
+                EntityMention(text="lipid-lowering therapies", type="Drug"),
+                EntityMention(text="≥30 days before screening", type="Temporal"),
+            ],
+        }
+    )
+    profile = make_profile(
+        medications=[make_medication(code="259255", start=AS_OF - timedelta(days=45))]
+    )
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert compilation.checkable_predicates[0].predicate_kind == "medication_exposure"
+    assert compilation.checkable_predicates[0].min_duration_days == 30
+    assert verdict.verdict == "pass"
+    assert verdict.reason == "ok"
+
+
 def test_compiled_composite_any_of_rolls_up_subcheck_predicates() -> None:
     parent = crit_free_text()
     first = crit_measurement(text="hba1c", operator=">=", value=6.5, unit="%")

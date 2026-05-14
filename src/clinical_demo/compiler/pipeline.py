@@ -65,6 +65,7 @@ from .schema import (
     DiagnosticFact,
     DiagnosticSeverity,
     ExpansionPlan,
+    ExpansionStrategy,
     PredicateKind,
     ResolutionDomain,
     ResolutionGap,
@@ -156,6 +157,13 @@ _MEDICATION_LIST_CUE_RE = re.compile(
     r")\b",
     re.IGNORECASE,
 )
+_TEMPORAL_MEDICATION_PREFIX_RE = re.compile(
+    r"^(?:"
+    r"use|used|using|received|receiving|previous\s+treatment|ongoing\s+treatment|"
+    r"treatment|patients\s+on|participants\s+on|on"
+    r")\s+(?:of\s+)?(?:any\s+)?(?:with\s+)?",
+    re.IGNORECASE,
+)
 _RELATIVE_WINDOW_RE = re.compile(
     r"\b(?:within|in|during|over)?\s*(?:the\s*)?"
     r"(?:past|last|prior|previous)\s+"
@@ -169,7 +177,7 @@ _WITHIN_WINDOW_RE = re.compile(
 _MIN_DURATION_RE = re.compile(
     r"\bfor\s+"
     r"(?:(?:at\s+least|a\s+minimum\s+of|minimum\s+of|no\s+less\s+than|"
-    r"more\s+than|over)\s+|(?:>=|>)\s*)"
+    r"more\s+than|over)\s+|(?:>=|>|≥)\s*)"
     r"(?P<num>\d+)\s*(?P<unit>days?|weeks?|months?|years?)\b",
     re.IGNORECASE,
 )
@@ -514,15 +522,29 @@ def _compile_criterion(
             resolver=context.resolver,
             reviewed_registry=context.reviewed_registry,
         )
-        supports.extend(temporal.supports)
-        gaps.extend(temporal.gaps)
-        diagnostics.extend(temporal.diagnostics)
-        predicate, temporal_predicates = _temporal_predicate(
+        temporal_medication = _compile_temporal_medication_exposure(
             criterion,
             source_criterion_id=source_id,
             temporal=temporal,
+            context=context,
         )
-        predicates.extend(temporal_predicates)
+        if temporal_medication is not None:
+            expansion = temporal_medication.expansion
+            predicate = temporal_medication.predicate
+            predicates.extend(temporal_medication.predicates)
+            supports.extend(temporal_medication.supports)
+            gaps.extend(temporal_medication.gaps)
+            diagnostics.extend(temporal_medication.diagnostics)
+        else:
+            supports.extend(temporal.supports)
+            gaps.extend(temporal.gaps)
+            diagnostics.extend(temporal.diagnostics)
+            predicate, temporal_predicates = _temporal_predicate(
+                criterion,
+                source_criterion_id=source_id,
+                temporal=temporal,
+            )
+            predicates.extend(temporal_predicates)
     elif criterion.kind in {"medication_present", "medication_absent"}:
         medication = compile_medication_resolution(
             criterion,
@@ -1986,6 +2008,139 @@ class _ConditionCompilation:
     supports: list[ResolutionSupport]
     gaps: list[ResolutionGap]
     diagnostics: list[CompilerDiagnostic]
+
+
+def _compile_temporal_medication_exposure(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    temporal: TemporalWindowCompilation,
+    context: _CompilerResolutionContext,
+) -> _ConditionCompilation | None:
+    """Reroute Drug-shaped temporal windows to medication exposure predicates."""
+
+    if criterion.temporal_window is None or criterion.temporal_window.direction != "within_past":
+        return None
+    if temporal.predicate.status == "resolved":
+        return None
+
+    surfaces = _temporal_medication_surfaces(criterion)
+    if not surfaces:
+        return None
+
+    for surface in surfaces:
+        surrogate = _criterion_like(
+            criterion,
+            kind="medication_present",
+            medication=MedicationCriterion(medication_text=surface),
+        )
+        medication = compile_medication_resolution(
+            surrogate,
+            source_criterion_id=source_criterion_id,
+            resolver_policy=context.resolver_policy,
+            resolver=context.resolver,
+            reviewed_registry=context.reviewed_registry,
+        )
+        predicate, predicates = _medication_predicate(
+            surrogate,
+            source_criterion_id=source_criterion_id,
+            medication=medication,
+        )
+        compiled = _temporal_medication_output(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            medication=medication,
+            predicate=predicate,
+            predicates=predicates,
+        )
+        if predicates:
+            return compiled
+
+    return None
+
+
+def _temporal_medication_surfaces(criterion: ExtractedCriterion) -> list[str]:
+    if criterion.temporal_window is None:
+        return []
+
+    drug_mentions = [mention.text for mention in criterion.mentions if mention.type == "Drug"]
+    if not drug_mentions:
+        return []
+
+    surfaces: list[str] = []
+    seen: set[str] = set()
+
+    def add(surface: str | None) -> None:
+        if surface is None:
+            return
+        stripped = " ".join(surface.strip().split())
+        normalized = _normalize_text(stripped)
+        if not normalized or normalized in seen:
+            return
+        seen.add(normalized)
+        surfaces.append(stripped)
+
+    add(criterion.temporal_window.event_text)
+    for mention_surface in drug_mentions:
+        add(mention_surface)
+    for surface in tuple(surfaces):
+        add(_TEMPORAL_MEDICATION_PREFIX_RE.sub("", surface))
+    return surfaces
+
+
+def _temporal_medication_output(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str,
+    medication: MedicationCompilationResult,
+    predicate: CheckablePredicatePlan,
+    predicates: list[CheckablePredicate],
+) -> _ConditionCompilation:
+    support_ids = list(predicate.support_ids)
+    gap_ids = [gap.gap_id for gap in medication.unresolved_gaps]
+    expansion_strategy: ExpansionStrategy = (
+        "patient_vocabulary_closure" if medication.medication_class.status == "resolved" else "none"
+    )
+    expansion = ExpansionPlan(
+        status=predicate.status,
+        domain="medication",
+        source_surface=surface,
+        strategy=expansion_strategy,
+        support_ids=support_ids,
+        gap_ids=gap_ids,
+    )
+    diagnostics = [
+        _diagnostic(
+            severity="info" if predicates else "warning",
+            code=(
+                "temporal_window.promoted.medication_exposure"
+                if predicates
+                else "temporal_window.medication_exposure_not_executable"
+            ),
+            message=(
+                f"Rerouted temporal-window event surface {surface!r} through "
+                "medication exposure compilation."
+            ),
+            stage="predicate_translation",
+            source_criterion_id=source_criterion_id,
+            facts=[
+                ("surface", surface),
+                ("source_text", criterion.source_text),
+                ("predicate_status", predicate.status),
+            ],
+        ),
+        *medication.diagnostics,
+    ]
+    return _ConditionCompilation(
+        expansion=expansion,
+        predicate=predicate,
+        predicates=predicates,
+        supports=medication.resolved_supports,
+        gaps=medication.unresolved_gaps,
+        diagnostics=diagnostics,
+    )
 
 
 @dataclass(frozen=True)

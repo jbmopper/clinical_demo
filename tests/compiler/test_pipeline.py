@@ -835,6 +835,32 @@ def test_medication_predicate_carries_exposure_window_and_minimum_duration() -> 
     assert "min_duration=30d" in expression
 
 
+def test_temporal_drug_event_reroutes_to_medication_exposure_predicate() -> None:
+    criterion = _temporal("lipid-lowering therapies", window_days=30).model_copy(
+        update={
+            "source_text": (
+                "Participants on lipid-lowering therapies must be on a stable dose "
+                "for ≥30 days before screening"
+            ),
+            "mentions": [
+                EntityMention(text="lipid-lowering therapies", type="Drug"),
+                EntityMention(text="≥30 days before screening", type="Temporal"),
+            ],
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "medication_exposure"
+    assert compiled.expansion.domain == "medication"
+    assert compiled.checkable_predicates[0].predicate_kind == "medication_exposure"
+    assert compiled.checkable_predicates[0].surface == "lipid-lowering therapies"
+    assert compiled.checkable_predicates[0].min_duration_days == 30
+    assert compiled.diagnostics[0].code == "temporal_window.promoted.medication_exposure"
+
+
 def test_condition_shaped_trial_exposure_compiles_to_internal_predicate() -> None:
     criterion = _condition(
         "Currently enrolled in or have completed any other investigational product study"

@@ -1459,6 +1459,10 @@ promotion remain follow-on work.
     exposure-window slice made source-text lookbacks executable for reviewed
     procedure-history predicates, so a mapped surgery/procedure can now require
     occurrence inside the criterion window instead of only "ever completed."
+    A follow-on temporal-domain reroute promotes Drug-shaped temporal-window
+    events into medication exposure compilation when the medication/class
+    surface resolves, so stable-dose lipid-lowering therapy clauses no longer
+    have to masquerade as condition events.
 
 - id: CC-08
   title: Measurement criterion compiler
@@ -1753,6 +1757,10 @@ promotion remain follow-on work.
   exposure duration for stable-dose therapy clauses; the next eval should
   measure how much this reduces temporal/exposure reason-only gaps before the
   remaining PAH/background-therapy and medication-affecting-BP class work.
+  The immediate reroute follow-up lets temporal-window Drug mentions resolve
+  through the medication compiler, covering lipid-lowering stable-dose therapy
+  and leaving unresolved medication-class surfaces as medication gaps rather
+  than condition-event gaps.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
