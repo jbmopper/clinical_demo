@@ -9,7 +9,8 @@ final opaque-unmapped registry slices, blood-pressure threshold decomposition,
 reviewed sex-specific ULN reference-limit translation, and reviewed
 antidiabetic medication-class closure, C-peptide unit conversion, and reviewed
 procedure-history predicate execution, blood-pressure-affecting medication
-class closure, and coronary-intervention temporal procedure rerouting.
+class closure, coronary-intervention temporal procedure rerouting, and
+condition-typed intravenous-inotrope medication exposure promotion.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -67,19 +68,23 @@ measurement, and medication hardening slices landed.
   medication pass adds reviewed current-vocabulary class closure over the
   available RxNorm anchors. The coronary-intervention temporal procedure pass
   maps the trial umbrella surface to completed PCI/CABG Procedure rows and
-  reroutes free-text temporal windows through `procedure_history`.
+  reroutes free-text temporal windows through `procedure_history`. The
+  condition-typed medication exposure pass adds reviewed intravenous-inotrope
+  current-vocabulary closure over norepinephrine and promotes medication-like
+  Condition mentions into `medication_exposure` only when the reviewed
+  medication compiler emits an executable predicate.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `dd7b8d745493` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 818 indeterminate / 171 pass | 0 (0.0%) | 27.3s |
+| `compiled_predicates` | `69e1b44cd6ec` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 22.2s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
 compiled snapshot from 37 to 0 `unmapped_concept` rows versus the previous
-qualifier/top-gap snapshot. It adds 76 indeterminate-to-determinate
+qualifier/top-gap snapshot. It adds 83 indeterminate-to-determinate
 criterion wins from more explicit compiler execution of mapped condition,
 measurement, trial-exposure, medication exposure, PH-ILD, HoFH, congenital heart
 disease, cardiovascular event-list promotions, GLP-1 class closure, and
@@ -87,8 +92,9 @@ diabetes/HF/pregnancy variant mapping, plus blood-pressure threshold
 decomposition, sex-specific hemoglobin ULN translation, antidiabetic
 medication-class closure, C-peptide unit conversion, full-pneumonectomy
 procedure-history execution, blood-pressure-affecting medication-class
-exposure, and coronary-intervention procedure-history temporal windows. The
-final movement packet has 76
+exposure, coronary-intervention procedure-history temporal windows, and
+condition-typed intravenous-inotrope medication exposure promotion. The final
+movement packet has 83
 indeterminate-to-determinate criterion wins plus 1
 determinate-to-determinate movement. The prior broad-parent
 determinate-to-indeterminate movements are gone:
@@ -122,7 +128,7 @@ Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
 `legacy_vs_compiled_movement_review.json` and `.md` are the focused review
-packet for these changes. They contain 77 decisive criterion movements and 287
+packet for these changes. They contain 84 decisive criterion movements and 280
 reason-code-only changes. The decisive movements include medication-exposure
 wins for RAAS blockers, stable lipid-lowering treatment, and reviewed class
 closure, plus GLP-1 member closure, SGLT/non-insulin antidiabetic class
@@ -131,34 +137,35 @@ measurement, trial-exposure, PH-ILD, cardiovascular event-list, congenital heart
 disease, HoFH, BP threshold movements, sex-specific hemoglobin ULN translation,
 full-pneumonectomy procedure-history predicates, blood-pressure-affecting
 medication-class exposure, and coronary-intervention procedure-history temporal
-windows. Closed-world absence-dependent verdicts should still be reviewed as a
-group so the absence-as-negative decisions match the validation contract.
+windows, and condition-typed intravenous-inotrope medication exposure
+promotion. Closed-world absence-dependent verdicts should still be reviewed as
+a group so the absence-as-negative decisions match the validation contract.
 
 ## Compiler Readiness
 
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 348
-- unresolved compiler gaps: 296
+- checkable predicates: 355
+- unresolved compiler gaps: 289
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 990 total, 397 blocking
+- validation findings: 983 total, 397 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 278 |
+| `implement_compiler_logic` | 271 |
 | `review_gap` | 10 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-296 raw rows to 166 distinct surface/action/policy work items:
+289 raw rows to 165 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 160 |
+| `implement_compiler_logic` | 159 |
 | `review_gap` | 1 |
 
 The current threshold gate passes only without `--require-compilation`, because
@@ -168,11 +175,11 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 296 \
+  --max-unresolved-gaps 289 \
   --max-closed-world-blocking-cases 43 \
   --max-closed-world-blocking-findings 397 \
   --max-gap-kind unmapped_concept=0 \
-  --max-gap-kind unsupported_predicate=278 \
+  --max-gap-kind unsupported_predicate=271 \
   --max-gap-kind ambiguous_mapping=8 \
   --max-gap-kind insufficient_source=10
 ```
@@ -230,7 +237,10 @@ to 346, lowered blocking validation findings to 397, and preserved the same
 case rollup. The coronary-intervention temporal procedure slice then preserved
 the gap and case-rollup counts while increasing checkable predicates to 348
 and moving two NCT07489209 free-text temporal criteria from indeterminate to
-determinate `pass`.
+determinate `pass`. The condition-typed medication exposure slice then reduced
+unresolved compiler gaps to 289, increased checkable predicates to 355, reduced
+total validation findings to 983, and moved seven NCT06941441 intravenous-
+inotrope free-text criteria from indeterminate to determinate `pass`.
 
 ## Patient-Evidence Calibration
 
@@ -240,7 +250,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `dd7b8d745493` | 5/50 | 80.0% | 40.0% | 17 |
+| `69e1b44cd6ec` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

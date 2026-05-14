@@ -790,6 +790,17 @@ def _compile_free_text_promotion(
     surrogate: ExtractedCriterion | None = None
     promotion_kind: str | None = None
     if mention.type == "Condition":
+        if (
+            medication_promotion := _compile_condition_typed_medication_promotion(
+                criterion,
+                index=index,
+                source_criterion_id=source_criterion_id,
+                surface=surface,
+                resolver_policy=resolver_policy,
+                context=context,
+            )
+        ) is not None:
+            return medication_promotion
         if _looks_unsafe_composite_surface(surface):
             return None
         surrogate = _criterion_like(
@@ -855,6 +866,47 @@ def _compile_free_text_promotion(
         source_criterion_id=source_criterion_id,
         surface=surface,
         promotion_kind=promotion_kind,
+        predicate=compiled.predicate,
+        predicates=compiled.checkable_predicates,
+        supports=compiled.resolved_supports,
+        gaps=compiled.unresolved_gaps,
+        diagnostics=compiled.diagnostics,
+        expansion=compiled.expansion,
+        unit_normalization=compiled.unit_normalization,
+    )
+
+
+def _compile_condition_typed_medication_promotion(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+) -> _FreeTextPromotionCompilation | None:
+    surrogate = _criterion_like(
+        criterion,
+        kind="medication_present",
+        medication=MedicationCriterion(medication_text=surface),
+    )
+    sub_id = f"{source_criterion_id}:free-text:medication"
+    compiled = _compile_criterion(
+        surrogate,
+        index=index,
+        resolver_policy=resolver_policy,
+        composite_groups=[],
+        context=context,
+        source_criterion_id_override=sub_id,
+        allow_condition_phrase_promotion=False,
+    )
+    if not compiled.checkable_predicates:
+        return None
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind="medication",
         predicate=compiled.predicate,
         predicates=compiled.checkable_predicates,
         supports=compiled.resolved_supports,

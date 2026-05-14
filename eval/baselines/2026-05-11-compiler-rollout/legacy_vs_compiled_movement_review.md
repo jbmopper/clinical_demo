@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `dd7b8d745493`
+- comparison: `69e1b44cd6ec`
 - changed cases: 13/49
 - changed criteria: 364/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=76 / reason_changed=287
+- criterion directions: determinate_changed=1 / indeterminate_to_determinate=83 / reason_changed=280
 
 ## Case Movements
 
@@ -61,7 +61,7 @@ Public-Artifact-Safety: synthetic
 | `28db1c55__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `28db1c55__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `28db1c55__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
-| `28db1c55__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `28db1c55__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `28db1c55__NCT07297797` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | the 24-hour mean systolic blood pressure assessed by ABPM at Screening is ≥ 130 mmHg and < 160 mmHg. |
 | `28db1c55__NCT07297797` | 8 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Occurrence of any cardiovascular or cerebrovascular event within 6 months prior to screening; |
 | `28db1c55__NCT07297797` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Presence of uncontrolled severe arrhythmia within 6 months prior to screening; |
@@ -91,7 +91,7 @@ Public-Artifact-Safety: synthetic
 | `2e555528__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `2e555528__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `2e555528__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
-| `2e555528__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `2e555528__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `38f38890__NCT06217302` | 1 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Duration of T1D ≥ 8 years; |
 | `38f38890__NCT06217302` | 5 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving standard of care, including renin angiotensin system blockers (RASB) at a clinically ap... |
 | `38f38890__NCT06217302` | 7 | free_text | indeterminate->fail | indeterminate_to_determinate | compound | a. Blood pressure ≤155/95 mmHg at screening, or b. BP ≤155/95 mmHg at the end of the run-in perio... |
@@ -145,7 +145,7 @@ Public-Artifact-Safety: synthetic
 | `407ef75b__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `407ef75b__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `407ef75b__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
-| `407ef75b__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `407ef75b__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `407ef75b__NCT07297797` | 4 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | the 24-hour mean systolic blood pressure assessed by ABPM at Screening is ≥ 130 mmHg and < 160 mmHg. |
 | `407ef75b__NCT07297797` | 8 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Occurrence of any cardiovascular or cerebrovascular event within 6 months prior to screening; |
 | `407ef75b__NCT07297797` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Presence of uncontrolled severe arrhythmia within 6 months prior to screening; |
@@ -162,7 +162,7 @@ Public-Artifact-Safety: synthetic
 | `509f9a77__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `509f9a77__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `509f9a77__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
-| `509f9a77__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `509f9a77__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `509f9a77__NCT07221513` | 0 | condition_present | indeterminate->indeterminate | reason_changed | compound | Participants with HF New York Heart Association Class II-III. |
 | `509f9a77__NCT07221513` | 1 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Participants will be classified as having HFrEF (LVEF ≤ 40%) or HFpEF (LVEF >40% and ≤70%). |
 | `509f9a77__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Right heart catheterization (RHC) based evidence of cpcPH: |
@@ -217,7 +217,7 @@ Public-Artifact-Safety: synthetic
 | `56cfe6a5__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `56cfe6a5__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `56cfe6a5__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
-| `56cfe6a5__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `56cfe6a5__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `60b0873c__NCT06220266` | 0 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Natural menopause, last menstrual period more than one year ago. |
 | `60b0873c__NCT06220266` | 6 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | have diabetes or uncontrolled high blood pressure, including HbA1c >9, Systolic blood pressure >1... |
 | `60b0873c__NCT06220266` | 8 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Ever had an organ transplant |
@@ -286,7 +286,7 @@ Public-Artifact-Safety: synthetic
 | `a06bce31__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `a06bce31__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `a06bce31__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
-| `a06bce31__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `a06bce31__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `a06bce31__NCT07221513` | 0 | condition_present | indeterminate->indeterminate | reason_changed | compound | Participants with HF New York Heart Association Class II-III. |
 | `a06bce31__NCT07221513` | 1 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Participants will be classified as having HFrEF (LVEF ≤ 40%) or HFpEF (LVEF >40% and ≤70%). |
 | `a06bce31__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Right heart catheterization (RHC) based evidence of cpcPH: |
@@ -337,7 +337,7 @@ Public-Artifact-Safety: synthetic
 | `c46a254d__NCT06941441` | 22 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Cerebrovascular accident within 3 months prior to the screening visit |
 | `c46a254d__NCT06941441` | 23 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Acutely decompensated heart failure within 14 days prior to the screening visit, as per investiga... |
 | `c46a254d__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
-| `c46a254d__NCT06941441` | 25 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
+| `c46a254d__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `d02b2ca5__NCT06128278` | 3 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of HRT or has used HRT for <6 months prior to enrollment |
 | `d02b2ca5__NCT06128278` | 4 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Advanced CKD requiring dialysis |
 | `d02b2ca5__NCT06128278` | 5 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History of kidney transplant |

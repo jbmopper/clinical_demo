@@ -250,6 +250,31 @@ def test_committed_blood_pressure_affecting_class_expands_without_rxnorm_cache(
     ]
 
 
+def test_committed_intravenous_inotrope_class_expands_without_rxnorm_cache(
+    tmp_path: Path,
+) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("received intravenous inotropes"),
+        source_criterion_id="criterion:inotropes",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == "Intravenous inotropes (current patient vocabulary)"
+    assert result.concept_set.codes == frozenset({"242969"})
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "received intravenous inotropes",
+        "norepinephrine",
+    ]
+
+
 def test_committed_glp1_class_expands_without_rxnorm_cache(tmp_path: Path) -> None:
     resolver = TerminologyResolver(
         TerminologyCache(tmp_path),

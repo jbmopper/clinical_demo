@@ -345,65 +345,6 @@
     {
       "case_count": 7,
       "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 25,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug",
-          "message": "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-        },
-        {
-          "criterion_index": 25,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug",
-          "message": "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-        },
-        {
-          "criterion_index": 25,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug",
-          "message": "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:ea443b80c57a",
-      "message_examples": [
-        "Reviewed condition surface 'Received intravenous inotropes' is classified as extractor_bug: Intravenous inotrope receipt is medication/procedure exposure with route context, not a condition surface."
-      ],
-      "normalized_surface": "received intravenous inotropes",
-      "occurrence_count": 7,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "Received intravenous inotropes",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
         "temporal_window"
       ],
       "domain": "condition",

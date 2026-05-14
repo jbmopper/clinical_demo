@@ -80,6 +80,7 @@ def test_committed_reviewed_medication_classes_load() -> None:
     bisphosphonates = registry.lookup("bisphosphonate treatment")
     raas = registry.lookup("RASB")
     bp_affecting = registry.lookup("medication affecting blood pressure")
+    inotropes = registry.lookup("received intravenous inotropes")
     glp1 = registry.lookup("GLP-1 RA")
     sglt2 = registry.lookup("sglt-2 inhibitors")
     sglt_variant = registry.lookup("SGLT inhibitor")
@@ -105,6 +106,9 @@ def test_committed_reviewed_medication_classes_load() -> None:
         "losartan",
     )
     assert registry.lookup("antihypertensive medicines") is bp_affecting
+    assert inotropes is not None
+    assert inotropes.member_surfaces == ("norepinephrine",)
+    assert registry.lookup("IV inotropes") is inotropes
     assert glp1 is not None
     assert glp1.member_surfaces == ("semaglutide",)
     assert sglt2 is not None

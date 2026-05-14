@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `dd7b8d745493` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `69e1b44cd6ec` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -43,16 +43,18 @@
   procedure-history execution against parsed patient `Procedure` rows,
   blood-pressure-affecting medication-class closure for the current Synthea
   RxNorm vocabulary, and reviewed coronary-intervention temporal-event
-  rerouting through `procedure_history` predicates. It regenerates the compiler
+  rerouting through `procedure_history` predicates, plus reviewed
+  intravenous-inotrope medication-class closure and promotion of
+  condition-typed free-text medication exposure rows. It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
   `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
-  with 76 indeterminate-to-determinate criterion movements, 1 determinate
+  with 83 indeterminate-to-determinate criterion movements, 1 determinate
   movement, and 13 case-rollup movements. The path is still not default-ready:
-  diagnostics show 296 unresolved compiler gaps, 43 closed-world-blocking
+  diagnostics show 289 unresolved compiler gaps, 43 closed-world-blocking
   cases, and 397 blocking validation findings. The deduped review packet has
-  166 groups (160 `implement_compiler_logic`, 5 `choose_candidate`, and 1
+  165 groups (159 `implement_compiler_logic`, 5 `choose_candidate`, and 1
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
   ULN buckets, SGLT/non-insulin antidiabetic medication-class buckets, and the
@@ -74,6 +76,10 @@
   coronary-intervention procedure slice turned two NCT07489209 free-text
   temporal procedure rows from indeterminate to determinate `pass` by checking
   completed PCI/CABG procedure history inside the six-month window. The
+  condition-typed medication exposure slice turned seven NCT06941441
+  intravenous-inotrope rows from indeterminate to determinate `pass` by
+  promoting reviewed medication-like Condition mentions into medication
+  exposure predicates. The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
@@ -1205,7 +1211,10 @@ mapping rows for full pneumonectomy, and emits executable `procedure_history`
 predicates for reviewed surgical-history surfaces. A 2026-05-13 CC-07
 follow-on adds reviewed coronary-intervention procedure mappings and reroutes
 temporal/free-text coronary-intervention windows into `procedure_history`
-predicates over completed PCI/CABG rows. The `CC-10`, `CC-11`, and `CC-12`
+predicates over completed PCI/CABG rows. A 2026-05-13 CC-09 follow-on closes
+the reviewed intravenous-inotrope medication class over norepinephrine and
+promotes condition-typed medication exposure free text when that route produces
+an executable medication predicate. The `CC-10`, `CC-11`, and `CC-12`
 reporting foundations now expose closed-world validation, reviewer gap queue,
 and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
 promotion remain follow-on work.
@@ -1591,7 +1600,11 @@ promotion remain follow-on work.
     over the committed Synthea medication vocabulary (amlodipine, furosemide,
     hydrochlorothiazide, lisinopril, losartan) so temporal medication-class
     exposure criteria route through executable RxNorm predicates instead of
-    condition-event gaps.
+    condition-event gaps. A third 2026-05-13 slice added reviewed
+    intravenous-inotrope current-vocabulary closure over norepinephrine and
+    lets one-mention free-text rows that the extractor typed as `Condition`
+    promote to medication exposure when the reviewed medication compiler can
+    emit an executable predicate.
 
 - id: CC-10
   title: Compiler validation gates
@@ -1760,10 +1773,10 @@ promotion remain follow-on work.
   reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 0/1076
   (0.0%); it adds 71 indeterminate-to-determinate criterion wins and changes 13
   case rollups (all away from indeterminate). It is still not default-ready:
-  compiler diagnostics show 299 unresolved gaps and 43 closed-world-blocking
-  compiled cases, with 403 blocking validation findings. The regenerated
-  compiler-review artifact now dedupes the 299 raw rows to 168
-  surface/action/policy groups (162 `implement_compiler_logic`, 5
+  compiler diagnostics show 289 unresolved gaps and 43 closed-world-blocking
+  compiled cases, with 397 blocking validation findings. The regenerated
+  compiler-review artifact now dedupes the 289 raw rows to 165
+  surface/action/policy groups (159 `implement_compiler_logic`, 5
   `choose_candidate`, and 1 `review_gap`). There are no remaining
   `review_mapping` groups; the generic blood-pressure ambiguity bucket is gone,
   and reviewed AST/ALT/bilirubin/hemoglobin ULN criteria now compile through
@@ -1783,7 +1796,10 @@ promotion remain follow-on work.
   reviewed coronary-intervention umbrella to completed PCI/CABG Procedure rows
   and reroutes NCT07489209's free-text temporal window through
   `procedure_history`, moving two criteria from indeterminate to determinate
-  `pass`.
+  `pass`. A condition-typed medication exposure follow-up then promotes
+  reviewed medication-like free-text Condition mentions into medication
+  predicates, moving seven intravenous-inotrope criteria from indeterminate to
+  determinate `pass`.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
@@ -1794,8 +1810,8 @@ promotion remain follow-on work.
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `dd7b8d745493`: 13 case movements, 77 decisive criterion
-  movements, and 287 reason-code-only changes. Decisive wins include reviewed
+  `e8efb7bcce35` -> `69e1b44cd6ec`: 13 case movements, 84 decisive criterion
+  movements, and 280 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
   lipid-lowering therapy, GLP-1 member closure, SGLT/non-insulin antidiabetic
   class closure, diabetes/HF/pregnancy variants,
@@ -1803,7 +1819,8 @@ promotion remain follow-on work.
   event-list, congenital heart disease, HoFH, BP threshold movements, and
   sex-specific hemoglobin ULN translation, full-pneumonectomy
   procedure-history predicates, blood-pressure-affecting medication-class
-  exposure, and coronary-intervention procedure-history temporal windows.
+  exposure, coronary-intervention procedure-history temporal windows, and
+  condition-typed intravenous-inotrope medication exposure promotion.
   Reason-only changes now also include AST/ALT and bilirubin ULN translation.
   Remaining
   reason-only changes are expected while reviewed unsupported/out-of-scope rows

@@ -364,6 +364,33 @@ def test_free_text_procedure_mention_promotes_to_procedure_history_predicate() -
     assert compiled.diagnostics[0].code == "free_text.promoted.procedure"
 
 
+def test_condition_typed_free_text_medication_exposure_promotes_to_medication() -> None:
+    criterion = _free_text(
+        "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, "
+        "vasopressin) within 30 days prior to the screening visit"
+    ).model_copy(
+        update={
+            "mentions": [
+                EntityMention(text="Received intravenous inotropes", type="Condition"),
+                EntityMention(text="30 days prior to the screening visit", type="Temporal"),
+            ]
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+    predicate = compiled.checkable_predicates[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "medication_exposure"
+    assert compiled.expansion.domain == "medication"
+    assert predicate.predicate_kind == "medication_exposure"
+    assert predicate.surface == "Received intravenous inotropes"
+    assert predicate.window_days == 30
+    assert predicate.target_codes == frozenset({"242969"})
+    assert compiled.diagnostics[0].code == "free_text.promoted.medication"
+
+
 def test_reviewed_coronary_procedure_surface_compiles_to_procedure_history() -> None:
     result = compile_extracted_criteria([_condition("percutaneous coronary intervention")])
 

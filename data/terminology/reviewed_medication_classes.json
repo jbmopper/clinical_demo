@@ -122,6 +122,26 @@
       "resolver_version": "reviewed-medication-class-registry-v1"
     },
     {
+      "class_id": "reviewed-medication-class:intravenous-inotropes-current-vocab",
+      "display": "Intravenous inotropes (current patient vocabulary)",
+      "surfaces": [
+        "intravenous inotropes",
+        "received intravenous inotropes",
+        "iv inotropes",
+        "inotropes"
+      ],
+      "member_surfaces": [
+        "norepinephrine"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed intravenous-inotrope expansion closed over the committed Synthea medication vocabulary currently carrying norepinephrine injection rows.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced 'Received intravenous inotropes' as a condition-shaped exposure phrase; committed Synthea FHIR rows include RxNorm-coded norepinephrine injection representatives.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-13",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
       "class_id": "reviewed-medication-class:glp-1-receptor-agonists",
       "display": "GLP-1 receptor agonists",
       "surfaces": [

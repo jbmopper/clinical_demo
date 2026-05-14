@@ -6,10 +6,10 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "dd7b8d745493",
+  "comparison_run_id": "69e1b44cd6ec",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "dd7b8d745493",
+    "comparison_run_id": "69e1b44cd6ec",
     "common_cases": 49,
     "changed_cases": 13,
     "compared_criteria": 1076,
@@ -20,14 +20,14 @@
     },
     "by_criterion_movement": {
       "indeterminate->fail": 29,
-      "indeterminate->indeterminate": 287,
-      "indeterminate->pass": 47,
+      "indeterminate->indeterminate": 280,
+      "indeterminate->pass": 54,
       "pass->fail": 1
     },
     "by_direction": {
       "determinate_changed": 1,
-      "indeterminate_to_determinate": 76,
-      "reason_changed": 287
+      "indeterminate_to_determinate": 83,
+      "reason_changed": 280
     }
   },
   "case_movements": [
@@ -1021,20 +1021,23 @@
       "criterion_source_text": "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 30 days prior to the screening visit",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:25:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:free-text:medication:medication:support:class-expansion",
+        "criterion:25:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:28db1c55__NCT07297797:4",
@@ -1830,20 +1833,23 @@
       "criterion_source_text": "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 30 days prior to the screening visit",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:25:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:free-text:medication:medication:support:class-expansion",
+        "criterion:25:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:38f38890__NCT06217302:1",
@@ -3298,20 +3304,23 @@
       "criterion_source_text": "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 30 days prior to the screening visit",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:25:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:free-text:medication:medication:support:class-expansion",
+        "criterion:25:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:407ef75b__NCT07297797:4",
@@ -3750,20 +3759,23 @@
       "criterion_source_text": "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 30 days prior to the screening visit",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:25:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:free-text:medication:medication:support:class-expansion",
+        "criterion:25:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:509f9a77__NCT07221513:0",
@@ -5224,20 +5236,23 @@
       "criterion_source_text": "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 30 days prior to the screening visit",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:25:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:free-text:medication:medication:support:class-expansion",
+        "criterion:25:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:60b0873c__NCT06220266:0",
@@ -7058,20 +7073,23 @@
       "criterion_source_text": "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 30 days prior to the screening visit",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:25:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:free-text:medication:medication:support:class-expansion",
+        "criterion:25:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:a06bce31__NCT07221513:0",
@@ -8423,20 +8441,23 @@
       "criterion_source_text": "Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 30 days prior to the screening visit",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "human_review_required",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:25:free-text:condition:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:25:free-text:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:25:free-text:medication:medication:support:class-expansion",
+        "criterion:25:free-text:medication:medication:support:class-member-001"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:d02b2ca5__NCT06128278:3",
