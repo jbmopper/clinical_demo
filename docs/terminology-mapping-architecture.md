@@ -175,7 +175,9 @@ Foundation status:
   predicates. Synthea FHIR `Procedure` resources are parsed into patient
   procedure-history rows, and reviewed procedure mappings such as full
   pneumonectomy are checked against completed procedures instead of being
-  forced through condition mappings.
+  forced through condition mappings. Reviewed dialysis procedure mappings now
+  let CKD/ESRD-on-dialysis surfaces decompose into mixed `all_of` condition
+  plus `procedure_history` predicates.
 - `CC-06` through `CC-09` have helper foundations for compound/time,
   measurement, and medication compilation. Temporal event lookup now tries
   conservative condition-event variants for diagnosis/history-shaped surfaces

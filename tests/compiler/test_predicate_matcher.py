@@ -166,6 +166,54 @@ def test_compiled_procedure_history_applies_source_window() -> None:
     assert verdict.reason == "ok"
 
 
+def test_compiled_all_of_mixed_condition_and_procedure_history_requires_both() -> None:
+    criterion = crit_condition(text="advanced CKD requiring chronic dialysis")
+    compilation = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    full_profile = make_profile(
+        conditions=[make_condition(code="431856006", display="Chronic kidney disease stage 2")],
+        procedures=[make_procedure(code="265764009", display="Renal dialysis")],
+    )
+    missing_condition_profile = make_profile(
+        conditions=[],
+        procedures=[make_procedure(code="265764009", display="Renal dialysis")],
+    )
+
+    full_verdict = match_compiled_criteria(compilation, full_profile, make_trial())[0]
+    missing_condition_verdict = match_compiled_criteria(
+        compilation,
+        missing_condition_profile,
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.criteria[0].predicate.predicate_kind == "compound"
+    assert [predicate.predicate_kind for predicate in compilation.checkable_predicates] == [
+        "condition_presence",
+        "procedure_history",
+    ]
+    assert full_verdict.verdict == "pass"
+    assert full_verdict.reason == "ok"
+    assert {evidence.kind for evidence in full_verdict.evidence} == {"condition", "procedure"}
+    assert missing_condition_verdict.verdict == "fail"
+    assert missing_condition_verdict.reason == "ok"
+
+
+def test_compiled_mixed_renal_dialysis_exclusion_polarity_applies_after_rollup() -> None:
+    criterion = crit_condition(text="end-stage renal failure on dialysis", polarity="exclusion")
+    profile = make_profile(
+        conditions=[make_condition(code="46177005", display="End-stage renal disease")],
+        procedures=[make_procedure(code="302497006", display="Hemodialysis")],
+    )
+
+    compilation = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    verdict = match_compiled_criteria(compilation, profile, make_trial())[0]
+
+    assert compilation.criteria[0].compound_logic.operator == "all_of"
+    assert verdict.verdict == "fail"
+    assert verdict.reason == "ok"
+    assert {evidence.kind for evidence in verdict.evidence} == {"condition", "procedure"}
+
+
 def test_compiled_medication_exposure_applies_source_window() -> None:
     criterion = crit_medication(text="metformin").model_copy(
         update={"source_text": "Use of metformin in the previous 2 months"}

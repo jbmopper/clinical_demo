@@ -420,6 +420,42 @@ def test_reviewed_coronary_procedure_surface_compiles_to_procedure_history() -> 
     assert compiled.checkable_predicates[0].target_codes == frozenset({"415070008"})
 
 
+def test_dialysis_dependent_ckd_condition_decomposes_to_condition_and_procedure_all_of() -> None:
+    criterion = _condition("advanced CKD requiring chronic dialysis")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.status == "resolved"
+    assert compiled.compound_logic.operator == "all_of"
+    assert compiled.compound_logic.subcheck_ids == [
+        "criterion:0:renal-dialysis:condition",
+        "criterion:0:renal-dialysis:procedure",
+    ]
+    assert [predicate.predicate_kind for predicate in compiled.checkable_predicates] == [
+        "condition_presence",
+        "procedure_history",
+    ]
+    assert "433146000" in compiled.checkable_predicates[0].target_codes
+    assert compiled.checkable_predicates[1].target_codes == frozenset({"265764009", "302497006"})
+    assert compiled.diagnostics[0].code == "condition.promoted.renal-dialysis-dependence"
+
+
+def test_dialysis_dependent_end_stage_renal_failure_uses_esrd_condition_atom() -> None:
+    criterion = _condition("end-stage renal failure on dialysis")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.checkable_predicates[0].predicate_kind == "condition_presence"
+    assert compiled.checkable_predicates[0].surface == "end-stage renal disease"
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"46177005"})
+    assert compiled.checkable_predicates[1].predicate_kind == "procedure_history"
+
+
 def test_condition_compiler_preserves_raw_hyphenated_lookup_surface() -> None:
     criterion = _condition("end-stage renal disease")
 

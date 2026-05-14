@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `bc2fa92bdf18` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `b47ada00d6a7` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -55,22 +55,26 @@
   for nonclinical condition surfaces, plus reviewed current-vocabulary
   anticoagulant closure and condition/temporal medication-class exposure
   rerouting, plus reviewer-artifact classification for reviewed
-  `out_of_scope`/`extractor_bug` compiler gaps.
+  `out_of_scope`/`extractor_bug` compiler gaps, plus CKD/renal-failure
+  dialysis-dependent composite decomposition into condition and
+  `procedure_history` subchecks over reviewed dialysis Procedure rows.
   It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
   `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
-  with 84 indeterminate-to-determinate criterion movements, 1 determinate
-  movement, and 13 case-rollup movements. The path is still not default-ready:
-  diagnostics show 284 unresolved compiler gaps, 43 closed-world-blocking
-  cases, and 387 blocking validation findings. The deduped review packet has
-  162 groups (72 `implement_compiler_logic`, 5 `choose_candidate`, and 85
-  `review_gap`); there are no remaining `review_mapping` groups, and the
+  with 88 indeterminate-to-determinate criterion movements, 275 reason-only
+  criterion changes, and 13 case-rollup movements. The path is still not
+  default-ready: diagnostics show 280 unresolved compiler gaps, 43
+  closed-world-blocking cases, and 379 blocking validation findings. The
+  deduped review packet has 159 groups (69 `implement_compiler_logic`, 5
+  `choose_candidate`, and 85 `review_gap`); there are no remaining
+  `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
   ULN buckets, SGLT/non-insulin antidiabetic medication-class buckets, and the
   C-peptide unit-conversion bucket are closed; the full-pneumonectomy
-  procedure-history bucket is now executable. The first
+  procedure-history bucket and renal dialysis-dependent CKD/ESRD composite
+  bucket are now executable. The first
   cache-independent closure pass is complete for the
   warmed-cache delta: an empty-cache probe had regressed to 424 gaps / 156
   compiled `unmapped_concept`, then reviewed artifacts brought it back to the
@@ -110,11 +114,13 @@
   `extractor_bug` gaps in the `review_gap` lane, including promoted
   subcriterion rows, so the remaining implementation queue is no longer
   inflated by things we have already classified as non-executable.
-  The
-  remaining compiler-gap count is intentional: formerly opaque rows are now
+  The renal dialysis composite slice removes the three CKD/renal-failure
+  dialysis-dependence implementation groups by decomposing them into reviewed
+  CKD/ESRD condition atoms plus reviewed dialysis procedure-history atoms.
+  The remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
-  72 grouped `implement_compiler_logic` items, implementing safe
+  69 grouped `implement_compiler_logic` items, implementing safe
   normal-range/provenance execution where patient data can support it, and
   preparing a smaller human grading packet
   once the closed-world blockers are lower.
@@ -1259,7 +1265,11 @@ matching. A 2026-05-14 follow-on routes free-text fasting/OGTT/random
 plasma-glucose threshold clauses into measurement compilation, adds
 `normal_range_unknown` and `provenance_required` gap kinds, and makes compiler
 review artifacts classify `free_text_review` gaps as review work rather than
-compiler-logic implementation. The `CC-10`, `CC-11`, and `CC-12`
+compiler-logic implementation. A later 2026-05-14 CC-06/CC-07 follow-on adds
+reviewed dialysis procedure mappings and decomposes CKD/ESRD-on-dialysis
+surfaces into `all_of` condition plus `procedure_history` predicates, removing
+the three renal dialysis-dependence implementation groups from the review
+queue. The `CC-10`, `CC-11`, and `CC-12`
 reporting foundations now expose closed-world validation, reviewer gap queue,
 and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
 promotion remain follow-on work.
@@ -1836,7 +1846,7 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`bc2fa92bdf18`) after the reviewed condition/event,
+  `compiled_predicates` (`b47ada00d6a7`) after the reviewed condition/event,
   medication registry-closure, cache-independent terminology-closure, reviewed
   descendant-expansion, condition/event decomposition, and qualifier/top-gap
   review slices, followed by the opaque-unmapped registry pass for GLP-1
@@ -1844,17 +1854,19 @@ promotion remain follow-on work.
   singleton oncology/genomic/procedure/status classifications, plus BP
   threshold decomposition, reviewed sex-specific ULN reference-limit translation,
   reviewed antidiabetic medication-class closure, C-peptide unit conversion, and
-  reviewed full-pneumonectomy procedure-history execution.
+  reviewed full-pneumonectomy procedure-history execution, anticoagulation
+  medication-class rerouting, reviewer-artifact cleanup, and renal
+  dialysis-dependent CKD/ESRD composite execution.
   Both runs have
   the same 2 deceased-patient scoring refusals and the same Layer-1
   structured-field metrics (89.0% agreement, 98.6% coverage). The compiled path
   reduces criterion-level `unmapped_concept` from 317/1076 (29.5%) to 0/1076
-  (0.0%); it adds 84 indeterminate-to-determinate criterion wins and changes 13
+  (0.0%); it adds 88 indeterminate-to-determinate criterion wins and changes 13
   case rollups (all away from indeterminate). It is still not default-ready:
-  compiler diagnostics show 284 unresolved gaps and 43 closed-world-blocking
-  compiled cases, with 387 blocking validation findings. The regenerated
-  compiler-review artifact now dedupes the 284 raw rows to 162
-  surface/action/policy groups (72 `implement_compiler_logic`, 5
+  compiler diagnostics show 280 unresolved gaps and 43 closed-world-blocking
+  compiled cases, with 379 blocking validation findings. The regenerated
+  compiler-review artifact now dedupes the 280 raw rows to 159
+  surface/action/policy groups (69 `implement_compiler_logic`, 5
   `choose_candidate`, and 85 `review_gap`). There are no remaining
   `review_mapping` groups; the generic blood-pressure ambiguity bucket is gone,
   and reviewed AST/ALT/bilirubin/hemoglobin ULN criteria now compile through
@@ -1907,18 +1919,23 @@ promotion remain follow-on work.
   moving reviewed `out_of_scope` and `extractor_bug` gaps from
   `implement_compiler_logic` to `review_gap`, dropping the deduped
   implementation queue to 72 groups and raising review-only groups to 85.
+  The renal dialysis composite follow-on then decomposes CKD/ESRD-on-dialysis
+  phrases into condition plus procedure-history `all_of` predicates, reducing
+  unresolved gaps to 280, increasing checkable predicates to 368, lowering
+  blocking validation findings to 379, and dropping the deduped implementation
+  queue to 69 groups.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
-  rollups, reducing the remaining 72 grouped compiler-logic gaps, and using the
+  rollups, reducing the remaining 69 grouped compiler-logic gaps, and using the
   deduped compiler-review packet for targeted reviewer/registry work.
 - Movement review artifact (2026-05-12 cache-independent refresh):
   `scripts/eval.py movement-review` now exports baseline-vs-comparison case and
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `bc2fa92bdf18`: 13 case movements, 85 decisive criterion
-  movements, and 279 reason-code-only changes. Decisive wins include reviewed
+  `e8efb7bcce35` -> `b47ada00d6a7`: 13 case movements, 88 decisive criterion
+  movements, and 275 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
   lipid-lowering therapy, GLP-1 member closure, SGLT/non-insulin antidiabetic
   class closure, diabetes/HF/pregnancy variants,
@@ -1963,10 +1980,11 @@ promotion remain follow-on work.
   moved the snapshot to 299 unresolved compiler gaps with 343 checkable
   predicates by executing full-pneumonectomy history against completed
   patient `Procedure` rows. Medication/procedure exposure follow-ons then moved
-  the snapshot through 296, 289, 285, and now 284 unresolved compiler gaps with
-  360 checkable predicates by adding antihypertensive, intravenous-inotrope,
+  the snapshot through 296, 289, 285, 284, and now 280 unresolved compiler gaps
+  with 368 checkable predicates by adding antihypertensive, intravenous-inotrope,
   aromatase-inhibitor, anticonvulsant, and anticoagulant current-vocabulary
-  closures plus coronary-intervention procedure-window execution. The latest
+  closures plus coronary-intervention procedure-window execution and renal
+  dialysis-dependent CKD/ESRD composite execution. The latest
   taxonomy/routing pass split out 4
   `normal_range_unknown` and 6 `provenance_required` measurement blockers,
   moves the plasma-glucose ADA bullets from free-text to measurement-domain

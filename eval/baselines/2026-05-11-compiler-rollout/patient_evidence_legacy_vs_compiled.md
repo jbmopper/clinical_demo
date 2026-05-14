@@ -13,10 +13,10 @@ Public-Artifact-Safety: synthetic
 | Run | LLM use | Comparable | Accuracy | Abstention | Citation agreement | Mode skipped | Retrieved rows | Decisive citations | Eligibility | Adjudicator |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | `e8efb7bcce35` | `none` | 5/50 | 80.0% | 40.0% | 0.0% (0/1) | 17 | (none) | (none) | fail=28 / indeterminate=18 / pass_pending_review=1 | 0 calls / $0.0000 |
-| `bc2fa92bdf18` | `none` | 5/50 | 80.0% | 40.0% | 0.0% (0/1) | 17 | (none) | (none) | fail=40 / indeterminate=5 / pass_pending_review=2 | 0 calls / $0.0000 |
+| `b47ada00d6a7` | `none` | 5/50 | 80.0% | 40.0% | 0.0% (0/1) | 17 | (none) | (none) | fail=40 / indeterminate=5 / pass_pending_review=2 | 0 calls / $0.0000 |
 
 ## Case Rollup Movement
 
 | Baseline | Comparison | Changed cases | Movements |
 |---|---|---:|---|
-| `e8efb7bcce35` | `bc2fa92bdf18` | 13 | indeterminate->fail=12 / indeterminate->pass_pending_review=1 |
+| `e8efb7bcce35` | `b47ada00d6a7` | 13 | indeterminate->fail=12 / indeterminate->pass_pending_review=1 |

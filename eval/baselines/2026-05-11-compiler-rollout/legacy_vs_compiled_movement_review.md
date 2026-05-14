@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `bc2fa92bdf18`
+- comparison: `b47ada00d6a7`
 - changed cases: 13/49
-- changed criteria: 364/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=84 / reason_changed=279
+- changed criteria: 363/1076
+- criterion directions: indeterminate_to_determinate=88 / reason_changed=275
 
 ## Case Movements
 
@@ -169,7 +169,7 @@ Public-Artifact-Safety: synthetic
 | `509f9a77__NCT07221513` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindicated to RHC that can be left in place for approximately 6 hours. |
 | `509f9a77__NCT07221513` | 9 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Body mass index (BMI) >45 kg/m² at screening. |
 | `55c5b8d3__NCT06128278` | 3 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of HRT or has used HRT for <6 months prior to enrollment |
-| `55c5b8d3__NCT06128278` | 4 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Advanced CKD requiring dialysis |
+| `55c5b8d3__NCT06128278` | 4 | condition_present | indeterminate->pass | indeterminate_to_determinate | compound | Advanced CKD requiring dialysis |
 | `55c5b8d3__NCT06128278` | 5 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History of kidney transplant |
 | `55c5b8d3__NCT06128278` | 6 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of immunosuppressant medications (unless taking a stable dosage for a quiescent disease) |
 | `55c5b8d3__NCT06128278` | 8 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Antioxidant and/or omega-3 fatty acid use within the 2 weeks prior to testing |
@@ -292,7 +292,7 @@ Public-Artifact-Safety: synthetic
 | `a06bce31__NCT07221513` | 2 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Right heart catheterization (RHC) based evidence of cpcPH: |
 | `a06bce31__NCT07221513` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindicated to RHC that can be left in place for approximately 6 hours. |
 | `a06bce31__NCT07221513` | 9 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | measurement_threshold | Body mass index (BMI) >45 kg/m² at screening. |
-| `a9a2c4dd__NCT05998863` | 5 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | End-stage renal failure on dialysis |
+| `a9a2c4dd__NCT05998863` | 5 | condition_absent | indeterminate->fail | indeterminate_to_determinate | compound | End-stage renal failure on dialysis |
 | `a9a2c4dd__NCT05998863` | 9 | condition_absent | indeterminate->fail | indeterminate_to_determinate | condition_presence | Diabetes Type II with HbA1C ≥ 7% |
 | `a9a2c4dd__NCT05998863` | 11 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Required to take calcium |
 | `aa01ba4c__NCT07064473` | 6 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | At least one additional risk factor for developing heart failure (HF) |
@@ -339,7 +339,7 @@ Public-Artifact-Safety: synthetic
 | `c46a254d__NCT06941441` | 24 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Significant (≥ 2+ regurgitation) mitral regurgitation or aortic regurgitation valvular disease |
 | `c46a254d__NCT06941441` | 25 | free_text | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Received intravenous inotropes (e.g., dobutamine, dopamine, norepinephrine, vasopressin) within 3... |
 | `d02b2ca5__NCT06128278` | 3 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of HRT or has used HRT for <6 months prior to enrollment |
-| `d02b2ca5__NCT06128278` | 4 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Advanced CKD requiring dialysis |
+| `d02b2ca5__NCT06128278` | 4 | condition_present | indeterminate->pass | indeterminate_to_determinate | compound | Advanced CKD requiring dialysis |
 | `d02b2ca5__NCT06128278` | 5 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | History of kidney transplant |
 | `d02b2ca5__NCT06128278` | 6 | medication_absent | indeterminate->indeterminate | reason_changed | medication_exposure | Use of immunosuppressant medications (unless taking a stable dosage for a quiescent disease) |
 | `d02b2ca5__NCT06128278` | 8 | free_text | indeterminate->indeterminate | reason_changed | medication_exposure | Antioxidant and/or omega-3 fatty acid use within the 2 weeks prior to testing |
@@ -369,11 +369,10 @@ Public-Artifact-Safety: synthetic
 | `d362f4e5__NCT06564324` | 27 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Have ongoing cardiac dysrhythmias of ≥CTCAE Grade 2, uncontrolled atrial fibrillation of any grad... |
 | `d362f4e5__NCT06564324` | 30 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Be pregnant or breastfeeding |
 | `d57e867e__NCT06143566` | 0 | condition_present | indeterminate->pass | indeterminate_to_determinate | condition_presence | Patients with Type 2 DM |
-| `d57e867e__NCT06143566` | 1 | condition_present | pass->fail | determinate_changed | condition_presence | History of chronic kidney disease, defined as an estimated glomerular filtration rate (eGFR) of 2... |
 | `d57e867e__NCT06143566` | 5 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Hyperkalemia > 5.0 |
 | `d57e867e__NCT06143566` | 6 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Contraindication to any component of polypill |
 | `e7d52393__NCT04040959` | 4 | measurement_threshold | indeterminate->fail | indeterminate_to_determinate | compound | Blood pressure controlled to <140/90 mmHg for the past 3 months |
-| `e7d52393__NCT04040959` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Patients with advanced CKD requiring chronic dialysis |
+| `e7d52393__NCT04040959` | 7 | condition_absent | indeterminate->fail | indeterminate_to_determinate | compound | Patients with advanced CKD requiring chronic dialysis |
 | `e7d52393__NCT04040959` | 8 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Significant co-morbid conditions that lead the investigator to conclude that life expectancy < 1... |
 | `e7d52393__NCT04040959` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | History of severe congestive heart failure (i.e., ejection fraction < 35%) |
 | `e7d52393__NCT04040959` | 10 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Hospitalization in the past month |

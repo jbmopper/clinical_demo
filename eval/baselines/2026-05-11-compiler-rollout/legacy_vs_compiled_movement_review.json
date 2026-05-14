@@ -6,28 +6,26 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "bc2fa92bdf18",
+  "comparison_run_id": "b47ada00d6a7",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "bc2fa92bdf18",
+    "comparison_run_id": "b47ada00d6a7",
     "common_cases": 49,
     "changed_cases": 13,
     "compared_criteria": 1076,
-    "changed_criteria": 364,
+    "changed_criteria": 363,
     "by_case_movement": {
       "indeterminate->fail": 12,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 30,
-      "indeterminate->indeterminate": 279,
-      "indeterminate->pass": 54,
-      "pass->fail": 1
+      "indeterminate->fail": 32,
+      "indeterminate->indeterminate": 275,
+      "indeterminate->pass": 56
     },
     "by_direction": {
-      "determinate_changed": 1,
-      "indeterminate_to_determinate": 84,
-      "reason_changed": 279
+      "indeterminate_to_determinate": 88,
+      "reason_changed": 275
     }
   },
   "case_movements": [
@@ -3952,20 +3950,25 @@
       "criterion_source_text": "Advanced CKD requiring dialysis",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:4",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:4:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:4:renal-dialysis:condition:predicate:condition",
+        "criterion:4:renal-dialysis:procedure:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:4:renal-dialysis:condition:condition:support:concept-set",
+        "criterion:4:renal-dialysis:condition:condition:support:expansion",
+        "criterion:4:renal-dialysis:procedure:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:55c5b8d3__NCT06128278:5",
@@ -7249,20 +7252,25 @@
       "criterion_source_text": "End-stage renal failure on dialysis",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:5",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:5:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:5:renal-dialysis:condition:predicate:condition",
+        "criterion:5:renal-dialysis:procedure:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:5:renal-dialysis:condition:condition:support:concept-set",
+        "criterion:5:renal-dialysis:condition:condition:support:expansion",
+        "criterion:5:renal-dialysis:procedure:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:a9a2c4dd__NCT05998863:9",
@@ -8509,20 +8517,25 @@
       "criterion_source_text": "Advanced CKD requiring dialysis",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:4",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:4:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:4:renal-dialysis:condition:predicate:condition",
+        "criterion:4:renal-dialysis:procedure:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:4:renal-dialysis:condition:condition:support:concept-set",
+        "criterion:4:renal-dialysis:condition:condition:support:expansion",
+        "criterion:4:renal-dialysis:procedure:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:d02b2ca5__NCT06128278:5",
@@ -9316,35 +9329,6 @@
       "comparison_gap_ids": []
     },
     {
-      "row_id": "criterion:d57e867e__NCT06143566:1",
-      "pair_id": "d57e867e__NCT06143566",
-      "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
-      "nct_id": "NCT06143566",
-      "eval_slice": "t2dm-academic",
-      "criterion_index": 1,
-      "criterion_kind": "condition_present",
-      "criterion_source_text": "History of chronic kidney disease, defined as an estimated glomerular filtration rate (eGFR) of 25 to 90 per minute per 1.73 m2 of body-surface area (stage 2 to 4 CKD) with a urinary albumin-to-creatinine ratio (with albumin measured in milligrams and creatinine measured in grams) of less than 5000",
-      "baseline_verdict": "pass",
-      "baseline_reason": "ok",
-      "comparison_verdict": "fail",
-      "comparison_reason": "ok",
-      "movement": "pass->fail",
-      "direction": "determinate_changed",
-      "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": true,
-      "comparison_compiled_id": "compiled:criterion:1",
-      "comparison_predicate_status": "resolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [
-        "criterion:1:predicate:condition"
-      ],
-      "comparison_support_ids": [
-        "criterion:1:condition:support:concept-set",
-        "criterion:1:condition:support:expansion"
-      ],
-      "comparison_gap_ids": []
-    },
-    {
       "row_id": "criterion:d57e867e__NCT06143566:5",
       "pair_id": "d57e867e__NCT06143566",
       "patient_id": "d57e867e-4896-9e07-f502-5f4f881bd80e",
@@ -9439,20 +9423,25 @@
       "criterion_source_text": "Patients with advanced CKD requiring chronic dialysis",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:7",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:7:condition:gap:reviewed-composite_unhandled"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "compound",
+      "comparison_predicate_ids": [
+        "criterion:7:renal-dialysis:condition:predicate:condition",
+        "criterion:7:renal-dialysis:procedure:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:7:renal-dialysis:condition:condition:support:concept-set",
+        "criterion:7:renal-dialysis:condition:condition:support:expansion",
+        "criterion:7:renal-dialysis:procedure:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:e7d52393__NCT04040959:8",

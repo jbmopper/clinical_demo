@@ -183,6 +183,85 @@
             "expansion_policy": "reviewed_code_list"
         },
         {
+            "kind": "procedure",
+            "surface": "dialysis",
+            "normalized_surface": "dialysis",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:dialysis-current-vocab",
+            "candidates": [
+                {
+                    "name": "Dialysis reviewed procedure list",
+                    "concept_set": "reviewed:procedure:dialysis-current-vocab",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "265764009",
+                        "302497006"
+                    ],
+                    "source": "committed Synthea FHIR review",
+                    "reason": "The current patient files encode dialysis dependence as completed Renal dialysis and Hemodialysis Procedure rows."
+                }
+            ],
+            "reason": "Dialysis is completed procedure-history evidence and can be executed against parsed patient Procedure rows for renal criteria that explicitly require dialysis dependence.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-14 compiler-review group: CKD/renal-failure requiring dialysis composite criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-14",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
+            "kind": "procedure",
+            "surface": "renal dialysis",
+            "normalized_surface": "renal dialysis",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:renal-dialysis",
+            "candidates": [
+                {
+                    "name": "Renal dialysis reviewed procedure",
+                    "concept_set": "reviewed:procedure:renal-dialysis",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "265764009"
+                    ],
+                    "source": "committed Synthea FHIR review",
+                    "reason": "Synthea FHIR Procedure rows use SNOMED 265764009 for Renal dialysis."
+                }
+            ],
+            "reason": "Renal dialysis is completed procedure-history evidence and can be executed against parsed patient Procedure rows.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-14 compiler-review group: CKD/renal-failure requiring dialysis composite criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-14",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
+            "kind": "procedure",
+            "surface": "hemodialysis",
+            "normalized_surface": "hemodialysis",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:hemodialysis",
+            "candidates": [
+                {
+                    "name": "Hemodialysis reviewed procedure",
+                    "concept_set": "reviewed:procedure:hemodialysis",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "302497006"
+                    ],
+                    "source": "committed Synthea FHIR review",
+                    "reason": "Synthea FHIR Procedure rows use SNOMED 302497006 for Hemodialysis."
+                }
+            ],
+            "reason": "Hemodialysis is completed procedure-history evidence and can be executed against parsed patient Procedure rows.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-14 compiler-review group: CKD/renal-failure requiring dialysis composite criteria.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-14",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
             "kind": "lab",
             "surface": "pulmonary vascular resistance (PVR)",
             "normalized_surface": "pulmonary vascular resistance (pvr",
@@ -1127,6 +1206,37 @@
             "provenance": "2026-05-12 compiler-review group: renal condition criterion.",
             "reviewer": "codex-assisted review",
             "reviewed_at": "2026-05-12",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
+            "kind": "condition",
+            "surface": "chronic kidney disease",
+            "normalized_surface": "chronic kidney disease",
+            "status": "mapped",
+            "concept_set": "CHRONIC_KIDNEY_DISEASE",
+            "candidates": [
+                {
+                    "name": "Chronic kidney disease reviewed code list",
+                    "concept_set": "CHRONIC_KIDNEY_DISEASE",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "431855005",
+                        "431856006",
+                        "433144002",
+                        "431857002",
+                        "433146000"
+                    ],
+                    "source": "reviewed_registry",
+                    "score": 1.0,
+                    "reason": "Reviewed CKD stage code list used as the renal-disease component for dialysis-dependent CKD composite criteria."
+                }
+            ],
+            "reason": "Maps the atomic CKD surface to the reviewed chronic kidney disease ConceptSet; severity qualifiers such as dialysis dependence remain compiler compound logic.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-14 compiler-review group: CKD requiring dialysis composite decomposition.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-14",
             "resolver_version": "reviewed-registry-v1",
             "expansion_policy": "reviewed_code_list"
         },

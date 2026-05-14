@@ -186,6 +186,9 @@ def test_committed_procedure_mappings_load() -> None:
     pci = registry.lookup("procedure", "percutaneous coronary intervention")
     cabg = registry.lookup("procedure", "coronary artery bypass grafting")
     cabg_surgery = registry.lookup("procedure", "coronary artery bypass graft surgery")
+    dialysis = registry.lookup("procedure", "dialysis")
+    renal_dialysis = registry.lookup("procedure", "renal dialysis")
+    hemodialysis = registry.lookup("procedure", "hemodialysis")
 
     assert pneumonectomy is not None
     assert pneumonectomy.status == "mapped"
@@ -202,6 +205,15 @@ def test_committed_procedure_mappings_load() -> None:
     assert cabg_surgery is not None
     assert cabg_surgery.status == "mapped"
     assert cabg_surgery.candidates[0].codes == frozenset({"232717009"})
+    assert dialysis is not None
+    assert dialysis.status == "mapped"
+    assert dialysis.candidates[0].codes == frozenset({"265764009", "302497006"})
+    assert renal_dialysis is not None
+    assert renal_dialysis.status == "mapped"
+    assert renal_dialysis.candidates[0].codes == frozenset({"265764009"})
+    assert hemodialysis is not None
+    assert hemodialysis.status == "mapped"
+    assert hemodialysis.candidates[0].codes == frozenset({"302497006"})
 
 
 def test_committed_cache_independent_closure_mappings_load() -> None:
@@ -252,6 +264,7 @@ def test_committed_condition_long_tail_review_rows_load() -> None:
     active_hiv = registry.lookup("condition", "active HIV infection")
     anticoagulation = registry.lookup("condition", "chronic anticoagulation therapy")
     measurable_disease = registry.lookup("condition", "measurable disease")
+    ckd = registry.lookup("condition", "chronic kidney disease")
 
     assert type_2_dm is not None
     assert type_2_dm.status == "mapped"
@@ -303,6 +316,9 @@ def test_committed_condition_long_tail_review_rows_load() -> None:
     assert measurable_disease is not None
     assert measurable_disease.kind == "condition"
     assert measurable_disease.status == "out_of_scope"
+    assert ckd is not None
+    assert ckd.status == "mapped"
+    assert ckd.concept_set == "CHRONIC_KIDNEY_DISEASE"
 
 
 def test_committed_procedure_review_rows_load() -> None:

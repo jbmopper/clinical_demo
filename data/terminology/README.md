@@ -36,8 +36,8 @@ anti-tumor/TKI exposure, recent major surgery, and oncology toxicity phrases so
 the compiler can report why they are not executable condition mappings.
 The final opaque-gap pass adds reviewed diabetes/HF/pregnancy surface variants
 and classifies the singleton long tail: active hepatitis/HIV/TB infection,
-breastfeeding, advanced CKD with dialysis, anticoagulation therapy,
-LDL-apheresis, hospitalization, allergy/hypersensitivity, thyroid-control
+breastfeeding, anticoagulation therapy, LDL-apheresis, hospitalization,
+allergy/hypersensitivity, thyroid-control
 phrases, NSCLC/staging/metastasis, xeno-crossmatch, and genomic/procedure/event
 phrases now have committed non-opaque outcomes.
 
@@ -47,7 +47,10 @@ to reviewed SNOMED procedure code lists and compile to `procedure_history`
 predicates over parsed patient `Procedure` resources. This keeps
 surgical-history evidence out of diagnosis/Condition matching while still
 allowing closed-world execution when the patient file contains completed
-procedure rows.
+procedure rows. Dialysis surfaces (`dialysis`, `renal dialysis`, and
+`hemodialysis`) are also reviewed procedure rows; the compiler uses them to
+decompose CKD/ESRD-on-dialysis condition phrases into condition plus completed
+procedure subchecks instead of broadening the condition mapping.
 
 Each mapping is keyed by `(kind, normalized_surface)` and loaded by
 `clinical_demo.terminology.reviewed_registry`. Duplicate keys are rejected at

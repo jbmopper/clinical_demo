@@ -313,6 +313,20 @@ _OTHER_MEDICAL_CONDITION_RE = re.compile(
     r"\bother\s+(?:serious\s+)?medical\s+conditions?\b",
     re.IGNORECASE,
 )
+_DIALYSIS_DEPENDENT_CKD_RE = re.compile(
+    r"\b(?:advanced\s+)?(?:chronic\s+kidney\s+disease(?:\s*\(ckd\))?|ckd)\b"
+    r".{0,80}?\b(?:requiring|requires|on)\b.{0,40}?\b(?:chronic\s+)?dialysis\b|"
+    r"\b(?:chronic\s+)?dialysis\b.{0,80}?"
+    r"\b(?:advanced\s+)?(?:chronic\s+kidney\s+disease(?:\s*\(ckd\))?|ckd)\b",
+    re.IGNORECASE,
+)
+_DIALYSIS_DEPENDENT_ESRD_RE = re.compile(
+    r"\bend[-\s]+stage\s+renal\s+(?:failure|disease)\b"
+    r".{0,80}?\b(?:requiring|requires|on)\b.{0,40}?\b(?:chronic\s+)?dialysis\b|"
+    r"\b(?:chronic\s+)?dialysis\b.{0,80}?"
+    r"\bend[-\s]+stage\s+renal\s+(?:failure|disease)\b",
+    re.IGNORECASE,
+)
 _CARDIOVASCULAR_EVENT_TERMS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(r"\b(?:acute\s+coronary\s+syndrome|acs)\b", re.IGNORECASE),
@@ -1428,6 +1442,18 @@ def _compile_condition_phrase_promotion(
     if not normalized:
         return None
 
+    if _DIALYSIS_DEPENDENT_CKD_RE.search(surface) or _DIALYSIS_DEPENDENT_ESRD_RE.search(surface):
+        return _compile_dialysis_dependent_renal_phrase(
+            criterion,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            resolver_policy=resolver_policy,
+            context=context,
+            promotion_domain=promotion_domain,
+            promotion_label=promotion_label,
+        )
+
     if _NYHA_HEART_FAILURE_RE.search(surface):
         return _compile_condition_phrase_with_unsupported_qualifier(
             criterion,
@@ -1577,6 +1603,111 @@ def _compile_condition_phrase_promotion(
         )
 
     return None
+
+
+def _compile_dialysis_dependent_renal_phrase(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+) -> _FreeTextPromotionCompilation:
+    renal_surface = (
+        "end-stage renal disease"
+        if _DIALYSIS_DEPENDENT_ESRD_RE.search(surface)
+        else "chronic kidney disease"
+    )
+    renal_id = f"{source_criterion_id}:renal-dialysis:condition"
+    dialysis_id = f"{source_criterion_id}:renal-dialysis:procedure"
+    renal_surrogate = _criterion_like(
+        criterion,
+        kind=_condition_surrogate_kind(criterion),
+        condition=ConditionCriterion(condition_text=renal_surface),
+    )
+    renal = _compile_criterion(
+        renal_surrogate,
+        index=index,
+        resolver_policy=resolver_policy,
+        composite_groups=[],
+        context=context,
+        source_criterion_id_override=renal_id,
+        allow_condition_phrase_promotion=False,
+    )
+    dialysis = _compile_reviewed_procedure_history(
+        criterion,
+        source_criterion_id=dialysis_id,
+        surface="dialysis",
+        context=context,
+    )
+    if dialysis is None:
+        dialysis_gap = _gap(
+            gap_id=f"{dialysis_id}:procedure:gap:missing-reviewed-dialysis",
+            stage="concept_resolution",
+            domain="procedure",
+            kind="unmapped_concept",
+            source_criterion_id=dialysis_id,
+            surface="dialysis",
+            message=(
+                "Dialysis-dependent renal criteria require a reviewed dialysis "
+                "procedure mapping before execution."
+            ),
+            resolver_policy=resolver_policy,
+        )
+        dialysis_supports: list[ResolutionSupport] = []
+        dialysis_gaps = [dialysis_gap]
+        dialysis_predicates: list[CheckablePredicate] = []
+        dialysis_diagnostics = [
+            _diagnostic(
+                severity="warning",
+                code="renal_dialysis.missing_procedure_mapping",
+                message=dialysis_gap.message,
+                stage="concept_resolution",
+                source_criterion_id=dialysis_id,
+                facts=[("gap_id", dialysis_gap.gap_id)],
+            )
+        ]
+    else:
+        dialysis_supports = dialysis.supports
+        dialysis_gaps = dialysis.gaps
+        dialysis_predicates = dialysis.predicates
+        dialysis_diagnostics = dialysis.diagnostics
+
+    subcheck_ids = [renal_id, dialysis_id]
+    supports = [*renal.resolved_supports, *dialysis_supports]
+    gaps = [*renal.unresolved_gaps, *dialysis_gaps]
+    predicates = [*renal.checkable_predicates, *dialysis_predicates]
+    diagnostics = [*renal.diagnostics, *dialysis_diagnostics]
+    predicate = _compound_predicate_plan(
+        subcheck_ids,
+        predicates=predicates,
+        gaps=gaps,
+        operator="all_of",
+    )
+    compound_logic = CompoundLogicPlan(
+        status="resolved",
+        operator="all_of",
+        source_group_ids=[],
+        subcheck_ids=subcheck_ids,
+        gap_ids=[gap.gap_id for gap in gaps],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind="renal-dialysis-dependence",
+        predicate=predicate,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
+        compound_logic=compound_logic,
+    )
 
 
 def _compile_condition_phrase_alias(
