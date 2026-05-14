@@ -6,10 +6,10 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "7d58de5d529d",
+  "comparison_run_id": "f38623e1ad54",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "7d58de5d529d",
+    "comparison_run_id": "f38623e1ad54",
     "common_cases": 49,
     "changed_cases": 13,
     "compared_criteria": 1076,
@@ -2270,18 +2270,18 @@
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
       "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
+      "comparison_reason": "human_review_required",
       "movement": "indeterminate->indeterminate",
       "direction": "reason_changed",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:30",
       "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:30:condition-phrase:gap:unsupported"
+        "criterion:30:free-text-review:gap:study-compliance"
       ]
     },
     {
@@ -5592,18 +5592,18 @@
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
       "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
+      "comparison_reason": "human_review_required",
       "movement": "indeterminate->indeterminate",
       "direction": "reason_changed",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:25",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:25:condition:gap:reviewed-out_of_scope"
+        "criterion:25:free-text-review:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -5618,18 +5618,18 @@
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
       "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
+      "comparison_reason": "human_review_required",
       "movement": "indeterminate->indeterminate",
       "direction": "reason_changed",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:26",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_status": "unsupported",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:26:condition:gap:reviewed-out_of_scope"
+        "criterion:26:free-text-review:gap:reviewed-out_of_scope"
       ]
     },
     {
@@ -7914,18 +7914,18 @@
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
       "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
+      "comparison_reason": "human_review_required",
       "movement": "indeterminate->indeterminate",
       "direction": "reason_changed",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:30",
       "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "condition_presence",
+      "comparison_predicate_kind": "free_text_review",
       "comparison_predicate_ids": [],
       "comparison_support_ids": [],
       "comparison_gap_ids": [
-        "criterion:30:condition-phrase:gap:unsupported"
+        "criterion:30:free-text-review:gap:study-compliance"
       ]
     },
     {

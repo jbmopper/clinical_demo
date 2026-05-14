@@ -342,6 +342,24 @@ def test_compiled_free_text_condition_promotion_executes() -> None:
     assert verdict.evidence_under_assumption is True
 
 
+def test_compiled_structured_free_text_review_condition_stays_human_review() -> None:
+    criterion = crit_condition(text="structured exercise program")
+
+    compilation = compile_extracted_criteria([criterion])
+    verdict = match_compiled_criteria(
+        compilation,
+        make_profile(),
+        make_trial(),
+        matcher_assumption_mode="closed_world_eval",
+    )[0]
+
+    assert compilation.criteria[0].predicate.predicate_kind == "free_text_review"
+    assert verdict.verdict == "indeterminate"
+    assert verdict.reason == "human_review_required"
+    assert verdict.evidence[0].kind == "missing"
+    assert "human-review/free-text criterion" in verdict.evidence[0].note
+
+
 def test_compiled_free_text_composite_condition_mention_stays_human_review() -> None:
     criterion = crit_free_text(
         polarity="exclusion",

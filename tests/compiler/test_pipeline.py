@@ -429,6 +429,83 @@ def test_reviewed_condition_nonmapped_emits_typed_gap() -> None:
     assert compiled.diagnostics[0].code == "condition.reviewed.composite_unhandled"
 
 
+def test_reviewed_nonclinical_condition_routes_to_free_text_review_plan() -> None:
+    criterion = _condition("structured exercise program")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "free_text_review"
+    assert compiled.expansion.status == "skipped"
+    assert compiled.expansion.domain == "free_text"
+    assert compiled.checkable_predicates == []
+    assert compiled.unresolved_gaps[0].gap_id == (
+        "criterion:0:free-text-review:gap:reviewed-out_of_scope"
+    )
+    assert compiled.unresolved_gaps[0].domain == "free_text"
+    assert compiled.unresolved_gaps[0].kind == "unsupported_predicate"
+    assert compiled.diagnostics[0].code == "condition.reviewed.out_of_scope.free_text_review"
+
+
+def test_free_text_reviewed_nonclinical_condition_mention_routes_to_review_plan() -> None:
+    criterion = _free_text("Participation in a structured exercise program").model_copy(
+        update={"mentions": [EntityMention(text="structured exercise program", type="Condition")]}
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.criterion_kind == "free_text"
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "free_text_review"
+    assert compiled.expansion.domain == "free_text"
+    assert compiled.checkable_predicates == []
+    assert compiled.unresolved_gaps[0].gap_id == (
+        "criterion:0:free-text:condition:free-text-review:gap:reviewed-out_of_scope"
+    )
+    assert compiled.unresolved_gaps[0].domain == "free_text"
+    assert [diagnostic.code for diagnostic in compiled.diagnostics] == [
+        "free_text.promoted.free-text-review",
+        "condition.reviewed.out_of_scope.free_text_review",
+    ]
+
+
+def test_study_compliance_condition_phrase_routes_to_free_text_review_plan() -> None:
+    criterion = _condition(
+        "Ability to adhere to study visit schedule and understand and comply with "
+        "all protocol requirements"
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "free_text_review"
+    assert compiled.expansion.domain == "free_text"
+    assert compiled.unresolved_gaps[0].gap_id == "criterion:0:free-text-review:gap:study-compliance"
+    assert compiled.unresolved_gaps[0].domain == "free_text"
+    assert compiled.checkable_predicates == []
+    assert [diagnostic.code for diagnostic in compiled.diagnostics] == [
+        "condition.promoted.free-text-review",
+        "condition_phrase.free_text_review",
+    ]
+
+
+def test_acuity_sensitive_reviewed_condition_stays_condition_gap() -> None:
+    criterion = _condition("acutely decompensated heart failure")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unresolved"
+    assert compiled.predicate.predicate_kind == "condition_presence"
+    assert compiled.expansion.domain == "condition"
+    assert compiled.unresolved_gaps[0].gap_id == "criterion:0:condition:gap:reviewed-out_of_scope"
+    assert compiled.unresolved_gaps[0].domain == "condition"
+    assert compiled.diagnostics[0].code == "condition.reviewed.out_of_scope"
+
+
 def test_reviewed_condition_mapping_can_use_specific_code_list() -> None:
     criterion = _condition("chronic kidney disease (CKD) stage 3-4")
 

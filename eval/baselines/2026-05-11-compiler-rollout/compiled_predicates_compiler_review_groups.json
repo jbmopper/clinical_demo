@@ -235,65 +235,6 @@
       ],
       "example_rows": [
         {
-          "criterion_index": 7,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT06941441",
-          "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:7:condition-phrase:gap:unsupported"
-        },
-        {
-          "criterion_index": 7,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT06941441",
-          "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:7:condition-phrase:gap:unsupported"
-        },
-        {
-          "criterion_index": 7,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
-          "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:7:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT06941441",
-          "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:7:condition-phrase:gap:unsupported"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:b7e7ab2ac104",
-      "message_examples": [
-        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
-      ],
-      "normalized_surface": "ability to adhere to study visit schedule and understand and comply with all protocol requirements",
-      "occurrence_count": 7,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "predicate_translation",
-      "surface": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
-      "trial_count": 1
-    },
-    {
-      "case_count": 7,
-      "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-academic"
-      ],
-      "example_rows": [
-        {
           "criterion_index": 23,
           "criterion_kind": "free_text",
           "criterion_source_text": "",
@@ -406,7 +347,66 @@
       "criterion_kinds": [
         "free_text"
       ],
-      "domain": "condition",
+      "domain": "free_text",
+      "eval_slices": [
+        "hypertension-academic"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 7,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:7:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "28db1c55__NCT06941441",
+          "row_id": "28db1c55__NCT06941441:criterion:7:free-text-review:gap:study-compliance"
+        },
+        {
+          "criterion_index": 7,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:7:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "2e555528__NCT06941441",
+          "row_id": "2e555528__NCT06941441:criterion:7:free-text-review:gap:study-compliance"
+        },
+        {
+          "criterion_index": 7,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+          "eval_slice": "hypertension-academic",
+          "gap_id": "criterion:7:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06941441",
+          "pair_id": "407ef75b__NCT06941441",
+          "row_id": "407ef75b__NCT06941441:criterion:7:free-text-review:gap:study-compliance"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:745a60a42ba5",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+      "occurrence_count": 7,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "Ability to adhere to study visit schedule and understand and comply with all protocol requirements",
+      "trial_count": 1
+    },
+    {
+      "case_count": 7,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "free_text",
       "eval_slices": [
         "hypertension-academic"
       ],
@@ -416,39 +416,39 @@
           "criterion_kind": "free_text",
           "criterion_source_text": "",
           "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
+          "gap_id": "criterion:19:free-text:condition:free-text-review:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'structured exercise program' is a human-review/free-text criterion rather than a condition ConceptSet: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
           "nct_id": "NCT06941441",
           "pair_id": "28db1c55__NCT06941441",
-          "row_id": "28db1c55__NCT06941441:criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope"
+          "row_id": "28db1c55__NCT06941441:criterion:19:free-text:condition:free-text-review:gap:reviewed-out_of_scope"
         },
         {
           "criterion_index": 19,
           "criterion_kind": "free_text",
           "criterion_source_text": "",
           "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
+          "gap_id": "criterion:19:free-text:condition:free-text-review:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'structured exercise program' is a human-review/free-text criterion rather than a condition ConceptSet: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
           "nct_id": "NCT06941441",
           "pair_id": "2e555528__NCT06941441",
-          "row_id": "2e555528__NCT06941441:criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope"
+          "row_id": "2e555528__NCT06941441:criterion:19:free-text:condition:free-text-review:gap:reviewed-out_of_scope"
         },
         {
           "criterion_index": 19,
           "criterion_kind": "free_text",
           "criterion_source_text": "",
           "eval_slice": "hypertension-academic",
-          "gap_id": "criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
+          "gap_id": "criterion:19:free-text:condition:free-text-review:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'structured exercise program' is a human-review/free-text criterion rather than a condition ConceptSet: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile.",
           "nct_id": "NCT06941441",
           "pair_id": "407ef75b__NCT06941441",
-          "row_id": "407ef75b__NCT06941441:criterion:19:free-text:condition:condition:gap:reviewed-out_of_scope"
+          "row_id": "407ef75b__NCT06941441:criterion:19:free-text:condition:free-text-review:gap:reviewed-out_of_scope"
         }
       ],
       "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:72b6f09d0e26",
+      "group_id": "compiler-gap-group:0e3b1ded4a05",
       "message_examples": [
-        "Reviewed condition surface 'structured exercise program' is classified as out_of_scope: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile."
+        "Reviewed condition surface 'structured exercise program' is a human-review/free-text criterion rather than a condition ConceptSet: Structured exercise program participation is lifestyle/intervention history, not condition evidence represented in the current patient profile."
       ],
       "normalized_surface": "structured exercise program",
       "occurrence_count": 7,
@@ -456,7 +456,7 @@
       "recommended_action": "implement_compiler_logic",
       "resolver_policy": "cached_only",
       "severity": "medium",
-      "stage": "concept_resolution",
+      "stage": "predicate_translation",
       "surface": "structured exercise program",
       "trial_count": 1
     },
@@ -1030,54 +1030,6 @@
       "severity": "medium",
       "stage": "predicate_translation",
       "surface": "concomitant disease with life expectancy <6 months",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 30,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:30:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT06217302",
-          "pair_id": "38f38890__NCT06217302",
-          "row_id": "38f38890__NCT06217302:criterion:30:condition-phrase:gap:unsupported"
-        },
-        {
-          "criterion_index": 30,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:30:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT06217302",
-          "pair_id": "c2786fee__NCT06217302",
-          "row_id": "c2786fee__NCT06217302:criterion:30:condition-phrase:gap:unsupported"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:52f2c6400e53",
-      "message_examples": [
-        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
-      ],
-      "normalized_surface": "condition that may render the patient unable to comply with study requirements",
-      "occurrence_count": 2,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "predicate_translation",
-      "surface": "condition that may render the patient unable to comply with study requirements",
       "trial_count": 1
     },
     {
@@ -2331,54 +2283,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 35,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:35:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT06475781",
-          "pair_id": "2e555528__NCT06475781",
-          "row_id": "2e555528__NCT06475781:criterion:35:condition-phrase:gap:unsupported"
-        },
-        {
-          "criterion_index": 35,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "criterion:35:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT06475781",
-          "pair_id": "56cfe6a5__NCT06475781",
-          "row_id": "56cfe6a5__NCT06475781:criterion:35:condition-phrase:gap:unsupported"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:d776f6ee9fd8",
-      "message_examples": [
-        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
-      ],
-      "normalized_surface": "the investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions",
-      "occurrence_count": 2,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "predicate_translation",
-      "surface": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "condition_absent"
       ],
       "domain": "condition",
@@ -2614,6 +2518,54 @@
       "severity": "medium",
       "stage": "predicate_translation",
       "surface": "2-hour plasma glucose \u2265 200 mg/dL (11.1 mmol/L) during an oral glucose tolerance test",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "free_text",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 30,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:30:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "38f38890__NCT06217302",
+          "row_id": "38f38890__NCT06217302:criterion:30:free-text-review:gap:study-compliance"
+        },
+        {
+          "criterion_index": 30,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Any condition that may render the patient unable to comply with study requirements and/or complete the study.",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:30:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06217302",
+          "pair_id": "c2786fee__NCT06217302",
+          "row_id": "c2786fee__NCT06217302:criterion:30:free-text-review:gap:study-compliance"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:3fa7beb0f628",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "condition that may render the patient unable to comply with study requirements",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "condition that may render the patient unable to comply with study requirements",
       "trial_count": 1
     },
     {
@@ -2998,6 +2950,54 @@
       "severity": "medium",
       "stage": "predicate_translation",
       "surface": "Prior thoracic radiotherapy",
+      "trial_count": 1
+    },
+    {
+      "case_count": 2,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "free_text",
+      "eval_slices": [
+        "hypertension-industry"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 35,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:35:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "2e555528__NCT06475781",
+          "row_id": "2e555528__NCT06475781:criterion:35:free-text-review:gap:study-compliance"
+        },
+        {
+          "criterion_index": 35,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
+          "eval_slice": "hypertension-industry",
+          "gap_id": "criterion:35:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT06475781",
+          "pair_id": "56cfe6a5__NCT06475781",
+          "row_id": "56cfe6a5__NCT06475781:criterion:35:free-text-review:gap:study-compliance"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:0cc6a1495917",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "the investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions",
+      "occurrence_count": 2,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "The Investigator judges that the subject will be unable to fully participate in the study and complete it for any reason, including inability to comply with the study procedures and treatment of addiction or any other relevant medical or psychiatric conditions.",
       "trial_count": 1
     },
     {
@@ -3735,28 +3735,28 @@
           "criterion_kind": "free_text",
           "criterion_source_text": "",
           "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:15:free-text:medication-list:005:medication:gap:medication_class",
-          "message": "Medication surface 'DPP4 inhibitors' appears to name a medication class; no reviewed medication-class expansion exists for this surface.",
+          "gap_id": "criterion:15:free-text:medication-list:005:medication:gap:reviewed-out_of_scope",
+          "message": "Reviewed medication surface classified as out_of_scope: DPP-4 inhibitor class exposure is not represented by the current committed patient medication vocabulary.",
           "nct_id": "NCT06524960",
           "pair_id": "1293efbb__NCT06524960",
-          "row_id": "1293efbb__NCT06524960:criterion:15:free-text:medication-list:005:medication:gap:medication_class"
+          "row_id": "1293efbb__NCT06524960:criterion:15:free-text:medication-list:005:medication:gap:reviewed-out_of_scope"
         },
         {
           "criterion_index": 15,
           "criterion_kind": "free_text",
           "criterion_source_text": "",
           "eval_slice": "t2dm-academic",
-          "gap_id": "criterion:15:free-text:medication-list:005:medication:gap:medication_class",
-          "message": "Medication surface 'DPP4 inhibitors' appears to name a medication class; no reviewed medication-class expansion exists for this surface.",
+          "gap_id": "criterion:15:free-text:medication-list:005:medication:gap:reviewed-out_of_scope",
+          "message": "Reviewed medication surface classified as out_of_scope: DPP-4 inhibitor class exposure is not represented by the current committed patient medication vocabulary.",
           "nct_id": "NCT06524960",
           "pair_id": "9e84e569__NCT06524960",
-          "row_id": "9e84e569__NCT06524960:criterion:15:free-text:medication-list:005:medication:gap:medication_class"
+          "row_id": "9e84e569__NCT06524960:criterion:15:free-text:medication-list:005:medication:gap:reviewed-out_of_scope"
         }
       ],
       "gap_kind": "unsupported_predicate",
       "group_id": "compiler-gap-group:be6530b0788e",
       "message_examples": [
-        "Medication surface 'DPP4 inhibitors' appears to name a medication class; no reviewed medication-class expansion exists for this surface."
+        "Reviewed medication surface classified as out_of_scope: DPP-4 inhibitor class exposure is not represented by the current committed patient medication vocabulary."
       ],
       "normalized_surface": "dpp4 inhibitors",
       "occurrence_count": 2,
@@ -4699,43 +4699,6 @@
     {
       "case_count": 1,
       "criterion_kinds": [
-        "condition_present"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 26,
-          "criterion_kind": "condition_present",
-          "criterion_source_text": "Have a history of medical noncompliance that may preclude adherence to the demands and requirements of xenotransplantation (eg, history of substance use disorder [SUD] within 1 year of informed consent, lack of social support, untreated psychological conditions).",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:26:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'history of medical noncompliance' is classified as out_of_scope: Medical noncompliance is adherence/social-history evidence, not a condition ConceptSet represented in the current profile.",
-          "nct_id": "NCT07224763",
-          "pair_id": "60b0873c__NCT07224763",
-          "row_id": "60b0873c__NCT07224763:criterion:26:condition:gap:reviewed-out_of_scope"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:9d56f6e7563e",
-      "message_examples": [
-        "Reviewed condition surface 'history of medical noncompliance' is classified as out_of_scope: Medical noncompliance is adherence/social-history evidence, not a condition ConceptSet represented in the current profile."
-      ],
-      "normalized_surface": "history of medical noncompliance",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "history of medical noncompliance",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
         "condition_absent"
       ],
       "domain": "condition",
@@ -4916,43 +4879,6 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "impaired hepatic function",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 25,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Not able to independently perform activities of daily life.",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:25:condition:gap:reviewed-out_of_scope",
-          "message": "Reviewed condition surface 'inability to perform activities of daily life' is classified as out_of_scope: Activities-of-daily-living function is functional-status evidence, not structured condition evidence in the current profile.",
-          "nct_id": "NCT07224763",
-          "pair_id": "60b0873c__NCT07224763",
-          "row_id": "60b0873c__NCT07224763:criterion:25:condition:gap:reviewed-out_of_scope"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:1c643274e001",
-      "message_examples": [
-        "Reviewed condition surface 'inability to perform activities of daily life' is classified as out_of_scope: Activities-of-daily-living function is functional-status evidence, not structured condition evidence in the current profile."
-      ],
-      "normalized_surface": "inability to perform activities of daily life",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "inability to perform activities of daily life",
       "trial_count": 1
     },
     {
@@ -5624,43 +5550,6 @@
     {
       "case_count": 1,
       "criterion_kinds": [
-        "free_text"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "nsclc"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 58,
-          "criterion_kind": "free_text",
-          "criterion_source_text": "The participant is, in the Investigator's opinion, unable or unwilling to comply with the trial procedures.",
-          "eval_slice": "nsclc",
-          "gap_id": "criterion:58:condition-phrase:gap:unsupported",
-          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
-          "nct_id": "NCT05967689",
-          "pair_id": "83f922a9__NCT05967689",
-          "row_id": "83f922a9__NCT05967689:criterion:58:condition-phrase:gap:unsupported"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:ef2d59f62c11",
-      "message_examples": [
-        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
-      ],
-      "normalized_surface": "the participant is, in the investigator's opinion, unable or unwilling to comply with the trial procedures",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "predicate_translation",
-      "surface": "The participant is, in the Investigator's opinion, unable or unwilling to comply with the trial procedures.",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
         "temporal_window"
       ],
       "domain": "condition",
@@ -6068,6 +5957,43 @@
     {
       "case_count": 1,
       "criterion_kinds": [
+        "condition_present"
+      ],
+      "domain": "free_text",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 26,
+          "criterion_kind": "condition_present",
+          "criterion_source_text": "Have a history of medical noncompliance that may preclude adherence to the demands and requirements of xenotransplantation (eg, history of substance use disorder [SUD] within 1 year of informed consent, lack of social support, untreated psychological conditions).",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:26:free-text-review:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'history of medical noncompliance' is a human-review/free-text criterion rather than a condition ConceptSet: Medical noncompliance is adherence/social-history evidence, not a condition ConceptSet represented in the current profile.",
+          "nct_id": "NCT07224763",
+          "pair_id": "60b0873c__NCT07224763",
+          "row_id": "60b0873c__NCT07224763:criterion:26:free-text-review:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:3439e49e1a54",
+      "message_examples": [
+        "Reviewed condition surface 'history of medical noncompliance' is a human-review/free-text criterion rather than a condition ConceptSet: Medical noncompliance is adherence/social-history evidence, not a condition ConceptSet represented in the current profile."
+      ],
+      "normalized_surface": "history of medical noncompliance",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "history of medical noncompliance",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
         "free_text"
       ],
       "domain": "free_text",
@@ -6100,6 +6026,43 @@
       "severity": "medium",
       "stage": "predicate_translation",
       "surface": "history of symptomatic gallbladder disease requiring treatment per investigator's assessment within 24 weeks prior to signing the ICF.",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "condition_absent"
+      ],
+      "domain": "free_text",
+      "eval_slices": [
+        "ckd"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 25,
+          "criterion_kind": "condition_absent",
+          "criterion_source_text": "Not able to independently perform activities of daily life.",
+          "eval_slice": "ckd",
+          "gap_id": "criterion:25:free-text-review:gap:reviewed-out_of_scope",
+          "message": "Reviewed condition surface 'inability to perform activities of daily life' is a human-review/free-text criterion rather than a condition ConceptSet: Activities-of-daily-living function is functional-status evidence, not structured condition evidence in the current profile.",
+          "nct_id": "NCT07224763",
+          "pair_id": "60b0873c__NCT07224763",
+          "row_id": "60b0873c__NCT07224763:criterion:25:free-text-review:gap:reviewed-out_of_scope"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:ce98d4337045",
+      "message_examples": [
+        "Reviewed condition surface 'inability to perform activities of daily life' is a human-review/free-text criterion rather than a condition ConceptSet: Activities-of-daily-living function is functional-status evidence, not structured condition evidence in the current profile."
+      ],
+      "normalized_surface": "inability to perform activities of daily life",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "inability to perform activities of daily life",
       "trial_count": 1
     },
     {
@@ -6285,6 +6248,43 @@
       "severity": "medium",
       "stage": "predicate_translation",
       "surface": "primary biliary cholangitis.",
+      "trial_count": 1
+    },
+    {
+      "case_count": 1,
+      "criterion_kinds": [
+        "free_text"
+      ],
+      "domain": "free_text",
+      "eval_slices": [
+        "nsclc"
+      ],
+      "example_rows": [
+        {
+          "criterion_index": 58,
+          "criterion_kind": "free_text",
+          "criterion_source_text": "The participant is, in the Investigator's opinion, unable or unwilling to comply with the trial procedures.",
+          "eval_slice": "nsclc",
+          "gap_id": "criterion:58:free-text-review:gap:study-compliance",
+          "message": "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile.",
+          "nct_id": "NCT05967689",
+          "pair_id": "83f922a9__NCT05967689",
+          "row_id": "83f922a9__NCT05967689:criterion:58:free-text-review:gap:study-compliance"
+        }
+      ],
+      "gap_kind": "unsupported_predicate",
+      "group_id": "compiler-gap-group:6584ed56fa81",
+      "message_examples": [
+        "Study-compliance criteria require protocol-adherence or investigator judgment evidence outside the current structured clinical profile."
+      ],
+      "normalized_surface": "the participant is, in the investigator's opinion, unable or unwilling to comply with the trial procedures",
+      "occurrence_count": 1,
+      "priority": 60,
+      "recommended_action": "implement_compiler_logic",
+      "resolver_policy": "cached_only",
+      "severity": "medium",
+      "stage": "predicate_translation",
+      "surface": "The participant is, in the Investigator's opinion, unable or unwilling to comply with the trial procedures.",
       "trial_count": 1
     },
     {

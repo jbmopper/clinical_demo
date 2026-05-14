@@ -47,6 +47,7 @@ from .schema import (
 )
 
 LOINC_SYSTEM = "http://loinc.org"
+_GLUCOSE_LOINC_CODE = "2339-0"
 _PARENTHETICAL_RE = re.compile(r"\(([^()]*)\)")
 _UPPER_REFERENCE_RE = re.compile(r"\b(?:u\.?\s*l\.?\s*n|upper\s+limit\s+of\s+normal)\b", re.I)
 _LOWER_REFERENCE_RE = re.compile(r"\b(?:l\.?\s*l\.?\s*n|lower\s+limit\s+of\s+normal)\b", re.I)
@@ -60,6 +61,26 @@ _REFERENCE_MULTIPLIER_RE = re.compile(
 )
 _REFERENCE_DIRECTION_OPERATOR_RE = re.compile(
     r"\b(?P<word>above|greater\s+than|more\s+than|exceeds?|below|less\s+than|under)\b",
+    re.I,
+)
+_PROVENANCE_GLUCOSE_THRESHOLD_RE = re.compile(
+    r"(?P<surface>"
+    r"fasting\s+plasma\s+glucose|"
+    r"(?:2|two)[-\s]*hour\s+plasma\s+glucose|"
+    r"random\s+plasma\s+glucose"
+    r")"
+    r".{0,120}?"
+    r"(?P<op>>=|<=|\u2265|\u2264|>|<|=)\s*"
+    r"(?P<value>\d+(?:\.\d+)?)\s*"
+    r"(?P<unit>mg\s*/\s*dL|mmol\s*/\s*L)?",
+    re.I,
+)
+_PROVENANCE_GLUCOSE_SURFACE_RE = re.compile(
+    r"\b("
+    r"fasting\s+plasma\s+glucose|"
+    r"(?:2|two)[-\s]*hour\s+plasma\s+glucose|"
+    r"random\s+plasma\s+glucose"
+    r")\b",
     re.I,
 )
 
@@ -78,6 +99,28 @@ class _ConvertedReferenceLimit:
     conventional_unit: str
     conversion_factor: float
     normalized_value: float
+
+
+@dataclass(frozen=True)
+class _SourceThreshold:
+    surface: str
+    operator: ThresholdOperator
+    value: float
+    unit: str | None
+    provenance_kind: str
+    source_excerpt: str
+
+
+@dataclass(frozen=True)
+class _EffectiveMeasurement:
+    surface: str
+    operator: ThresholdOperator
+    value: float | None
+    value_low: float | None
+    value_high: float | None
+    unit: str | None
+    provenance_kind: str | None
+    source_threshold: _SourceThreshold | None
 
 
 class MeasurementResolutionResult(BaseModel):
@@ -144,8 +187,9 @@ def compile_measurement_resolution(
             resolver_policy=resolver_policy,
         )
 
-    surface = measurement.measurement_text
-    source_unit = measurement.unit
+    effective = _effective_measurement(criterion)
+    surface = effective.surface
+    source_unit = effective.unit
     supports: list[ResolutionSupport] = []
     gaps: list[ResolutionGap] = []
     diagnostics: list[CompilerDiagnostic] = []
@@ -153,6 +197,15 @@ def compile_measurement_resolution(
     reviewed_entry = mappings.lookup("lab", surface)
     if reviewed_entry is not None:
         if reviewed_entry.status != "mapped":
+            provenance_result = _provenance_sensitive_glucose_result(
+                source_criterion_id=source_criterion_id,
+                effective=effective,
+                entry=reviewed_entry,
+                unit_registry=registry,
+                resolver_policy=resolver_policy,
+            )
+            if provenance_result is not None:
+                return provenance_result
             return _reviewed_nonmapped_result(
                 source_criterion_id=source_criterion_id,
                 surface=surface,
@@ -162,6 +215,15 @@ def compile_measurement_resolution(
             )
         concept_set = concept_set_by_id(reviewed_entry.concept_set)
     else:
+        provenance_result = _provenance_sensitive_glucose_result(
+            source_criterion_id=source_criterion_id,
+            effective=effective,
+            entry=None,
+            unit_registry=registry,
+            resolver_policy=resolver_policy,
+        )
+        if provenance_result is not None:
+            return provenance_result
         concept_set = _lookup_measurement_concept_set(surface)
     loinc_codes = _loinc_codes(concept_set)
     selected_loinc_code = loinc_codes[0] if len(loinc_codes) == 1 else None
@@ -335,18 +397,18 @@ def compile_measurement_resolution(
     )
 
     normalized_values = _normalized_values(
-        value=measurement.value,
-        value_low=measurement.value_low,
-        value_high=measurement.value_high,
+        value=effective.value,
+        value_low=effective.value_low,
+        value_high=effective.value_high,
         conversion_factor=conversion_factor,
     )
     value_gaps = _threshold_value_gaps(
         source_criterion_id=source_criterion_id,
         surface=surface,
-        operator=measurement.operator,
-        value=measurement.value,
-        value_low=measurement.value_low,
-        value_high=measurement.value_high,
+        operator=effective.operator,
+        value=effective.value,
+        value_low=effective.value_low,
+        value_high=effective.value_high,
         resolver_policy=resolver_policy,
     )
     for gap in value_gaps:
@@ -368,7 +430,7 @@ def compile_measurement_resolution(
         loinc_codes=loinc_codes,
         selected_loinc_code=selected_loinc_code,
         unit_normalization=plan,
-        normalized_operator=measurement.operator,
+        normalized_operator=effective.operator,
         normalized_value=normalized_values[0],
         normalized_value_low=normalized_values[1],
         normalized_value_high=normalized_values[2],
@@ -738,6 +800,103 @@ def _converted_reference_limit(
     )
 
 
+def _effective_measurement(criterion: ExtractedCriterion) -> _EffectiveMeasurement:
+    measurement = criterion.measurement
+    if measurement is None:
+        raise ValueError("_effective_measurement requires a measurement criterion")
+
+    source_threshold = _source_text_provenance_glucose_threshold(
+        criterion.source_text,
+        measurement.measurement_text,
+    )
+    surface = measurement.measurement_text
+    provenance_kind = _provenance_glucose_kind(surface)
+    if source_threshold is not None:
+        surface = source_threshold.surface
+        provenance_kind = source_threshold.provenance_kind
+
+    value = (
+        measurement.value if measurement.value is not None else _threshold_value(source_threshold)
+    )
+    unit = measurement.unit or (source_threshold.unit if source_threshold is not None else None)
+
+    return _EffectiveMeasurement(
+        surface=surface,
+        operator=(
+            source_threshold.operator
+            if source_threshold is not None and measurement.value is None
+            else measurement.operator
+        ),
+        value=value,
+        value_low=measurement.value_low,
+        value_high=measurement.value_high,
+        unit=unit,
+        provenance_kind=provenance_kind,
+        source_threshold=source_threshold,
+    )
+
+
+def _threshold_value(source_threshold: _SourceThreshold | None) -> float | None:
+    if source_threshold is None:
+        return None
+    return source_threshold.value
+
+
+def _source_text_provenance_glucose_threshold(
+    *texts: str | None,
+) -> _SourceThreshold | None:
+    for text in texts:
+        if text is None or not text.strip():
+            continue
+        match = _PROVENANCE_GLUCOSE_THRESHOLD_RE.search(text)
+        if match is None:
+            continue
+        surface = _normalized_provenance_glucose_surface(match.group("surface"))
+        return _SourceThreshold(
+            surface=surface,
+            operator=_normalized_threshold_operator(match.group("op")),
+            value=float(match.group("value")),
+            unit=_compact_unit(match.group("unit")),
+            provenance_kind=_provenance_glucose_kind(surface) or "glucose_provenance",
+            source_excerpt=match.group(0).strip(),
+        )
+    return None
+
+
+def _normalized_provenance_glucose_surface(surface: str) -> str:
+    if re.search(r"\bfasting\s+plasma\s+glucose\b", surface, re.I):
+        return "fasting plasma glucose"
+    if re.search(r"\b(?:2|two)[-\s]*hour\s+plasma\s+glucose\b", surface, re.I):
+        return "2-hour plasma glucose"
+    return "random plasma glucose"
+
+
+def _provenance_glucose_kind(surface: str) -> str | None:
+    match = _PROVENANCE_GLUCOSE_SURFACE_RE.search(surface)
+    if match is None:
+        return None
+    normalized_surface = _normalized_provenance_glucose_surface(match.group(1))
+    if normalized_surface == "fasting plasma glucose":
+        return "fasting_state_required"
+    if normalized_surface == "2-hour plasma glucose":
+        return "ogtt_timing_required"
+    return "random_glucose_context_required"
+
+
+def _normalized_threshold_operator(operator: str) -> ThresholdOperator:
+    if operator == "\u2265":
+        return ">="
+    if operator == "\u2264":
+        return "<="
+    return operator  # type: ignore[return-value]
+
+
+def _compact_unit(unit: str | None) -> str | None:
+    if unit is None:
+        return None
+    return re.sub(r"\s*/\s*", "/", unit.strip())
+
+
 def _reference_limit_request(criterion: ExtractedCriterion) -> _ReferenceLimitRequest | None:
     measurement = criterion.measurement
     if measurement is None:
@@ -943,6 +1102,162 @@ def _loinc_codes(concept_set: ConceptSet | None) -> list[str]:
     if concept_set is None or concept_set.system != LOINC_SYSTEM:
         return []
     return sorted(concept_set.codes)
+
+
+def _provenance_sensitive_glucose_result(
+    *,
+    source_criterion_id: str,
+    effective: _EffectiveMeasurement,
+    entry: ReviewedMappingEntry | None,
+    unit_registry: MeasurementUnitRegistry,
+    resolver_policy: ResolverExecutionPolicy,
+) -> MeasurementResolutionResult | None:
+    if (
+        effective.provenance_kind is None
+        or effective.value is None
+        or effective.operator not in {"<", "<=", "=", ">=", ">"}
+    ):
+        return None
+
+    source_unit = effective.unit
+    canonical_unit: str | None = None
+    conventional_unit = unit_registry.conventional_unit(_GLUCOSE_LOINC_CODE)
+    conversion_factor: float | None = None
+    normalized_value: float | None = None
+    supports: list[ResolutionSupport] = []
+    diagnostics: list[CompilerDiagnostic] = []
+
+    if source_unit is not None:
+        canonical_unit = unit_registry.canonical_unit(_GLUCOSE_LOINC_CODE, source_unit)
+        conversion_factor = unit_registry.conversion_factor(
+            _GLUCOSE_LOINC_CODE,
+            canonical_unit,
+            conventional_unit,
+        )
+        if (
+            canonical_unit is not None
+            and conventional_unit is not None
+            and conversion_factor is not None
+        ):
+            normalized_value = effective.value * conversion_factor
+            supports.append(
+                _unit_support(
+                    source_criterion_id=source_criterion_id,
+                    source_unit=source_unit,
+                    canonical_unit=canonical_unit,
+                    conventional_unit=conventional_unit,
+                    conversion_factor=conversion_factor,
+                    resolver_policy=resolver_policy,
+                )
+            )
+
+    if effective.source_threshold is not None:
+        supports.append(
+            _support(
+                support_id=f"{source_criterion_id}:measurement:source-threshold",
+                stage="predicate_translation",
+                domain="measurement",
+                source_criterion_id=source_criterion_id,
+                surface=effective.source_threshold.source_excerpt,
+                normalized_surface=(
+                    f"{effective.surface} {effective.operator} "
+                    f"{effective.value:g} {source_unit or ''}".strip()
+                ),
+                target_system="source_text",
+                target_id=effective.provenance_kind,
+                target_label="provenance-sensitive glucose threshold",
+                resolver_policy=resolver_policy,
+            )
+        )
+
+    gap = _gap(
+        gap_id=f"{source_criterion_id}:measurement:gap:glucose_provenance",
+        stage="predicate_translation",
+        domain="measurement",
+        kind="unsupported_predicate",
+        source_criterion_id=source_criterion_id,
+        surface=effective.surface,
+        message=(
+            f"Measurement '{effective.surface}' has a numeric glucose threshold, but "
+            f"{_glucose_provenance_requirement(effective.provenance_kind)} is not "
+            "represented in the current patient profile; threshold details are preserved "
+            "for review and not collapsed to ordinary glucose."
+        ),
+        resolver_policy=resolver_policy,
+    )
+    diagnostics.append(
+        _diagnostic(
+            severity="warning",
+            code="measurement.provenance_sensitive_glucose.unsupported",
+            message=gap.message,
+            source_criterion_id=source_criterion_id,
+            facts=[
+                ("gap_id", gap.gap_id),
+                ("provenance_kind", effective.provenance_kind),
+                (
+                    "reviewed_status",
+                    entry.status if entry is not None else "local_provenance_guard",
+                ),
+            ],
+        )
+    )
+    diagnostics.append(
+        _diagnostic(
+            severity="info",
+            code="measurement.provenance_sensitive_glucose.threshold_extracted",
+            message=(
+                f"Preserved source glucose threshold {effective.operator} {effective.value:g} "
+                f"{source_unit or ''} for measurement '{effective.surface}'."
+            ),
+            source_criterion_id=source_criterion_id,
+            facts=[
+                ("loinc_unit_basis", _GLUCOSE_LOINC_CODE),
+                ("operator", effective.operator),
+                ("value", f"{effective.value:g}"),
+                ("source_unit", source_unit or ""),
+                ("canonical_unit", canonical_unit or ""),
+                ("conventional_unit", conventional_unit or ""),
+                (
+                    "normalized_value",
+                    "" if normalized_value is None else f"{normalized_value:g}",
+                ),
+            ],
+        )
+    )
+
+    return MeasurementResolutionResult(
+        source_criterion_id=source_criterion_id,
+        measurement_surface=effective.surface,
+        concept_set=None,
+        loinc_codes=[],
+        selected_loinc_code=None,
+        unit_normalization=UnitNormalizationPlan(
+            status="unsupported",
+            measurement_surface=effective.surface,
+            source_unit=source_unit,
+            canonical_unit=canonical_unit,
+            conventional_unit=conventional_unit,
+            conversion_factor=conversion_factor,
+            gap_ids=[gap.gap_id],
+        ),
+        normalized_operator=effective.operator,
+        normalized_value=normalized_value,
+        normalized_value_low=None,
+        normalized_value_high=None,
+        resolved_supports=supports,
+        unresolved_gaps=[gap],
+        diagnostics=diagnostics,
+    )
+
+
+def _glucose_provenance_requirement(provenance_kind: str) -> str:
+    if provenance_kind == "fasting_state_required":
+        return "fasting-state provenance"
+    if provenance_kind == "ogtt_timing_required":
+        return "oral-glucose-tolerance-test timing provenance"
+    if provenance_kind == "random_glucose_context_required":
+        return "random-glucose symptom or hyperglycemic-crisis context"
+    return "glucose provenance"
 
 
 def _reviewed_nonmapped_result(

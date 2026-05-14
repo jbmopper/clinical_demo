@@ -4,14 +4,14 @@
     "contains_real_patient_data": false,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
   },
-  "run_id": "7d58de5d529d",
-  "notes": "compiled predicates after aromatase/anticonvulsant medication class closures; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "run_id": "f38623e1ad54",
+  "notes": "compiled predicates after parallel measurement/medication/condition-review hardening; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
   "n_cases": 49,
   "n_errors": 2,
   "scored_cases": 47,
   "total_criteria": 1076,
-  "total_scoring_latency_ms": 22644.282546001705,
-  "avg_scoring_latency_ms": 462.1282152245246,
+  "total_scoring_latency_ms": 18627.842539990525,
+  "avg_scoring_latency_ms": 380.1600518365413,
   "verdict_counts": {
     "fail": 87,
     "indeterminate": 811,
@@ -19,10 +19,10 @@
   },
   "reason_counts": {
     "ambiguous_criterion": 20,
-    "human_review_required": 588,
+    "human_review_required": 592,
     "no_data": 10,
     "ok": 265,
-    "unsupported_kind": 175,
+    "unsupported_kind": 171,
     "unsupported_mood": 18
   },
   "kind_counts": {
@@ -66,18 +66,18 @@
     "unsupported_predicate": 267
   },
   "compiler_unresolved_gaps_by_stage": {
-    "concept_resolution": 213,
-    "predicate_translation": 72
+    "concept_resolution": 204,
+    "predicate_translation": 81
   },
   "compiler_unresolved_gaps_by_domain": {
-    "condition": 165,
-    "free_text": 34,
+    "condition": 144,
+    "free_text": 55,
     "measurement": 52,
     "medication": 33,
     "temporal": 1
   },
   "compiler_closed_world_ok_cases": 4,
   "compiler_closed_world_blocking_cases": 43,
-  "compiler_closed_world_findings_total": 983,
-  "compiler_closed_world_blocking_findings_total": 397
+  "compiler_closed_world_findings_total": 979,
+  "compiler_closed_world_blocking_findings_total": 389
 }

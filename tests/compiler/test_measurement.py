@@ -237,6 +237,79 @@ def test_reviewed_mapped_measurement_resolves_without_alias_entry() -> None:
     assert result.unresolved_gaps == []
 
 
+def test_fasting_plasma_glucose_preserves_threshold_but_requires_provenance() -> None:
+    result = compile_measurement_resolution(
+        _measurement("fasting plasma glucose", operator=">=", value=126.0, unit="mg/dL"),
+        "c:fpg-provenance",
+    )
+
+    assert result.concept_set is None
+    assert result.selected_loinc_code is None
+    assert result.unit_normalization.status == "unsupported"
+    assert result.unit_normalization.source_unit == "mg/dL"
+    assert result.unit_normalization.canonical_unit == "mg/dL"
+    assert result.unit_normalization.conventional_unit == "mg/dL"
+    assert result.unit_normalization.conversion_factor == 1.0
+    assert result.normalized_operator == ">="
+    assert result.normalized_value == 126.0
+    assert [gap.kind for gap in result.unresolved_gaps] == ["unsupported_predicate"]
+    assert result.unresolved_gaps[0].stage == "predicate_translation"
+    assert "not collapsed to ordinary glucose" in result.unresolved_gaps[0].message
+    assert {
+        "measurement.provenance_sensitive_glucose.unsupported",
+        "measurement.provenance_sensitive_glucose.threshold_extracted",
+    } <= {diagnostic.code for diagnostic in result.diagnostics}
+
+
+def test_ogtt_glucose_threshold_is_extracted_from_full_source_surface() -> None:
+    source = (
+        "2-hour plasma glucose \u2265 200 mg/dL (11.1 mmol/L) during an oral glucose tolerance test"
+    )
+
+    result = compile_measurement_resolution(
+        _measurement(source, operator=">=", value=None, unit=None).model_copy(
+            update={"source_text": source}
+        ),
+        "c:ogtt-provenance",
+    )
+
+    assert result.measurement_surface == "2-hour plasma glucose"
+    assert result.concept_set is None
+    assert result.unit_normalization.status == "unsupported"
+    assert result.unit_normalization.source_unit == "mg/dL"
+    assert result.normalized_operator == ">="
+    assert result.normalized_value == 200.0
+    assert result.unresolved_gaps[0].stage == "predicate_translation"
+    assert any(
+        support.support_id == "c:ogtt-provenance:measurement:source-threshold"
+        for support in result.resolved_supports
+    )
+
+
+def test_random_plasma_glucose_mmol_l_threshold_preserves_context_gap() -> None:
+    source = (
+        "In a patient with classic symptoms of hyperglycemia or hyperglycemic crisis, "
+        "a random plasma glucose \u2265 11.1 mmol/L"
+    )
+
+    result = compile_measurement_resolution(
+        _measurement("random plasma glucose", operator=">=", value=None, unit=None).model_copy(
+            update={"source_text": source}
+        ),
+        "c:random-glucose-provenance",
+    )
+
+    assert result.measurement_surface == "random plasma glucose"
+    assert result.unit_normalization.status == "unsupported"
+    assert result.unit_normalization.source_unit == "mmol/L"
+    assert result.unit_normalization.canonical_unit == "mmol/L"
+    assert result.unit_normalization.conventional_unit == "mg/dL"
+    assert result.unit_normalization.conversion_factor == 18.018
+    assert result.normalized_operator == ">="
+    assert result.normalized_value == pytest.approx(199.9998)
+    assert "symptom or hyperglycemic-crisis context" in result.unresolved_gaps[0].message
+
+
 def test_missing_threshold_value_emits_predicate_translation_gap() -> None:
     result = compile_measurement_resolution(
         _measurement("aspartate aminotransferase", operator="<=", value=None, unit=None),

@@ -12,7 +12,9 @@ procedure-history predicate execution, blood-pressure-affecting medication
 class closure, coronary-intervention temporal procedure rerouting, and
 condition-typed intravenous-inotrope medication exposure promotion, plus
 aromatase-inhibitor and anticonvulsant current-vocabulary medication-class
-closures.
+closures, DPP-4 reviewed out-of-scope variants, provenance-sensitive
+plasma-glucose threshold preservation, and structured `free_text_review`
+validation/matcher handling.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -78,14 +80,19 @@ measurement, and medication hardening slices landed.
   closure pass adds reviewed current-vocabulary anchors for anastrozole and
   carbamazepine so aromatase-inhibitor and anticonvulsant-therapy rows compile
   without live RxNorm lookup; broader steroid/immunosuppressant/HRT classes
-  remain typed gaps until route and exception semantics are modeled.
+  remain typed gaps until route and exception semantics are modeled. The
+  latest hardening pass records DPP-4 variants as reviewed out-of-scope class
+  gaps, preserves fasting/OGTT/random plasma-glucose threshold values and units
+  while blocking execution until patient observation provenance exists, and
+  treats structured `free_text_review` predicates as allowed human-review items
+  in closed-world validation/matching.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `7d58de5d529d` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 22.6s |
+| `compiled_predicates` | `f38623e1ad54` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 18.6s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
@@ -102,7 +109,10 @@ exposure, coronary-intervention procedure-history temporal windows, and
 condition-typed intravenous-inotrope medication exposure promotion. The latest
 aromatase-inhibitor/anticonvulsant class closure removed four medication-class
 compiler gaps but produced no additional verdict movement because the parent
-drug-list criterion still has other unresolved medication-class members. The final
+drug-list criterion still has other unresolved medication-class members. The
+structured `free_text_review` hardening pass reduced blocking validation
+findings without changing criterion verdict counts because these rows remain
+human-review items, not executable predicates. The final
 movement packet has 83
 indeterminate-to-determinate criterion wins plus 1
 determinate-to-determinate movement. The prior broad-parent
@@ -158,7 +168,7 @@ Both runs compile the same 47 non-error cases:
 - checkable predicates: 359
 - unresolved compiler gaps: 285
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 983 total, 397 blocking
+- validation findings: 979 total, 389 blocking
 
 Unresolved compiler gaps by recommended action:
 
@@ -186,7 +196,7 @@ uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
   --max-unresolved-gaps 285 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 397 \
+  --max-closed-world-blocking-findings 389 \
   --max-gap-kind unmapped_concept=0 \
   --max-gap-kind unsupported_predicate=267 \
   --max-gap-kind ambiguous_mapping=8 \
@@ -253,7 +263,11 @@ inotrope free-text criteria from indeterminate to determinate `pass`. The
 aromatase-inhibitor/anticonvulsant class slice then reduced unresolved compiler
 gaps to 285 and increased checkable predicates to 359 without verdict movement,
 because the affected drug-list criterion still contains other unresolved
-medication-class members.
+medication-class members. The structured `free_text_review` hardening pass then
+kept 285 gaps and 359 checkable predicates, lowered total validation findings
+to 979 and blocking validation findings to 389, and preserved the same case
+rollup while making reviewed nonclinical condition surfaces explicitly
+human-review-only.
 
 ## Patient-Evidence Calibration
 
@@ -263,7 +277,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `7d58de5d529d` | 5/50 | 80.0% | 40.0% | 17 |
+| `f38623e1ad54` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

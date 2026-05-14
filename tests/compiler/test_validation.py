@@ -145,6 +145,26 @@ def test_free_text_without_predicate_is_allowed_review_not_blocking() -> None:
     assert result.summary.non_blocking_count == 1
 
 
+def test_structured_free_text_review_condition_is_allowed_review_not_blocking() -> None:
+    compilation = compile_extracted_criteria([_condition("structured exercise program")])
+    compiled = compilation.criteria[0]
+
+    findings = validate_compiled_criterion_for_closed_world(compiled)
+    result = validate_compilation_for_closed_world(compilation)
+
+    assert compiled.criterion_kind == "condition_present"
+    assert compiled.predicate.predicate_kind == "free_text_review"
+    assert findings[0].code == "allowed_non_executable"
+    assert findings[0].criterion_kind == "condition_present"
+    assert findings[0].blocking is False
+    assert findings[0].allowed_non_executable_class == "free_text_review"
+    assert findings[0].gap_ids == ["criterion:0:free-text-review:gap:reviewed-out_of_scope"]
+    assert result.ok is True
+    assert result.summary.structured_criteria_count == 1
+    assert result.summary.review_criteria_count == 1
+    assert result.summary.blocking_count == 0
+
+
 def test_free_text_composite_with_executable_subchecks_is_not_review_only() -> None:
     parent = _free_text("HbA1c >= 7% or HbA1c <= 6%")
     first = _measurement("HbA1c", operator=">=", value=7.0, unit="%")

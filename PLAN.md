@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `7d58de5d529d` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `f38623e1ad54` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -45,9 +45,12 @@
   RxNorm vocabulary, and reviewed coronary-intervention temporal-event
   rerouting through `procedure_history` predicates, plus reviewed
   intravenous-inotrope medication-class closure and promotion of
-  condition-typed free-text medication exposure rows, and reviewed
+  condition-typed free-text medication exposure rows, reviewed
   aromatase-inhibitor/anticonvulsant current-vocabulary medication-class
-  closures. It regenerates the compiler
+  closures, reviewed DPP-4 out-of-scope medication-class variants,
+  provenance-sensitive plasma-glucose threshold preservation, and structured
+  `free_text_review` routing/validation for nonclinical condition surfaces.
+  It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
@@ -55,7 +58,7 @@
   with 83 indeterminate-to-determinate criterion movements, 1 determinate
   movement, and 13 case-rollup movements. The path is still not default-ready:
   diagnostics show 285 unresolved compiler gaps, 43 closed-world-blocking
-  cases, and 397 blocking validation findings. The deduped review packet has
+  cases, and 389 blocking validation findings. The deduped review packet has
   163 groups (157 `implement_compiler_logic`, 5 `choose_candidate`, and 1
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
@@ -84,7 +87,11 @@
   exposure predicates. The aromatase-inhibitor/anticonvulsant slice removed
   four more medication-class compiler gaps and added four checkable predicates
   without moving verdicts because the parent drug-list criterion still has
-  other unresolved medication-class members. The
+  other unresolved medication-class members. The structured free-text-review
+  slice makes reviewed nonclinical condition surfaces validate and match as
+  `human_review_required` instead of ordinary unsupported structured gaps,
+  lowering blocking validation findings without pretending those criteria are
+  executable. The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
@@ -1223,8 +1230,12 @@ an executable medication predicate. A later 2026-05-13 CC-09 follow-on adds
 reviewed current-vocabulary closures for aromatase inhibitors over anastrozole
 and anticonvulsant therapy over carbamazepine; these remove the corresponding
 medication-class gaps while leaving broader steroid/immunosuppressant/HRT
-classes blocked until route and exception semantics are represented. The `CC-10`,
-`CC-11`, and `CC-12`
+classes blocked until route and exception semantics are represented. A
+2026-05-13 parallel hardening pass adds reviewed DPP-4 out-of-scope variants,
+preserves fasting/OGTT/random plasma-glucose thresholds as provenance-sensitive
+unsupported measurement predicates, and treats structured `free_text_review`
+criteria as allowed human-review items in closed-world validation and compiled
+matching. The `CC-10`, `CC-11`, and `CC-12`
 reporting foundations now expose closed-world validation, reviewer gap queue,
 and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
 promotion remain follow-on work.
@@ -1553,7 +1564,11 @@ promotion remain follow-on work.
     reviewed male/female limits exist; missing sex-specific limits still become
     typed unsupported gaps. The C-peptide unit conversion is now LOINC-scoped:
     `nmol/L` criteria compile into conventional `ng/mL` thresholds using the
-    trial-provided 0.2 nmol/L = 0.6 ng/mL equivalence.
+    trial-provided 0.2 nmol/L = 0.6 ng/mL equivalence. A 2026-05-13 provenance
+    hardening slice recognizes fasting plasma glucose, 2-hour plasma glucose,
+    and random plasma glucose phrases, preserves extracted source thresholds
+    and units, and emits an explicit provenance-sensitive unsupported
+    measurement gap instead of silently executing against generic glucose rows.
 
 - id: CC-09
   title: Medication and class compiler
@@ -1618,7 +1633,10 @@ promotion remain follow-on work.
     current-vocabulary closures for aromatase inhibitors and anticonvulsant
     therapy over anastrozole and carbamazepine, respectively, reducing the
     remaining medication-class compiler queue while preserving typed gaps for
-    broader classes that still need route/exception logic.
+    broader classes that still need route/exception logic. A 2026-05-13 review
+    slice adds DPP-4 / DPP4 / dipeptidyl peptidase-4 class variants as reviewed
+    out-of-scope medication gaps because the current patient medication
+    vocabulary has no usable RxNorm anchor for that class.
 
 - id: CC-10
   title: Compiler validation gates
@@ -1654,6 +1672,12 @@ promotion remain follow-on work.
     - tests/compiler/test_validation.py
     - extractor invariant and matcher soft-fail tests
   parallel_group: integration_serial
+  status: >
+    Closed-world validation is active in reports and eval diagnostics. A
+    2026-05-13 hardening slice makes structured criteria whose compiled
+    predicate kind is `free_text_review` an allowed non-executable human-review
+    class, preserving gap ids for reviewers while avoiding false
+    closed-world-blocking findings.
 
 - id: CC-11
   title: Reviewer and artifact workflow
@@ -1772,7 +1796,7 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`7d58de5d529d`) after the reviewed condition/event,
+  `compiled_predicates` (`f38623e1ad54`) after the reviewed condition/event,
   medication registry-closure, cache-independent terminology-closure, reviewed
   descendant-expansion, condition/event decomposition, and qualifier/top-gap
   review slices, followed by the opaque-unmapped registry pass for GLP-1
@@ -1788,7 +1812,7 @@ promotion remain follow-on work.
   (0.0%); it adds 83 indeterminate-to-determinate criterion wins and changes 13
   case rollups (all away from indeterminate). It is still not default-ready:
   compiler diagnostics show 285 unresolved gaps and 43 closed-world-blocking
-  compiled cases, with 397 blocking validation findings. The regenerated
+  compiled cases, with 389 blocking validation findings. The regenerated
   compiler-review artifact now dedupes the 285 raw rows to 163
   surface/action/policy groups (157 `implement_compiler_logic`, 5
   `choose_candidate`, and 1 `review_gap`). There are no remaining
@@ -1818,6 +1842,13 @@ promotion remain follow-on work.
   reviewed current-vocabulary closures over anastrozole and carbamazepine,
   reducing unresolved gaps from 289 to 285 and increasing checkable predicates
   from 355 to 359 without additional verdict movement.
+  A structured free-text-review hardening pass then preserves those gap counts
+  while lowering blocking validation findings from 397 to 389 by treating
+  reviewed nonclinical condition surfaces as allowed human-review criteria in
+  closed-world validation and compiled matching. It also records reviewed DPP-4
+  medication-class variants as out-of-scope gaps and preserves
+  fasting/OGTT/random plasma-glucose thresholds as provenance-sensitive
+  unsupported measurement predicates.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
@@ -1828,7 +1859,7 @@ promotion remain follow-on work.
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `7d58de5d529d`: 13 case movements, 84 decisive criterion
+  `e8efb7bcce35` -> `f38623e1ad54`: 13 case movements, 84 decisive criterion
   movements, and 280 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
   lipid-lowering therapy, GLP-1 member closure, SGLT/non-insulin antidiabetic
@@ -1878,9 +1909,10 @@ promotion remain follow-on work.
   checkable predicates by adding antihypertensive, intravenous-inotrope,
   aromatase-inhibitor, and anticonvulsant current-vocabulary closures plus
   coronary-intervention procedure-window execution. The next CC-08/CC-10
-  targets are normal-range phrase execution, modality/fasting provenance
-  support, PAH/background-therapy class expansion on top of the new
-  exposure-window spine, and moving reviewed unsupported measurement decisions
+  targets are normal-range phrase execution, patient-side modality/fasting
+  provenance support for glucose execution, PAH/background-therapy class
+  expansion on top of the new exposure-window spine, and moving reviewed
+  unsupported measurement decisions
   into better compiler-specific gap kinds as the IR grows.
 
 ### Phase 3 — Cost optimization, red-team, polish, writeup

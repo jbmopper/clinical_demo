@@ -91,7 +91,8 @@ def validate_compiled_criterion_for_closed_world(
 ) -> list[ClosedWorldValidationFinding]:
     """Validate one compiled criterion for closed-world readiness."""
 
-    if compiled.criterion_kind == "free_text" and not compiled.checkable_predicates:
+    if _is_allowed_free_text_review(compiled):
+        gap_ids = [gap.gap_id for gap in compiled.unresolved_gaps]
         return [
             ClosedWorldValidationFinding(
                 code="allowed_non_executable",
@@ -100,10 +101,11 @@ def validate_compiled_criterion_for_closed_world(
                 source_criterion_id=compiled.source_criterion_id,
                 compiled_id=compiled.compiled_id,
                 criterion_kind=compiled.criterion_kind,
+                gap_ids=gap_ids,
                 allowed_non_executable_class="free_text_review",
                 message=(
-                    "Free-text criterion is allowed as a non-executable human-review item "
-                    "in closed-world validation."
+                    "Criterion is allowed as a non-executable human-review item in "
+                    "closed-world validation."
                 ),
             )
         ]
@@ -181,6 +183,13 @@ def validate_compilation_for_closed_world(
 
 def _is_structured(compiled: CompiledCriterion) -> bool:
     return compiled.criterion_kind in STRUCTURED_CRITERION_KINDS
+
+
+def _is_allowed_free_text_review(compiled: CompiledCriterion) -> bool:
+    return not compiled.checkable_predicates and (
+        compiled.predicate.predicate_kind == "free_text_review"
+        or compiled.criterion_kind == "free_text"
+    )
 
 
 def _gap_message(compiled: CompiledCriterion) -> str:

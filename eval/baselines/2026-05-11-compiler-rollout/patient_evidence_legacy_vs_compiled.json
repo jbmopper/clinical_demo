@@ -41,8 +41,8 @@
       "adjudicator_output_tokens": 0
     },
     {
-      "run_id": "7d58de5d529d",
-      "notes": "compiled predicates after aromatase/anticonvulsant medication class closures; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+      "run_id": "f38623e1ad54",
+      "notes": "compiled predicates after parallel measurement/medication/condition-review hardening; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
       "llm_use_level": "none",
       "matcher_assumption_mode": "closed_world_eval",
       "total_label_targets": 50,
@@ -72,7 +72,7 @@
   "mode_deltas": [
     {
       "baseline_run_id": "e8efb7bcce35",
-      "comparison_run_id": "7d58de5d529d",
+      "comparison_run_id": "f38623e1ad54",
       "changed_cases": 13,
       "movements": {
         "indeterminate->fail": 12,

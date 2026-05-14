@@ -3,7 +3,7 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `7d58de5d529d`
+- comparison: `f38623e1ad54`
 - changed cases: 13/49
 - changed criteria: 364/1076
 - criterion directions: determinate_changed=1 / indeterminate_to_determinate=83 / reason_changed=280
@@ -107,7 +107,7 @@ Public-Artifact-Safety: synthetic
 | `38f38890__NCT06217302` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Illicit drug abuse within 6 months of screening; |
 | `38f38890__NCT06217302` | 26 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women,... |
 | `38f38890__NCT06217302` | 27 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Participation in another interventional clinical research study within 30 days of screening; |
-| `38f38890__NCT06217302` | 30 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Any condition that may render the patient unable to comply with study requirements and/or complet... |
+| `38f38890__NCT06217302` | 30 | condition_absent | indeterminate->indeterminate | reason_changed | free_text_review | Any condition that may render the patient unable to comply with study requirements and/or complet... |
 | `38f38890__NCT07489209` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | Genetic diagnosis or clinical diagnosis of HoFH. |
 | `38f38890__NCT07489209` | 4 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving stable and tolerable lipid-lowering treatment or other drugs for chronic diseases treat... |
 | `38f38890__NCT07489209` | 16 | condition_absent | indeterminate->indeterminate | reason_changed | compound | Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to random... |
@@ -230,8 +230,8 @@ Public-Artifact-Safety: synthetic
 | `60b0873c__NCT07224763` | 21 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Cannot discontinue chronic anticoagulation therapy (low-dose daily aspirin is permissible). |
 | `60b0873c__NCT07224763` | 22 | condition_present | indeterminate->pass | indeterminate_to_determinate | condition_presence | History of major psychiatric disorders with psychiatric hospitalization and/or suicidal ideation... |
 | `60b0873c__NCT07224763` | 23 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Being treated for active tuberculosis (TB), have received prophylaxis for positive FDA-approved i... |
-| `60b0873c__NCT07224763` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Not able to independently perform activities of daily life. |
-| `60b0873c__NCT07224763` | 26 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Have a history of medical noncompliance that may preclude adherence to the demands and requiremen... |
+| `60b0873c__NCT07224763` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | free_text_review | Not able to independently perform activities of daily life. |
+| `60b0873c__NCT07224763` | 26 | condition_present | indeterminate->indeterminate | reason_changed | free_text_review | Have a history of medical noncompliance that may preclude adherence to the demands and requiremen... |
 | `83f922a9__NCT05967689` | 3 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Cohort A participants: Documented EGFR ex20ins status, as determined by local testing performed a... |
 | `83f922a9__NCT05967689` | 7 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants with brain metastasis must be neurologically stable. |
 | `83f922a9__NCT05967689` | 11 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Cohort B participants: Documented EGFR ex20ins status, as determined by local testing performed a... |
@@ -317,7 +317,7 @@ Public-Artifact-Safety: synthetic
 | `c2786fee__NCT06217302` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Illicit drug abuse within 6 months of screening; |
 | `c2786fee__NCT06217302` | 26 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Heavy alcohol use (for men, 5 drinks or more on any day or 15 drinks or more per week; for women,... |
 | `c2786fee__NCT06217302` | 27 | condition_absent | indeterminate->fail | indeterminate_to_determinate | trial_exposure | Participation in another interventional clinical research study within 30 days of screening; |
-| `c2786fee__NCT06217302` | 30 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Any condition that may render the patient unable to comply with study requirements and/or complet... |
+| `c2786fee__NCT06217302` | 30 | condition_absent | indeterminate->indeterminate | reason_changed | free_text_review | Any condition that may render the patient unable to comply with study requirements and/or complet... |
 | `c2786fee__NCT06597006` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | HoFH diagnosed by genetic confirmation |
 | `c2786fee__NCT06597006` | 3 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | On an optimal dose of statin (investigator's discretion), unless statin intolerant, with or witho... |
 | `c2786fee__NCT06597006` | 4 | temporal_window | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Participants on lipid-lowering therapies (such as e.g. statins, ezetimibe) must be on a stable do... |

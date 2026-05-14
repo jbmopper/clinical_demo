@@ -111,6 +111,10 @@ def test_committed_medication_mappings_load() -> None:
     norepinephrine = registry.lookup("medication", "norepinephrine")
     anastrozole = registry.lookup("medication", "anastrozole")
     carbamazepine = registry.lookup("medication", "carbamazepine")
+    dpp4 = registry.lookup("medication", "DPP4 inhibitors")
+    dpp4_hyphen = registry.lookup("medication", "DPP-4 inhibitors")
+    dpp4_long = registry.lookup("medication", "dipeptidyl peptidase-4 inhibitors")
+    dpp4_i = registry.lookup("medication", "DPP-4i inhibitors")
 
     assert metformin is not None
     assert metformin.status == "mapped"
@@ -148,6 +152,16 @@ def test_committed_medication_mappings_load() -> None:
     assert carbamazepine is not None
     assert carbamazepine.status == "mapped"
     assert carbamazepine.candidates[0].codes == frozenset({"308971"})
+    assert dpp4 is not None
+    assert dpp4.status == "out_of_scope"
+    assert dpp4.concept_set is None
+    assert dpp4.expansion_policy == "patient_vocabulary_closure"
+    assert dpp4_hyphen is not None
+    assert dpp4_hyphen.status == "out_of_scope"
+    assert dpp4_long is not None
+    assert dpp4_long.status == "out_of_scope"
+    assert dpp4_i is not None
+    assert dpp4_i.status == "out_of_scope"
 
 
 def test_committed_procedure_mappings_load() -> None:

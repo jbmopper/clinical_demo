@@ -477,11 +477,29 @@ def test_reviewed_nonmapped_medication_emits_typed_gap_without_resolving() -> No
     assert result.diagnostics[0].code == "medication.reviewed.out_of_scope"
 
 
-def test_unreviewed_class_like_medication_emits_unsupported_gap_without_false_mapping() -> None:
+def test_reviewed_dpp4_class_without_patient_anchor_emits_typed_gap() -> None:
     resolver = StubMedicationResolver({"DPP-4 inhibitors": METFORMIN})
 
     result = compile_medication_resolution(
         _criterion("DPP-4 inhibitors"),
+        source_criterion_id="criterion:dpp4",
+        resolver=resolver,
+    )
+
+    assert resolver.calls == []
+    assert result.gaps[0].kind == "unsupported_predicate"
+    assert "DPP-4 inhibitor class exposure" in result.gaps[0].message
+    assert result.medication_class.status == "unsupported"
+    assert result.ingredient.status == "skipped"
+    assert result.predicate.status == "unsupported"
+    assert result.diagnostics[0].code == "medication.reviewed.out_of_scope"
+
+
+def test_unreviewed_class_like_medication_emits_unsupported_gap_without_false_mapping() -> None:
+    resolver = StubMedicationResolver({"JAK inhibitors": METFORMIN})
+
+    result = compile_medication_resolution(
+        _criterion("JAK inhibitors"),
         source_criterion_id="criterion:3",
         resolver=resolver,
     )

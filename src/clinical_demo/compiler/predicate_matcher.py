@@ -919,35 +919,47 @@ def _gap_verdict(
     assumption: MatcherAssumptionMode,
 ) -> MatchVerdict:
     criterion = compiled.matcher_input
-    if criterion.kind == "free_text":
+    if compiled.predicate.predicate_kind == "free_text_review" or criterion.kind == "free_text":
         return _build(
             criterion,
             verdict="indeterminate",
             reason="human_review_required",
-            rationale="Free-text criterion; no compiled predicate was produced.",
-            evidence=[],
+            rationale=_free_text_review_rationale(compiled),
+            evidence=_gap_evidence(compiled.unresolved_gaps),
             assumption=assumption,
             evidence_under_assumption=False,
         )
 
     reason = _reason_for_gaps(compiled.unresolved_gaps)
     rationale = _gap_rationale(compiled)
-    evidence: list[Evidence] = [
-        MissingEvidence(
-            looked_for=f"{gap.domain}:{gap.kind}",
-            note=gap.message,
-        )
-        for gap in compiled.unresolved_gaps
-    ]
     return _build(
         criterion,
         verdict="indeterminate",
         reason=reason,
         rationale=rationale,
-        evidence=evidence,
+        evidence=_gap_evidence(compiled.unresolved_gaps),
         assumption=assumption,
         evidence_under_assumption=False,
     )
+
+
+def _free_text_review_rationale(compiled: CompiledCriterion) -> str:
+    if not compiled.unresolved_gaps:
+        return "Free-text criterion; no compiled predicate was produced."
+    return (
+        "Criterion requires human review and was not converted to an executable "
+        "predicate: " + "; ".join(f"{gap.kind}: {gap.message}" for gap in compiled.unresolved_gaps)
+    )
+
+
+def _gap_evidence(gaps: list[ResolutionGap]) -> list[Evidence]:
+    return [
+        MissingEvidence(
+            looked_for=f"{gap.domain}:{gap.kind}",
+            note=gap.message,
+        )
+        for gap in gaps
+    ]
 
 
 def _reason_for_gaps(gaps: list[ResolutionGap]) -> VerdictReason:

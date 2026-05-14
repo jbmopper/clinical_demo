@@ -250,6 +250,14 @@ _STUDY_COMPLIANCE_RE = re.compile(
     r"\bstudy\s+requirements?\b",
     re.IGNORECASE,
 )
+_REVIEWED_FREE_TEXT_REVIEW_CONDITION_SURFACES = frozenset(
+    {
+        "history of medical noncompliance",
+        "inability to perform activities of daily life",
+        "structured exercise program",
+        "travel time to xenotransplant center",
+    }
+)
 _QUALIFIED_ARRHYTHMIA_RE = re.compile(
     r"\b(?:ongoing|uncontrolled|severe|ctcae|grade)\b.*\b"
     r"(?:cardiac\s+)?(?:dysrhythmias?|arrhythmias?|atrial\s+fibrillation)\b",
@@ -861,11 +869,16 @@ def _compile_free_text_promotion(
         source_criterion_id_override=sub_id,
         allow_condition_phrase_promotion=False,
     )
+    output_promotion_kind = (
+        "free-text-review"
+        if compiled.predicate.predicate_kind == "free_text_review"
+        else promotion_kind
+    )
     return _promoted_compilation(
         criterion,
         source_criterion_id=source_criterion_id,
         surface=surface,
-        promotion_kind=promotion_kind,
+        promotion_kind=output_promotion_kind,
         predicate=compiled.predicate,
         predicates=compiled.checkable_predicates,
         supports=compiled.resolved_supports,
@@ -1253,13 +1266,14 @@ def _compile_condition_phrase_promotion(
         )
 
     if _STUDY_COMPLIANCE_RE.search(surface):
-        return _unsupported_condition_phrase(
+        return _free_text_review_condition_phrase(
             criterion,
             source_criterion_id=source_criterion_id,
             surface=surface,
             resolver_policy=resolver_policy,
             promotion_domain=promotion_domain,
             promotion_label=promotion_label,
+            gap_suffix="study-compliance",
             reason=(
                 "Study-compliance criteria require protocol-adherence or investigator "
                 "judgment evidence outside the current structured clinical profile."
@@ -1557,6 +1571,68 @@ def _compile_condition_phrase_compound(
         promotion_domain=promotion_domain,
         promotion_label=promotion_label,
         compound_logic=compound_logic,
+    )
+
+
+def _free_text_review_condition_phrase(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str,
+    resolver_policy: ResolverExecutionPolicy,
+    promotion_domain: ResolutionDomain,
+    promotion_label: str,
+    gap_suffix: str,
+    reason: str,
+) -> _FreeTextPromotionCompilation:
+    gap = _gap(
+        gap_id=f"{source_criterion_id}:free-text-review:gap:{gap_suffix}",
+        stage="predicate_translation",
+        domain="free_text",
+        kind="unsupported_predicate",
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        message=reason,
+        resolver_policy=resolver_policy,
+    )
+    predicate = CheckablePredicatePlan(
+        status="unsupported",
+        predicate_kind="free_text_review",
+        expression=None,
+        input_refs=[source_criterion_id],
+        support_ids=[],
+        gap_ids=[gap.gap_id],
+    )
+    expansion = ExpansionPlan(
+        status="skipped",
+        domain="free_text",
+        source_surface=surface,
+        strategy="none",
+        support_ids=[],
+        gap_ids=[gap.gap_id],
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind="free-text-review",
+        predicate=predicate,
+        predicates=[],
+        supports=[],
+        gaps=[gap],
+        diagnostics=[
+            _diagnostic(
+                severity="warning",
+                code="condition_phrase.free_text_review",
+                message=reason,
+                stage="predicate_translation",
+                source_criterion_id=source_criterion_id,
+                facts=[("surface", surface), ("gap_id", gap.gap_id)],
+            )
+        ],
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
+        expansion=expansion,
     )
 
 
@@ -2594,6 +2670,15 @@ def _compile_condition_resolution(
     reviewed_nonmapped = _reviewed_nonmapped_condition_entry(surface, context=context)
     if reviewed_nonmapped is not None:
         reviewed_entry, lookup_surface = reviewed_nonmapped
+        if _is_reviewed_free_text_review_condition(reviewed_entry, lookup_surface):
+            return _reviewed_free_text_review_condition_output(
+                criterion,
+                source_criterion_id=source_criterion_id,
+                surface=surface,
+                lookup_surface=lookup_surface,
+                reviewed_entry=reviewed_entry,
+                context=context,
+            )
         gap_kind = _reviewed_nonmapped_gap_kind(reviewed_entry)
         status: ResolutionStatus = "ambiguous" if gap_kind == "ambiguous_mapping" else "unsupported"
         gap = _gap(
@@ -2852,6 +2937,76 @@ def _condition_candidates(
         concept_sets[candidate.target_key] = concept_set
 
     return candidates, concept_sets
+
+
+def _is_reviewed_free_text_review_condition(
+    entry: ReviewedMappingEntry,
+    lookup_surface: str,
+) -> bool:
+    return (
+        entry.status == "out_of_scope"
+        and _normalize_text(lookup_surface) in _REVIEWED_FREE_TEXT_REVIEW_CONDITION_SURFACES
+    )
+
+
+def _reviewed_free_text_review_condition_output(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str,
+    lookup_surface: str,
+    reviewed_entry: ReviewedMappingEntry,
+    context: _CompilerResolutionContext,
+) -> _ConditionCompilation:
+    message = (
+        f"Reviewed condition surface {lookup_surface!r} is a human-review/free-text "
+        f"criterion rather than a condition ConceptSet: {reviewed_entry.reason}"
+    )
+    gap = _gap(
+        gap_id=f"{source_criterion_id}:free-text-review:gap:reviewed-{reviewed_entry.status}",
+        stage="predicate_translation",
+        domain="free_text",
+        kind="unsupported_predicate",
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        message=message,
+        resolver_policy=context.resolver_policy,
+    )
+    diagnostic = _diagnostic(
+        severity="warning",
+        code=f"condition.reviewed.{reviewed_entry.status}.free_text_review",
+        message=message,
+        stage="predicate_translation",
+        source_criterion_id=source_criterion_id,
+        facts=[
+            ("surface", surface),
+            ("lookup_surface", lookup_surface),
+            ("reviewed_status", reviewed_entry.status),
+            ("gap_id", gap.gap_id),
+        ],
+    )
+    return _ConditionCompilation(
+        expansion=ExpansionPlan(
+            status="skipped",
+            domain="free_text",
+            source_surface=surface,
+            strategy="none",
+            support_ids=[],
+            gap_ids=[gap.gap_id],
+        ),
+        predicate=CheckablePredicatePlan(
+            status="unsupported",
+            predicate_kind="free_text_review",
+            expression=None,
+            input_refs=[source_criterion_id],
+            support_ids=[],
+            gap_ids=[gap.gap_id],
+        ),
+        predicates=[],
+        supports=[],
+        gaps=[gap],
+        diagnostics=[diagnostic],
+    )
 
 
 def _reviewed_nonmapped_condition_entry(
