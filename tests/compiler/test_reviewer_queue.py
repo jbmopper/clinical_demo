@@ -109,6 +109,28 @@ def test_unknown_measurement_missing_unit_emits_mapping_and_unit_queue_items() -
     assert [item.surface for item in items] == ["BNP", "BNP"]
 
 
+def test_measurement_taxonomy_gaps_stay_compiler_logic_actions() -> None:
+    result = compile_extracted_criteria(
+        [
+            _measurement("fasting plasma glucose", unit="mg/dL"),
+            _measurement("clinical laboratory values", unit="normal ranges"),
+        ]
+    )
+
+    items = compiler_gap_queue(result)
+
+    assert [item.gap_kind for item in items] == [
+        "provenance_required",
+        "normal_range_unknown",
+    ]
+    assert [item.recommended_action for item in items] == [
+        "implement_compiler_logic",
+        "implement_compiler_logic",
+    ]
+    assert [item.priority for item in items] == [55, 55]
+    assert [item.severity for item in items] == ["medium", "medium"]
+
+
 def test_unsupported_compound_emits_decompose_compound_logic_action() -> None:
     parent = _free_text("HbA1c >= 7% with conflicting composite groups")
     subcheck = _measurement("HbA1c")

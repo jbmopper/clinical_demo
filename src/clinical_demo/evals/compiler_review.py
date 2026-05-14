@@ -11,7 +11,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 from clinical_demo.compiler import compiler_gap_queue
-from clinical_demo.compiler.reviewer_queue import RecommendedAction, Severity
+from clinical_demo.compiler.reviewer_queue import CompilerGapQueueItem, RecommendedAction, Severity
 from clinical_demo.compiler.schema import (
     CompiledCriterion,
     ResolutionDomain,
@@ -151,7 +151,7 @@ def build_compiler_gap_review_rows(run: RunResult) -> CompilerGapReviewRows:
                     surface=item.surface,
                     message=item.message,
                     resolver_policy=item.resolver_policy,
-                    recommended_action=item.recommended_action,
+                    recommended_action=_review_recommended_action(item, criterion),
                     priority=item.priority,
                     severity=item.severity,
                 )
@@ -279,6 +279,26 @@ def _criterion_source_text(criterion: CompiledCriterion | None) -> str:
     if criterion is None:
         return ""
     return criterion.source_text
+
+
+def _review_recommended_action(
+    item: CompilerGapQueueItem,
+    criterion: CompiledCriterion | None,
+) -> RecommendedAction:
+    if _is_free_text_review_gap(item, criterion):
+        return "review_gap"
+    return item.recommended_action
+
+
+def _is_free_text_review_gap(
+    item: CompilerGapQueueItem,
+    criterion: CompiledCriterion | None,
+) -> bool:
+    return (
+        criterion is not None
+        and criterion.predicate.predicate_kind == "free_text_review"
+        and item.gap_kind == "unsupported_predicate"
+    )
 
 
 def _row_sort_key(row: CompilerGapReviewRow) -> tuple[int, str, int, str, str]:

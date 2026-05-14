@@ -252,7 +252,7 @@ def test_fasting_plasma_glucose_preserves_threshold_but_requires_provenance() ->
     assert result.unit_normalization.conversion_factor == 1.0
     assert result.normalized_operator == ">="
     assert result.normalized_value == 126.0
-    assert [gap.kind for gap in result.unresolved_gaps] == ["unsupported_predicate"]
+    assert [gap.kind for gap in result.unresolved_gaps] == ["provenance_required"]
     assert result.unresolved_gaps[0].stage == "predicate_translation"
     assert "not collapsed to ordinary glucose" in result.unresolved_gaps[0].message
     assert {
@@ -280,6 +280,7 @@ def test_ogtt_glucose_threshold_is_extracted_from_full_source_surface() -> None:
     assert result.normalized_operator == ">="
     assert result.normalized_value == 200.0
     assert result.unresolved_gaps[0].stage == "predicate_translation"
+    assert result.unresolved_gaps[0].kind == "provenance_required"
     assert any(
         support.support_id == "c:ogtt-provenance:measurement:source-threshold"
         for support in result.resolved_supports
@@ -307,7 +308,84 @@ def test_random_plasma_glucose_mmol_l_threshold_preserves_context_gap() -> None:
     assert result.unit_normalization.conversion_factor == 18.018
     assert result.normalized_operator == ">="
     assert result.normalized_value == pytest.approx(199.9998)
+    assert result.unresolved_gaps[0].kind == "provenance_required"
     assert "symptom or hyperglycemic-crisis context" in result.unresolved_gaps[0].message
+
+
+def test_clinical_laboratory_values_normal_ranges_emit_normal_range_gap() -> None:
+    result = compile_measurement_resolution(
+        _measurement(
+            "clinical laboratory values",
+            operator="in_range",
+            value=None,
+            unit="normal ranges",
+        ).model_copy(
+            update={
+                "source_text": (
+                    "Clinical laboratory values within normal ranges or <1.5 times the ULN "
+                    "as specified by the testing laboratory"
+                )
+            }
+        ),
+        "c:clinical-labs-normal-range",
+    )
+
+    assert result.concept_set is None
+    assert result.unit_normalization.status == "unsupported"
+    assert result.normalized_value is None
+    assert [gap.kind for gap in result.unresolved_gaps] == ["normal_range_unknown"]
+    assert "normal-range semantics" in result.unresolved_gaps[0].message
+    assert "measurement.reviewed.composite_unhandled" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
+
+
+def test_corrected_calcium_local_normal_range_emit_normal_range_gap() -> None:
+    result = compile_measurement_resolution(
+        _measurement(
+            "serum calcium (corrected for albumin)",
+            operator="in_range",
+            value=None,
+            unit="institutional normal limits",
+        ).model_copy(
+            update={
+                "source_text": (
+                    "Corrected serum calcium should be within institutional normal limits"
+                )
+            }
+        ),
+        "c:corrected-calcium-normal-range",
+    )
+
+    assert result.concept_set is None
+    assert result.unit_normalization.status == "unsupported"
+    assert result.normalized_value is None
+    assert [gap.kind for gap in result.unresolved_gaps] == ["normal_range_unknown"]
+    assert "local normal-range interpretation" in result.unresolved_gaps[0].message
+    assert "measurement.reviewed.out_of_scope" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
+
+
+def test_named_lab_with_unreviewed_normal_limits_fails_closed_as_normal_range_gap() -> None:
+    result = compile_measurement_resolution(
+        _measurement(
+            "hemoglobin",
+            operator="in_range",
+            value=None,
+            unit="normal limits",
+        ).model_copy(update={"source_text": "Hemoglobin within normal limits"}),
+        "c:hemoglobin-normal-limits",
+    )
+
+    assert result.selected_loinc_code == "718-7"
+    assert result.unit_normalization.status == "unsupported"
+    assert result.normalized_value is None
+    assert [gap.kind for gap in result.unresolved_gaps] == ["normal_range_unknown"]
+    assert result.unresolved_gaps[0].stage == "unit_normalization"
+    assert "measurement.normal_range_unknown" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
 
 
 def test_missing_threshold_value_emits_predicate_translation_gap() -> None:

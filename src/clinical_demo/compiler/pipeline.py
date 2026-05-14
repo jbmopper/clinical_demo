@@ -93,6 +93,15 @@ class _BloodPressureThreshold:
     unit: str | None
 
 
+@dataclass(frozen=True)
+class _PlasmaGlucoseThreshold:
+    measurement_text: str
+    operator: ThresholdOperator
+    value: float
+    unit: str | None
+    source_text: str
+
+
 _PROMOTABLE_MENTION_TYPES = frozenset(
     {"Condition", "Drug", "Measurement", "Observation", "Procedure"}
 )
@@ -124,6 +133,31 @@ _GENERIC_BLOOD_PRESSURE_PAIR_RE = re.compile(
     rf"(?P<systolic>{_NUMERIC_THRESHOLD_RE})\s*/\s*"
     rf"(?P<diastolic>{_NUMERIC_THRESHOLD_RE})\s*"
     rf"(?P<unit>{_BLOOD_PRESSURE_UNIT_RE})?",
+    re.IGNORECASE,
+)
+_PLASMA_GLUCOSE_SURFACE_RE = (
+    r"fasting\s+plasma\s+glucose|"
+    r"(?:2|two)[-\s]*hour\s+plasma\s+glucose|"
+    r"random\s+plasma\s+glucose"
+)
+_WORD_THRESHOLD_OPERATOR_RE = (
+    r"greater\s+than\s+or\s+equal\s+to|"
+    r"less\s+than\s+or\s+equal\s+to|"
+    r"at\s+least|"
+    r"at\s+most|"
+    r"greater\s+than|"
+    r"more\s+than|"
+    r"exceeds?|"
+    r"less\s+than|"
+    r"under"
+)
+_PLASMA_GLUCOSE_UNIT_RE = r"mg\s*/\s*dL|mmol\s*/\s*L"
+_PLASMA_GLUCOSE_THRESHOLD_RE = re.compile(
+    rf"\b(?P<measurement>{_PLASMA_GLUCOSE_SURFACE_RE})\b"
+    rf"(?:(?!\b(?:{_PLASMA_GLUCOSE_SURFACE_RE})\b).){{0,120}}?"
+    rf"(?P<op>{_THRESHOLD_OPERATOR_RE}|{_WORD_THRESHOLD_OPERATOR_RE})\s*"
+    rf"(?P<value>{_NUMERIC_THRESHOLD_RE})\s*"
+    rf"(?P<unit>{_PLASMA_GLUCOSE_UNIT_RE})?",
     re.IGNORECASE,
 )
 _AMINOTRANSFERASE_REFERENCE_LIMIT_PAIR_RE = re.compile(
@@ -765,6 +799,17 @@ def _compile_free_text_promotion(
     ) is not None:
         return bp_promotion
 
+    if (
+        plasma_glucose_promotion := _compile_plasma_glucose_threshold_promotion(
+            criterion,
+            index=index,
+            source_criterion_id=source_criterion_id,
+            resolver_policy=resolver_policy,
+            context=context,
+        )
+    ) is not None:
+        return plasma_glucose_promotion
+
     phrase_promotion = _compile_condition_phrase_promotion(
         criterion,
         index=index,
@@ -1200,6 +1245,114 @@ def _compile_blood_pressure_threshold_promotion(
         promotion_domain=promotion_domain,
         promotion_label=promotion_label,
         compound_logic=compound_logic,
+    )
+
+
+def _compile_plasma_glucose_threshold_promotion(
+    criterion: ExtractedCriterion,
+    *,
+    index: int,
+    source_criterion_id: str,
+    resolver_policy: ResolverExecutionPolicy,
+    context: _CompilerResolutionContext,
+) -> _FreeTextPromotionCompilation | None:
+    if criterion.kind != "free_text":
+        return None
+    if ":plasma-glucose:" in source_criterion_id:
+        return None
+    thresholds = _plasma_glucose_thresholds_from_text(criterion.source_text)
+    if not thresholds:
+        return None
+
+    supports: list[ResolutionSupport] = []
+    gaps: list[ResolutionGap] = []
+    predicates: list[CheckablePredicate] = []
+    diagnostics: list[CompilerDiagnostic] = []
+    subcheck_ids: list[str] = []
+    unit_normalization: UnitNormalizationPlan | None = None
+
+    for sub_index, threshold in enumerate(thresholds, start=1):
+        sub_id = f"{source_criterion_id}:plasma-glucose:{sub_index:03d}"
+        subcheck_ids.append(sub_id)
+        surrogate = _criterion_like(
+            criterion,
+            kind="measurement_threshold",
+            measurement=MeasurementCriterion(
+                measurement_text=threshold.measurement_text,
+                operator=threshold.operator,
+                value=threshold.value,
+                value_low=None,
+                value_high=None,
+                unit=threshold.unit,
+            ),
+        ).model_copy(update={"source_text": threshold.source_text})
+        compiled = _compile_criterion(
+            surrogate,
+            index=index,
+            resolver_policy=resolver_policy,
+            composite_groups=[],
+            context=context,
+            source_criterion_id_override=sub_id,
+        )
+        supports.extend(compiled.resolved_supports)
+        gaps.extend(compiled.unresolved_gaps)
+        predicates.extend(compiled.checkable_predicates)
+        diagnostics.extend(compiled.diagnostics)
+        if len(thresholds) == 1:
+            unit_normalization = compiled.unit_normalization
+
+    if not predicates and not gaps:
+        return None
+
+    if len(subcheck_ids) == 1:
+        if predicates and not gaps:
+            predicate = _resolved_predicate_plan(predicates[0])
+        else:
+            predicate = CheckablePredicatePlan(
+                status="unsupported",
+                predicate_kind="measurement_threshold",
+                expression=None,
+                predicate_ids=[predicate.predicate_id for predicate in predicates],
+                input_refs=subcheck_ids,
+                support_ids=[support.support_id for support in supports],
+                gap_ids=[gap.gap_id for gap in gaps],
+            )
+        compound_logic = None
+    else:
+        operator = _plasma_glucose_compound_operator(thresholds, criterion.source_text)
+        predicate = _compound_predicate_plan(
+            subcheck_ids,
+            predicates=predicates,
+            gaps=gaps,
+            operator=operator,
+        )
+        compound_logic = CompoundLogicPlan(
+            status="resolved" if predicates and not gaps else "unresolved",
+            operator=operator,
+            source_group_ids=[],
+            subcheck_ids=subcheck_ids,
+            gap_ids=[gap.gap_id for gap in gaps],
+        )
+
+    surface = ", ".join(
+        f"{threshold.measurement_text} {threshold.operator} {threshold.value:g}"
+        f"{' ' + threshold.unit if threshold.unit else ''}"
+        for threshold in thresholds
+    )
+    return _promoted_compilation(
+        criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        promotion_kind="plasma-glucose-thresholds",
+        predicate=predicate,
+        predicates=predicates,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        promotion_domain="free_text",
+        promotion_label="free-text",
+        compound_logic=compound_logic,
+        unit_normalization=unit_normalization,
     )
 
 
@@ -1940,6 +2093,15 @@ def _normalize_threshold_operator(operator: str) -> ThresholdOperator:
         return ">="
     if operator == "≤":
         return "<="
+    normalized = " ".join(operator.lower().split())
+    if normalized in {"greater than or equal to", "at least"}:
+        return ">="
+    if normalized in {"less than or equal to", "at most"}:
+        return "<="
+    if normalized in {"greater than", "more than", "exceed", "exceeds"}:
+        return ">"
+    if normalized in {"less than", "under"}:
+        return "<"
     return operator  # type: ignore[return-value]
 
 
@@ -1964,6 +2126,64 @@ def _blood_pressure_compound_operator(
     if all(threshold.operator in {"<", "<="} for threshold in thresholds):
         return "all_of"
     return "any_of"
+
+
+def _plasma_glucose_thresholds_from_text(source_text: str) -> list[_PlasmaGlucoseThreshold]:
+    thresholds: list[_PlasmaGlucoseThreshold] = []
+    seen: set[tuple[str, str, float, str | None]] = set()
+
+    for match in _PLASMA_GLUCOSE_THRESHOLD_RE.finditer(source_text):
+        measurement_text = _plasma_glucose_measurement_text(match.group("measurement"))
+        operator = _normalize_threshold_operator(match.group("op"))
+        value = float(match.group("value").replace(",", ""))
+        unit = _normalize_glucose_unit(match.group("unit"))
+        key = (measurement_text, operator, value, unit)
+        if key in seen:
+            continue
+        seen.add(key)
+        thresholds.append(
+            _PlasmaGlucoseThreshold(
+                measurement_text=measurement_text,
+                operator=operator,
+                value=value,
+                unit=unit,
+                source_text=match.group(0).strip(),
+            )
+        )
+
+    return thresholds
+
+
+def _plasma_glucose_measurement_text(surface: str) -> str:
+    if re.search(r"\bfasting\s+plasma\s+glucose\b", surface, re.IGNORECASE):
+        return "fasting plasma glucose"
+    if re.search(r"\b(?:2|two)[-\s]*hour\s+plasma\s+glucose\b", surface, re.IGNORECASE):
+        return "2-hour plasma glucose"
+    return "random plasma glucose"
+
+
+def _normalize_glucose_unit(unit: str | None) -> str | None:
+    if unit is None:
+        return None
+    compact = re.sub(r"\s*/\s*", "/", unit.strip())
+    normalized = compact.lower()
+    if normalized == "mg/dl":
+        return "mg/dL"
+    if normalized == "mmol/l":
+        return "mmol/L"
+    return compact
+
+
+def _plasma_glucose_compound_operator(
+    thresholds: Sequence[_PlasmaGlucoseThreshold],
+    source_text: str,
+) -> CompositeOperator:
+    normalized = f" {_normalize_text(source_text)} "
+    if " and " in normalized and " or " not in normalized and ";" not in source_text:
+        return "all_of"
+    if any(threshold.operator in {">", ">="} for threshold in thresholds):
+        return "any_of"
+    return "all_of"
 
 
 def _aminotransferase_compound_operator(criterion: ExtractedCriterion) -> CompositeOperator:
@@ -3236,7 +3456,7 @@ def _measurement_predicate(
         return (
             CheckablePredicatePlan(
                 status="unsupported"
-                if any(gap.kind == "unsupported_predicate" for gap in measurement.unresolved_gaps)
+                if _has_unsupported_measurement_gap(measurement)
                 else "unresolved",
                 predicate_kind="measurement_threshold",
                 expression=None,
@@ -3265,6 +3485,13 @@ def _measurement_predicate(
         gap_ids=[],
     )
     return _resolved_predicate_plan(predicate, support_ids=support_ids), [predicate]
+
+
+def _has_unsupported_measurement_gap(measurement: MeasurementResolutionResult) -> bool:
+    return any(
+        gap.kind in {"normal_range_unknown", "provenance_required", "unsupported_predicate"}
+        for gap in measurement.unresolved_gaps
+    )
 
 
 def _temporal_predicate(

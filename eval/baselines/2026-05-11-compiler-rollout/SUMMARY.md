@@ -2,7 +2,7 @@ Public-Artifact-Safety: synthetic
 
 # 2026-05-11 Compiler Rollout Eval Snapshot
 
-Updated 2026-05-13 after the reviewed condition/event, medication
+Updated 2026-05-14 after the reviewed condition/event, medication
 registry-closure, cache-independent terminology-closure, reviewed
 descendant-expansion, condition/event decomposition, qualifier/top-gap review,
 final opaque-unmapped registry slices, blood-pressure threshold decomposition,
@@ -13,8 +13,9 @@ class closure, coronary-intervention temporal procedure rerouting, and
 condition-typed intravenous-inotrope medication exposure promotion, plus
 aromatase-inhibitor and anticonvulsant current-vocabulary medication-class
 closures, DPP-4 reviewed out-of-scope variants, provenance-sensitive
-plasma-glucose threshold preservation, and structured `free_text_review`
-validation/matcher handling.
+plasma-glucose threshold preservation, free-text plasma-glucose routing,
+normal-range/provenance gap taxonomy, and structured `free_text_review`
+validation/matcher/reviewer-artifact handling.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -85,14 +86,17 @@ measurement, and medication hardening slices landed.
   gaps, preserves fasting/OGTT/random plasma-glucose threshold values and units
   while blocking execution until patient observation provenance exists, and
   treats structured `free_text_review` predicates as allowed human-review items
-  in closed-world validation/matching.
+  in closed-world validation/matching. The 2026-05-14 follow-on routes
+  free-text ADA plasma-glucose diagnostic clauses into measurement compilation,
+  adds `normal_range_unknown` and `provenance_required` gap kinds, and remaps
+  `free_text_review` review artifacts from compiler-logic work to review work.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `f38623e1ad54` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 18.6s |
+| `compiled_predicates` | `a53dea7638dc` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 26.2s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
@@ -112,7 +116,10 @@ compiler gaps but produced no additional verdict movement because the parent
 drug-list criterion still has other unresolved medication-class members. The
 structured `free_text_review` hardening pass reduced blocking validation
 findings without changing criterion verdict counts because these rows remain
-human-review items, not executable predicates. The final
+human-review items, not executable predicates. The free-text plasma-glucose
+routing and gap-taxonomy pass also preserves verdict counts while moving ADA
+glucose bullets out of the free-text implementation bucket and making
+normal-range/provenance blockers explicit. The final
 movement packet has 83
 indeterminate-to-determinate criterion wins plus 1
 determinate-to-determinate movement. The prior broad-parent
@@ -175,8 +182,8 @@ Unresolved compiler gaps by recommended action:
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 267 |
-| `review_gap` | 10 |
+| `implement_compiler_logic` | 253 |
+| `review_gap` | 24 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
 285 raw rows to 163 distinct surface/action/policy work items:
@@ -184,8 +191,8 @@ The compiler-review packet now also has a deduped group artifact. It collapses
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 157 |
-| `review_gap` | 1 |
+| `implement_compiler_logic` | 151 |
+| `review_gap` | 7 |
 
 The current threshold gate passes only without `--require-compilation`, because
 the 2 deceased-patient scorer refusals mean compilation is missing for those
@@ -198,14 +205,17 @@ uv run python scripts/check_compiler_diagnostics.py \
   --max-closed-world-blocking-cases 43 \
   --max-closed-world-blocking-findings 389 \
   --max-gap-kind unmapped_concept=0 \
-  --max-gap-kind unsupported_predicate=267 \
+  --max-gap-kind unsupported_predicate=257 \
   --max-gap-kind ambiguous_mapping=8 \
-  --max-gap-kind insufficient_source=10
+  --max-gap-kind insufficient_source=10 \
+  --max-gap-kind normal_range_unknown=4 \
+  --max-gap-kind provenance_required=6
 ```
 
 There are no remaining `review_mapping` groups. The remaining queue is compiler
-work: unsupported predicate translation, ambiguous candidate choice, and
-insufficient-source review. Formerly opaque singleton concepts (NSCLC,
+work: unsupported predicate translation, normal-range/provenance execution,
+ambiguous candidate choice, and insufficient-source review. Formerly opaque
+singleton concepts (NSCLC,
 curative-intent treatment, ALK rearrangements, measurable disease, pregnancy
 test variants, active hepatitis/HIV/TB infection, breastfeeding, other diabetes
 types, xenotransplant logistics/crossmatch phrases, anticoagulation therapy,
@@ -267,7 +277,12 @@ medication-class members. The structured `free_text_review` hardening pass then
 kept 285 gaps and 359 checkable predicates, lowered total validation findings
 to 979 and blocking validation findings to 389, and preserved the same case
 rollup while making reviewed nonclinical condition surfaces explicitly
-human-review-only.
+human-review-only. The 2026-05-14 taxonomy/routing pass then kept the same
+gap, predicate, validation, and rollup counts but split 10 generic unsupported
+measurement gaps into 4 `normal_range_unknown` rows and 6 `provenance_required`
+rows, moved the plasma-glucose ADA bullets from free-text to measurement-domain
+gaps, and reduced deduped `implement_compiler_logic` groups from 157 to 151 by
+classifying allowed `free_text_review` rows as review work.
 
 ## Patient-Evidence Calibration
 
@@ -277,7 +292,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `f38623e1ad54` | 5/50 | 80.0% | 40.0% | 17 |
+| `a53dea7638dc` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

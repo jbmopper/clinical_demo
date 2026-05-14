@@ -163,6 +163,41 @@ def test_build_rows_sort_by_priority_pair_source_index_gap_id() -> None:
     ]
 
 
+def test_build_rows_classifies_free_text_review_predicates_as_review_work() -> None:
+    study_compliance = (
+        "Ability to adhere to study visit schedule and understand and comply with "
+        "all protocol requirements"
+    )
+    run = _run(
+        [
+            _record(
+                "pair-review",
+                [_condition("structured exercise program"), _condition(study_compliance)],
+            )
+        ]
+    )
+
+    rows = build_compiler_gap_review_rows(run)
+
+    assert [(row.surface, row.gap_kind, row.domain, row.recommended_action) for row in rows] == [
+        (
+            "structured exercise program",
+            "unsupported_predicate",
+            "free_text",
+            "review_gap",
+        ),
+        (
+            study_compliance,
+            "unsupported_predicate",
+            "free_text",
+            "review_gap",
+        ),
+    ]
+    assert {row.message for row in rows}
+    assert all(row.priority == 60 for row in rows)
+    assert all(row.severity == "medium" for row in rows)
+
+
 def test_json_round_trip_uses_stable_list_artifact(tmp_path) -> None:
     rows = build_compiler_gap_review_rows(
         _run([_record("pair-1", [_condition("rare unknown syndrome"), _measurement("BNP")])])
@@ -220,6 +255,31 @@ def test_build_groups_dedupes_equivalent_surface_gaps() -> None:
     assert group.trial_count == 1
     assert group.criterion_kinds == ["condition_present"]
     assert [example.pair_id for example in group.example_rows] == ["pair-1", "pair-2"]
+
+
+def test_build_groups_keeps_free_text_review_predicates_in_review_gap_bucket() -> None:
+    rows = build_compiler_gap_review_rows(
+        _run(
+            [
+                _record("pair-1", [_condition("structured exercise program")]),
+                _record("pair-2", [_condition("structured exercise program")]),
+            ]
+        )
+    )
+
+    groups = build_compiler_gap_review_groups(rows)
+
+    assert len(rows) == 2
+    assert len(groups) == 1
+    group = groups[0]
+    assert group.recommended_action == "review_gap"
+    assert group.gap_kind == "unsupported_predicate"
+    assert group.domain == "free_text"
+    assert group.surface == "structured exercise program"
+    assert group.normalized_surface == "structured exercise program"
+    assert group.occurrence_count == 2
+    assert group.case_count == 2
+    assert group.criterion_kinds == ["condition_present"]
 
 
 def test_group_json_round_trip_uses_stable_list_artifact(tmp_path) -> None:

@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `f38623e1ad54` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `a53dea7638dc` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -48,8 +48,11 @@
   condition-typed free-text medication exposure rows, reviewed
   aromatase-inhibitor/anticonvulsant current-vocabulary medication-class
   closures, reviewed DPP-4 out-of-scope medication-class variants,
-  provenance-sensitive plasma-glucose threshold preservation, and structured
-  `free_text_review` routing/validation for nonclinical condition surfaces.
+  provenance-sensitive plasma-glucose threshold preservation, free-text
+  plasma-glucose threshold routing into measurement compilation,
+  normal-range/provenance-specific measurement gap kinds, and structured
+  `free_text_review` routing/validation plus reviewer-artifact classification
+  for nonclinical condition surfaces.
   It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
@@ -59,7 +62,7 @@
   movement, and 13 case-rollup movements. The path is still not default-ready:
   diagnostics show 285 unresolved compiler gaps, 43 closed-world-blocking
   cases, and 389 blocking validation findings. The deduped review packet has
-  163 groups (157 `implement_compiler_logic`, 5 `choose_candidate`, and 1
+  163 groups (151 `implement_compiler_logic`, 5 `choose_candidate`, and 7
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
   ULN buckets, SGLT/non-insulin antidiabetic medication-class buckets, and the
@@ -91,12 +94,18 @@
   slice makes reviewed nonclinical condition surfaces validate and match as
   `human_review_required` instead of ordinary unsupported structured gaps,
   lowering blocking validation findings without pretending those criteria are
-  executable. The
+  executable. The latest free-text measurement routing and gap-taxonomy slice
+  moves the ADA plasma-glucose diagnostic clauses out of generic free-text
+  implementation work into measurement-domain `provenance_required` gaps and
+  splits normal-range measurement blockers into `normal_range_unknown`, reducing
+  the deduped implementation queue without changing unsafe execution behavior.
+  The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
-  157 grouped `implement_compiler_logic` items, tightening measurement
-  normal-range/provenance handling, and preparing a smaller human grading packet
+  151 grouped `implement_compiler_logic` items, implementing safe
+  normal-range/provenance execution where patient data can support it, and
+  preparing a smaller human grading packet
   once the closed-world blockers are lower.
 - **Earlier matcher correction (still relevant):** matcher v0.2 (PLAN 2.19) makes
   `matcher_assumption_mode` change behavior, not just metadata, and
@@ -1235,7 +1244,11 @@ classes blocked until route and exception semantics are represented. A
 preserves fasting/OGTT/random plasma-glucose thresholds as provenance-sensitive
 unsupported measurement predicates, and treats structured `free_text_review`
 criteria as allowed human-review items in closed-world validation and compiled
-matching. The `CC-10`, `CC-11`, and `CC-12`
+matching. A 2026-05-14 follow-on routes free-text fasting/OGTT/random
+plasma-glucose threshold clauses into measurement compilation, adds
+`normal_range_unknown` and `provenance_required` gap kinds, and makes compiler
+review artifacts classify `free_text_review` gaps as review work rather than
+compiler-logic implementation. The `CC-10`, `CC-11`, and `CC-12`
 reporting foundations now expose closed-world validation, reviewer gap queue,
 and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
 promotion remain follow-on work.
@@ -1569,6 +1582,11 @@ promotion remain follow-on work.
     and random plasma glucose phrases, preserves extracted source thresholds
     and units, and emits an explicit provenance-sensitive unsupported
     measurement gap instead of silently executing against generic glucose rows.
+    A 2026-05-14 follow-on routes those same plasma-glucose clauses when they
+    arrive as free-text ADA diagnostic bullets, preserving them as
+    measurement-domain `provenance_required` gaps. Normal-range criteria now
+    emit `normal_range_unknown` rather than generic unsupported predicate gaps
+    when reviewed limits or patient-observation reference ranges are missing.
 
 - id: CC-09
   title: Medication and class compiler
@@ -1677,7 +1695,10 @@ promotion remain follow-on work.
     2026-05-13 hardening slice makes structured criteria whose compiled
     predicate kind is `free_text_review` an allowed non-executable human-review
     class, preserving gap ids for reviewers while avoiding false
-    closed-world-blocking findings.
+    closed-world-blocking findings. A 2026-05-14 follow-on adds explicit
+    `normal_range_unknown` and `provenance_required` gap classes so validation
+    and review artifacts distinguish patient-data/measurement-semantics blockers
+    from generic unsupported compiler work.
 
 - id: CC-11
   title: Reviewer and artifact workflow
@@ -1715,6 +1736,11 @@ promotion remain follow-on work.
     - API tests
     - patient-evidence calibration builder tests
   parallel_group: integration_serial
+  status: >
+    Compiler review artifacts are active for rollout snapshots. A 2026-05-14
+    remap keeps `free_text_review` predicate gaps in the `review_gap` bucket
+    instead of `implement_compiler_logic`, so the implementation queue reflects
+    actual compiler work rather than allowed human-review leftovers.
 
 - id: CC-12
   title: Eval gates and baseline rebuild
@@ -1796,7 +1822,7 @@ promotion remain follow-on work.
 - Fresh compiler rollout eval (2026-05-12 cache-independent refresh):
   sequential closed-world, deterministic cached-only runs compare fresh-cache
   legacy `matcher_inputs` (`e8efb7bcce35`) with fresh-cache opt-in
-  `compiled_predicates` (`f38623e1ad54`) after the reviewed condition/event,
+  `compiled_predicates` (`a53dea7638dc`) after the reviewed condition/event,
   medication registry-closure, cache-independent terminology-closure, reviewed
   descendant-expansion, condition/event decomposition, and qualifier/top-gap
   review slices, followed by the opaque-unmapped registry pass for GLP-1
@@ -1814,8 +1840,8 @@ promotion remain follow-on work.
   compiler diagnostics show 285 unresolved gaps and 43 closed-world-blocking
   compiled cases, with 389 blocking validation findings. The regenerated
   compiler-review artifact now dedupes the 285 raw rows to 163
-  surface/action/policy groups (157 `implement_compiler_logic`, 5
-  `choose_candidate`, and 1 `review_gap`). There are no remaining
+  surface/action/policy groups (151 `implement_compiler_logic`, 5
+  `choose_candidate`, and 7 `review_gap`). There are no remaining
   `review_mapping` groups; the generic blood-pressure ambiguity bucket is gone,
   and reviewed AST/ALT/bilirubin/hemoglobin ULN criteria now compile through
   normal reference-limit translation, while SGLT and non-insulin antidiabetic
@@ -1849,17 +1875,24 @@ promotion remain follow-on work.
   medication-class variants as out-of-scope gaps and preserves
   fasting/OGTT/random plasma-glucose thresholds as provenance-sensitive
   unsupported measurement predicates.
+  A 2026-05-14 follow-on routes free-text plasma-glucose diagnostic thresholds
+  into measurement compilation and splits generic measurement unsupported rows
+  into `normal_range_unknown` (4 rows), `provenance_required` (6 rows), and
+  `unsupported_predicate` (257 rows). Raw unresolved gaps stay 285 and
+  validation stays 389 blocking findings, but the deduped implementation queue
+  drops from 157 to 151 groups while review-only/free-text-review work moves
+  into 7 `review_gap` groups.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
-  rollups, reducing the remaining 157 grouped compiler-logic gaps, and using the
+  rollups, reducing the remaining 151 grouped compiler-logic gaps, and using the
   deduped compiler-review packet for targeted reviewer/registry work.
 - Movement review artifact (2026-05-12 cache-independent refresh):
   `scripts/eval.py movement-review` now exports baseline-vs-comparison case and
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `f38623e1ad54`: 13 case movements, 84 decisive criterion
+  `e8efb7bcce35` -> `a53dea7638dc`: 13 case movements, 84 decisive criterion
   movements, and 280 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
   lipid-lowering therapy, GLP-1 member closure, SGLT/non-insulin antidiabetic
@@ -1908,8 +1941,13 @@ promotion remain follow-on work.
   the snapshot through 296, 289, and now 285 unresolved compiler gaps with 359
   checkable predicates by adding antihypertensive, intravenous-inotrope,
   aromatase-inhibitor, and anticonvulsant current-vocabulary closures plus
-  coronary-intervention procedure-window execution. The next CC-08/CC-10
-  targets are normal-range phrase execution, patient-side modality/fasting
+  coronary-intervention procedure-window execution. The latest taxonomy/routing
+  pass keeps 285 unresolved gaps but splits out 4
+  `normal_range_unknown` and 6 `provenance_required` measurement blockers,
+  moves the plasma-glucose ADA bullets from free-text to measurement-domain
+  gaps, and lowers the deduped implementation queue from 157 to 151 groups.
+  The next CC-08/CC-10 targets are normal-range phrase execution, patient-side
+  modality/fasting
   provenance support for glucose execution, PAH/background-therapy class
   expansion on top of the new exposure-window spine, and moving reviewed
   unsupported measurement decisions

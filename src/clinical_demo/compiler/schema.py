@@ -59,6 +59,8 @@ ResolutionGapKind = Literal[
     "missing_unit",
     "unsupported_compound",
     "unsupported_predicate",
+    "normal_range_unknown",
+    "provenance_required",
     "insufficient_source",
     "not_attempted",
 ]

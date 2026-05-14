@@ -773,6 +773,90 @@ def test_free_text_blood_pressure_thresholds_compile_to_measurement_compound() -
     assert compiled.checkable_predicates[1].target_codes == frozenset({"8462-4"})
 
 
+def test_free_text_fasting_plasma_glucose_promotes_to_measurement_provenance_gap() -> None:
+    criterion = _free_text("Fasting plasma glucose >= 126 mg/dL at screening")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.criterion_kind == "free_text"
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "measurement_threshold"
+    assert compiled.checkable_predicates == []
+    assert compiled.unit_normalization.status == "unsupported"
+    assert compiled.unit_normalization.measurement_surface == "fasting plasma glucose"
+    assert compiled.unresolved_gaps[0].domain == "measurement"
+    assert compiled.unresolved_gaps[0].kind == "provenance_required"
+    assert "not collapsed to ordinary glucose" in compiled.unresolved_gaps[0].message
+    assert [diagnostic.code for diagnostic in compiled.diagnostics[:3]] == [
+        "free_text.promoted.plasma-glucose-thresholds",
+        "measurement.provenance_sensitive_glucose.unsupported",
+        "measurement.provenance_sensitive_glucose.threshold_extracted",
+    ]
+
+
+def test_free_text_plasma_glucose_thresholds_compile_to_unsupported_measurement_compound() -> None:
+    criterion = _free_text(
+        "Hyperglycemia: fasting plasma glucose >= 126 mg/dL; "
+        "2-hour plasma glucose >= 200 mg/dL during an oral glucose tolerance test; "
+        "or random plasma glucose >= 200 mg/dL with classic symptoms"
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.criterion_kind == "free_text"
+    assert compiled.predicate.status == "unresolved"
+    assert compiled.predicate.predicate_kind == "compound"
+    assert compiled.compound_logic.status == "unresolved"
+    assert compiled.compound_logic.operator == "any_of"
+    assert compiled.checkable_predicates == []
+    assert compiled.diagnostics[0].code == "free_text.promoted.plasma-glucose-thresholds"
+    assert [(gap.domain, gap.kind, gap.surface) for gap in compiled.unresolved_gaps] == [
+        ("measurement", "provenance_required", "fasting plasma glucose"),
+        ("measurement", "provenance_required", "2-hour plasma glucose"),
+        ("measurement", "provenance_required", "random plasma glucose"),
+    ]
+    assert {diagnostic.code for diagnostic in compiled.diagnostics} >= {
+        "measurement.provenance_sensitive_glucose.unsupported",
+        "measurement.provenance_sensitive_glucose.threshold_extracted",
+    }
+
+
+def test_direct_provenance_glucose_measurement_plan_is_unsupported() -> None:
+    criterion = _measurement_with_value(
+        "fasting plasma glucose",
+        operator=">=",
+        value=126.0,
+        unit="mg/dL",
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "measurement_threshold"
+    assert compiled.checkable_predicates == []
+    assert compiled.unresolved_gaps[0].kind == "provenance_required"
+
+
+def test_direct_normal_range_measurement_plan_is_unsupported() -> None:
+    criterion = _measurement_with_value(
+        "hemoglobin",
+        operator="in_range",
+        value=None,
+        unit="normal limits",
+    ).model_copy(update={"source_text": "Hemoglobin within normal limits"})
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "measurement_threshold"
+    assert compiled.checkable_predicates == []
+    assert compiled.unresolved_gaps[0].kind == "normal_range_unknown"
+
+
 def test_generic_blood_pressure_pair_measurement_decomposes_to_systolic_diastolic() -> None:
     criterion = _measurement_with_value(
         "blood pressure",

@@ -283,6 +283,22 @@ def compile_measurement_resolution(
     if reference_limit_result is not None:
         return reference_limit_result
 
+    normal_range_result = _normal_range_unknown_result(
+        criterion=criterion,
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        source_unit=source_unit,
+        selected_loinc_code=selected_loinc_code,
+        loinc_codes=loinc_codes,
+        concept_set=concept_set,
+        supports=supports,
+        gaps=gaps,
+        diagnostics=diagnostics,
+        resolver_policy=resolver_policy,
+    )
+    if normal_range_result is not None:
+        return normal_range_result
+
     canonical_unit: str | None = None
     conventional_unit: str | None = None
     conversion_factor: float | None = None
@@ -754,6 +770,64 @@ def _reference_limit_result(
     )
 
 
+def _normal_range_unknown_result(
+    *,
+    criterion: ExtractedCriterion,
+    source_criterion_id: str,
+    surface: str,
+    source_unit: str | None,
+    selected_loinc_code: str | None,
+    loinc_codes: list[str],
+    concept_set: ConceptSet | None,
+    supports: list[ResolutionSupport],
+    gaps: list[ResolutionGap],
+    diagnostics: list[CompilerDiagnostic],
+    resolver_policy: ResolverExecutionPolicy,
+) -> MeasurementResolutionResult | None:
+    if not _normal_range_unknown_requested(criterion):
+        return None
+
+    local_gaps = list(gaps)
+    local_diagnostics = list(diagnostics)
+    gap = _gap(
+        gap_id=f"{source_criterion_id}:measurement:gap:normal_range",
+        stage="unit_normalization",
+        domain="measurement",
+        kind="normal_range_unknown",
+        source_criterion_id=source_criterion_id,
+        surface=source_unit or surface,
+        message=(
+            f"Measurement '{surface}' is expressed relative to a normal range, but no "
+            "reviewed reference limit or patient-observation reference range is available "
+            "for safe translation."
+        ),
+        resolver_policy=resolver_policy,
+    )
+    local_gaps.append(gap)
+    local_diagnostics.append(
+        _diagnostic(
+            severity="warning",
+            code="measurement.normal_range_unknown",
+            message=gap.message,
+            source_criterion_id=source_criterion_id,
+            facts=[("gap_id", gap.gap_id)],
+        )
+    )
+
+    return _reference_limit_unresolved_result(
+        source_criterion_id=source_criterion_id,
+        surface=surface,
+        source_unit=source_unit,
+        concept_set=concept_set,
+        loinc_codes=loinc_codes,
+        selected_loinc_code=selected_loinc_code,
+        supports=list(supports),
+        gaps=local_gaps,
+        diagnostics=local_diagnostics,
+        status="unsupported",
+    )
+
+
 def _converted_reference_limit(
     *,
     source_criterion_id: str,
@@ -922,6 +996,21 @@ def _reference_limit_request(criterion: ExtractedCriterion) -> _ReferenceLimitRe
         operator=operator,
         multiplier=_reference_limit_multiplier(measurement.value, reference_text),
         sex_specific=_SEX_SPECIFIC_REFERENCE_RE.search(reference_text) is not None,
+    )
+
+
+def _normal_range_unknown_requested(criterion: ExtractedCriterion) -> bool:
+    measurement = criterion.measurement
+    if measurement is None:
+        return False
+    reference_text = " ".join(
+        part for part in (criterion.source_text, measurement.unit) if part is not None
+    )
+    if _NORMAL_RANGE_RE.search(reference_text) is None:
+        return False
+    return (
+        _UPPER_REFERENCE_RE.search(reference_text) is None
+        and _LOWER_REFERENCE_RE.search(reference_text) is None
     )
 
 
@@ -1174,7 +1263,7 @@ def _provenance_sensitive_glucose_result(
         gap_id=f"{source_criterion_id}:measurement:gap:glucose_provenance",
         stage="predicate_translation",
         domain="measurement",
-        kind="unsupported_predicate",
+        kind="provenance_required",
         source_criterion_id=source_criterion_id,
         surface=effective.surface,
         message=(
@@ -1280,7 +1369,9 @@ def _reviewed_nonmapped_result(
         resolver_policy=resolver_policy,
     )
     status: ResolutionStatus = (
-        "unsupported" if gap_kind == "unsupported_predicate" else "unresolved"
+        "unsupported"
+        if gap_kind in {"normal_range_unknown", "provenance_required", "unsupported_predicate"}
+        else "unresolved"
     )
     return MeasurementResolutionResult(
         source_criterion_id=source_criterion_id,
@@ -1323,7 +1414,18 @@ def _reviewed_nonmapped_result(
 def _reviewed_nonmapped_gap_kind(entry: ReviewedMappingEntry) -> ResolutionGapKind:
     if entry.status == "ambiguous":
         return "ambiguous_mapping"
+    if _reviewed_entry_requires_normal_range(entry):
+        return "normal_range_unknown"
     return "unsupported_predicate"
+
+
+def _reviewed_entry_requires_normal_range(entry: ReviewedMappingEntry) -> bool:
+    text = " ".join((entry.reason, entry.source, entry.provenance))
+    return (
+        "normal-range" in text.lower()
+        or _NORMAL_RANGE_RE.search(text) is not None
+        or re.search(r"\breference\s+ranges?\b", text, re.I) is not None
+    )
 
 
 def _infer_missing_unit(
