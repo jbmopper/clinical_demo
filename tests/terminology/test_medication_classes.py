@@ -79,6 +79,7 @@ def test_committed_reviewed_medication_classes_load() -> None:
     lipid_lowering = registry.lookup("lipid-lowering oral drugs")
     bisphosphonates = registry.lookup("bisphosphonate treatment")
     raas = registry.lookup("RASB")
+    bp_affecting = registry.lookup("medication affecting blood pressure")
     glp1 = registry.lookup("GLP-1 RA")
     sglt2 = registry.lookup("sglt-2 inhibitors")
     sglt_variant = registry.lookup("SGLT inhibitor")
@@ -95,6 +96,15 @@ def test_committed_reviewed_medication_classes_load() -> None:
     assert bisphosphonates.member_surfaces == ("alendronic acid",)
     assert raas is not None
     assert raas.member_surfaces == ("lisinopril", "losartan")
+    assert bp_affecting is not None
+    assert bp_affecting.member_surfaces == (
+        "amlodipine",
+        "furosemide",
+        "hydrochlorothiazide",
+        "lisinopril",
+        "losartan",
+    )
+    assert registry.lookup("antihypertensive medicines") is bp_affecting
     assert glp1 is not None
     assert glp1.member_surfaces == ("semaglutide",)
     assert sglt2 is not None

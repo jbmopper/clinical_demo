@@ -217,6 +217,39 @@ def test_committed_lipid_lowering_class_expands_without_rxnorm_cache(tmp_path: P
     ]
 
 
+def test_committed_blood_pressure_affecting_class_expands_without_rxnorm_cache(
+    tmp_path: Path,
+) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("medication affecting blood pressure"),
+        source_criterion_id="criterion:bp-meds",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == (
+        "Blood-pressure-affecting medications (current patient vocabulary)"
+    )
+    assert result.concept_set.codes == frozenset(
+        {"308136", "313988", "1719286", "310798", "314076", "314077", "979492"}
+    )
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "medication affecting blood pressure",
+        "amlodipine",
+        "furosemide",
+        "hydrochlorothiazide",
+        "lisinopril",
+        "losartan",
+    ]
+
+
 def test_committed_glp1_class_expands_without_rxnorm_cache(tmp_path: Path) -> None:
     resolver = TerminologyResolver(
         TerminologyCache(tmp_path),

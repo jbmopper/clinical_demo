@@ -89,6 +89,39 @@
       "resolver_version": "reviewed-medication-class-registry-v1"
     },
     {
+      "class_id": "reviewed-medication-class:blood-pressure-affecting-current-vocab",
+      "display": "Blood-pressure-affecting medications (current patient vocabulary)",
+      "surfaces": [
+        "medication affecting blood pressure",
+        "medications affecting blood pressure",
+        "blood pressure medication",
+        "blood pressure medications",
+        "high blood pressure medication",
+        "high blood pressure medications",
+        "blood pressure-lowering medication",
+        "blood pressure-lowering medications",
+        "antihypertensive medicine",
+        "antihypertensive medicines",
+        "antihypertensive medication",
+        "antihypertensive medications",
+        "antihypertensive therapy"
+      ],
+      "member_surfaces": [
+        "amlodipine",
+        "furosemide",
+        "hydrochlorothiazide",
+        "lisinopril",
+        "losartan"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed blood-pressure-affecting medication expansion closed over the committed Synthea medication vocabulary currently carrying amlodipine, furosemide, hydrochlorothiazide, lisinopril, and losartan representatives.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced temporal medication-class exposure for 'medication affecting blood pressure'; committed Synthea FHIR rows include these RxNorm-coded blood-pressure-affecting representatives.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-13",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
       "class_id": "reviewed-medication-class:glp-1-receptor-agonists",
       "display": "GLP-1 receptor agonists",
       "surfaces": [

@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `a123e6b96d41` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `25b97f5e4dc6` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -40,15 +40,17 @@
   hemoglobin multiplier criteria, plus reviewed SGLT/SGLT2 spelling-variant
   and non-insulin antidiabetic medication-class closure, C-peptide
   `nmol/L` to `ng/mL` conversion, and reviewed full-pneumonectomy
-  procedure-history execution against parsed patient `Procedure` rows. It regenerates the compiler
+  procedure-history execution against parsed patient `Procedure` rows, plus
+  blood-pressure-affecting medication-class closure for the current Synthea
+  RxNorm vocabulary. It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
   `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
   with 71 indeterminate-to-determinate criterion movements, 1 determinate
   movement, and 13 case-rollup movements. The path is still not default-ready:
-  diagnostics show 299 unresolved compiler gaps, 43 closed-world-blocking
-  cases, and 403 blocking validation findings. The deduped review packet has
+  diagnostics show 296 unresolved compiler gaps, 43 closed-world-blocking
+  cases, and 397 blocking validation findings. The deduped review packet has
   168 groups (162 `implement_compiler_logic`, 5 `choose_candidate`, and 1
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
@@ -66,6 +68,8 @@
   the last unit-normalization bucket from the compiler-review groups. The
   procedure-history slice introduced completed-procedure parsing and
   `procedure_history` predicates for reviewed surgical-history surfaces. The
+  blood-pressure-affecting medication slice turned NCT07297797's temporal
+  medication-class exposure into executable RxNorm predicates. The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
@@ -1572,7 +1576,12 @@ promotion remain follow-on work.
     medication lookback windows and minimum observed duration constraints to
     compiled medication predicates, covering cases such as recent medication
     use and stable-dose therapy before screening without treating them as
-    generic active-medication checks.
+    generic active-medication checks. A second 2026-05-13 slice closed the
+    reviewed `medication affecting blood pressure` / antihypertensive class
+    over the committed Synthea medication vocabulary (amlodipine, furosemide,
+    hydrochlorothiazide, lisinopril, losartan) so temporal medication-class
+    exposure criteria route through executable RxNorm predicates instead of
+    condition-event gaps.
 
 - id: CC-10
   title: Compiler validation gates

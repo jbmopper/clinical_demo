@@ -105,6 +105,9 @@ def test_committed_medication_mappings_load() -> None:
     semaglutide = registry.lookup("medication", "semaglutide")
     amylin = registry.lookup("medication", "amylin")
     calcitonin = registry.lookup("medication", "calcitonin")
+    amlodipine = registry.lookup("medication", "amlodipine")
+    furosemide = registry.lookup("medication", "furosemide")
+    hydrochlorothiazide = registry.lookup("medication", "hydrochlorothiazide")
 
     assert metformin is not None
     assert metformin.status == "mapped"
@@ -124,6 +127,15 @@ def test_committed_medication_mappings_load() -> None:
     assert calcitonin.candidates[0].codes == frozenset(
         {"213570", "248087", "248088", "308866", "313919"}
     )
+    assert amlodipine is not None
+    assert amlodipine.status == "mapped"
+    assert amlodipine.candidates[0].codes == frozenset({"308136"})
+    assert furosemide is not None
+    assert furosemide.status == "mapped"
+    assert furosemide.candidates[0].codes == frozenset({"313988", "1719286"})
+    assert hydrochlorothiazide is not None
+    assert hydrochlorothiazide.status == "mapped"
+    assert hydrochlorothiazide.candidates[0].codes == frozenset({"310798"})
 
 
 def test_committed_cache_independent_closure_mappings_load() -> None:

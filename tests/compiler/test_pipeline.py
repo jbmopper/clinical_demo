@@ -861,6 +861,38 @@ def test_temporal_drug_event_reroutes_to_medication_exposure_predicate() -> None
     assert compiled.diagnostics[0].code == "temporal_window.promoted.medication_exposure"
 
 
+def test_temporal_blood_pressure_medication_event_reroutes_to_class_exposure() -> None:
+    criterion = _temporal("medication affecting blood pressure", window_days=28).model_copy(
+        update={
+            "source_text": (
+                "Use of any medication affecting blood pressure within 4 weeks prior "
+                "to screening, or planned use during the study period"
+            ),
+            "mentions": [
+                EntityMention(text="medication affecting blood pressure", type="Drug"),
+                EntityMention(text="within 4 weeks prior to screening", type="Temporal"),
+                EntityMention(text="planned use during the study period", type="Temporal"),
+            ],
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+    predicate = compiled.checkable_predicates[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "medication_exposure"
+    assert compiled.expansion.domain == "medication"
+    assert compiled.expansion.strategy == "patient_vocabulary_closure"
+    assert predicate.predicate_kind == "medication_exposure"
+    assert predicate.surface == "medication affecting blood pressure"
+    assert predicate.window_days == 28
+    assert predicate.target_codes == frozenset(
+        {"308136", "313988", "1719286", "310798", "314076", "314077", "979492"}
+    )
+    assert compiled.diagnostics[0].code == "temporal_window.promoted.medication_exposure"
+
+
 def test_condition_shaped_trial_exposure_compiles_to_internal_predicate() -> None:
     criterion = _condition(
         "Currently enrolled in or have completed any other investigational product study"
