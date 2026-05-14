@@ -1766,54 +1766,6 @@
     {
       "case_count": 2,
       "criterion_kinds": [
-        "temporal_window"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hypertension-industry"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 13,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "gap:criterion:13:temporal:reviewed_extractor_bug",
-          "message": "Reviewed temporal event surface 'medication affecting blood pressure' is classified as extractor_bug: This is medication-class exposure, not a condition event; it should be handled by medication/class compiler logic.",
-          "nct_id": "NCT07297797",
-          "pair_id": "28db1c55__NCT07297797",
-          "row_id": "28db1c55__NCT07297797:gap:criterion:13:temporal:reviewed_extractor_bug"
-        },
-        {
-          "criterion_index": 13,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
-          "eval_slice": "hypertension-industry",
-          "gap_id": "gap:criterion:13:temporal:reviewed_extractor_bug",
-          "message": "Reviewed temporal event surface 'medication affecting blood pressure' is classified as extractor_bug: This is medication-class exposure, not a condition event; it should be handled by medication/class compiler logic.",
-          "nct_id": "NCT07297797",
-          "pair_id": "407ef75b__NCT07297797",
-          "row_id": "407ef75b__NCT07297797:gap:criterion:13:temporal:reviewed_extractor_bug"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:dc931361e35d",
-      "message_examples": [
-        "Reviewed temporal event surface 'medication affecting blood pressure' is classified as extractor_bug: This is medication-class exposure, not a condition event; it should be handled by medication/class compiler logic."
-      ],
-      "normalized_surface": "medication affecting blood pressure",
-      "occurrence_count": 2,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "medication affecting blood pressure",
-      "trial_count": 1
-    },
-    {
-      "case_count": 2,
-      "criterion_kinds": [
         "condition_present"
       ],
       "domain": "condition",
@@ -5267,43 +5219,6 @@
       "severity": "medium",
       "stage": "concept_resolution",
       "surface": "leptomeningeal CNS disease",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
-        "temporal_window"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "hyperlipidemia"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 4,
-          "criterion_kind": "temporal_window",
-          "criterion_source_text": "Participants on lipid-lowering therapies (such as e.g. statins, ezetimibe) must be on a stable dose for \u226530 days before screening with no planned medication or dose changes during study participation",
-          "eval_slice": "hyperlipidemia",
-          "gap_id": "gap:criterion:4:temporal:reviewed_extractor_bug",
-          "message": "Reviewed temporal event surface 'lipid-lowering therapies' is classified as extractor_bug: Lipid-lowering therapies are medication-class exposure; temporal event compilation does not yet route medication-class events through the medication compiler.",
-          "nct_id": "NCT06597006",
-          "pair_id": "c2786fee__NCT06597006",
-          "row_id": "c2786fee__NCT06597006:gap:criterion:4:temporal:reviewed_extractor_bug"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:05f96715cc34",
-      "message_examples": [
-        "Reviewed temporal event surface 'lipid-lowering therapies' is classified as extractor_bug: Lipid-lowering therapies are medication-class exposure; temporal event compilation does not yet route medication-class events through the medication compiler."
-      ],
-      "normalized_surface": "lipid-lowering therapies",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "lipid-lowering therapies",
       "trial_count": 1
     },
     {

@@ -78,6 +78,111 @@
             "expansion_policy": "reviewed_code_list"
         },
         {
+            "kind": "procedure",
+            "surface": "coronary intervention",
+            "normalized_surface": "coronary intervention",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:coronary-intervention-current-vocab",
+            "candidates": [
+                {
+                    "name": "Coronary intervention reviewed procedure list",
+                    "concept_set": "reviewed:procedure:coronary-intervention-current-vocab",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "415070008",
+                        "232717009"
+                    ],
+                    "source": "committed Synthea FHIR review",
+                    "reason": "The current patient files encode coronary intervention history as completed PCI and CABG Procedure rows."
+                }
+            ],
+            "reason": "Coronary intervention is a procedure-history umbrella surface in trial criteria; in the current patient vocabulary it can execute against completed PCI or CABG Procedure rows.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-13 compiler-review group: NCT07489209 coronary intervention temporal-window criterion.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-13",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
+            "kind": "procedure",
+            "surface": "percutaneous coronary intervention",
+            "normalized_surface": "percutaneous coronary intervention",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:percutaneous-coronary-intervention",
+            "candidates": [
+                {
+                    "name": "Percutaneous coronary intervention reviewed procedure",
+                    "concept_set": "reviewed:procedure:percutaneous-coronary-intervention",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "415070008"
+                    ],
+                    "source": "committed Synthea FHIR review",
+                    "reason": "Synthea FHIR Procedure rows use SNOMED 415070008 for Percutaneous coronary intervention."
+                }
+            ],
+            "reason": "Percutaneous coronary intervention is completed procedure-history evidence and can be executed against parsed patient Procedure rows.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-13 compiler-review group: coronary disease event procedure phrases.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-13",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
+            "kind": "procedure",
+            "surface": "coronary artery bypass grafting",
+            "normalized_surface": "coronary artery bypass grafting",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:coronary-artery-bypass-grafting",
+            "candidates": [
+                {
+                    "name": "Coronary artery bypass grafting reviewed procedure",
+                    "concept_set": "reviewed:procedure:coronary-artery-bypass-grafting",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "232717009"
+                    ],
+                    "source": "committed Synthea FHIR review",
+                    "reason": "Synthea FHIR Procedure rows use SNOMED 232717009 for Coronary artery bypass grafting."
+                }
+            ],
+            "reason": "Coronary artery bypass grafting is completed procedure-history evidence and can be executed against parsed patient Procedure rows.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-13 compiler-review group: coronary disease event procedure phrases.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-13",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
+            "kind": "procedure",
+            "surface": "coronary artery bypass graft surgery",
+            "normalized_surface": "coronary artery bypass graft surgery",
+            "status": "mapped",
+            "concept_set": "reviewed:procedure:coronary-artery-bypass-grafting",
+            "candidates": [
+                {
+                    "name": "Coronary artery bypass grafting reviewed procedure",
+                    "concept_set": "reviewed:procedure:coronary-artery-bypass-grafting",
+                    "system": "http://snomed.info/sct",
+                    "codes": [
+                        "232717009"
+                    ],
+                    "source": "committed Synthea FHIR review",
+                    "reason": "Trial text synonym for the CABG Procedure rows encoded as SNOMED 232717009 in Synthea FHIR."
+                }
+            ],
+            "reason": "Coronary artery bypass graft surgery is a surface synonym for CABG procedure-history evidence.",
+            "source": "compiler rollout review",
+            "provenance": "2026-05-13 compiler-review group: coronary disease event procedure phrases.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-13",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "reviewed_code_list"
+        },
+        {
             "kind": "lab",
             "surface": "pulmonary vascular resistance (PVR)",
             "normalized_surface": "pulmonary vascular resistance (pvr",

@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `a123e6b96d41`
+- comparison: `dd7b8d745493`
 - changed cases: 13/49
-- changed criteria: 362/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=71 / reason_changed=290
+- changed criteria: 364/1076
+- criterion directions: determinate_changed=1 / indeterminate_to_determinate=76 / reason_changed=287
 
 ## Case Movements
 
@@ -66,7 +66,7 @@ Public-Artifact-Safety: synthetic
 | `28db1c55__NCT07297797` | 8 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Occurrence of any cardiovascular or cerebrovascular event within 6 months prior to screening; |
 | `28db1c55__NCT07297797` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Presence of uncontrolled severe arrhythmia within 6 months prior to screening; |
 | `28db1c55__NCT07297797` | 11 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Other diseases requiring Renin-Angiotensin-Aldosterone System (RAAS) inhibitor therapy, besides h... |
-| `28db1c55__NCT07297797` | 13 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use... |
+| `28db1c55__NCT07297797` | 13 | temporal_window | indeterminate->fail | indeterminate_to_determinate | medication_exposure | Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use... |
 | `2e555528__NCT06475781` | 0 | condition_present | indeterminate->fail | indeterminate_to_determinate | compound | A clinical diagnosis of PH-ILD. |
 | `2e555528__NCT06475781` | 9 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have a baseline 6-minute walk distance ≥100 meters and ≤500 meters. |
 | `2e555528__NCT06475781` | 14 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Subjects must have clinical laboratory values within normal ranges or <1.5 times the upper limit... |
@@ -111,6 +111,7 @@ Public-Artifact-Safety: synthetic
 | `38f38890__NCT07489209` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | Genetic diagnosis or clinical diagnosis of HoFH. |
 | `38f38890__NCT07489209` | 4 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving stable and tolerable lipid-lowering treatment or other drugs for chronic diseases treat... |
 | `38f38890__NCT07489209` | 16 | condition_absent | indeterminate->indeterminate | reason_changed | compound | Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to random... |
+| `38f38890__NCT07489209` | 17 | free_text | indeterminate->pass | indeterminate_to_determinate | procedure_history | Performed coronary intervention within 6 months prior to randomization, or plan to perform corona... |
 | `38f38890__NCT07489209` | 22 | measurement_threshold | indeterminate->fail | indeterminate_to_determinate | compound | Uncontrolled hypertension at screening (blood pressure >160/100 mmHg). |
 | `3a364909__NCT06220266` | 0 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Natural menopause, last menstrual period more than one year ago. |
 | `3a364909__NCT06220266` | 6 | free_text | indeterminate->pass | indeterminate_to_determinate | compound | have diabetes or uncontrolled high blood pressure, including HbA1c >9, Systolic blood pressure >1... |
@@ -149,7 +150,7 @@ Public-Artifact-Safety: synthetic
 | `407ef75b__NCT07297797` | 8 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Occurrence of any cardiovascular or cerebrovascular event within 6 months prior to screening; |
 | `407ef75b__NCT07297797` | 9 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Presence of uncontrolled severe arrhythmia within 6 months prior to screening; |
 | `407ef75b__NCT07297797` | 11 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Other diseases requiring Renin-Angiotensin-Aldosterone System (RAAS) inhibitor therapy, besides h... |
-| `407ef75b__NCT07297797` | 13 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use... |
+| `407ef75b__NCT07297797` | 13 | temporal_window | indeterminate->fail | indeterminate_to_determinate | medication_exposure | Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use... |
 | `509f9a77__NCT06941441` | 3 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Baseline RHC performed during the Screening Period documenting a minimum PVR of ≥ 5 WU and a pulm... |
 | `509f9a77__NCT06941441` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Receiving stable background therapy for PAH for >90 days and will continue receiving throughout t... |
 | `509f9a77__NCT06941441` | 9 | free_text | indeterminate->indeterminate | reason_changed | free_text_review | Diagnosis of PH WHO Groups 2, 3, 4, or 5 |
@@ -319,7 +320,7 @@ Public-Artifact-Safety: synthetic
 | `c2786fee__NCT06217302` | 30 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Any condition that may render the patient unable to comply with study requirements and/or complet... |
 | `c2786fee__NCT06597006` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | HoFH diagnosed by genetic confirmation |
 | `c2786fee__NCT06597006` | 3 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | On an optimal dose of statin (investigator's discretion), unless statin intolerant, with or witho... |
-| `c2786fee__NCT06597006` | 4 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Participants on lipid-lowering therapies (such as e.g. statins, ezetimibe) must be on a stable do... |
+| `c2786fee__NCT06597006` | 4 | temporal_window | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Participants on lipid-lowering therapies (such as e.g. statins, ezetimibe) must be on a stable do... |
 | `c2786fee__NCT06597006` | 5 | free_text | indeterminate->indeterminate | reason_changed | condition_presence | Participants on a documented regimen of LDL-apheresis for ≥ 3 months before screening will be all... |
 | `c2786fee__NCT06597006` | 6 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Documented evidence of a null (negative) mutation in both LDLR alleles |
 | `c2786fee__NCT06597006` | 7 | temporal_window | indeterminate->indeterminate | reason_changed | temporal_event | Previous treatment (within 90 days of screening) with monoclonal antibodies directed towards PCSK9 |
@@ -349,6 +350,7 @@ Public-Artifact-Safety: synthetic
 | `d02b2ca5__NCT07489209` | 1 | condition_present | indeterminate->fail | indeterminate_to_determinate | condition_presence | Genetic diagnosis or clinical diagnosis of HoFH. |
 | `d02b2ca5__NCT07489209` | 4 | medication_present | indeterminate->pass | indeterminate_to_determinate | medication_exposure | Receiving stable and tolerable lipid-lowering treatment or other drugs for chronic diseases treat... |
 | `d02b2ca5__NCT07489209` | 16 | condition_absent | indeterminate->indeterminate | reason_changed | compound | Had New York Heart Association (NYHA) grade III-IV heart failure within 12 months prior to random... |
+| `d02b2ca5__NCT07489209` | 17 | free_text | indeterminate->pass | indeterminate_to_determinate | procedure_history | Performed coronary intervention within 6 months prior to randomization, or plan to perform corona... |
 | `d02b2ca5__NCT07489209` | 22 | measurement_threshold | indeterminate->pass | indeterminate_to_determinate | compound | Uncontrolled hypertension at screening (blood pressure >160/100 mmHg). |
 | `d362f4e5__NCT06564324` | 1 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Have documentation of ROS1 rearrangement by a positive result |
 | `d362f4e5__NCT06564324` | 2 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Have at least 1 measurable (i.e., target) lesion by Investigator assessment per RECIST v1.1. |

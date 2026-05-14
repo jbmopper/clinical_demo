@@ -164,6 +164,14 @@ _TEMPORAL_MEDICATION_PREFIX_RE = re.compile(
     r")\s+(?:of\s+)?(?:any\s+)?(?:with\s+)?",
     re.IGNORECASE,
 )
+_TEMPORAL_PROCEDURE_PREFIX_RE = re.compile(
+    r"^(?:"
+    r"performed|performing|received|receiving|underwent|undergoing|"
+    r"planned\s+(?:use|procedure|surgery)|plan(?:ned)?\s+to\s+(?:perform|undergo)|"
+    r"have\s+(?:had|a\s+history\s+of)|had|history\s+of"
+    r")\s+(?:a\s+|an\s+|any\s+)?",
+    re.IGNORECASE,
+)
 _RELATIVE_WINDOW_RE = re.compile(
     r"\b(?:within|in|during|over)?\s*(?:the\s*)?"
     r"(?:past|last|prior|previous)\s+"
@@ -528,6 +536,16 @@ def _compile_criterion(
             temporal=temporal,
             context=context,
         )
+        temporal_procedure = (
+            None
+            if temporal_medication is not None
+            else _compile_temporal_procedure_history(
+                criterion,
+                source_criterion_id=source_id,
+                temporal=temporal,
+                context=context,
+            )
+        )
         if temporal_medication is not None:
             expansion = temporal_medication.expansion
             predicate = temporal_medication.predicate
@@ -535,6 +553,13 @@ def _compile_criterion(
             supports.extend(temporal_medication.supports)
             gaps.extend(temporal_medication.gaps)
             diagnostics.extend(temporal_medication.diagnostics)
+        elif temporal_procedure is not None:
+            expansion = temporal_procedure.expansion
+            predicate = temporal_procedure.predicate
+            predicates.extend(temporal_procedure.predicates)
+            supports.extend(temporal_procedure.supports)
+            gaps.extend(temporal_procedure.gaps)
+            diagnostics.extend(temporal_procedure.diagnostics)
         else:
             supports.extend(temporal.supports)
             gaps.extend(temporal.gaps)
@@ -700,6 +725,23 @@ def _compile_free_text_promotion(
             source_criterion_id=source_criterion_id,
             resolver_policy=resolver_policy,
             context=context,
+        )
+
+    if (
+        temporal_procedure := _compile_temporal_procedure_history(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            temporal=None,
+            context=context,
+        )
+    ) is not None:
+        return _FreeTextPromotionCompilation(
+            predicate=temporal_procedure.predicate,
+            predicates=temporal_procedure.predicates,
+            supports=temporal_procedure.supports,
+            gaps=temporal_procedure.gaps,
+            diagnostics=temporal_procedure.diagnostics,
+            expansion=temporal_procedure.expansion,
         )
 
     if (
@@ -2143,6 +2185,109 @@ def _temporal_medication_output(
     )
 
 
+def _compile_temporal_procedure_history(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    temporal: TemporalWindowCompilation | None,
+    context: _CompilerResolutionContext,
+) -> _ConditionCompilation | None:
+    """Reroute reviewed procedure-shaped temporal windows to Procedure checks."""
+
+    if criterion.temporal_window is None or criterion.temporal_window.direction != "within_past":
+        return None
+    if temporal is not None and temporal.predicate.status == "resolved":
+        return None
+
+    surfaces = _temporal_procedure_surfaces(criterion)
+    if not surfaces:
+        return None
+
+    for surface in surfaces:
+        procedure = _compile_reviewed_procedure_history(
+            criterion,
+            source_criterion_id=source_criterion_id,
+            surface=surface,
+            context=context,
+            window_days=criterion.temporal_window.window_days,
+        )
+        if procedure is not None and procedure.predicates:
+            return _temporal_procedure_output(
+                criterion,
+                source_criterion_id=source_criterion_id,
+                surface=surface,
+                procedure=procedure,
+            )
+
+    return None
+
+
+def _temporal_procedure_surfaces(criterion: ExtractedCriterion) -> list[str]:
+    if criterion.temporal_window is None:
+        return []
+
+    procedure_mentions = [
+        mention.text for mention in criterion.mentions if mention.type == "Procedure"
+    ]
+    surfaces: list[str] = []
+    seen: set[str] = set()
+
+    def add(surface: str | None) -> None:
+        if surface is None:
+            return
+        stripped = " ".join(surface.strip().split())
+        normalized = _normalize_text(stripped)
+        if not normalized or normalized in seen:
+            return
+        seen.add(normalized)
+        surfaces.append(stripped)
+
+    add(criterion.temporal_window.event_text)
+    for mention_surface in procedure_mentions:
+        add(mention_surface)
+    for surface in tuple(surfaces):
+        add(_TEMPORAL_PROCEDURE_PREFIX_RE.sub("", surface))
+    return surfaces
+
+
+def _temporal_procedure_output(
+    criterion: ExtractedCriterion,
+    *,
+    source_criterion_id: str,
+    surface: str,
+    procedure: _ConditionCompilation,
+) -> _ConditionCompilation:
+    diagnostics = [
+        _diagnostic(
+            severity="info",
+            code="temporal_window.promoted.procedure_history",
+            message=(
+                f"Rerouted temporal-window event surface {surface!r} through "
+                "procedure-history compilation."
+            ),
+            stage="predicate_translation",
+            source_criterion_id=source_criterion_id,
+            facts=[
+                ("surface", surface),
+                ("source_text", criterion.source_text),
+                ("window_days", str(criterion.temporal_window.window_days))
+                if criterion.temporal_window is not None
+                else ("window_days", "none"),
+                ("predicate_status", procedure.predicate.status),
+            ],
+        ),
+        *procedure.diagnostics,
+    ]
+    return _ConditionCompilation(
+        expansion=procedure.expansion,
+        predicate=procedure.predicate,
+        predicates=procedure.predicates,
+        supports=procedure.supports,
+        gaps=procedure.gaps,
+        diagnostics=diagnostics,
+    )
+
+
 @dataclass(frozen=True)
 class _FreeTextPromotionCompilation:
     predicate: CheckablePredicatePlan
@@ -2161,6 +2306,7 @@ def _compile_reviewed_procedure_history(
     source_criterion_id: str,
     surface: str | None,
     context: _CompilerResolutionContext,
+    window_days: int | None = None,
 ) -> _ConditionCompilation | None:
     if surface is None:
         return None
@@ -2274,7 +2420,9 @@ def _compile_reviewed_procedure_history(
             target_system=concept_set.system,
             target_codes=concept_set.codes,
             negated=_criterion_is_absence(criterion),
-            window_days=_free_text_window_days(criterion.source_text),
+            window_days=window_days
+            if window_days is not None
+            else _free_text_window_days(criterion.source_text),
             support_ids=support_ids,
             gap_ids=[],
         )

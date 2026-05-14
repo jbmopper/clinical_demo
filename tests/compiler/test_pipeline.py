@@ -364,6 +364,18 @@ def test_free_text_procedure_mention_promotes_to_procedure_history_predicate() -
     assert compiled.diagnostics[0].code == "free_text.promoted.procedure"
 
 
+def test_reviewed_coronary_procedure_surface_compiles_to_procedure_history() -> None:
+    result = compile_extracted_criteria([_condition("percutaneous coronary intervention")])
+
+    compiled = result.criteria[0]
+
+    assert compiled.expansion.domain == "procedure"
+    assert compiled.expansion.status == "resolved"
+    assert compiled.predicate.predicate_kind == "procedure_history"
+    assert compiled.checkable_predicates[0].predicate_kind == "procedure_history"
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"415070008"})
+
+
 def test_condition_compiler_preserves_raw_hyphenated_lookup_surface() -> None:
     criterion = _condition("end-stage renal disease")
 
@@ -891,6 +903,56 @@ def test_temporal_blood_pressure_medication_event_reroutes_to_class_exposure() -
         {"308136", "313988", "1719286", "310798", "314076", "314077", "979492"}
     )
     assert compiled.diagnostics[0].code == "temporal_window.promoted.medication_exposure"
+
+
+def test_temporal_coronary_intervention_event_reroutes_to_procedure_history() -> None:
+    criterion = _temporal("coronary intervention", window_days=180).model_copy(
+        update={
+            "source_text": (
+                "Performed coronary intervention within 6 months prior to randomization, "
+                "or plan to perform coronary intervention during the study."
+            ),
+            "mentions": [],
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+    predicate = compiled.checkable_predicates[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "procedure_history"
+    assert compiled.expansion.domain == "procedure"
+    assert predicate.predicate_kind == "procedure_history"
+    assert predicate.surface == "coronary intervention"
+    assert predicate.window_days == 180
+    assert predicate.target_codes == frozenset({"415070008", "232717009"})
+    assert compiled.diagnostics[0].code == "temporal_window.promoted.procedure_history"
+
+
+def test_free_text_temporal_coronary_intervention_promotes_to_procedure_history() -> None:
+    criterion = _free_text(
+        "Performed coronary intervention within 6 months prior to randomization, "
+        "or plan to perform coronary intervention during the study."
+    ).model_copy(
+        update={
+            "temporal_window": TemporalWindowCriterion(
+                event_text="coronary intervention",
+                window_days=180,
+                direction="within_past",
+            ),
+            "mentions": [],
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "procedure_history"
+    assert compiled.checkable_predicates[0].target_codes == frozenset({"415070008", "232717009"})
+    assert compiled.checkable_predicates[0].window_days == 180
+    assert compiled.diagnostics[0].code == "temporal_window.promoted.procedure_history"
 
 
 def test_condition_shaped_trial_exposure_compiles_to_internal_predicate() -> None:

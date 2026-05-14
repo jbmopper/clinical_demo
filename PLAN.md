@@ -21,7 +21,7 @@
 - **Active phase:** Phase 2 — Workflow + eval.
 - **Latest compiler rollout snapshot:** opt-in
   `matcher_execution_source=compiled_predicates` closed-world deterministic
-  fresh-cache eval run `25b97f5e4dc6` now reflects reviewed lab mappings/non-mappings,
+  fresh-cache eval run `dd7b8d745493` now reflects reviewed lab mappings/non-mappings,
   reviewed condition/event non-mapping classifications, a CKD stage 3-or-4
   reviewed `ConceptSet`, shared reviewed `ConceptSet` lookup, measurement
   threshold-value blocking gaps, reviewed medication RxNorm patient-vocabulary
@@ -40,18 +40,19 @@
   hemoglobin multiplier criteria, plus reviewed SGLT/SGLT2 spelling-variant
   and non-insulin antidiabetic medication-class closure, C-peptide
   `nmol/L` to `ng/mL` conversion, and reviewed full-pneumonectomy
-  procedure-history execution against parsed patient `Procedure` rows, plus
+  procedure-history execution against parsed patient `Procedure` rows,
   blood-pressure-affecting medication-class closure for the current Synthea
-  RxNorm vocabulary. It regenerates the compiler
+  RxNorm vocabulary, and reviewed coronary-intervention temporal-event
+  rerouting through `procedure_history` predicates. It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
   fresh-cache `matcher_inputs` run `e8efb7bcce35`, criterion-level
   `unmapped_concept` is down from 317/1076 (29.5%) to 0/1076 (0.0%),
-  with 71 indeterminate-to-determinate criterion movements, 1 determinate
+  with 76 indeterminate-to-determinate criterion movements, 1 determinate
   movement, and 13 case-rollup movements. The path is still not default-ready:
   diagnostics show 296 unresolved compiler gaps, 43 closed-world-blocking
   cases, and 397 blocking validation findings. The deduped review packet has
-  168 groups (162 `implement_compiler_logic`, 5 `choose_candidate`, and 1
+  166 groups (160 `implement_compiler_logic`, 5 `choose_candidate`, and 1
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
   ULN buckets, SGLT/non-insulin antidiabetic medication-class buckets, and the
@@ -70,6 +71,9 @@
   `procedure_history` predicates for reviewed surgical-history surfaces. The
   blood-pressure-affecting medication slice turned NCT07297797's temporal
   medication-class exposure into executable RxNorm predicates. The
+  coronary-intervention procedure slice turned two NCT07489209 free-text
+  temporal procedure rows from indeterminate to determinate `pass` by checking
+  completed PCI/CABG procedure history inside the six-month window. The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
@@ -1198,7 +1202,10 @@ and generic or SBP/DBP pair shorthand into LOINC-bound systolic/diastolic
 threshold predicates. A 2026-05-12 procedure-history follow-on parses Synthea
 FHIR `Procedure` resources into the patient model, adds reviewed procedure
 mapping rows for full pneumonectomy, and emits executable `procedure_history`
-predicates for reviewed surgical-history surfaces. The `CC-10`, `CC-11`, and `CC-12`
+predicates for reviewed surgical-history surfaces. A 2026-05-13 CC-07
+follow-on adds reviewed coronary-intervention procedure mappings and reroutes
+temporal/free-text coronary-intervention windows into `procedure_history`
+predicates over completed PCI/CABG rows. The `CC-10`, `CC-11`, and `CC-12`
 reporting foundations now expose closed-world validation, reviewer gap queue,
 and legacy-vs-compiled parity objects; deeper eval wiring and reviewer artifact
 promotion remain follow-on work.
@@ -1466,7 +1473,10 @@ promotion remain follow-on work.
     A follow-on temporal-domain reroute promotes Drug-shaped temporal-window
     events into medication exposure compilation when the medication/class
     surface resolves, so stable-dose lipid-lowering therapy clauses no longer
-    have to masquerade as condition events.
+    have to masquerade as condition events. A 2026-05-13 temporal-procedure
+    follow-on promotes reviewed procedure-shaped temporal/free-text events,
+    starting with coronary intervention, into `procedure_history` predicates
+    with the extractor-provided lookback window.
 
 - id: CC-08
   title: Measurement criterion compiler
@@ -1769,7 +1779,11 @@ promotion remain follow-on work.
   The immediate reroute follow-up lets temporal-window Drug mentions resolve
   through the medication compiler, covering lipid-lowering stable-dose therapy
   and leaving unresolved medication-class surfaces as medication gaps rather
-  than condition-event gaps.
+  than condition-event gaps. A temporal-procedure follow-up then maps the
+  reviewed coronary-intervention umbrella to completed PCI/CABG Procedure rows
+  and reroutes NCT07489209's free-text temporal window through
+  `procedure_history`, moving two criteria from indeterminate to determinate
+  `pass`.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
@@ -1780,16 +1794,17 @@ promotion remain follow-on work.
   criterion movements, defaulting to decisive verdict changes with
   `--include-reason-only` available for noisier reason-code diffs. The rollout
   snapshot includes `legacy_vs_compiled_movement_review.{json,md}` for
-  `e8efb7bcce35` -> `a123e6b96d41`: 13 case movements, 72 decisive criterion
-  movements, and 290 reason-code-only changes. Decisive wins include reviewed
+  `e8efb7bcce35` -> `dd7b8d745493`: 13 case movements, 77 decisive criterion
+  movements, and 287 reason-code-only changes. Decisive wins include reviewed
   medication exposure for RAAS blockers, statin/list-like class closure,
   lipid-lowering therapy, GLP-1 member closure, SGLT/non-insulin antidiabetic
   class closure, diabetes/HF/pregnancy variants,
   measurement predicates, trial-exposure movements, PH-ILD, cardiovascular
   event-list, congenital heart disease, HoFH, BP threshold movements, and
-  sex-specific hemoglobin ULN translation, and full-pneumonectomy
-  procedure-history predicates. Reason-only changes now also include AST/ALT
-  and bilirubin ULN translation.
+  sex-specific hemoglobin ULN translation, full-pneumonectomy
+  procedure-history predicates, blood-pressure-affecting medication-class
+  exposure, and coronary-intervention procedure-history temporal windows.
+  Reason-only changes now also include AST/ALT and bilirubin ULN translation.
   Remaining
   reason-only changes are expected while reviewed unsupported/out-of-scope rows
   replace opaque terminology misses.

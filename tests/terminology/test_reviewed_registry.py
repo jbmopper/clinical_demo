@@ -138,6 +138,34 @@ def test_committed_medication_mappings_load() -> None:
     assert hydrochlorothiazide.candidates[0].codes == frozenset({"310798"})
 
 
+def test_committed_procedure_mappings_load() -> None:
+    registry = load_reviewed_mapping_registry(
+        REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"
+    )
+
+    pneumonectomy = registry.lookup("procedure", "full pneumonectomy")
+    coronary_intervention = registry.lookup("procedure", "coronary intervention")
+    pci = registry.lookup("procedure", "percutaneous coronary intervention")
+    cabg = registry.lookup("procedure", "coronary artery bypass grafting")
+    cabg_surgery = registry.lookup("procedure", "coronary artery bypass graft surgery")
+
+    assert pneumonectomy is not None
+    assert pneumonectomy.status == "mapped"
+    assert pneumonectomy.candidates[0].codes == frozenset({"49795001", "232647000"})
+    assert coronary_intervention is not None
+    assert coronary_intervention.status == "mapped"
+    assert coronary_intervention.candidates[0].codes == frozenset({"415070008", "232717009"})
+    assert pci is not None
+    assert pci.status == "mapped"
+    assert pci.candidates[0].codes == frozenset({"415070008"})
+    assert cabg is not None
+    assert cabg.status == "mapped"
+    assert cabg.candidates[0].codes == frozenset({"232717009"})
+    assert cabg_surgery is not None
+    assert cabg_surgery.status == "mapped"
+    assert cabg_surgery.candidates[0].codes == frozenset({"232717009"})
+
+
 def test_committed_cache_independent_closure_mappings_load() -> None:
     registry = load_reviewed_mapping_registry(
         REPO_ROOT / "data" / "terminology" / "reviewed_mappings.json"

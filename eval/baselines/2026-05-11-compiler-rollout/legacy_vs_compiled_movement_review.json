@@ -6,28 +6,28 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "a123e6b96d41",
+  "comparison_run_id": "dd7b8d745493",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "a123e6b96d41",
+    "comparison_run_id": "dd7b8d745493",
     "common_cases": 49,
     "changed_cases": 13,
     "compared_criteria": 1076,
-    "changed_criteria": 362,
+    "changed_criteria": 364,
     "by_case_movement": {
       "indeterminate->fail": 12,
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 27,
-      "indeterminate->indeterminate": 290,
-      "indeterminate->pass": 44,
+      "indeterminate->fail": 29,
+      "indeterminate->indeterminate": 287,
+      "indeterminate->pass": 47,
       "pass->fail": 1
     },
     "by_direction": {
       "determinate_changed": 1,
-      "indeterminate_to_determinate": 71,
-      "reason_changed": 290
+      "indeterminate_to_determinate": 76,
+      "reason_changed": 287
     }
   },
   "case_movements": [
@@ -1149,20 +1149,27 @@
       "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "temporal_event",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "gap:criterion:13:temporal:reviewed_extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:13:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:medication:support:class-expansion",
+        "criterion:13:medication:support:class-member-001",
+        "criterion:13:medication:support:class-member-002",
+        "criterion:13:medication:support:class-member-003",
+        "criterion:13:medication:support:class-member-004",
+        "criterion:13:medication:support:class-member-005"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:2e555528__NCT06475781:0",
@@ -2356,6 +2363,34 @@
       ]
     },
     {
+      "row_id": "criterion:38f38890__NCT07489209:17",
+      "pair_id": "38f38890__NCT07489209",
+      "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 17,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "Performed coronary intervention within 6 months prior to randomization, or plan to perform coronary intervention during the study.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:17",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:17:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:17:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
+    },
+    {
       "row_id": "criterion:38f38890__NCT07489209:22",
       "pair_id": "38f38890__NCT07489209",
       "patient_id": "38f38890-b80f-6542-51d4-882c7b37b0bf",
@@ -3391,20 +3426,27 @@
       "criterion_source_text": "Use of any medication affecting blood pressure within 4 weeks prior to screening, or planned use during the study period;",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:13",
-      "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "temporal_event",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "gap:criterion:13:temporal:reviewed_extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:13:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:13:medication:support:class-expansion",
+        "criterion:13:medication:support:class-member-001",
+        "criterion:13:medication:support:class-member-002",
+        "criterion:13:medication:support:class-member-003",
+        "criterion:13:medication:support:class-member-004",
+        "criterion:13:medication:support:class-member-005"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:509f9a77__NCT06941441:3",
@@ -7930,20 +7972,24 @@
       "criterion_source_text": "Participants on lipid-lowering therapies (such as e.g. statins, ezetimibe) must be on a stable dose for ≥30 days before screening with no planned medication or dose changes during study participation",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
       "comparison_evidence_under_assumption": false,
       "comparison_compiled_id": "compiled:criterion:4",
-      "comparison_predicate_status": "unsupported",
-      "comparison_predicate_kind": "temporal_event",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "gap:criterion:4:temporal:reviewed_extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:4:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:4:medication:support:class-expansion",
+        "criterion:4:medication:support:class-member-001",
+        "criterion:4:medication:support:class-member-002"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:c2786fee__NCT06597006:5",
@@ -8719,6 +8765,34 @@
       "comparison_gap_ids": [
         "criterion:16:condition-phrase:nyha-functional-class:gap:unsupported"
       ]
+    },
+    {
+      "row_id": "criterion:d02b2ca5__NCT07489209:17",
+      "pair_id": "d02b2ca5__NCT07489209",
+      "patient_id": "d02b2ca5-7e63-1c3d-505f-3a7218bac46d",
+      "nct_id": "NCT07489209",
+      "eval_slice": "hyperlipidemia",
+      "criterion_index": 17,
+      "criterion_kind": "free_text",
+      "criterion_source_text": "Performed coronary intervention within 6 months prior to randomization, or plan to perform coronary intervention during the study.",
+      "baseline_verdict": "indeterminate",
+      "baseline_reason": "human_review_required",
+      "comparison_verdict": "pass",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->pass",
+      "direction": "indeterminate_to_determinate",
+      "baseline_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
+      "comparison_compiled_id": "compiled:criterion:17",
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "procedure_history",
+      "comparison_predicate_ids": [
+        "criterion:17:predicate:procedure"
+      ],
+      "comparison_support_ids": [
+        "criterion:17:procedure:support:reviewed-code-list"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:d02b2ca5__NCT07489209:22",
