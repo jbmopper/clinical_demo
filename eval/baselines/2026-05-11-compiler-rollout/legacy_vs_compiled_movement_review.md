@@ -3,10 +3,10 @@ Public-Artifact-Safety: synthetic
 # Run Movement Review
 
 - baseline: `e8efb7bcce35`
-- comparison: `a53dea7638dc`
+- comparison: `bc2fa92bdf18`
 - changed cases: 13/49
 - changed criteria: 364/1076
-- criterion directions: determinate_changed=1 / indeterminate_to_determinate=83 / reason_changed=280
+- criterion directions: determinate_changed=1 / indeterminate_to_determinate=84 / reason_changed=279
 
 ## Case Movements
 
@@ -227,7 +227,7 @@ Public-Artifact-Safety: synthetic
 | `60b0873c__NCT07224763` | 7 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Negative xeno-crossmatch at Screening and pre-transplant. |
 | `60b0873c__NCT07224763` | 8 | measurement_threshold | indeterminate->indeterminate | reason_changed | measurement_threshold | Estimated Post Transplant Survival Calculator score >20%. |
 | `60b0873c__NCT07224763` | 20 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Non-renal cause of hematological disorders associated with anemia (eg, thalassemia and sickle dis... |
-| `60b0873c__NCT07224763` | 21 | condition_absent | indeterminate->indeterminate | reason_changed | condition_presence | Cannot discontinue chronic anticoagulation therapy (low-dose daily aspirin is permissible). |
+| `60b0873c__NCT07224763` | 21 | condition_absent | indeterminate->fail | indeterminate_to_determinate | medication_exposure | Cannot discontinue chronic anticoagulation therapy (low-dose daily aspirin is permissible). |
 | `60b0873c__NCT07224763` | 22 | condition_present | indeterminate->pass | indeterminate_to_determinate | condition_presence | History of major psychiatric disorders with psychiatric hospitalization and/or suicidal ideation... |
 | `60b0873c__NCT07224763` | 23 | condition_present | indeterminate->indeterminate | reason_changed | condition_presence | Being treated for active tuberculosis (TB), have received prophylaxis for positive FDA-approved i... |
 | `60b0873c__NCT07224763` | 25 | condition_absent | indeterminate->indeterminate | reason_changed | free_text_review | Not able to independently perform activities of daily life. |

@@ -66,19 +66,21 @@ RxNorm anchors (`metformin`, `insulin`, statins, alendronic acid, and RAAS
 representatives) plus cache-independent reviewed RxNorm code sets for trial-only
 surfaces such as `Sotatercept`, `abaloparatide`, `Symlin`, `teriparatide`,
 `semaglutide`, `dapagliflozin`, `amylin`/pramlintide, and
-`calcitonin`/salmon-calcitonin. The next current-vocabulary class pass adds
-reviewed anchors for `anastrozole` and `carbamazepine`, letting
-aromatase-inhibitor and anticonvulsant-therapy criteria compile without live
+`calcitonin`/salmon-calcitonin. Current-vocabulary class passes add reviewed
+anchors for `anastrozole`, `carbamazepine`, and anticoagulant representatives
+`warfarin`, `enoxaparin`, and `heparin`, letting aromatase-inhibitor,
+anticonvulsant-therapy, and anticoagulation criteria compile without live
 RxNorm lookups.
 Medication-class entries are loaded by
 `clinical_demo.terminology.medication_classes`. They key one or more reviewed
 class surfaces such as `statins`, `lipid-lowering treatment`,
 `bisphosphonate treatment`, `GLP-1 agonists`, `SGLT inhibitor`, `diabetes
-medications other than insulin`, or `RASB` to member medication surfaces such
-as `atorvastatin`, `simvastatin`, `semaglutide`, and `dapagliflozin`. The
-compiler still resolves every member through reviewed/cache-only RxNorm lookup
-before creating an executable class predicate; missing members remain compiler
-gaps rather than partial matches.
+medications other than insulin`, `anticoagulation therapy`, or `RASB` to member
+medication surfaces such as `atorvastatin`, `simvastatin`, `semaglutide`,
+`dapagliflozin`, `warfarin`, `enoxaparin`, and `heparin`. The compiler still
+resolves every member through reviewed/cache-only RxNorm lookup before creating
+an executable class predicate; missing members remain compiler gaps rather than
+partial matches.
 
 Reviewed expansion entries are loaded by
 `clinical_demo.terminology.reviewed_expansions`. They turn reviewed broad

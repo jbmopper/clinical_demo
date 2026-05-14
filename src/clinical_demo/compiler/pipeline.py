@@ -39,6 +39,7 @@ from clinical_demo.terminology.candidates import (
     generate_query_variants,
 )
 from clinical_demo.terminology.expansion import expand_concept_set
+from clinical_demo.terminology.medication_classes import get_reviewed_medication_class_registry
 from clinical_demo.terminology.resolver import TerminologyResolver
 from clinical_demo.terminology.reviewed_registry import (
     ExpansionPolicy,
@@ -188,6 +189,17 @@ _MEDICATION_LIST_CUE_RE = re.compile(
     r"following\s+(?:drugs?|medications?|agents?|therap(?:y|ies))|"
     r"(?:treatment|therapy)\s+with\s+any|"
     r"use\s+of\s+any"
+    r")\b",
+    re.IGNORECASE,
+)
+_MEDICATION_EXPOSURE_SURFACE_RE = re.compile(
+    r"\b(?:"
+    r"anticoagulation|"
+    r"anticoagulants?|"
+    r"drugs?|"
+    r"medications?|"
+    r"therap(?:y|ies)|"
+    r"treatments?"
     r")\b",
     re.IGNORECASE,
 )
@@ -456,6 +468,33 @@ def _compile_criterion(
             supports.extend(trial_promotion.supports)
             gaps.extend(trial_promotion.gaps)
             diagnostics.extend(trial_promotion.diagnostics)
+        elif (
+            surface is not None
+            and (
+                _MEDICATION_EXPOSURE_SURFACE_RE.search(surface) is not None
+                or _is_reviewed_medication_class_surface(surface)
+            )
+            and (
+                medication_promotion := _compile_condition_typed_medication_promotion(
+                    criterion,
+                    index=index,
+                    source_criterion_id=source_id,
+                    surface=surface,
+                    resolver_policy=resolver_policy,
+                    context=context,
+                    promotion_domain="condition",
+                    promotion_label="condition",
+                )
+            )
+            is not None
+        ):
+            predicate = medication_promotion.predicate
+            predicates.extend(medication_promotion.predicates)
+            supports.extend(medication_promotion.supports)
+            gaps.extend(medication_promotion.gaps)
+            diagnostics.extend(medication_promotion.diagnostics)
+            if medication_promotion.expansion is not None:
+                expansion = medication_promotion.expansion
         elif (
             allow_condition_phrase_promotion
             and surface is not None
@@ -942,13 +981,16 @@ def _compile_condition_typed_medication_promotion(
     surface: str,
     resolver_policy: ResolverExecutionPolicy,
     context: _CompilerResolutionContext,
+    promotion_domain: ResolutionDomain = "free_text",
+    promotion_label: str = "free-text",
 ) -> _FreeTextPromotionCompilation | None:
     surrogate = _criterion_like(
         criterion,
         kind="medication_present",
         medication=MedicationCriterion(medication_text=surface),
     )
-    sub_id = f"{source_criterion_id}:free-text:medication"
+    sub_id_component = "free-text" if promotion_label == "free-text" else promotion_label
+    sub_id = f"{source_criterion_id}:{sub_id_component}:medication"
     compiled = _compile_criterion(
         surrogate,
         index=index,
@@ -960,6 +1002,19 @@ def _compile_condition_typed_medication_promotion(
     )
     if not compiled.checkable_predicates:
         return None
+    expansion = compiled.expansion
+    if any(
+        support.domain == "medication" and support.stage == "expansion"
+        for support in compiled.resolved_supports
+    ):
+        expansion = expansion.model_copy(
+            update={
+                "status": compiled.predicate.status,
+                "strategy": "patient_vocabulary_closure",
+                "support_ids": list(compiled.predicate.support_ids),
+                "gap_ids": list(compiled.predicate.gap_ids),
+            }
+        )
     return _promoted_compilation(
         criterion,
         source_criterion_id=source_criterion_id,
@@ -970,8 +1025,10 @@ def _compile_condition_typed_medication_promotion(
         supports=compiled.resolved_supports,
         gaps=compiled.unresolved_gaps,
         diagnostics=compiled.diagnostics,
-        expansion=compiled.expansion,
+        expansion=expansion,
         unit_normalization=compiled.unit_normalization,
+        promotion_domain=promotion_domain,
+        promotion_label=promotion_label,
     )
 
 
@@ -2455,7 +2512,10 @@ def _temporal_medication_surfaces(criterion: ExtractedCriterion) -> list[str]:
         return []
 
     drug_mentions = [mention.text for mention in criterion.mentions if mention.type == "Drug"]
-    if not drug_mentions:
+    event_text_is_reviewed_class = _is_reviewed_medication_class_surface(
+        criterion.temporal_window.event_text
+    )
+    if not drug_mentions and not event_text_is_reviewed_class:
         return []
 
     surfaces: list[str] = []
@@ -2477,6 +2537,10 @@ def _temporal_medication_surfaces(criterion: ExtractedCriterion) -> list[str]:
     for surface in tuple(surfaces):
         add(_TEMPORAL_MEDICATION_PREFIX_RE.sub("", surface))
     return surfaces
+
+
+def _is_reviewed_medication_class_surface(surface: str) -> bool:
+    return get_reviewed_medication_class_registry().lookup(surface) is not None
 
 
 def _temporal_medication_output(

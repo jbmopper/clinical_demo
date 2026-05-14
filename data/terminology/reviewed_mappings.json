@@ -3385,6 +3385,78 @@
         },
         {
             "kind": "medication",
+            "surface": "warfarin",
+            "normalized_surface": "warfarin",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:warfarin",
+            "candidates": [
+                {
+                    "name": "warfarin",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["855332"],
+                    "source": "committed Synthea FHIR review",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries warfarin sodium tablet rows as RxNorm 855332."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary warfarin ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: anticoagulation criteria can be compiled against the current patient medication vocabulary.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-14",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "enoxaparin",
+            "normalized_surface": "enoxaparin",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:enoxaparin",
+            "candidates": [
+                {
+                    "name": "enoxaparin",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["854235", "854252"],
+                    "source": "committed Synthea FHIR review",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries enoxaparin prefilled-syringe rows as RxNorm 854235 and 854252."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary enoxaparin ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: anticoagulation criteria can be compiled against the current patient medication vocabulary.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-14",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
+            "surface": "heparin",
+            "normalized_surface": "heparin",
+            "status": "mapped",
+            "concept_set": "reviewed:medication:heparin",
+            "candidates": [
+                {
+                    "name": "heparin",
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "codes": ["1659263"],
+                    "source": "committed Synthea FHIR review",
+                    "score": 1.0,
+                    "reason": "The committed Synthea cohort carries heparin sodium injection rows as RxNorm 1659263."
+                }
+            ],
+            "reason": "Reviewed medication surface maps to the current patient-vocabulary heparin injection ConceptSet.",
+            "source": "compiler CC-09 review",
+            "provenance": "Medication class rollout: anticoagulation criteria can be compiled against the current patient medication vocabulary.",
+            "reviewer": "codex-assisted review",
+            "reviewed_at": "2026-05-14",
+            "resolver_version": "reviewed-registry-v1",
+            "expansion_policy": "patient_vocabulary_closure"
+        },
+        {
+            "kind": "medication",
             "surface": "marijuana",
             "normalized_surface": "marijuana",
             "status": "out_of_scope",

@@ -275,6 +275,31 @@ def test_committed_intravenous_inotrope_class_expands_without_rxnorm_cache(
     ]
 
 
+def test_committed_anticoagulant_class_expands_without_rxnorm_cache(tmp_path: Path) -> None:
+    resolver = TerminologyResolver(
+        TerminologyCache(tmp_path),
+        execution_policy="cached_only",
+    )
+
+    result = compile_medication_resolution(
+        _criterion("chronic anticoagulation therapy"),
+        source_criterion_id="criterion:anticoagulation",
+        resolver=resolver,
+    )
+
+    assert result.gaps == []
+    assert result.concept_set is not None
+    assert result.concept_set.name == "Anticoagulants (current patient vocabulary)"
+    assert result.concept_set.codes == frozenset({"855332", "854235", "854252", "1659263"})
+    assert result.medication_class.status == "resolved"
+    assert [support.surface for support in result.supports] == [
+        "chronic anticoagulation therapy",
+        "warfarin",
+        "enoxaparin",
+        "heparin",
+    ]
+
+
 def test_committed_aromatase_inhibitor_class_expands_without_rxnorm_cache(
     tmp_path: Path,
 ) -> None:

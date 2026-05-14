@@ -186,8 +186,14 @@ Foundation status:
   `data/terminology/reviewed_medication_classes.json` for reviewed
   patient-vocabulary-closure class expansions such as statins, GLP-1 receptor
   agonists, SGLT/SGLT2 spelling variants, and non-insulin antidiabetic
-  medication surfaces; class predicates are emitted only when every member
-  surface resolves through cached/reviewed RxNorm lookup.
+  medication surfaces. Condition-shaped medication exposure surfaces can now
+  reroute through the medication compiler when an exact reviewed medication
+  class exists, and temporal medication events can do the same without a Drug
+  mention when the event text is a reviewed class surface. This covers the
+  current-vocabulary anticoagulation class while leaving PAH background therapy
+  as a typed composite gap until PAH medication anchors exist. Class predicates
+  are emitted only when every member surface resolves through cached/reviewed
+  RxNorm lookup.
 - `CC-08` now checks reviewed lab decisions before local measurement alias
   lookup, so known out-of-scope, extractor-bug, and ambiguous measurement
   surfaces become explicit compiler gaps with provenance instead of opaque
@@ -216,8 +222,8 @@ Foundation status:
 
 Active integration status:
 
-- The next integration slice is reviewer promotion flows and baseline threshold
-  selection behind the parity gate, using a fresh eval to expose the remaining
-  predicate gaps.
+- The next integration slice is another fresh eval and reviewer promotion pass
+  over the remaining predicate gaps, with particular attention to classes that
+  still need patient-vocabulary anchors rather than speculative expansion.
 
 Related: `docs/concept-mapping-failure-taxonomy.md`, `docs/evaluation-layers-and-gates.md`.

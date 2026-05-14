@@ -81,6 +81,7 @@ def test_committed_reviewed_medication_classes_load() -> None:
     raas = registry.lookup("RASB")
     bp_affecting = registry.lookup("medication affecting blood pressure")
     inotropes = registry.lookup("received intravenous inotropes")
+    anticoagulants = registry.lookup("chronic anticoagulation therapy")
     aromatase_inhibitors = registry.lookup("aromatase inhibitors")
     anticonvulsants = registry.lookup("anticonvulsant therapy")
     glp1 = registry.lookup("GLP-1 RA")
@@ -111,6 +112,9 @@ def test_committed_reviewed_medication_classes_load() -> None:
     assert inotropes is not None
     assert inotropes.member_surfaces == ("norepinephrine",)
     assert registry.lookup("IV inotropes") is inotropes
+    assert anticoagulants is not None
+    assert anticoagulants.member_surfaces == ("warfarin", "enoxaparin", "heparin")
+    assert registry.lookup("anticoagulation therapy") is anticoagulants
     assert aromatase_inhibitors is not None
     assert aromatase_inhibitors.member_surfaces == ("anastrozole",)
     assert registry.lookup("aromatase inhibitor") is aromatase_inhibitors

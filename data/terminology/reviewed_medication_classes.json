@@ -142,6 +142,33 @@
       "resolver_version": "reviewed-medication-class-registry-v1"
     },
     {
+      "class_id": "reviewed-medication-class:anticoagulants-current-vocab",
+      "display": "Anticoagulants (current patient vocabulary)",
+      "surfaces": [
+        "anticoagulation",
+        "anticoagulation therapy",
+        "anticoagulation medication",
+        "anticoagulation medications",
+        "anticoagulant",
+        "anticoagulants",
+        "anticoagulant medication",
+        "anticoagulant medications",
+        "chronic anticoagulation therapy"
+      ],
+      "member_surfaces": [
+        "warfarin",
+        "enoxaparin",
+        "heparin"
+      ],
+      "expansion_policy": "patient_vocabulary_closure",
+      "reason": "Reviewed anticoagulant expansion closed over the committed Synthea medication vocabulary currently carrying warfarin, enoxaparin, and heparin rows.",
+      "source": "compiler CC-09 review",
+      "provenance": "Compiler review groups surfaced chronic anticoagulation therapy as a condition-shaped medication exposure; committed Synthea FHIR rows include RxNorm-coded warfarin, enoxaparin, and heparin representatives.",
+      "reviewer": "codex-assisted review",
+      "reviewed_at": "2026-05-14",
+      "resolver_version": "reviewed-medication-class-registry-v1"
+    },
+    {
       "class_id": "reviewed-medication-class:aromatase-inhibitors-current-vocab",
       "display": "Aromatase inhibitors (current patient vocabulary)",
       "surfaces": [

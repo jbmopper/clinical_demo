@@ -391,6 +391,23 @@ def test_condition_typed_free_text_medication_exposure_promotes_to_medication() 
     assert compiled.diagnostics[0].code == "free_text.promoted.medication"
 
 
+def test_condition_shaped_anticoagulation_exposure_promotes_to_medication() -> None:
+    criterion = _condition("chronic anticoagulation therapy")
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+    predicate = compiled.checkable_predicates[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "medication_exposure"
+    assert compiled.expansion.domain == "medication"
+    assert compiled.expansion.strategy == "patient_vocabulary_closure"
+    assert predicate.predicate_kind == "medication_exposure"
+    assert predicate.surface == "chronic anticoagulation therapy"
+    assert predicate.target_codes == frozenset({"855332", "854235", "854252", "1659263"})
+    assert compiled.diagnostics[0].code == "condition.promoted.medication"
+
+
 def test_reviewed_coronary_procedure_surface_compiles_to_procedure_history() -> None:
     result = compile_extracted_criteria([_condition("percutaneous coronary intervention")])
 
@@ -1091,6 +1108,51 @@ def test_temporal_blood_pressure_medication_event_reroutes_to_class_exposure() -
         {"308136", "313988", "1719286", "310798", "314076", "314077", "979492"}
     )
     assert compiled.diagnostics[0].code == "temporal_window.promoted.medication_exposure"
+
+
+def test_temporal_reviewed_medication_class_event_reroutes_without_drug_mention() -> None:
+    criterion = _temporal("anticoagulation therapy", window_days=180).model_copy(
+        update={
+            "source_text": "Anticoagulation therapy within 6 months prior to enrollment",
+            "mentions": [EntityMention(text="6 months prior to enrollment", type="Temporal")],
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+    predicate = compiled.checkable_predicates[0]
+
+    assert compiled.predicate.status == "resolved"
+    assert compiled.predicate.predicate_kind == "medication_exposure"
+    assert compiled.expansion.domain == "medication"
+    assert predicate.predicate_kind == "medication_exposure"
+    assert predicate.window_days == 180
+    assert predicate.target_codes == frozenset({"855332", "854235", "854252", "1659263"})
+    assert compiled.diagnostics[0].code == "temporal_window.promoted.medication_exposure"
+
+
+def test_temporal_pah_background_therapy_without_class_anchor_stays_gap() -> None:
+    criterion = _temporal("stable background therapy for PAH", window_days=90).model_copy(
+        update={
+            "source_text": (
+                "Receiving stable background therapy for PAH for >90 days and will "
+                "continue receiving throughout trial"
+            ),
+            "mentions": [EntityMention(text=">90 days", type="Temporal")],
+        }
+    )
+
+    result = compile_extracted_criteria([criterion], resolver_policy="cached_only")
+    compiled = result.criteria[0]
+
+    assert compiled.predicate.status == "unsupported"
+    assert compiled.predicate.predicate_kind == "temporal_event"
+    assert compiled.checkable_predicates == []
+    assert (
+        compiled.unresolved_gaps[0].gap_id
+        == "gap:criterion:0:temporal:reviewed_composite_unhandled"
+    )
+    assert compiled.diagnostics[0].code == "temporal_event.reviewed.composite_unhandled"
 
 
 def test_temporal_coronary_intervention_event_reroutes_to_procedure_history() -> None:

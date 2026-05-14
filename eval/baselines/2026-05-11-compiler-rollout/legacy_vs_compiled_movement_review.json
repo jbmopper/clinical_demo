@@ -6,10 +6,10 @@
   },
   "artifact_type": "run-movement-review",
   "baseline_run_id": "e8efb7bcce35",
-  "comparison_run_id": "a53dea7638dc",
+  "comparison_run_id": "bc2fa92bdf18",
   "summary": {
     "baseline_run_id": "e8efb7bcce35",
-    "comparison_run_id": "a53dea7638dc",
+    "comparison_run_id": "bc2fa92bdf18",
     "common_cases": 49,
     "changed_cases": 13,
     "compared_criteria": 1076,
@@ -19,15 +19,15 @@
       "indeterminate->pass_pending_review": 1
     },
     "by_criterion_movement": {
-      "indeterminate->fail": 29,
-      "indeterminate->indeterminate": 280,
+      "indeterminate->fail": 30,
+      "indeterminate->indeterminate": 279,
       "indeterminate->pass": 54,
       "pass->fail": 1
     },
     "by_direction": {
       "determinate_changed": 1,
-      "indeterminate_to_determinate": 83,
-      "reason_changed": 280
+      "indeterminate_to_determinate": 84,
+      "reason_changed": 279
     }
   },
   "case_movements": [
@@ -5510,20 +5510,25 @@
       "criterion_source_text": "Cannot discontinue chronic anticoagulation therapy (low-dose daily aspirin is permissible).",
       "baseline_verdict": "indeterminate",
       "baseline_reason": "unmapped_concept",
-      "comparison_verdict": "indeterminate",
-      "comparison_reason": "unsupported_kind",
-      "movement": "indeterminate->indeterminate",
-      "direction": "reason_changed",
+      "comparison_verdict": "fail",
+      "comparison_reason": "ok",
+      "movement": "indeterminate->fail",
+      "direction": "indeterminate_to_determinate",
       "baseline_evidence_under_assumption": false,
-      "comparison_evidence_under_assumption": false,
+      "comparison_evidence_under_assumption": true,
       "comparison_compiled_id": "compiled:criterion:21",
-      "comparison_predicate_status": "unresolved",
-      "comparison_predicate_kind": "condition_presence",
-      "comparison_predicate_ids": [],
-      "comparison_support_ids": [],
-      "comparison_gap_ids": [
-        "criterion:21:condition:gap:reviewed-extractor_bug"
-      ]
+      "comparison_predicate_status": "resolved",
+      "comparison_predicate_kind": "medication_exposure",
+      "comparison_predicate_ids": [
+        "criterion:21:condition:medication:predicate:medication"
+      ],
+      "comparison_support_ids": [
+        "criterion:21:condition:medication:medication:support:class-expansion",
+        "criterion:21:condition:medication:medication:support:class-member-001",
+        "criterion:21:condition:medication:medication:support:class-member-002",
+        "criterion:21:condition:medication:medication:support:class-member-003"
+      ],
+      "comparison_gap_ids": []
     },
     {
       "row_id": "criterion:60b0873c__NCT07224763:22",

@@ -4477,43 +4477,6 @@
     {
       "case_count": 1,
       "criterion_kinds": [
-        "condition_absent"
-      ],
-      "domain": "condition",
-      "eval_slices": [
-        "ckd"
-      ],
-      "example_rows": [
-        {
-          "criterion_index": 21,
-          "criterion_kind": "condition_absent",
-          "criterion_source_text": "Cannot discontinue chronic anticoagulation therapy (low-dose daily aspirin is permissible).",
-          "eval_slice": "ckd",
-          "gap_id": "criterion:21:condition:gap:reviewed-extractor_bug",
-          "message": "Reviewed condition surface 'chronic anticoagulation therapy' is classified as extractor_bug: Chronic anticoagulation therapy is medication exposure/duration evidence, not a condition ConceptSet.",
-          "nct_id": "NCT07224763",
-          "pair_id": "60b0873c__NCT07224763",
-          "row_id": "60b0873c__NCT07224763:criterion:21:condition:gap:reviewed-extractor_bug"
-        }
-      ],
-      "gap_kind": "unsupported_predicate",
-      "group_id": "compiler-gap-group:52fee9c83d0d",
-      "message_examples": [
-        "Reviewed condition surface 'chronic anticoagulation therapy' is classified as extractor_bug: Chronic anticoagulation therapy is medication exposure/duration evidence, not a condition ConceptSet."
-      ],
-      "normalized_surface": "chronic anticoagulation therapy",
-      "occurrence_count": 1,
-      "priority": 60,
-      "recommended_action": "implement_compiler_logic",
-      "resolver_policy": "cached_only",
-      "severity": "medium",
-      "stage": "concept_resolution",
-      "surface": "chronic anticoagulation therapy",
-      "trial_count": 1
-    },
-    {
-      "case_count": 1,
-      "criterion_kinds": [
         "temporal_window"
       ],
       "domain": "condition",

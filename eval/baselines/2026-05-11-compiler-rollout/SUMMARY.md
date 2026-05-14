@@ -15,7 +15,9 @@ aromatase-inhibitor and anticonvulsant current-vocabulary medication-class
 closures, DPP-4 reviewed out-of-scope variants, provenance-sensitive
 plasma-glucose threshold preservation, free-text plasma-glucose routing,
 normal-range/provenance gap taxonomy, and structured `free_text_review`
-validation/matcher/reviewer-artifact handling.
+validation/matcher/reviewer-artifact handling, followed by condition-shaped
+and temporal medication-exposure rerouting for reviewed medication classes and
+current-vocabulary anticoagulant closure.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -90,18 +92,23 @@ measurement, and medication hardening slices landed.
   free-text ADA plasma-glucose diagnostic clauses into measurement compilation,
   adds `normal_range_unknown` and `provenance_required` gap kinds, and remaps
   `free_text_review` review artifacts from compiler-logic work to review work.
+  The anticoagulation exposure follow-on adds reviewed current-vocabulary
+  RxNorm anchors for warfarin, enoxaparin, and heparin, lets structured
+  condition surfaces promote through the medication compiler when they are
+  reviewed medication-class surfaces, and lets temporal medication-class event
+  text reroute without requiring a Drug mention.
 
 ## Run Comparison
 
 | Execution source | Run ID | Case rollup | Criterion verdicts | `unmapped_concept` | Latency |
 |---|---:|---:|---:|---:|---:|
 | `matcher_inputs` | `e8efb7bcce35` | 28 fail / 18 indeterminate / 0 pass / 1 pass_pending_review | 57 fail / 894 indeterminate / 125 pass | 317 (29.5%) | 18.1s |
-| `compiled_predicates` | `a53dea7638dc` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 87 fail / 811 indeterminate / 178 pass | 0 (0.0%) | 26.2s |
+| `compiled_predicates` | `bc2fa92bdf18` | 40 fail / 5 indeterminate / 0 pass / 2 pass_pending_review | 88 fail / 810 indeterminate / 178 pass | 0 (0.0%) | 18.6s |
 
 The compiled path reduces criterion-level `unmapped_concept` by 317 rows
 (-29.5 percentage points) against the same-run legacy path and moves the
 compiled snapshot from 37 to 0 `unmapped_concept` rows versus the previous
-qualifier/top-gap snapshot. It adds 83 indeterminate-to-determinate
+qualifier/top-gap snapshot. It adds 84 indeterminate-to-determinate
 criterion wins from more explicit compiler execution of mapped condition,
 measurement, trial-exposure, medication exposure, PH-ILD, HoFH, congenital heart
 disease, cardiovascular event-list promotions, GLP-1 class closure, and
@@ -110,7 +117,8 @@ decomposition, sex-specific hemoglobin ULN translation, antidiabetic
 medication-class closure, C-peptide unit conversion, full-pneumonectomy
 procedure-history execution, blood-pressure-affecting medication-class
 exposure, coronary-intervention procedure-history temporal windows, and
-condition-typed intravenous-inotrope medication exposure promotion. The latest
+condition-typed intravenous-inotrope medication exposure promotion, plus
+condition-shaped chronic anticoagulation medication exposure. The latest
 aromatase-inhibitor/anticonvulsant class closure removed four medication-class
 compiler gaps but produced no additional verdict movement because the parent
 drug-list criterion still has other unresolved medication-class members. The
@@ -119,8 +127,9 @@ findings without changing criterion verdict counts because these rows remain
 human-review items, not executable predicates. The free-text plasma-glucose
 routing and gap-taxonomy pass also preserves verdict counts while moving ADA
 glucose bullets out of the free-text implementation bucket and making
-normal-range/provenance blockers explicit. The final
-movement packet has 83
+normal-range/provenance blockers explicit. The anticoagulation exposure
+follow-on adds one more executable closed-world medication-exposure movement
+for chronic anticoagulation therapy. The final movement packet has 84
 indeterminate-to-determinate criterion wins plus 1
 determinate-to-determinate movement. The prior broad-parent
 determinate-to-indeterminate movements are gone:
@@ -154,7 +163,7 @@ Layer-1 structured field metrics are unchanged between paths: 89.0% agreement,
 98.6% coverage, 8 min-age disagreements, and 1 max-age missing extraction.
 
 `legacy_vs_compiled_movement_review.json` and `.md` are the focused review
-packet for these changes. They contain 84 decisive criterion movements and 280
+packet for these changes. They contain 85 decisive criterion movements and 279
 reason-code-only changes. The decisive movements include medication-exposure
 wins for RAAS blockers, stable lipid-lowering treatment, and reviewed class
 closure, plus GLP-1 member closure, SGLT/non-insulin antidiabetic class
@@ -163,35 +172,36 @@ measurement, trial-exposure, PH-ILD, cardiovascular event-list, congenital heart
 disease, HoFH, BP threshold movements, sex-specific hemoglobin ULN translation,
 full-pneumonectomy procedure-history predicates, blood-pressure-affecting
 medication-class exposure, and coronary-intervention procedure-history temporal
-windows, and condition-typed intravenous-inotrope medication exposure
-promotion. Closed-world absence-dependent verdicts should still be reviewed as
-a group so the absence-as-negative decisions match the validation contract.
+windows, condition-typed intravenous-inotrope medication exposure promotion,
+and condition-shaped chronic anticoagulation therapy promotion. Closed-world
+absence-dependent verdicts should still be reviewed as a group so the
+absence-as-negative decisions match the validation contract.
 
 ## Compiler Readiness
 
 Both runs compile the same 47 non-error cases:
 
 - compiled criteria: 1076
-- checkable predicates: 359
-- unresolved compiler gaps: 285
+- checkable predicates: 360
+- unresolved compiler gaps: 284
 - closed-world validation: 4 ok cases, 43 blocking cases
-- validation findings: 979 total, 389 blocking
+- validation findings: 977 total, 387 blocking
 
 Unresolved compiler gaps by recommended action:
 
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 253 |
+| `implement_compiler_logic` | 252 |
 | `review_gap` | 24 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
-285 raw rows to 163 distinct surface/action/policy work items:
+284 raw rows to 162 distinct surface/action/policy work items:
 
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 151 |
+| `implement_compiler_logic` | 150 |
 | `review_gap` | 7 |
 
 The current threshold gate passes only without `--require-compilation`, because
@@ -201,11 +211,11 @@ cases before the compiler runs:
 ```bash
 uv run python scripts/check_compiler_diagnostics.py \
   --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
-  --max-unresolved-gaps 285 \
+  --max-unresolved-gaps 284 \
   --max-closed-world-blocking-cases 43 \
-  --max-closed-world-blocking-findings 389 \
+  --max-closed-world-blocking-findings 387 \
   --max-gap-kind unmapped_concept=0 \
-  --max-gap-kind unsupported_predicate=257 \
+  --max-gap-kind unsupported_predicate=256 \
   --max-gap-kind ambiguous_mapping=8 \
   --max-gap-kind insufficient_source=10 \
   --max-gap-kind normal_range_unknown=4 \
@@ -282,7 +292,12 @@ gap, predicate, validation, and rollup counts but split 10 generic unsupported
 measurement gaps into 4 `normal_range_unknown` rows and 6 `provenance_required`
 rows, moved the plasma-glucose ADA bullets from free-text to measurement-domain
 gaps, and reduced deduped `implement_compiler_logic` groups from 157 to 151 by
-classifying allowed `free_text_review` rows as review work.
+classifying allowed `free_text_review` rows as review work. The anticoagulation
+exposure follow-on then reduced unresolved compiler gaps to 284, increased
+checkable predicates to 360, lowered total validation findings to 977 and
+blocking validation findings to 387, reduced deduped `implement_compiler_logic`
+groups to 150, and moved one chronic-anticoagulation condition-shaped criterion
+from indeterminate to determinate `fail` under closed-world evaluation.
 
 ## Patient-Evidence Calibration
 
@@ -292,7 +307,7 @@ labels, with only 5 labels comparable to this closed-world deterministic mode.
 | Run | Comparable | Accuracy | Abstention | Mode skipped |
 |---|---:|---:|---:|---:|
 | `e8efb7bcce35` | 5/50 | 80.0% | 40.0% | 17 |
-| `a53dea7638dc` | 5/50 | 80.0% | 40.0% | 17 |
+| `bc2fa92bdf18` | 5/50 | 80.0% | 40.0% | 17 |
 
 Interpretation: defer broad human grading until the remaining decisive compiler
 movements are reviewed and the compiler gap queue is reduced. The next human

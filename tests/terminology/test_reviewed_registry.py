@@ -109,6 +109,9 @@ def test_committed_medication_mappings_load() -> None:
     furosemide = registry.lookup("medication", "furosemide")
     hydrochlorothiazide = registry.lookup("medication", "hydrochlorothiazide")
     norepinephrine = registry.lookup("medication", "norepinephrine")
+    warfarin = registry.lookup("medication", "warfarin")
+    enoxaparin = registry.lookup("medication", "enoxaparin")
+    heparin = registry.lookup("medication", "heparin")
     anastrozole = registry.lookup("medication", "anastrozole")
     carbamazepine = registry.lookup("medication", "carbamazepine")
     dpp4 = registry.lookup("medication", "DPP4 inhibitors")
@@ -146,6 +149,15 @@ def test_committed_medication_mappings_load() -> None:
     assert norepinephrine is not None
     assert norepinephrine.status == "mapped"
     assert norepinephrine.candidates[0].codes == frozenset({"242969"})
+    assert warfarin is not None
+    assert warfarin.status == "mapped"
+    assert warfarin.candidates[0].codes == frozenset({"855332"})
+    assert enoxaparin is not None
+    assert enoxaparin.status == "mapped"
+    assert enoxaparin.candidates[0].codes == frozenset({"854235", "854252"})
+    assert heparin is not None
+    assert heparin.status == "mapped"
+    assert heparin.candidates[0].codes == frozenset({"1659263"})
     assert anastrozole is not None
     assert anastrozole.status == "mapped"
     assert anastrozole.candidates[0].codes == frozenset({"199224"})
