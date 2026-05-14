@@ -128,3 +128,9 @@ Statuses:
 - `extractor_bug`: the surface exists because extraction emitted the wrong span
   or type.
 - `out_of_scope`: the surface is outside the matcher/compiler scope.
+
+Compiler-review artifacts treat reviewed `extractor_bug` and `out_of_scope`
+rows as `review_gap` work rather than compiler implementation work. Reviewed
+`composite_unhandled` rows intentionally stay in the implementation lane
+because they need decomposition, route/provenance support, or new patient-data
+capability before execution is safe.

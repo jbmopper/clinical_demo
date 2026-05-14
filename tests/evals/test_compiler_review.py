@@ -17,7 +17,9 @@ from clinical_demo.evals.compiler_review import (
 from clinical_demo.evals.run import CaseRecord, EvalCase, RunResult
 from clinical_demo.extractor.schema import (
     ConditionCriterion,
+    EntityMention,
     ExtractedCriterion,
+    FreeTextCriterion,
     MeasurementCriterion,
 )
 from tests.evals._fixtures import AS_OF, make_score_pair_result
@@ -63,6 +65,24 @@ def _measurement(text: str, unit: str | None = None) -> ExtractedCriterion:
         temporal_window=None,
         free_text=None,
         mentions=[],
+    )
+
+
+def _free_text(text: str, *, mention_text: str) -> ExtractedCriterion:
+    return ExtractedCriterion(
+        kind="free_text",
+        polarity="inclusion",
+        source_text=text,
+        negated=False,
+        mood="actual",
+        age=None,
+        sex=None,
+        condition=None,
+        medication=None,
+        measurement=None,
+        temporal_window=None,
+        free_text=FreeTextCriterion(note="review fixture"),
+        mentions=[EntityMention(text=mention_text, type="Condition")],
     )
 
 
@@ -196,6 +216,59 @@ def test_build_rows_classifies_free_text_review_predicates_as_review_work() -> N
     assert {row.message for row in rows}
     assert all(row.priority == 60 for row in rows)
     assert all(row.severity == "medium" for row in rows)
+
+
+def test_build_rows_classifies_reviewed_nonexecutable_statuses_as_review_work() -> None:
+    run = _run(
+        [
+            _record(
+                "pair-reviewed",
+                [
+                    _condition("acutely decompensated heart failure"),
+                    _measurement("pulmonary vascular resistance (PVR)", "Wood units"),
+                    _condition("Uncontrolled systemic hypertension"),
+                ],
+            )
+        ]
+    )
+
+    rows = build_compiler_gap_review_rows(run)
+    rows_by_surface = {row.surface: row for row in rows}
+
+    assert rows_by_surface["acutely decompensated heart failure"].recommended_action == (
+        "review_gap"
+    )
+    assert rows_by_surface["pulmonary vascular resistance (PVR)"].recommended_action == (
+        "review_gap"
+    )
+    assert rows_by_surface["Uncontrolled systemic hypertension"].recommended_action == (
+        "implement_compiler_logic"
+    )
+
+
+def test_build_rows_uses_parent_compiled_criterion_for_promoted_subcriterion_gaps() -> None:
+    source_text = "Participants have acutely decompensated heart failure at baseline."
+    run = _run(
+        [
+            _record(
+                "pair-promoted",
+                [
+                    _free_text(
+                        source_text,
+                        mention_text="acutely decompensated heart failure",
+                    )
+                ],
+            )
+        ]
+    )
+
+    rows = build_compiler_gap_review_rows(run)
+
+    assert len(rows) == 1
+    assert rows[0].source_criterion_id == "criterion:0:free-text:condition"
+    assert rows[0].compiled_id == "compiled:criterion:0"
+    assert rows[0].criterion_source_text == source_text
+    assert rows[0].recommended_action == "review_gap"
 
 
 def test_json_round_trip_uses_stable_list_artifact(tmp_path) -> None:

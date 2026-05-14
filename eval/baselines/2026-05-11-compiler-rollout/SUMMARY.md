@@ -17,7 +17,8 @@ plasma-glucose threshold preservation, free-text plasma-glucose routing,
 normal-range/provenance gap taxonomy, and structured `free_text_review`
 validation/matcher/reviewer-artifact handling, followed by condition-shaped
 and temporal medication-exposure rerouting for reviewed medication classes and
-current-vocabulary anticoagulant closure.
+current-vocabulary anticoagulant closure, then reviewer-artifact classification
+for reviewed `out_of_scope` / `extractor_bug` gaps.
 
 Purpose: compare the legacy `matcher_inputs` execution path with opt-in
 `compiled_predicates` after the compiler foundation, composite, temporal,
@@ -192,8 +193,8 @@ Unresolved compiler gaps by recommended action:
 | Action | Rows |
 |---|---:|
 | `choose_candidate` | 8 |
-| `implement_compiler_logic` | 252 |
-| `review_gap` | 24 |
+| `implement_compiler_logic` | 114 |
+| `review_gap` | 162 |
 
 The compiler-review packet now also has a deduped group artifact. It collapses
 284 raw rows to 162 distinct surface/action/policy work items:
@@ -201,8 +202,8 @@ The compiler-review packet now also has a deduped group artifact. It collapses
 | Action | Groups |
 |---|---:|
 | `choose_candidate` | 5 |
-| `implement_compiler_logic` | 150 |
-| `review_gap` | 7 |
+| `implement_compiler_logic` | 72 |
+| `review_gap` | 85 |
 
 The current threshold gate passes only without `--require-compilation`, because
 the 2 deceased-patient scorer refusals mean compilation is missing for those
@@ -298,6 +299,11 @@ checkable predicates to 360, lowered total validation findings to 977 and
 blocking validation findings to 387, reduced deduped `implement_compiler_logic`
 groups to 150, and moved one chronic-anticoagulation condition-shaped criterion
 from indeterminate to determinate `fail` under closed-world evaluation.
+The reviewer-artifact classification follow-on leaves matcher/eval counts
+unchanged but moves reviewed `out_of_scope` and `extractor_bug` gaps from
+implementation work to review-only work, including promoted subcriterion rows.
+That drops deduped `implement_compiler_logic` groups from 150 to 72 and raises
+`review_gap` groups from 7 to 85.
 
 ## Patient-Evidence Calibration
 

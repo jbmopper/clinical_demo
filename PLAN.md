@@ -54,7 +54,8 @@
   `free_text_review` routing/validation plus reviewer-artifact classification
   for nonclinical condition surfaces, plus reviewed current-vocabulary
   anticoagulant closure and condition/temporal medication-class exposure
-  rerouting.
+  rerouting, plus reviewer-artifact classification for reviewed
+  `out_of_scope`/`extractor_bug` compiler gaps.
   It regenerates the compiler
   review/movement artifacts under
   `eval/baselines/2026-05-11-compiler-rollout/`. Compared with legacy
@@ -64,7 +65,7 @@
   movement, and 13 case-rollup movements. The path is still not default-ready:
   diagnostics show 284 unresolved compiler gaps, 43 closed-world-blocking
   cases, and 387 blocking validation findings. The deduped review packet has
-  162 groups (150 `implement_compiler_logic`, 5 `choose_candidate`, and 7
+  162 groups (72 `implement_compiler_logic`, 5 `choose_candidate`, and 85
   `review_gap`); there are no remaining `review_mapping` groups, and the
   generic blood-pressure ambiguity plus reviewed AST/ALT/bilirubin/hemoglobin
   ULN buckets, SGLT/non-insulin antidiabetic medication-class buckets, and the
@@ -105,11 +106,15 @@
   anticoagulation therapy into a reviewed medication-class predicate over
   warfarin, enoxaparin, and heparin; PAH background therapy remains a typed
   composite gap because no current patient-vocabulary PAH therapy anchors exist.
+  The reviewer-artifact cleanup keeps reviewed `out_of_scope` and
+  `extractor_bug` gaps in the `review_gap` lane, including promoted
+  subcriterion rows, so the remaining implementation queue is no longer
+  inflated by things we have already classified as non-executable.
   The
   remaining compiler-gap count is intentional: formerly opaque rows are now
   typed unsupported/composite work.
   Remaining next work is reviewing the decisive movement rows, reducing the
-  150 grouped `implement_compiler_logic` items, implementing safe
+  72 grouped `implement_compiler_logic` items, implementing safe
   normal-range/provenance execution where patient data can support it, and
   preparing a smaller human grading packet
   once the closed-world blockers are lower.
@@ -1746,7 +1751,10 @@ promotion remain follow-on work.
     Compiler review artifacts are active for rollout snapshots. A 2026-05-14
     remap keeps `free_text_review` predicate gaps in the `review_gap` bucket
     instead of `implement_compiler_logic`, so the implementation queue reflects
-    actual compiler work rather than allowed human-review leftovers.
+    actual compiler work rather than allowed human-review leftovers. A follow-on
+    remap also moves reviewed `out_of_scope` and `extractor_bug` compiler gaps
+    into `review_gap`, including promoted subcriterion rows whose source ids do
+    not exactly match top-level compiled criterion ids.
 
 - id: CC-12
   title: Eval gates and baseline rebuild
@@ -1846,8 +1854,8 @@ promotion remain follow-on work.
   compiler diagnostics show 284 unresolved gaps and 43 closed-world-blocking
   compiled cases, with 387 blocking validation findings. The regenerated
   compiler-review artifact now dedupes the 284 raw rows to 162
-  surface/action/policy groups (150 `implement_compiler_logic`, 5
-  `choose_candidate`, and 7 `review_gap`). There are no remaining
+  surface/action/policy groups (72 `implement_compiler_logic`, 5
+  `choose_candidate`, and 85 `review_gap`). There are no remaining
   `review_mapping` groups; the generic blood-pressure ambiguity bucket is gone,
   and reviewed AST/ALT/bilirubin/hemoglobin ULN criteria now compile through
   normal reference-limit translation, while SGLT and non-insulin antidiabetic
@@ -1895,10 +1903,14 @@ promotion remain follow-on work.
   implementation groups to 150 while moving one chronic-anticoagulation
   criterion to determinate `fail`
   under closed-world evaluation.
+  A reviewer-artifact cleanup then leaves matcher/eval counts unchanged while
+  moving reviewed `out_of_scope` and `extractor_bug` gaps from
+  `implement_compiler_logic` to `review_gap`, dropping the deduped
+  implementation queue to 72 groups and raising review-only groups to 85.
   Snapshot artifacts live under
   `eval/baselines/2026-05-11-compiler-rollout/`; next work is deceased-patient
   eval seed policy, triaging decisive criterion movements / 13 case
-  rollups, reducing the remaining 150 grouped compiler-logic gaps, and using the
+  rollups, reducing the remaining 72 grouped compiler-logic gaps, and using the
   deduped compiler-review packet for targeted reviewer/registry work.
 - Movement review artifact (2026-05-12 cache-independent refresh):
   `scripts/eval.py movement-review` now exports baseline-vs-comparison case and
@@ -1959,6 +1971,10 @@ promotion remain follow-on work.
   `normal_range_unknown` and 6 `provenance_required` measurement blockers,
   moves the plasma-glucose ADA bullets from free-text to measurement-domain
   gaps, and lowers the deduped implementation queue from 157 to 150 groups.
+  Reviewer-artifact classification now moves reviewed non-executable
+  `out_of_scope`/`extractor_bug` rows out of the implementation lane, lowering
+  the deduped implementation queue further to 72 groups without changing
+  matcher outputs.
   The next CC-08/CC-10 targets are normal-range phrase execution, patient-side
   modality/fasting
   provenance support for glucose execution, PAH/background-therapy class

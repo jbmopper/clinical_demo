@@ -194,6 +194,11 @@ Foundation status:
   as a typed composite gap until PAH medication anchors exist. Class predicates
   are emitted only when every member surface resolves through cached/reviewed
   RxNorm lookup.
+- Compiler-review artifacts use those reviewed statuses when assigning work:
+  reviewed `out_of_scope` and `extractor_bug` gaps are review-only queue items,
+  while `composite_unhandled`, missing provenance, and normal-range gaps stay
+  in implementation lanes because they require additional compiler/data-model
+  capability.
 - `CC-08` now checks reviewed lab decisions before local measurement alias
   lookup, so known out-of-scope, extractor-bug, and ambiguous measurement
   surfaces become explicit compiler gaps with provenance instead of opaque

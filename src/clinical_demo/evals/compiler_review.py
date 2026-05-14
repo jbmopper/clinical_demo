@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from hashlib import sha1
 from pathlib import Path
 
@@ -14,6 +14,7 @@ from clinical_demo.compiler import compiler_gap_queue
 from clinical_demo.compiler.reviewer_queue import CompilerGapQueueItem, RecommendedAction, Severity
 from clinical_demo.compiler.schema import (
     CompiledCriterion,
+    CompilerDiagnostic,
     ResolutionDomain,
     ResolutionGapKind,
     ResolutionStage,
@@ -115,6 +116,7 @@ ARTIFACT_SAFETY = {
     "contains_real_patient_data": False,
     "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata.",
 }
+_REVIEWED_REVIEW_ONLY_STATUSES = frozenset({"out_of_scope", "extractor_bug"})
 
 
 def build_compiler_gap_review_rows(run: RunResult) -> CompilerGapReviewRows:
@@ -130,7 +132,10 @@ def build_compiler_gap_review_rows(run: RunResult) -> CompilerGapReviewRows:
             criterion.source_criterion_id: criterion for criterion in result.compilation.criteria
         }
         for item in compiler_gap_queue(result.compilation):
-            criterion = compiled_by_source.get(item.source_criterion_id)
+            criterion = _compiled_criterion_for_source(
+                item.source_criterion_id,
+                compiled_by_source,
+            )
             rows.append(
                 CompilerGapReviewRow(
                     row_id=f"{record.case.pair_id}:{item.gap_id}",
@@ -275,6 +280,23 @@ def _compiled_id(criterion: CompiledCriterion | None) -> str | None:
     return criterion.compiled_id
 
 
+def _compiled_criterion_for_source(
+    source_criterion_id: str,
+    compiled_by_source: Mapping[str, CompiledCriterion],
+) -> CompiledCriterion | None:
+    criterion = compiled_by_source.get(source_criterion_id)
+    if criterion is not None:
+        return criterion
+
+    parts = source_criterion_id.split(":")
+    for end in range(len(parts) - 1, 1, -1):
+        parent_id = ":".join(parts[:end])
+        criterion = compiled_by_source.get(parent_id)
+        if criterion is not None:
+            return criterion
+    return None
+
+
 def _criterion_source_text(criterion: CompiledCriterion | None) -> str:
     if criterion is None:
         return ""
@@ -287,6 +309,8 @@ def _review_recommended_action(
 ) -> RecommendedAction:
     if _is_free_text_review_gap(item, criterion):
         return "review_gap"
+    if _is_reviewed_review_only_gap(item, criterion):
+        return "review_gap"
     return item.recommended_action
 
 
@@ -298,6 +322,45 @@ def _is_free_text_review_gap(
         criterion is not None
         and criterion.predicate.predicate_kind == "free_text_review"
         and item.gap_kind == "unsupported_predicate"
+    )
+
+
+def _is_reviewed_review_only_gap(
+    item: CompilerGapQueueItem,
+    criterion: CompiledCriterion | None,
+) -> bool:
+    if criterion is None or item.gap_kind != "unsupported_predicate":
+        return False
+
+    for diagnostic in criterion.diagnostics:
+        status = _reviewed_status_from_code(diagnostic.code)
+        if status not in _REVIEWED_REVIEW_ONLY_STATUSES:
+            continue
+        if _diagnostic_matches_gap(diagnostic, item):
+            return True
+    return False
+
+
+def _reviewed_status_from_code(code: str) -> str | None:
+    marker = ".reviewed."
+    if marker not in code:
+        return None
+    return code.split(marker, 1)[1].split(".", 1)[0]
+
+
+def _diagnostic_matches_gap(
+    diagnostic: CompilerDiagnostic,
+    item: CompilerGapQueueItem,
+) -> bool:
+    if any(fact.key == "gap_id" and fact.value == item.gap_id for fact in diagnostic.facts):
+        return True
+
+    status = _reviewed_status_from_code(diagnostic.code)
+    if status is None:
+        return False
+    reviewed_suffixes = (f"reviewed-{status}", f"reviewed_{status}")
+    return diagnostic.source_criterion_id == item.source_criterion_id and item.gap_id.endswith(
+        reviewed_suffixes
     )
 
 
