@@ -38,10 +38,10 @@ AI Forward Deployed Engineer interview.
 > Current Phase 2 focus: calibrated patient-trial matching -- feed
 > trials + patients into the system, retrieve relevant patient
 > evidence, and decide whether there is enough support to flag a
-> possible match. The 60-row patient-evidence packet is narrowed to
-> cardiometabolic eval slices, records the matcher assumption mode
-> (`open_world` by default), and includes structured retrieval
-> suggestions for reviewer citation. Oncology/NSCLC rows are
+> possible match. The active patient-evidence packet is the frozen
+> 26-row cardiometabolic slice built against run `b47ada00d6a7`;
+> the current demo pass has 10 usable labels and is directional, not
+> a statistically stable quality claim. Oncology/NSCLC rows are
 > deferred unless paired with hand-crafted oncology evidence.
 > `retrieval_only` is now exposed through the scorer, eval CLI, FastAPI
 > `/score`, and the reviewer UI; it attaches ranked patient source rows
@@ -52,10 +52,10 @@ AI Forward Deployed Engineer interview.
 > and LDL-C. A new patient-evidence report command compares `none`,
 > `retrieval_only`, and `bounded_adjudication` runs against filled
 > labels, including verdict accuracy, citation agreement, abstention,
-> case rollup movement, and adjudicator cost/call totals. The label
-> template still has 0/60 filled labels, so bounded-adjudication
-> quality claims and broad multi-model cost sweeps remain blocked on
-> human calibration, not plumbing. A local TrialGPT/TREC-style benchmark scaffold is
+> case rollup movement, and adjudicator cost/call totals. The current
+> 10-label slice can support a demo cost/quality walkthrough; broad
+> multi-model claims remain blocked on more human calibration, not
+> plumbing. A local TrialGPT/TREC-style benchmark scaffold is
 > also available for patient-summary / trial-ranking framing; official
 > TREC ingestion is intentionally deferred.
 
@@ -72,6 +72,11 @@ system never autonomously enrolls anyone.
 - [`PLAN.md`](./PLAN.md) — build plan, hour estimates, scope cuts, decision log.
 - [`description.md`](./description.md#high-level-architecture) — narrative
   plus Mermaid and ASCII architecture diagrams.
+- [`docs/system-architecture-walkthrough.md`](./docs/system-architecture-walkthrough.md) —
+  stage-by-stage pipeline walkthrough for the imperative scorer, LangGraph path,
+  compiler, retrieval, and eval store.
+- [`docs/known-limitations-and-scope.md`](./docs/known-limitations-and-scope.md) —
+  current scope boundaries and claims the demo does not support yet.
 
 ## Setup
 
@@ -105,6 +110,37 @@ uv run python scripts/eval.py --help              # eval harness CLI
 uv run python scripts/serve.py                    # FastAPI demo server (127.0.0.1:8000)
 (cd web && npm run dev)                           # SvelteKit reviewer UI (127.0.0.1:5173)
 ```
+
+## Reproduce the frozen compiler baseline
+
+The interview-demo compiler snapshot is frozen at run `b47ada00d6a7` under
+`eval/baselines/2026-05-11-compiler-rollout/`. To verify a checkout still
+matches that gate:
+
+```bash
+uv run pytest && \
+uv run python scripts/check_compiler_diagnostics.py \
+  --diagnostics eval/baselines/2026-05-11-compiler-rollout/compiled_predicates_diagnostics.json \
+  --max-unresolved-gaps 280 \
+  --max-closed-world-blocking-cases 43 \
+  --max-closed-world-blocking-findings 379 \
+  --max-gap-kind unmapped_concept=0 \
+  --max-gap-kind unsupported_predicate=252 \
+  --max-gap-kind ambiguous_mapping=8 \
+  --max-gap-kind insufficient_source=10 \
+  --max-gap-kind normal_range_unknown=4 \
+  --max-gap-kind provenance_required=6
+```
+
+## Limitations
+
+This is a portfolio / research demo, not a clinical deployment package. It does
+not autonomously enroll patients, does not claim medical-device validation, and
+does not ship a multi-tenant PHI storage story. The calibrated core is
+cardiometabolic-heavy; oncology, rich note-aware screening, MIMIC-IV behavior,
+TrialGPT leaderboard claims, and live CT.gov search remain out of scope. See
+[`docs/known-limitations-and-scope.md`](./docs/known-limitations-and-scope.md)
+for the full boundary list.
 
 ## Data
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from clinical_demo.extractor.fix import CRITERION_FIX_NOTE_PREFIX, fix_extracted_criteria
-from clinical_demo.extractor.schema import ExtractedCriteria, ExtractionMetadata
+from clinical_demo.extractor.schema import EntityMention, ExtractedCriteria, ExtractionMetadata
 from tests.matcher._fixtures import (
     crit_condition,
     crit_free_text,
@@ -99,3 +99,102 @@ def test_fix_emits_native_composite_groups_for_explicit_or_bundle() -> None:
     assert group.subchecks[0].criterion.kind == "measurement_threshold"
     assert group.subchecks[1].criterion.kind == "free_text"
     assert "native composite" in out.metadata.notes
+
+
+def test_fix_promotes_parenthetical_condition_mentions_to_any_of_group() -> None:
+    original = crit_free_text(
+        polarity="exclusion",
+        source_text=("Disorders of bone metabolism (pregnancy, malignancy, breastfeeding)"),
+        mentions=[
+            EntityMention(text="pregnancy", type="Condition"),
+            EntityMention(text="malignancy", type="Condition"),
+            EntityMention(text="breastfeeding", type="Condition"),
+        ],
+    )
+
+    out = fix_extracted_criteria(_extracted(original))
+
+    assert out.criteria == [original]
+    group = out.composite_groups[0]
+    assert group.operator == "any_of"
+    assert group.parent_source_text == original.source_text
+    assert [subcheck.source_text for subcheck in group.subchecks] == [
+        "pregnancy",
+        "malignancy",
+        "breastfeeding",
+    ]
+    assert [subcheck.criterion.kind for subcheck in group.subchecks] == [
+        "condition_present",
+        "condition_present",
+        "condition_present",
+    ]
+    assert all(subcheck.criterion.polarity == "exclusion" for subcheck in group.subchecks)
+    assert all(subcheck.criterion.mentions for subcheck in group.subchecks)
+
+
+def test_fix_promotes_inline_disjunction_with_temporal_qualifier() -> None:
+    original = crit_free_text(
+        polarity="exclusion",
+        source_text="Pregnancy or breastfeeding within 6 months",
+        mentions=[
+            EntityMention(text="Pregnancy", type="Condition"),
+            EntityMention(text="breastfeeding", type="Condition"),
+            EntityMention(text="within 6 months", type="Temporal"),
+        ],
+    ).model_copy(update={"mood": "historical"})
+
+    out = fix_extracted_criteria(_extracted(original))
+
+    group = out.composite_groups[0]
+    assert group.operator == "any_of"
+    assert [subcheck.source_text for subcheck in group.subchecks] == [
+        "Pregnancy",
+        "breastfeeding",
+    ]
+    condition_texts = []
+    for subcheck in group.subchecks:
+        condition = subcheck.criterion.condition
+        assert condition is not None
+        condition_texts.append(condition.condition_text)
+    assert condition_texts == [
+        "Pregnancy",
+        "breastfeeding",
+    ]
+    assert all(subcheck.criterion.mood == "historical" for subcheck in group.subchecks)
+    assert all(subcheck.criterion.negated is False for subcheck in group.subchecks)
+
+
+def test_fix_promotes_treatment_with_any_following_drug_mentions() -> None:
+    original = crit_free_text(
+        polarity="exclusion",
+        source_text=(
+            "Treatment with any of the following drugs in past year: "
+            "immunosuppressants, calcitonin, bisphosphonate treatment."
+        ),
+        mentions=[
+            EntityMention(text="immunosuppressants", type="Drug"),
+            EntityMention(text="calcitonin", type="Drug"),
+            EntityMention(text="bisphosphonate treatment", type="Drug"),
+        ],
+    )
+
+    out = fix_extracted_criteria(_extracted(original))
+
+    group = out.composite_groups[0]
+    assert group.operator == "any_of"
+    assert [subcheck.criterion.kind for subcheck in group.subchecks] == [
+        "medication_present",
+        "medication_present",
+        "medication_present",
+    ]
+    medication_texts = []
+    for subcheck in group.subchecks:
+        medication = subcheck.criterion.medication
+        assert medication is not None
+        medication_texts.append(medication.medication_text)
+    assert medication_texts == [
+        "immunosuppressants",
+        "calcitonin",
+        "bisphosphonate treatment",
+    ]
+    assert all(subcheck.criterion.free_text is None for subcheck in group.subchecks)

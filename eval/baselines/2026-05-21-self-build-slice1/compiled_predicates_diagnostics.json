@@ -1,0 +1,85 @@
+{
+  "artifact_safety": {
+    "public_export": "synthetic",
+    "contains_real_patient_data": false,
+    "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
+  },
+  "run_id": "5f3acbeb448f",
+  "notes": "2026-05-21 self-build slice1 deterministic reviewed mention-to-composite promotion; compiled_predicates; binding_strategy=two_pass; resolver_execution_policy=cached_only; matcher_assumption_mode=closed_world_eval; llm_use_level=none",
+  "n_cases": 49,
+  "n_errors": 2,
+  "scored_cases": 47,
+  "total_criteria": 1076,
+  "total_scoring_latency_ms": 16564.437373977853,
+  "avg_scoring_latency_ms": 338.0497423260786,
+  "verdict_counts": {
+    "fail": 89,
+    "indeterminate": 806,
+    "pass": 181
+  },
+  "reason_counts": {
+    "ambiguous_criterion": 24,
+    "human_review_required": 592,
+    "no_data": 10,
+    "ok": 270,
+    "unsupported_kind": 162,
+    "unsupported_mood": 18
+  },
+  "kind_counts": {
+    "age": 45,
+    "condition_absent": 130,
+    "condition_present": 80,
+    "free_text": 635,
+    "measurement_threshold": 144,
+    "medication_absent": 8,
+    "medication_present": 13,
+    "sex": 6,
+    "temporal_window": 15
+  },
+  "unmapped_count": 0,
+  "unmapped_rate": 0.0,
+  "indeterminate_count": 806,
+  "indeterminate_rate": 0.7490706319702602,
+  "binding_registered_total": 27,
+  "binding_registered_resolved": 27,
+  "binding_registered_unmapped": 0,
+  "binding_registered_by_kind": {
+    "condition": {
+      "mapped": 14
+    },
+    "lab": {
+      "mapped": 12
+    },
+    "medication": {
+      "mapped": 1
+    }
+  },
+  "top_unmapped_surfaces": [],
+  "compiler_compilation_present_cases": 47,
+  "compiler_compilation_missing_cases": 2,
+  "compiler_compiled_criteria_total": 1076,
+  "compiler_checkable_predicates_total": 368,
+  "compiler_unresolved_gaps_total": 280,
+  "compiler_unresolved_gaps_by_kind": {
+    "ambiguous_mapping": 8,
+    "insufficient_source": 10,
+    "normal_range_unknown": 4,
+    "provenance_required": 6,
+    "unsupported_predicate": 252
+  },
+  "compiler_unresolved_gaps_by_stage": {
+    "concept_resolution": 199,
+    "predicate_translation": 81
+  },
+  "compiler_unresolved_gaps_by_domain": {
+    "condition": 139,
+    "free_text": 49,
+    "measurement": 58,
+    "medication": 33,
+    "temporal": 1
+  },
+  "compiler_closed_world_ok_cases": 4,
+  "compiler_closed_world_blocking_cases": 43,
+  "compiler_closed_world_findings_total": 969,
+  "compiler_closed_world_blocking_findings_total": 379
+}

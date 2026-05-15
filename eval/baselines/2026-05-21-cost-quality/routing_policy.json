@@ -1,0 +1,89 @@
+{
+  "artifact_safety": {
+    "public_export": "synthetic",
+    "contains_real_patient_data": false,
+    "source_data": "Synthetic Synthea patients and public ClinicalTrials.gov trial metadata."
+  },
+  "policy_version": "patient-evidence-routing-provisional-v0.1",
+  "status": "provisional",
+  "basis": {
+    "baseline_dir": "eval/baselines/2026-05-21-cost-quality",
+    "label_denominator": "10 usable rows: 8 open_world, 2 closed_world_eval",
+    "warning": "This policy is a demo artifact, not a production default. Revisit after the planned 20/26 label gate."
+  },
+  "defaults": {
+    "batch_scoring": "none",
+    "reviewer_ui": "retrieval_only",
+    "manual_escalation": "bounded_adjudication"
+  },
+  "rules": [
+    {
+      "criterion_kind": "age",
+      "matcher_assumption_mode": "*",
+      "llm_use_level": "none",
+      "rationale": "Deterministic demographics are already directly checkable."
+    },
+    {
+      "criterion_kind": "sex",
+      "matcher_assumption_mode": "*",
+      "llm_use_level": "none",
+      "rationale": "Deterministic demographics are already directly checkable."
+    },
+    {
+      "criterion_kind": "measurement_threshold",
+      "matcher_assumption_mode": "*",
+      "llm_use_level": "retrieval_only",
+      "rationale": "Retrieved observations help reviewer inspection; missing labs remain indeterminate in every assumption mode."
+    },
+    {
+      "criterion_kind": "condition_present",
+      "matcher_assumption_mode": "open_world",
+      "llm_use_level": "retrieval_only",
+      "rationale": "Open-world absence is not proof of absence; surface retrieved rows without spending adjudicator calls by default."
+    },
+    {
+      "criterion_kind": "condition_absent",
+      "matcher_assumption_mode": "open_world",
+      "llm_use_level": "retrieval_only",
+      "rationale": "Open-world absence-dependent decisions need visible evidence context."
+    },
+    {
+      "criterion_kind": "medication_present",
+      "matcher_assumption_mode": "open_world",
+      "llm_use_level": "retrieval_only",
+      "rationale": "Medication exposure often benefits from surfaced rows and route/status context."
+    },
+    {
+      "criterion_kind": "medication_absent",
+      "matcher_assumption_mode": "open_world",
+      "llm_use_level": "retrieval_only",
+      "rationale": "Medication absence is not safely decisive under incomplete charts."
+    },
+    {
+      "criterion_kind": "temporal_window",
+      "matcher_assumption_mode": "open_world",
+      "llm_use_level": "retrieval_only",
+      "rationale": "Temporal source rows help review without making hidden-chart assumptions."
+    },
+    {
+      "criterion_kind": "free_text",
+      "matcher_assumption_mode": "*",
+      "llm_use_level": "retrieval_only",
+      "rationale": "Free-text criteria need reviewer context; bounded adjudication remains opt-in until labels are larger."
+    },
+    {
+      "criterion_kind": "*",
+      "matcher_assumption_mode": "closed_world_eval",
+      "llm_use_level": "none",
+      "rationale": "Closed-world labels are too sparse in this slice to justify extra default spend."
+    }
+  ],
+  "bounded_adjudication_escalation": {
+    "allowed_when": [
+      "deterministic verdict is indeterminate",
+      "retrieval_only surfaced relevant patient rows",
+      "the user explicitly requests citation-grounded adjudication or the workflow is a budgeted eval sweep"
+    ],
+    "not_default_reason": "In this 8-label open-world slice it did not improve labeled accuracy or abstention, while adding 695 calls / $0.1678."
+  }
+}

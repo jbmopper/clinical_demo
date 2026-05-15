@@ -13,6 +13,15 @@ trigger points for regenerating calibration data and re-running evals.
 - `PLAN.md` §12 — decision log; `D-74` is the self-building track decision.
 - `eval/baselines/2026-05-11-compiler-rollout/SUMMARY.md` — frozen demo baseline.
 
+**Execution note (2026-05-14).** The first cost/quality slice was run with the
+current **10 / 26 usable labels** by explicit operator decision, rather than
+waiting for the original ≥ 20 / 26 gate. The resulting artifacts live under
+`eval/baselines/2026-05-21-cost-quality/` and must be read as a directional
+demo slice: 8 usable `open_world` rows, 2 usable `closed_world_eval` rows, and
+no statistically durable routing claim. SQLite remains the local eval store;
+DB-writing eval runs were kept serial instead of replacing the store or adding
+a merge step.
+
 ---
 
 ## 1. Tracks at a glance

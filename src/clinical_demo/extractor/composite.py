@@ -15,11 +15,19 @@ from clinical_demo.extractor.schema import (
     CompositeCriterionGroup,
     CompositeCriterionSubcheck,
     CompositeOperator,
+    ConditionCriterion,
+    EntityMention,
     ExtractedCriterion,
     FreeTextCriterion,
     MeasurementCriterion,
+    MedicationCriterion,
 )
 from clinical_demo.matcher.concept_lookup import lookup_lab
+from clinical_demo.terminology import (
+    ReviewedMappingKind,
+    get_reviewed_mapping_registry,
+    get_reviewed_medication_class_registry,
+)
 
 _COMPOSITE_SPLITTERS: tuple[tuple[CompositeOperator, re.Pattern[str]], ...] = (
     ("any_of", re.compile(r"\s*;\s+OR\s+", re.IGNORECASE)),
@@ -30,6 +38,18 @@ _MEASUREMENT_SUBCHECK_RE = re.compile(
     r"(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>%|[A-Za-z][A-Za-z0-9/%.*^{}_-]*)?",
     re.IGNORECASE,
 )
+_PAREN_LIST_RE = re.compile(r"\([^)]*,[^)]*\)")
+_INLINE_DISJUNCTION_RE = re.compile(r"\b(?:or|and/or)\b", re.IGNORECASE)
+_TEMPORAL_QUALIFIER_RE = re.compile(
+    r"\b(?:within|in the past|past|prior|last)\s+\d+\s+"
+    r"(?:day|days|week|weeks|month|months|year|years)\b",
+    re.IGNORECASE,
+)
+_TREATMENT_LIST_RE = re.compile(
+    r"\btreatment with any of the following\b|\bany of the following drugs\b",
+    re.IGNORECASE,
+)
+_PROMOTABLE_MENTION_TYPES = frozenset({"Condition", "Drug"})
 
 
 def build_composite_criterion_groups(
@@ -63,6 +83,8 @@ def build_composite_criterion_groups(
                 ],
             )
         ]
+    if criterion.kind == "free_text":
+        return _mention_backed_composite_groups(criterion, criterion_index=criterion_index)
     return []
 
 
@@ -122,6 +144,124 @@ def _subcheck_criterion(
             note=f"composite_subcheck operator={operator}; parent_kind={parent.kind}"
         ),
         mentions=[],
+    )
+
+
+def _mention_backed_composite_groups(
+    criterion: ExtractedCriterion,
+    *,
+    criterion_index: int,
+) -> list[CompositeCriterionGroup]:
+    mentions = _promotable_mentions(criterion)
+    if len(mentions) < 2 or not _has_supported_mention_composite_shape(criterion, mentions):
+        return []
+
+    group_id = f"criterion:{criterion_index}:group:001"
+    operator: CompositeOperator = "any_of"
+    return [
+        CompositeCriterionGroup(
+            group_id=group_id,
+            operator=operator,
+            parent_criterion_index=criterion_index,
+            parent_source_text=criterion.source_text,
+            subchecks=[
+                CompositeCriterionSubcheck(
+                    subcheck_id=f"{group_id}:subcheck:{index:03d}",
+                    operator=operator,
+                    source_text=mention.text.strip(),
+                    criterion=_mention_subcheck_criterion(
+                        parent=criterion,
+                        mention=mention,
+                    ),
+                )
+                for index, mention in enumerate(mentions, start=1)
+            ],
+        )
+    ]
+
+
+def _promotable_mentions(criterion: ExtractedCriterion) -> list[EntityMention]:
+    return [
+        mention
+        for mention in criterion.mentions
+        if mention.type in _PROMOTABLE_MENTION_TYPES and mention.text.strip()
+    ]
+
+
+def _has_supported_mention_composite_shape(
+    criterion: ExtractedCriterion,
+    mentions: list[EntityMention],
+) -> bool:
+    if not _mentions_have_reviewed_decisions(mentions):
+        return False
+    source = criterion.source_text
+    if _TREATMENT_LIST_RE.search(source) and all(mention.type == "Drug" for mention in mentions):
+        return True
+    if _PAREN_LIST_RE.search(source) and _mentions_fit_parenthetical_list(source, mentions):
+        return True
+    return bool(
+        _INLINE_DISJUNCTION_RE.search(source)
+        and _TEMPORAL_QUALIFIER_RE.search(source)
+        and len({mention.type for mention in mentions}) == 1
+    )
+
+
+def _mentions_have_reviewed_decisions(mentions: list[EntityMention]) -> bool:
+    reviewed_mappings = get_reviewed_mapping_registry()
+    medication_classes = get_reviewed_medication_class_registry()
+    for mention in mentions:
+        kind: ReviewedMappingKind = "condition" if mention.type == "Condition" else "medication"
+        if reviewed_mappings.lookup(kind, mention.text) is not None:
+            continue
+        if mention.type == "Drug" and medication_classes.lookup(mention.text) is not None:
+            continue
+        return False
+    return True
+
+
+def _mentions_fit_parenthetical_list(source_text: str, mentions: list[EntityMention]) -> bool:
+    for match in _PAREN_LIST_RE.finditer(source_text):
+        parenthetical = match.group(0).lower()
+        if all(mention.text.strip().lower() in parenthetical for mention in mentions):
+            return True
+    return False
+
+
+def _mention_subcheck_criterion(
+    *,
+    parent: ExtractedCriterion,
+    mention: EntityMention,
+) -> ExtractedCriterion:
+    if mention.type == "Condition":
+        return ExtractedCriterion(
+            kind="condition_present",
+            polarity=parent.polarity,
+            source_text=mention.text.strip(),
+            negated=parent.negated,
+            mood=parent.mood,
+            age=None,
+            sex=None,
+            condition=ConditionCriterion(condition_text=mention.text.strip()),
+            medication=None,
+            measurement=None,
+            temporal_window=None,
+            free_text=None,
+            mentions=[mention],
+        )
+    return ExtractedCriterion(
+        kind="medication_present",
+        polarity=parent.polarity,
+        source_text=mention.text.strip(),
+        negated=parent.negated,
+        mood=parent.mood,
+        age=None,
+        sex=None,
+        condition=None,
+        medication=MedicationCriterion(medication_text=mention.text.strip()),
+        measurement=None,
+        temporal_window=None,
+        free_text=None,
+        mentions=[mention],
     )
 
 
